@@ -1,0 +1,30 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+
+(in .file
+    (call .qrtr-cfg.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block qrtr-cfg
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/usr/bin/qrtr-cfg"
+        file
+        execfile_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "qrtr-cfg")))
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .file.exec.obj_template))

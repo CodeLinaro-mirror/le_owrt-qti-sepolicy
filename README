@@ -1,0 +1,27 @@
+===============QTI SEPOLICY =================================. 
+All vendor related sepolicy (cil) files are going to be added here . 
+
+During the pre-phase of build all this files are copied to upstream 
+code in the below path . 
+build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/selinux-policy-0.8
+
+Any contribution to this folder please follow the folder tree and naming 
+convention of upstream  you can refer to the above path  under /src 
+you can see different cil file   place in each directory based on the type of 
+resource /bin.
+
+
+Make file: 
+Local reference of Makefile :   package/system/selinux-policy/Makefile
+https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=package/system/selinux-policy/Makefile
+
+To compile just sepolicy :
+ make -j16  V=sc  package/system/selinux-policy 
+
+For example you can refer 
+build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/selinux-policy-0.8/src
+
+
+Other doc/links :
+https://openwrt.org/packages/pkgdata/selinux-policy
+

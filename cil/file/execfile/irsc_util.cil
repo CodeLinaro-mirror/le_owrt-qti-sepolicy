@@ -1,0 +1,30 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+
+(in .file
+    (call .irsc_util.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block irsc_util
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/usr/bin/irsc_util"
+        file
+        execfile_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "irsc_util")))
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .file.exec.obj_template))

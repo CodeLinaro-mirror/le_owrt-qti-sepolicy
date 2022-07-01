@@ -13,7 +13,7 @@
         "/dev/qseecom"
         char
         nodedev_file_context)
-		
+
        ;;
        ;; Macros
        ;;

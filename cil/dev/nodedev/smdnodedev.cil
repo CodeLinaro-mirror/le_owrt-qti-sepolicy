@@ -10,16 +10,16 @@
        ;;
 
        (filecon
-        "/dev/smd*"
+        "/dev/smd([0-99])"
         char
         nodedev_file_context)
-		
+
        ;;
        ;; Macros
        ;;
-	(macro obj_type_transition_nodedev ((type ARG1))
+       (macro obj_type_transition_nodedev ((type ARG1))
               (call .tmp.fs_obj_type_transition
-                    (ARG1 nodedev chr_file "smd_device")))
+                    (ARG1 nodedev chr_file "smd_dev")))
        ;;
        ;; Policy
        ;;

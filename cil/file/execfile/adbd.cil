@@ -1,30 +1,37 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-
-(in .file
-    (call .adbd.obj_type_transition_execfile (unconfined.subj_typeattr)))
+(in .sys
+	(call .adbd.subj_type_transition (subj)))
 
 (block adbd
+;(in .file
+;	(call .adbd.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
-       ;;
-       ;; Contexts
-       ;;
+	;; Contexts
+	;;
 
-       (filecon
-        "/sbin/adbd"
-        file
-        execfile_file_context)
+	(filecon
+		"/sbin/adbd"
+		file
+		execfile_file_context)
 
-       ;;
-       ;; Macros
-       ;;
+	;;
+	;; Macros
+	;;
 
-       (macro obj_type_transition_execfile ((type ARG1))
-              (call .file.execfile_obj_type_transition
-                    (ARG1 execfile file "adbd")))
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "adbd")))
+	;;
+	;; Policy
+	;;
 
-       ;;
-       ;; Policy
-       ;;
+	;;(blockinherit .file.exec.obj_template)
+	(blockinherit .agent.base_template)
 
-       (blockinherit .file.exec.obj_template))
+	;; search in config files is needed
+	;;which is done on start /Stop  of services
+	(call .file.search_conffile_dirs (subj)))
+
+	;;(blockinherit .tmpfile.runtime.obj_template)
+;

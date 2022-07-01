@@ -1,0 +1,33 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+;; following are missing in upstream file_context and which
+;; not getting label and doing this at runtime is bit expensive
+
+(in .file
+
+    ;;
+    ;; Contexts
+    ;;
+
+
+	(filecon
+        "/lib"
+        dir
+        libfile_file_context)
+
+
+    (filecon
+     "/lib/.*"
+     any
+     libfile_file_context)
+
+     (filecon
+     "/usr/lib/libq*"
+     file
+     libfile_file_context)
+
+
+    ;(blockinherit lib.obj_template)
+
+    (call datafile_obj_type_transition_libfile (unconfined.subj_typeattr))
+    (call obj_type_transition_libfile (unconfined.subj_typeattr))
+	)

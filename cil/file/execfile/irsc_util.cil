@@ -1,30 +1,42 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
 
-(in .file
-    (call .irsc_util.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(in .sys
+    (call .irsc_util.subj_type_transition (subj)))
+
+;;(in .file
+;;    (call .irsc_util.obj_type_transition_execfile (unconfined.subj_typeattr))
+;;    (call .irsc_util.obj_type_transition_runtimetmpfile
+;;          (unconfined.subj_typeattr)))
 
 (block irsc_util
 
-       ;;
-       ;; Contexts
-       ;;
 
-       (filecon
-        "/usr/bin/irsc_util"
-        file
-        execfile_file_context)
+	;;
+	;; Contexts
+	;;
 
-       ;;
-       ;; Macros
-       ;;
+	(filecon
+		"/usr/bin/irsc_util"
+		file
+	execfile_file_context)
 
-       (macro obj_type_transition_execfile ((type ARG1))
-              (call .file.execfile_obj_type_transition
-                    (ARG1 execfile file "irsc_util")))
+	;;
+	;; Macros
+	;;
 
-       ;;
-       ;; Policy
-       ;;
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+                  (ARG1 execfile file "irsc_util")))
 
-       (blockinherit .file.exec.obj_template))
+
+	;; Policy
+	;;
+
+	(blockinherit .agent.base_template)
+	;; search in config files is needed
+	;;which is done on start /Stop  of services
+	(call .file.search_conffile_dirs (subj))
+	;;(blockinherit .tmpfile.runtime.obj_template)
+	   )

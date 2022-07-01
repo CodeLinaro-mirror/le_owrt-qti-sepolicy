@@ -1,30 +1,31 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
+(in .sys
+    (call .init_mss.subj_type_transition (subj)))
 
-(in .file
-    (call .init_mss.obj_type_transition_execfile (unconfined.subj_typeattr)))
+;(in .file
+ ;   (call .init_mss.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
 (block init_mss
-
-       ;;
-       ;; Contexts
-       ;;
-
-       (filecon
-        "/usr/bin/init_mss"
-        file
-        execfile_file_context)
-
-       ;;
-       ;; Macros
-       ;;
-
-       (macro obj_type_transition_execfile ((type ARG1))
-              (call .file.execfile_obj_type_transition
-                    (ARG1 execfile file "init_mss")))
-
-       ;;
-       ;; Policy
-       ;;
-
-       (blockinherit .file.exec.obj_template))
+	;;
+	;; Contexts
+	;;
+	(filecon
+		"/usr/bin/init_mss"
+		file
+		execfile_file_context)
+	;;
+	;; Macros
+	;;
+		(macro obj_type_transition_execfile ((type ARG1))
+			(call .file.execfile_obj_type_transition
+				(ARG1 execfile file "init_mss")))
+	;;
+	;;Policy
+	;;
+        (blockinherit .agent.base_template)
+	   ;; search in config files is needed
+	   ;;which is done on start /Stop  of services
+	   (call .file.search_conffile_dirs (subj))
+;	   (blockinherit .file.exec.obj_template)
+)

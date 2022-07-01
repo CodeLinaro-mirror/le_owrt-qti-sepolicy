@@ -2,17 +2,17 @@
 
 
 (in .sys
-    (call .diag-router.subj_type_transition (subj)))
+    (call .qcmap_cm.subj_type_transition (subj)))
 
 ;(in .file
- ;   (call .diag-router.obj_type_transition_execfile (unconfined.subj_typeattr)))
+ ;   (call .qcmap_cm.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
-(block diag-router
+(block qcmap_cm
 	;;
 	;; Contexts
 	;;
 	(filecon
-		"/usr/bin/diag-router"
+		"/usr/bin/QCMAP_ConnectionManager"
 		file
 		execfile_file_context)
 	;;
@@ -20,11 +20,7 @@
        ;;
 		(macro obj_type_transition_execfile ((type ARG1))
 			(call .file.execfile_obj_type_transition
-				(ARG1 execfile file "diag-router")))
-
-		(macro unix_stream_connect ((type ARG1))
-              (call connectto_unix_stream_sockets (ARG1)))
-
+				(ARG1 execfile file "QCMAP_ConnectionManager")))
 	;;
 	;; Policy
        ;;
@@ -52,8 +48,5 @@
 	;;need for /dev/logd or logging
 	;; this will add write permission also
 	   (call .logd.unix_dgram_send(subj))
-	;; search  /dev tree .
-	(call .devices.search_sysfile_dirs (subj))
-
 	;;(blockinherit .file.exec.obj_template)
 )

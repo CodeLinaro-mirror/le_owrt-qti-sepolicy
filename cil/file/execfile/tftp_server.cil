@@ -1,0 +1,28 @@
+ ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+    (call .tftp_server.subj_type_transition (subj)))
+
+;(in .file
+ ;   (call .tftp_server.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block tftp_server
+	   ;;
+       ;; Contexts
+       ;;
+	(filecon
+		"/usr/sbin/tftp_server"
+		file
+		execfile_file_context)
+       ;;
+       ;; Macros
+       ;;
+		(macro obj_type_transition_execfile ((type ARG1))
+			(call .file.execfile_obj_type_transition
+				(ARG1 execfile file "tftp_server")))
+	   ;;
+       ;; Policy
+       ;;
+       (blockinherit .agent.base_template)
+;		(blockinherit .file.exec.obj_template)
+)

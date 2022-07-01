@@ -1,0 +1,53 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+    (call .diagrebootapp.subj_type_transition (subj)))
+
+;(in .file
+ ;   (call .diagrebootapp.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block diagrebootapp
+	   ;;
+       ;; Contexts
+       ;;
+    ( typepermissive subj )
+	(filecon
+		"/usr/bin/diagrebootapp"
+		file
+		execfile_file_context)
+       ;;
+       ;; Macros
+       ;;
+		(macro obj_type_transition_execfile ((type ARG1))
+			(call .file.execfile_obj_type_transition
+				(ARG1 execfile file "diagrebootapp")))
+
+
+	   ;;
+       ;; Policy
+       ;;
+       (blockinherit .agent.base_template)
+	   
+	;; search in config files is needed
+	;;which is done on start /Stop  of services
+	   (call .file.search_conffile_dirs (subj))
+	   (call .sys.search_fs_dirs (subj))
+	   (call .bus.list_sysfile_dirs (subj))
+
+	;; Needed for  unix_dgram socket creation
+	   (allow subj self create_unix_dgram_socket)
+	   (allow subj self (capability (setgid setuid)))
+	   (allow subj self create_unix_stream_socket)
+	   (allow subj self (capability (setgid setuid chown)))
+
+	;; Needed to for diagrebootapp to connect to diag-router
+	   (call .diag-router.unix_stream_connect(subj))
+	;;(allow diagrebootapp.subj diag-router.subj:unix_stream_socket connectto)
+
+	;;Needed for reading and search sysfs 
+	(call .sys.read_fs_lnk_files (subj))
+
+	(call .devices.search_sysfile_dirs (subj))
+
+	;;(blockinherit .file.exec.obj_template)
+)

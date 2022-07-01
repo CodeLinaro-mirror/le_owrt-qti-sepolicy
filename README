@@ -1,5 +1,5 @@
 ===============QTI SEPOLICY =================================. 
-All vendor related sepolicy (cil) files are going to be added here . 
+All vendor related sepolicy (cil) files are going to be added here .
 
 During the pre-phase of build all this files are copied to upstream 
 code in the below path . 
@@ -17,6 +17,16 @@ https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=package/system/selinux-p
 
 To compile just sepolicy :
  make -j16  V=sc  package/system/selinux-policy 
+
+ Please note: Qti sepolicy change will only take effect once you clean and  rebuild SEpolicy
+ to clean and compile just sepolicy
+  make -j16  V=sc  package/system/selinux-policy/clean
+  make -j16  V=sc  package/system/selinux-policy/compile
+ Once done  create the full build
+
+ As we are enabling  global selinux to enforce  we have to take care of upstream sepolicy
+ All uptream sepolicy  are added to  qexec and qlibs  cil file
+
 
 For example you can refer 
 build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/selinux-policy-0.8/src

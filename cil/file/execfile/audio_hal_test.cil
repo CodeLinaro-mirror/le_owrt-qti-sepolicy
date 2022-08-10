@@ -1,0 +1,130 @@
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+    (call .hal_rec_test.subj_type_transition (subj))
+    (call .hal_play_test.subj_type_transition (subj)))
+
+(in .file
+    (call .hal_rec_test.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .hal_play_test.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+
+(block hal_rec_test
+    ;;
+    ;; Contexts
+    ;;
+    (filecon
+        "/usr/bin/hal_rec_test"
+        file
+        execfile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+            (call .file.execfile_obj_type_transition
+                (ARG1 execfile file "hal_rec_test")))
+
+        (macro audio_hal_device_access ((type ARG1))
+              (allow subj nodedev readwrite_chr_file))
+
+
+    ;;
+    ;; Policy
+        ;;
+        (blockinherit .agent.base_template)
+
+    ;; search in config files is needed
+    ;;which is done on start /Stop  of services
+       (call .file.search_conffile_dirs (subj))
+
+    ;; Need qipcrtr socket creations
+       (allow subj  self  create_qipcrtr_socket)
+
+    ;; Needed for  unix_dgram socket creation
+       (allow subj self create_unix_dgram_socket)
+
+    ;;Needed for creating of unix stream socket
+       (allow subj self create_unix_stream_stream_socket)
+
+    ;; TODO:we will allow this for intial version will remove later
+           (allow subj self (capability (dac_override dac_read_search)))
+
+    ;; Need creat and read of this uevent socket
+       (allow subj self create_netlink_kobject_uevent_socket)
+
+    ;;need for /dev/logd or logging
+    ;; this will add write permission also
+       (call .logd.unix_dgram_send(subj))
+    ;; search  /dev tree .
+    (call .devices.search_sysfile_dirs (subj))
+
+    ;;(blockinherit .file.exec.obj_template)
+
+    ;;(call .dev.readwriteinherited_csddev_chr_files (subj))
+    (call .fs.write_sysfile_dirs (subj))
+    ;;  (call .fs.search_tracefile_dirs (subj))
+
+    (call .shell.execute_execfile_files (subj))
+
+)
+
+(block hal_play_test
+    ;;
+    ;; Contexts
+    ;;
+
+    (filecon
+        "/usr/bin/hal_play_test"
+        file
+        execfile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+            (call .file.execfile_obj_type_transition
+                (ARG1 execfile file "hal_play_test")))
+
+    ;;
+    ;; Policy
+        ;;
+        (blockinherit .agent.base_template)
+
+    ;; search in config files is needed
+    ;;which is done on start /Stop  of services
+       (call .file.search_conffile_dirs (subj))
+
+    ;; Need qipcrtr socket creations
+       (allow subj  self  create_qipcrtr_socket)
+
+    ;; Needed for  unix_dgram socket creation
+       (allow subj self create_unix_dgram_socket)
+
+    ;;Needed for creating of unix stream socket
+       (allow subj self create_unix_stream_stream_socket)
+
+    ;; TODO:we will allow this for intial version will remove later
+           (allow subj self (capability (dac_override dac_read_search)))
+
+    ;; Need creat and read of this uevent socket
+       (allow subj self create_netlink_kobject_uevent_socket)
+
+    ;;need for /dev/logd or logging
+    ;; this will add write permission also
+       (call .logd.unix_dgram_send(subj))
+    ;; search  /dev tree .
+    (call .devices.search_sysfile_dirs (subj))
+
+    ;;(blockinherit .file.exec.obj_template)
+
+    ;;(call .dev.readwriteinherited_csddev_chr_files (subj))
+    (call .fs.write_sysfile_dirs (subj))
+    ;;  (call .fs.search_tracefile_dirs (subj))
+
+    (call .shell.execute_execfile_files (subj))
+
+)

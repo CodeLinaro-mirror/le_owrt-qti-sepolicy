@@ -1,0 +1,167 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; Sepolicy rules for location - base location.cil file contains common contexts
+;; eg: conf, data, devnodes, common rules etc
+
+(in .file
+    ;; location etc and data files
+    (call .loc_data.obj_type_transition_datafile (unconfined.subj_typeattr))
+    (call .loc_etc.obj_type_transition_conffile (unconfined.subj_typeattr))
+    ;; location socket files
+    (call .loc_socket.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+
+;;#============= Location conf files ==============
+(block loc_etc
+    ;;
+    ;; Contexts
+    ;; --------
+    (filecon "/etc/gps\.conf" file conffile_file_context)
+    (filecon "/etc/izat\.conf" file conffile_file_context)
+    (filecon "/etc/flp\.conf" file conffile_file_context)
+    (filecon "/etc/batching\.conf" file conffile_file_context)
+    (filecon "/etc/xtwifi\.conf" file conffile_file_context)
+    (filecon "/etc/lowi\.conf" file conffile_file_context)
+    (filecon "/etc/qapi\.conf" file conffile_file_context)
+    (filecon "/etc/cacert_location\.pem" file conffile_file_context)
+
+    ;;
+    ;; Macros
+    ;; ------
+    (macro read_loc_etc_files ((type ARG1))
+          (allow ARG1 conffile read_file))
+
+    (macro obj_type_transition_conffile ((type ARG1))
+          (call .file.conffile_obj_type_transition
+                (ARG1 conffile file "gps.conf"))
+          (call .file.conffile_obj_type_transition
+                (ARG1 conffile file "izat.conf"))
+          (call .file.conffile_obj_type_transition
+                (ARG1 conffile file "flp.conf"))
+          (call .file.conffile_obj_type_transition
+                (ARG1 conffile file "batching.conf"))
+          (call .file.conffile_obj_type_transition
+                (ARG1 conffile file "xtwifi.conf"))
+          (call .file.conffile_obj_type_transition
+                (ARG1 conffile file "lowi.conf"))
+          (call .file.conffile_obj_type_transition
+                (ARG1 conffile file "qapi.conf"))
+          (call .file.conffile_obj_type_transition
+                (ARG1 conffile file "cacert_location.pem")))
+
+    ;;
+    ;; Policy
+    ;; ------
+    (blockinherit .file.conf.obj_template)
+)
+
+;;#============= Location Data files ==============
+(block loc_data
+    ;;
+    ;; Contexts
+    ;; --------
+    (filecon "/data/vendor/location" dir datafile_file_context)
+    (filecon "/data/vendor/location/.*" any datafile_file_context)
+    (filecon "/data/vendor/location-partner" dir datafile_file_context)
+    (filecon "/data/vendor/location-partner/.*" any datafile_file_context)
+
+    ;;
+    ;; Macros
+    ;; ------
+    (macro obj_type_transition_datafile ((type ARG1))
+          (call .file.datafile_obj_type_transition
+                (ARG1 datafile dir "location"))
+          (call .file.datafile_obj_type_transition
+                (ARG1 datafile dir "location-partner")))
+
+    (macro manage_loc_data_files ((type ARG1))
+          (call manage_datafile_dirs (ARG1))
+          (call manage_datafile_files (ARG1)))
+
+    ;;
+    ;; Policy
+    ;; ------
+    (blockinherit file.data.obj_template)
+)
+
+;;#============= Location Socket files ==============
+(block loc_socket
+    ;;
+    ;; Contexts
+    ;; --------
+    (filecon "/dev/socket/location" dir nodedev_file_context)
+    (filecon "/dev/socket/location/.*" any nodedev_file_context)
+    (filecon "/dev/socket/loc_client" dir nodedev_file_context)
+    (filecon "/dev/socket/loc_client/.*" any nodedev_file_context)
+
+    ;;
+    ;; Macros
+    ;; ------
+
+    (macro obj_type_transition_nodedev ((type ARG1))
+          (call .tmp.fs_obj_type_transition
+                (ARG1 nodedev dir "location"))
+          (call .tmp.fs_obj_type_transition
+                (ARG1 nodedev dir "loc_client")))
+
+    (macro manage_loc_socket_files ((type ARG1))
+          (call manage_nodedev_dirs (ARG1))
+          (call manage_nodedev_sock_files (ARG1)))
+
+    ;;
+    ;; Policy
+    ;; ------
+    (blockinherit .dev.node.obj_template)
+)
+
+;;#============= Common policy rules for location daemons ==============
+(block loc_daemons_common
+
+    (block loc_daemons_common_macro_template
+        ;;
+        ;; Macros
+        ;; ------
+        (macro loc_daemons_common_rules ((type ARG1))
+                ;; Logging - /dev/logd.
+                ;; this will add logd.miscfile sock_file write permission also
+                (call .logd.unix_dgram_send (ARG1))
+
+                ;; read location conf files
+                (call .file.search_conffile_dirs (ARG1))
+                (call .loc_etc.read_loc_etc_files (ARG1))
+
+                ;; location files inside /data/vendor
+                (call .loc_data.manage_loc_data_files (ARG1))
+
+                ;; location sockets inside /dev/socket
+                (call .loc_socket.manage_loc_socket_files (ARG1))
+
+                (allow ARG1 self create_unix_stream_socket)
+                (allow ARG1 self (unix_stream_socket (accept listen)))
+                (allow ARG1 self create_unix_dgram_socket)
+
+                (call .sys.search_fs_dirs (ARG1))
+                (call .tmpfile.search_runtimetmpfile_dirs (ARG1))
+
+                (call search_nodedev_dirs (ARG1))
+
+                ;; read devices sysfile
+                (call .devices.search_sysfile_dirs (ARG1))
+                (call .devices.read_sysfile_files (ARG1)))
+
+        ;;
+        ;; Policy
+        ;; ------
+        (blockinherit .dev.node.obj_template)
+    )
+
+    (block loc_daemons_common_template
+        ;;
+        ;; Policy
+        ;; ------
+        (blockabstract loc_daemons_common_template)
+
+        (blockinherit .loc_daemons_common.loc_daemons_common_macro_template)
+     )
+)

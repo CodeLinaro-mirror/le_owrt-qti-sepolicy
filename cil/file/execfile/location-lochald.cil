@@ -1,0 +1,66 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; Sepolicy rules for location daemon - location_hal_daemon
+(in .sys
+    (call .loc_hal_daemon.subj_type_transition (subj)))
+
+(in .file
+    ;; location exec files transition
+    (call .loc_hal_daemon.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+;;#============= Location Hal Daemon ==============
+(block loc_hal_daemon
+    ;;
+    ;; Contexts
+    ;; --------
+    (filecon "/usr/bin/location_hal_daemon" file execfile_file_context)
+
+    ;;
+    ;; Macros
+    ;; ------
+    (macro obj_type_transition_execfile ((type ARG1))
+          (call .file.execfile_obj_type_transition
+                (ARG1 execfile file "location_hal_daemon")))
+
+    ;;
+    ;; Policy
+    ;; ------
+    (blockinherit .agent.base_template)
+    (blockinherit .loc_daemons_common.loc_daemons_common_template)
+
+    ;; import common rules for location deamons
+    (call loc_daemons_common_rules (subj))
+
+    ;; Set supplementary groups
+    (allow subj self (capability (setgid)))
+
+    ;; communicate with location daemons via unix dgram sockets
+    (call .loc_xtra_daemon.sendto_unix_dgram_sockets (subj))
+    (call .loc_edgnss_daemon.sendto_unix_dgram_sockets (subj))
+
+    ;; communicate with location test apps which runs in sys.subj ctxt
+    (call .sys.sendto_unix_dgram_sockets (subj))
+
+    ;; connect to location test apps target stream
+    (call .sys.connectto_unix_stream_sockets (subj))
+
+    ;; connect to loc_launcher target stream
+    (call .loc_launcher.connectto_unix_stream_sockets (subj))
+
+    ;; Need qipcrtr socket creations
+    (allow subj  self  create_qipcrtr_socket)
+
+    ;; read kernel sysfs
+    (call .kernel.search_sysfile_dirs (subj))
+
+    ;; read debug.fs dir
+    (call .debug.search_fs_dirs (subj))
+
+    ;; read /etc/group
+    (call .nameservice.read_miscfile_files (subj))
+
+    ;; Needed to for diagrebootapp to connect to diag-router
+    (call .diag-router.unix_stream_connect(subj))
+)

@@ -1,0 +1,72 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; Sepolicy rules for location daemon - loc_launcher
+(in .sys
+    (call .loc_launcher.subj_type_transition (subj)))
+
+(in .file
+    ;; location exec files transition
+    (call .loc_launcher.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+;;#============= Location launcher ==============
+(block loc_launcher
+    ;;
+    ;; Contexts
+    ;; --------
+    (filecon "/usr/bin/loc_launcher" file execfile_file_context)
+
+    ;;
+    ;; Macros
+    ;; ------
+    (macro obj_type_transition_execfile ((type ARG1))
+          (call .file.execfile_obj_type_transition
+                (ARG1 execfile file "loc_launcher")))
+
+    ;;
+    ;; Policy
+    ;; ------
+    (blockinherit .agent.base_template)
+    (blockinherit .loc_daemons_common.loc_daemons_common_template)
+
+    ;; Child process launched by loc_launcher.
+    ;; Load and execute child process. Allow loc-launcher to launch file
+    (call .loc_lowi_server.execute_execfile_files (subj))
+    (call .loc_xtra_daemon.execute_execfile_files (subj))
+    (call .loc_xtwifi_client.execute_execfile_files (subj))
+    (call .loc_xtwifi_inet.execute_execfile_files (subj))
+    (call .loc_edgnss_daemon.execute_execfile_files (subj))
+
+    ;; Execute these daemons with an automatic transition to required context by default
+    (call .loc_lowi_server.subj_type_transition (subj))
+    (call .loc_lowi_server.execfile_subj_type_transition (subj .loc_lowi_server.subj))
+    (call .loc_xtra_daemon.subj_type_transition (subj))
+    (call .loc_xtra_daemon.execfile_subj_type_transition (subj .loc_xtra_daemon.subj))
+    (call .loc_xtwifi_client.subj_type_transition (subj))
+    (call .loc_xtwifi_client.execfile_subj_type_transition (subj .loc_xtwifi_client.subj))
+    (call .loc_xtwifi_inet.subj_type_transition (subj))
+    (call .loc_xtwifi_inet.execfile_subj_type_transition (subj .loc_xtwifi_inet.subj))
+    (call .loc_edgnss_daemon.subj_type_transition (subj))
+    (call .loc_edgnss_daemon.execfile_subj_type_transition (subj .loc_edgnss_daemon.subj))
+
+    ;; Below transition denials seen after adding ujail support in loc-launcher rc
+    (call .loc_lowi_server.nnptransition (subj))
+    (call .loc_xtra_daemon.nnptransition (subj))
+    (call .loc_xtwifi_client.nnptransition (subj))
+    (call .loc_xtwifi_inet.nnptransition (subj))
+    (call .loc_edgnss_daemon.nnptransition (subj))
+
+    ;; import common rules for location deamons
+    (call loc_daemons_common_rules (subj))
+
+    ;; loc-launcher child process which has signal handling
+    (call .loc_xtra_daemon.signal (subj))
+    (call .loc_edgnss_daemon.signal (subj))
+
+    ;; Set groups for child process
+    (allow subj self (capability (setgid)))
+
+    ;; read /etc/group
+    (call .nameservice.read_miscfile_files (subj))
+)

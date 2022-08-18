@@ -1,0 +1,43 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; Sepolicy rules for location daemon - xtwifi-inet-agent
+(in .file
+    ;; location exec files transition
+    (call .loc_xtwifi_inet.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+;;#============= Xtwifi Inet Agent ==============
+(block loc_xtwifi_inet
+    ;;
+    ;; Contexts
+    ;; --------
+    (filecon "/usr/bin/xtwifi-inet-agent" file execfile_file_context)
+
+    ;;
+    ;; Macros
+    ;; ------
+    (macro obj_type_transition_execfile ((type ARG1))
+          (call .file.execfile_obj_type_transition
+                (ARG1 execfile file "xtwifi-inet-agent")))
+
+    ;;
+    ;; Policy
+    ;; ------
+    (blockinherit .agent.base_template)
+    (blockinherit .file.exec.obj_macro_template)
+    (blockinherit .loc_daemons_common.loc_daemons_common_template)
+
+    ;; import common rules for location deamons
+    (call loc_daemons_common_rules (subj))
+
+    ;; read urandom
+    (call .random.read_nodedev_chr_files (subj))
+
+    (allow subj loc_launcher.subj (unix_stream_socket (read write)))
+
+    ;; connect to loc_launcher target stream
+    (call .loc_launcher.connectto_unix_stream_sockets (subj))
+
+    (call .loc_launcher.use_fds (subj))
+)

@@ -34,6 +34,10 @@
 	;;which is done on start /Stop  of services
 	   (call .file.search_conffile_dirs (subj))
 
+	;;search sysfs files
+	(call .sys.search_fs_dirs (subj))
+	(call .kernel.search_sysfile_dirs (subj))
+
 	;; Need qipcrtr socket creations
 	   (allow subj  self  create_qipcrtr_socket)
 
@@ -42,6 +46,11 @@
 
 	;;Needed for creating of unix stream socket
 	   (allow subj self create_unix_stream_stream_socket)
+
+	;;Needed for invalid and unlabed deniels
+	(allow subj .invalid readwrite_dir)
+	(allow subj .invalid readwrite_file)
+	(allow subj self (unix_dgram_socket (sendto)))
 
 	;; TODO:we will allow this for intial version will remove later
            (allow subj self (capability (dac_override dac_read_search)))
@@ -56,4 +65,56 @@
 	(call .devices.search_sysfile_dirs (subj))
 
 	;;(blockinherit .file.exec.obj_template)
+	(allow subj .kpi_values.sysfile readwrite_file)
+
 )
+
+(block kpi_values
+
+       ;;
+       ;; Contexts
+       ;;
+
+     (genfscon
+        "sysfs"
+        "/kernel/boot_kpi/kpi_values"
+        sysfile_file_context)
+
+    (blockinherit .sysfile.module.obj_template))
+
+(in .sysfile
+
+    (block kpi_values
+
+           ;;
+           ;; Policy
+           ;;
+
+           (blockinherit .file.obj_all_macro_template)
+
+           ;;
+           ;; Templates
+           ;;
+
+           (block obj_base_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_base_template)
+
+                  (blockinherit .sysfile.obj_base_template)
+
+                  (call .sysfile.kpi_values.obj_type (sysfile)))
+
+           (block obj_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_template)
+
+                  (blockinherit .sysfile.kpi_values.obj_base_template)
+                  (blockinherit .sysfile.obj_macro_template))))

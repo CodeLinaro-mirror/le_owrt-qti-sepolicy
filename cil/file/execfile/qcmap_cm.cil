@@ -1,11 +1,15 @@
- ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
     (call .qcmap_cm.subj_type_transition (subj)))
 
 (in .file
     (call .qcmap_cm.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .qcmap_cm.obj_type_transition_conffile (unconfined.subj_typeattr))
+    (call .qcmap_cm.obj_type_transition_datafile (unconfined.subj_typeattr))
     (call .qcmap_cm.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr)))
 
 (block qcmap_cm
@@ -18,38 +22,48 @@
         execfile_file_context)
 
         (filecon
-        "/tmp/run/qcmap_cm"
+        "/etc/data"
+        dir
+        conffile_file_context)
+
+        (filecon
+        "/etc/data/.*"
+        any
+        conffile_file_context)
+
+        (filecon
+        "/data"
+        dir
+        datafile_file_context)
+
+        (filecon
+        "/data/data_qcmap"
+        dir
+        datafile_file_context)
+
+        (filecon
+        "/data/data_qcmap/LOGs\.txt"
+        file
+        datafile_file_context)
+
+        (filecon
+        "/dev/socket/data"
         dir
         runtimetmpfile_file_context)
 
         (filecon
-        "/tmp/run/qcmap_cm/.*"
+        "/dev/socket/data/*"
         any
         runtimetmpfile_file_context)
 
         (filecon
-        "/tmp/run/qcmap_cm\.lock"
-        file
-        runtimetmpfile_file_context)
-
-        (filecon
-        "/tmp/run/qcmap_cm\.state"
-        file
-        runtimetmpfile_file_context)
-
-        (filecon
-        "/var/run/qnicorn_connect"
+        "/tmp/run/qnicorn_connect"
         any
         runtimetmpfile_file_context)
 
         (filecon
-        "/dev/socket/data/nl_qcmap_uds_file"
-        socket
-        runtimetmpfile_file_context)
-
-        (filecon
-        "/dev/socket/data/qcmap_*"
-        socket
+        "/tmp/data"
+        any
         runtimetmpfile_file_context)
 
         ;; Macros
@@ -59,45 +73,51 @@
                (call .file.execfile_obj_type_transition
                         (ARG1 execfile file "qcmap_cm")))
 
+        (macro obj_type_transition_conffile ((type ARG1))
+              (call .file.conffile_obj_type_transition
+                    (ARG1 conffile dir "data")))
+
         (macro obj_type_transition_datafile ((type ARG1))
               (call .file.datafile_obj_type_transition
-                    (ARG1 datafile dir "qcmap_cm.data")))
-
+                    (ARG1 datafile dir "data"))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile dir "data_qcmap"))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile file "LOGs.txt"))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile file "qnicorn_connect"))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile file "data")))
 
         (macro obj_type_transition_runtimetmpfile ((type ARG1))
               (call .tmpfile.runtimetmpfile_obj_type_transition
-                    (ARG1 runtimetmpfile file "qcmap_cm.lock"))
-              (call .tmpfile.runtimetmpfile_obj_type_transition
-                    (ARG1 runtimetmpfile file "qcmap_cm.state"))
-                      (call .tmpfile.runtimetmpfile_obj_type_transition
-                    (ARG1 runtimetmpfile file "qcmap_cm.conf"))
-                      (call .tmpfile.runtimetmpfile_obj_type_transition
-                    (ARG1 runtimetmpfile file "qnicorn_connect")))
+                    (ARG1 runtimetmpfile dir "data")))
 
-        ;;
         ;; Policy
-        ;;
            (blockinherit .agent.base_template)
+           (blockinherit file.conf.obj_template)
            (blockinherit .tmpfile.runtime.obj_template)
-           ;; (blockinherit .subj.subj_all_macro_template)
+           (blockinherit file.data.obj_template)
+        ;; (blockinherit .subj.subj_all_macro_template)
 
-        ;; search in config files is needed
-        ;; which is done on start /Stop  of services
-           (call .file.search_conffile_dirs (subj))
-
-        ;; Need qipcrtr socket creations
-           (allow subj  self  create_qipcrtr_socket)
-
-        ;; Needed for  unix_dgram socket creation
+        ;; Need creat for packet_socket, rawip_socket, udp_socket, qipcrtr_socket, unix_dgram_socket, unix_stream_socket, netlink_socket,
+        ;; netlink_kobject_uevent_socket
+           (allow subj self create_packet_socket)
+           (allow subj self create_rawip_socket)
+           (allow subj self create_udp_socket)
+           (allow subj self create_netlink_socket)
+           (allow subj self create_qipcrtr_socket)
            (allow subj self create_unix_dgram_socket)
-        ;; Needed for creating of unix stream socket
            (allow subj self create_unix_stream_stream_socket)
+           (allow subj self create_netlink_kobject_uevent_socket)
+
+        ;; Need search on config files is needed - which is done on start /Stop  of services
+          (call .qcmap_cm.search_conffile_dirs (subj))
+        ;; Need for search on etc dir
+          (call .file.search_conffile_dirs (subj))
 
         ;; TODO:we will allow this for intial version will remove later
            (allow subj self (capability (dac_override dac_read_search net_raw net_admin)))
-
-        ;; Need creat and read of this uevent socket
-           (allow subj self create_netlink_kobject_uevent_socket)
 
         ;; Need for /dev/logd or logging
         ;; this will add write permission also
@@ -106,23 +126,21 @@
         ;; Needed for search on /sys/class
            (call .class.search_sysfile_dirs (subj))
 
-        ;;/tmp/run file add remove open sort of operations need this.
-          (call .tmpfile.manage_runtimetmpfile_dirs (subj))
-          (call .tmpfile.search_runtimetmpfile_dirs (subj))
-          (call .tmpfile.manage_runtimetmpfile_files (subj))
+        ;; Need search on /tmp/run dir
+           (call .tmpfile.search_runtimetmpfile_dirs (subj))
 
-        ;; Need write, connecto for
-        ;; pid=1943 comm="QCMAP_Connectio" name="qnicorn_connect" dev="tmpfs" ino=13998 scontext=u:r:qcmap_cm.subj tcontext=u:r:tmpfile.runtimetmpfile tclass=sock_file
-           (call .tmpfile.write_runtimetmpfile_sock_files(subj))
-           (call  .tmpfile.manage_runtimetmpfile_sock_files(subj))
+        ;; Need search, add_name on /dev/socket/data dir
+           (call .qcmap_cm.search_runtimetmpfile_dirs (subj))
+           (call .qcmap_cm.addname_runtimetmpfile_dirs (subj))
+           (call .qcmap_cm.write_runtimetmpfile_dirs (subj))
 
-        ;; Seem  its  even needs special ioctl cmd  0x89a0
-        ;; just uncomment this line if you see ioctlcmd 89a0 related
-        ;;(allowx subj self (ioctl (tcp_socket (0x89a0))))
+        ;; Need write on qnicorn_connect
+           (call .qcmap_cm.write_runtimetmpfile_sock_files (subj))
 
-          (call .sys.search_sysctlfile_dirs (subj))
+        ;; Need search on proc dir
+           (call .sys.search_sysctlfile_dirs (subj))
 
-          (call .file.read_execfile_lnk_files (subj))
+        ;; (call .file.read_execfile_lnk_files (subj))
 
         ;; Needed for the /dev/kmsg write
            (call .kmsg.readwrite_nodedev_chr_files (subj))
@@ -130,70 +148,37 @@
         ;; Needed for /dev/socket/data/qcmap_dsi_uds_file
            (allow subj self (unix_dgram_socket (sendto)))
 
-         (call .netfilter.read_sysctlfile_files (subj))
-         (call .netfilter.search_sysctlfile_dirs (subj))
+        ;; Need search, read, write on /proc/sys/net/netfilter/nf_conntrack_enable_sip_segmentation
+           (call .netfilter.search_sysctlfile_dirs(subj))
+           (call .netfilter.readwrite_sysctlfile(subj))
+           (call .netfilter.readwrite_sysctlfile_sock_files (subj))
 
-        ;; Need for reading of
-        ;; /proc/sys/net/netfilter/nf_conntrack_enable_sip_segmentation
-           (call .netfilter.read_sysctlfile_files (subj))
-
-        ;; Module load is been called from the code which is not advised
-        ;; adding the required permission for now.
+        ;; Module load is been called from the code which is not advised, adding the required permission for now.
            (call .sys.requestmodule (subj))
-        ;; (dontaudit subj self(capability(sys_module)))
 
-        ;; needed for search , manage , add_name in /dev
-          (call .devices.search_sysfile_dirs (subj))
-          (call .devices.manage_sysfile_files (subj))
-          (call .devices.addname_sysfile_dirs (subj))
-          (call .devices.write_sysfile_dirs (subj))
-
-        ;; Need for libs to do execmod  textrel
-        ;; TODO : lib should be compiled with no textrel
-        ;; Once doen should remove this line
-        ;;(call .libfiles.execmod_libfile_files (subj))
-        ;;(blockinherit .file.exec.obj_template)
-
-
-        ;; Need creat for packet_socket
-           (allow subj self create_packet_socket)
-
-        ;; Need for create rawip_socket
-           (allow subj self create_rawip_socket)
+        ;; Need for search , manage , add_name in /dev
+           (call .devices.search_sysfile_dirs (subj))
+           (call .devices.manage_sysfile_files (subj))
+           (call .devices.addname_sysfile_dirs (subj))
+           (call .devices.write_sysfile_dirs (subj))
 
         ;; Need for busybox read, open, execute
            (call .shell.execute_execfile_files (subj))
 
-        ;; Need for creat udp_socket
-           (allow subj self create_udp_socket)
-
         ;; Need for netlink_route_socket
            (allow subj self create_netlink_route_socket)
-
-        ;; Need for writing of
-        ;; /proc/sys/net/netfilter/nf_conntrack_enable_sip_segmentation
-           (call .netfilter.write_sysctlfile_files (subj))
 
         ;; Need for search of net
            (call .net.search_sysctlfile_dirs (subj))
 
         ;; Need for create sock_file of nl_qcmap_uds_file
-           (call .tmp.create_fs_sock_files (subj))
-
-        ;; Need for read, write for dir under nl_qcmap_uds_file
-           (call .tmp.readwrite_fs_dirs (subj))
+           (call .qcmap_cm.create_runtimetmpfile_sock_files (subj))
 
         ;; Need module_request for kmod="netdev-rndis0" tcontext=u:r:sys.subj
            (call .sys.requestmodule (subj))
 
-        ;; Need execmem for process scontext=u:r:qcmap_cm.subj tcontext=u:r:qcmap_cm.subj tclass=process
-           (allow subj self (process (execmem)))
-
         ;; Need for connecto of unix_stream_socket
            (call .sys.connectto_unix_stream_sockets(subj))
-
-        ;; Need write for sockfile with tcontext : u:r:tmp.fs
-           (call .tmp.write_fs_sock_files (subj))
 
         ;; Need for search on dir , write on files tcontext=u:r:ipv6.sysctlfile
            (call .ipv4.search_sysctlfile_dirs (subj))
@@ -201,49 +186,24 @@
            (call .ipv6.search_sysctlfile_dirs (subj))
            (call .ipv6.write_sysctlfile_files (subj))
 
-        ;; Need append
-        ;; Denial - { append } for  pid=2983 comm="sh" name="hosts" dev="ubifs" ino=3246 scontext=u:r:qcmap_cm.subj tcontext=u:r:file.conffile tclass=file permissive=1
-           (call .file.append_conffile_files (subj))
-
-        ;; Need unlink for sock_file with tcontext : u:r:tmp.fs
-           (call .tmp.manage_fs_sock_files(subj))
-
-        ;; Need create for netlink_socket
-           (allow subj self create_netlink_socket)
-
         ;; Need nlmsg_read for netlink_route_socket
            (allow subj self (netlink_route_socket (nlmsg_read)))
 
         ;; TODO : Have to move these dhcp_hosts denials to QCMAP LAN LIB file.Once we start handling the denials for QCMAP LAN LIB service.
-        ;; Need write for name="dhcp_hosts" tcontext=u:r:file.conffile
-           (call .file.create_conffile_files(subj))
-           (call .file.read_conffile_files(subj))
-
-        ;; Need add_name , write for name="dhcp_hosts" tcontext=u:r:file.conffile tclass=dir
-           (call .file.addname_conffile_dirs(subj))
-           (call .file.write_conffile_dirs(subj))
-
-        ;; Need write for name="dhcp_hosts" tcontext=u:r:file.conffile tclass=file
-           (call .file.write_conffile_files(subj))
-
-        ;; Need connecto for diag-router unix_stream_socket
-           (call .diag-router.unix_stream_connect (subj))
+        ;; Need create, read, write on name="dhcp_hosts" file
+           (call .qcmap_cm.create_conffile_files(subj))
+           (call .qcmap_cm.readwrite_conffile_files (subj))
+        ;; Need write, add_name on /etc/data dir
+           (call .qcmap_cm.addname_conffile_dirs(subj))
+           (call .qcmap_cm.write_conffile_dirs(subj))
 
         ;; Need search for fs dir with tcontext=u:r:fs.sysfile
-        ;; denied  { search } for  pid=2874 comm="sh" name="fs" dev="sysfs" ino=2 scontext=u:r:qcmap_cm.subj tcontext=u:r:fs.sysfile tclass=dir permissive=1
            (call .fs.search_sysfile_dirs (subj))
-
         ;; Need search for tcontext=u:r:sys.fs tclass=dir
            (call .sys.search_fs_dirs (subj))
-
-        ;; avc:  denied  { search } for  pid=2855 comm="sh" name="selinux" dev="ubifs" ino=1564 scontext=u:r:qcmap_cm.subj tcontext=u:r:selinux.conffile tclass=dir permissive=1
-          (call .selinux.search_conffile_dirs(subj))
-
-        ;; avc:  denied  { getattr } for  pid=2993 comm="sh" name="/" dev="selinuxfs" ino=1 scontext=u:r:qcmap_cm.subj tcontext=u:r:selinux.fs tclass=filesystem permissive=1
-          (call .selinux.getattr_filesystems(subj))
-
-        ;; avc
-        ;; (dontaudit subj sys.subj(capability(sys_module)))
-
+        ;; Need search on selinux dir
+           (call .selinux.search_conffile_dirs(subj))
+        ;; Need gettarr on selinux filesystem
+           (call .selinux.getattr_filesystems(subj))
 )
 

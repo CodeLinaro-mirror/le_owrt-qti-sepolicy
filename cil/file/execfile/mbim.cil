@@ -1,0 +1,87 @@
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+    (call .mbim.subj_type_transition (subj)))
+
+(in .file
+    (call .mbim.obj_type_transition_datafile (unconfined.subj_typeattr))
+    (call .mbim.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr)))
+
+(block mbim
+        ;;
+        ;; Contexts
+        ;;
+        (filecon
+         "/usr/bin/mbimd"
+         file
+         execfile_file_context)
+
+        (filecon
+         "/data/mbimd"
+         dir
+         datafile_file_context)
+
+        (filecon
+         "/data/mbimd/.*"
+         any
+         datafile_file_context)
+
+	(filecon
+	 "/tmp/run/mbim"
+	 dir
+	 runtimetmpfile_file_context)
+
+	(filecon
+	 "/tmp/run/mbim/.*"
+	 any
+	 runtimetmpfile_file_context)
+
+        ;;
+        ;; Macros
+        ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+            (call .file.execfile_obj_type_transition
+                (ARG1 execfile file "mbimd")))
+
+        (macro obj_type_transition_datafile ((type ARG1))
+            (call .file.datafile_obj_type_transition
+                (ARG1 datafile dir "mbimd")))
+
+        (macro obj_type_transition_runtimetmpfile ((type ARG1))
+	    (call .tmpfile.runtimetmpfile_obj_type_transition
+	        (ARG1 runtimetmpfile dir "mbim")))
+
+        ;;
+        ;; Policy
+        ;;
+        (blockinherit .agent.base_template)
+        (blockinherit .file.data.obj_template)
+        (blockinherit .file.data.obj_macro_template)
+	(blockinherit .tmpfile.runtime.obj_template)
+
+        ;; permission for unix_stream_socket, qipcrtr_socket
+        (allow subj self create_unix_stream_socket)
+        (allow subj self create_qipcrtr_socket)
+        (allow subj diag-router.subj (unix_stream_socket (connectto)))
+
+        ;; permission to access /etc/data/mbim_mode
+        (call .file.search_conffile_dirs (subj))
+
+        ;; permission to access all configuration files under /data/mbimd
+        (call .mbim.manage_datafile_dirs (subj))
+        (call .mbim.manage_datafile_files (subj))
+
+	;; permission to manage runtime files under /tmp/run/mbim
+	(call .mbim.manage_runtimetmpfile (subj))
+
+        ;; permission to read/write /dev/kmsg
+        (call .kmsg.readwrite_nodedev_chr_files (subj))
+
+        ;; permission to access device nodes
+        (call .android_mbim.readwrite_nodedev_chr_files (subj))
+        (call .smdcntl.readwrite_nodedev_chr_files (subj))
+        (call .ipa.readwrite_nodedev_chr_files (subj)))
+

@@ -1,0 +1,125 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .qtether.subj_type_transition (subj)))
+
+(in .file
+    (call .qtether.obj_type_transition_datafile (unconfined.subj_typeattr))
+    (call .qtether.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr)))
+
+
+(block qtether
+    ;;
+    ;; Contexts
+    ;;
+    (filecon
+        "/usr/bin/qti"
+        file
+        execfile_file_context)
+
+    (filecon
+        "/data/data_qcmap/qti"
+        dir
+        datafile_file_context)
+
+    (filecon
+       "/dev/socket/data/qti_dpm_uds_file"
+        socket
+        runtimetmpfile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+      (macro obj_type_transition_execfile ((type ARG1))
+            (call .file.execfile_obj_type_transition
+                (ARG1 execfile file "qti")))
+
+      (macro obj_type_transition_datafile ((type ARG1))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile dir "qti")))
+      (macro obj_type_transition_runtimetmpfile ((type ARG1))
+              (call .tmpfile.runtimetmpfile_obj_type_transition
+                    (ARG1 runtimetmpfile sock_file "qti_dpm_uds_file")))
+
+
+    ;;
+    ;; Policy
+    ;;
+       (blockinherit .agent.base_template)
+       (blockinherit file.data.obj_template)
+       (blockinherit .tmpfile.runtime.obj_template)
+
+    ;; TODO:we will allow this for intial version will remove later
+       (allow subj self (capability (dac_override )))
+    ;; Need create for unix_stream_socket
+       (allow subj self create_unix_stream_socket)
+    ;; Need create on netlink_kobject_uevent_socket
+       (allow subj self create_netlink_kobject_uevent_socket)
+    ;; Need for qipcrtr socket creation
+       (allow subj  self  create_qipcrtr_socket)
+    ;; Need for connecto of unix_stream_socket
+       (call .sys.connectto_unix_stream_sockets(subj))
+    ;; Need create on unix_dgram_socket
+       (allow subj self create_unix_dgram_socket)
+    ;; Need sento on unix_dgram_socket
+       (allow subj self (unix_dgram_socket (sendto)))
+    ;; Need for search on etc dir
+       (call .file.search_conffile_dirs (subj))
+    ;; Need for search on /etc/data/ dir
+       (call .qcmap_cm.search_conffile_dirs (subj))
+    ;; Need for read on /etc/data/adpl/mhi_enable
+       (call .qcmap_cm.read_conffile_files (subj))
+    ;; Need for search on /etc/data/adpl dir
+       (call .dataadpl.search_conffile_dirs (subj))
+    ;; Need read, write on /etc/data/adpl/mhi_enable
+       (call .dataadpl.readwrite_conffile_files (subj))
+    ;; Need serach on sys.fs
+       (call .sys.search_fs_dirs (subj))
+    ;; Need search on sysfile dir
+       (call .fs.search_sysfile_dirs (subj))
+    ;; Need execute on shell.execfile files
+        (call .shell.execute_execfile_files (subj))
+    ;; Need gettarr on selinux filesystem
+       (call .selinux.getattr_filesystems(subj))
+    ;; Need for search on etc dir
+       (call .selinux.search_conffile_dirs (subj))
+    ;; Need create on qti dir
+       (call .qtether.create_datafile_dirs (subj))
+    ;; Need create on qti dir
+       (call .qcmap_cm.create_datafile_files (subj))
+    ;; Need write on LOGs.txt
+       (call .qcmap_cm.readwrite_datafile_files (subj))
+    ;; Need search on /data dir
+       (call .qcmap_cm.search_datafile_dirs (subj))
+    ;; Need write on /qti
+       (call .qcmap_cm.readwrite_datafile_dirs  (subj))
+    ;; Need create on /data dir
+       (call .qcmap_cm.create_datafile_dirs (subj))
+    ;; Need watch on qti dir
+       (allow subj qcmap_cm.datafile (dir( watch)))
+    ;; Need open for /sys/devices/soc0/soc_id
+       (call .devices.manage_sysfile_files (subj))
+    ;; Need search on qti dir
+       (call .devices.search_sysfile_dirs (subj))
+    ;; Need read , write on /dev/dpl_ctrl
+       (call .adpl.readwrite_nodedev_chr_files(subj))
+    ;; Need read, write on /dev/socket/data dir
+       (call .qcmap_cm.readwriteinherited_runtimetmpfile_dirs (subj))
+    ;; Need create on qti_dpm_uds_file sock_file
+       (call .qtether.create_runtimetmpfile_sock_files (subj))
+    ;; Need create on qti_dpm_uds_file sock_file
+       (call .qcmap_cm.create_runtimetmpfile_sock_files (subj))
+    ;; Need create on qti_dpm_uds_file sock_file
+       (call .qcmap_cm.readwrite_runtimetmpfile_sock_files (subj))
+    ;; Need write on /dev/kmsg chr_file
+       (call .kmsg.readwrite_nodedev_chr_files (subj))
+    ;; Need write on /dev/kmsg chr_file
+       (call .smdcntl.readwrite_nodedev_chr_files (subj))
+    ;; Need unlink on adpl_cmd_uds_file sock_file
+       (allow subj qcmap_cm.runtimetmpfile (sock_file (unlink)))
+    ;; Need readwrite on /dev/smdcntl8
+    ;; (call .tmp.readwrite_fs_chr_files (subj))
+)

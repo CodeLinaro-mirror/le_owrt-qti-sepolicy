@@ -1,0 +1,44 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .dev
+    (call .adpl.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+
+(block adpl
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/dev/dpl_ctrl"
+        char
+        nodedev_file_context)
+
+       (filecon
+        "/dev/rmnet_ctrl"
+        char
+        nodedev_file_context)
+
+        (filecon
+        "/dev/ipa_odl_ctl"
+        char
+        nodedev_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+       (macro obj_type_transition_nodedev ((type ARG1))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "dpl_ctrl"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "rmnet_ctrl"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "ipa_odl_ctl")))
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .dev.node.obj_template))

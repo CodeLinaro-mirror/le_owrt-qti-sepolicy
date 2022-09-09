@@ -26,4 +26,5 @@ ${RESTORECON} -RF /etc
 #TODO : this 2 line need to removed
 #       to later stage
 ${RESTORECON} -RF /usr  /bin  /sbin /lib
+${RESTORECON} -F /data /var
 exit 0

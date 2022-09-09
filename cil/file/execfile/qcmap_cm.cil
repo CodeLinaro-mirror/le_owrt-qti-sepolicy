@@ -32,11 +32,6 @@
         conffile_file_context)
 
         (filecon
-        "/data"
-        dir
-        datafile_file_context)
-
-        (filecon
         "/data/data_qcmap"
         dir
         datafile_file_context)

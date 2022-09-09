@@ -15,7 +15,7 @@
         "/sbin"
         file
         execfile_file_context)
-		
+
 	(filecon
         "/sbin/*"
         any
@@ -26,7 +26,10 @@
 	 file
 	 execfile_file_context)
 
-       ;;
+	(filecon
+	"/data"
+     	dir
+     	datafile_file_context)
 
 	(filecon
 	"/data/.*"

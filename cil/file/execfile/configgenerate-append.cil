@@ -1,0 +1,11 @@
+;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved
+;;SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .configgenerate
+
+(block configgeneratetmp
+
+;; policy
+
+  (blockinherit .agent.base_template))
+  (allow subj self (capability (dac_read_search))))

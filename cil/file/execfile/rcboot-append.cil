@@ -1,0 +1,13 @@
+;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .rcboot
+
+(block rcboottmp
+
+;; policy
+
+    (blockinherit .agent.base_template))
+    (allow subj self (capability (dac_override dac_read_search)))
+    (allow subj .tmpfile.locktmpfile (dir (setattr)))
+)

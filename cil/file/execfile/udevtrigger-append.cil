@@ -1,0 +1,100 @@
+;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .udevtrigger
+
+(block udevtriggertmp
+       ;;
+       ;; policy
+       ;;
+       (blockinherit .agent.base_template))
+       (allow subj .zram_uevent.sysfile (file (open write getattr)))
+       (allow subj .zram_dev.sysfile (file (getattr)))
+)
+(block zram_dev
+       ;;
+       ;; Contexts
+       ;;
+(genfscon
+        "sysfs"
+        "/devices/virtual/block/zram0/dev"
+        sysfile_file_context)
+
+       (blockinherit .sysfile.module.obj_template))
+
+(in .sysfile
+       (block zram_dev
+           ;;
+           ;; Policy
+           ;;
+           (blockinherit .file.obj_all_macro_template)
+           ;;
+           ;; Templates
+           ;;
+              (block obj_base_template
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_base_template)
+
+                  (blockinherit .sysfile.obj_base_template)
+
+                  (call .sysfile.zram_dev.obj_type (sysfile)))
+
+           (block obj_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_template)
+
+                  (blockinherit .sysfile.zram_dev.obj_base_template)
+                  (blockinherit .sysfile.obj_macro_template))))
+(block zram_uevent
+
+       ;;
+       ;; Contexts
+       ;;
+     (genfscon
+        "sysfs"
+        "/devices/virtual/block/zram0/uevent"
+        sysfile_file_context)
+
+    (blockinherit .sysfile.module.obj_template))
+(in .sysfile
+
+    (block zram_uevent
+
+           ;;
+           ;; Policy
+           ;;
+           (blockinherit .file.obj_all_macro_template)
+
+           ;;
+           ;; Templates
+           ;;
+
+           (block obj_base_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_base_template)
+
+                  (blockinherit .sysfile.obj_base_template)
+
+                  (call .sysfile.zram_uevent.obj_type (sysfile)))
+
+           (block obj_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_template)
+
+                  (blockinherit .sysfile.zram_uevent.obj_base_template)
+                  (blockinherit .sysfile.obj_macro_template))))

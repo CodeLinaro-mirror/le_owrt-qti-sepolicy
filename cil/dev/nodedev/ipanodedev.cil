@@ -1,0 +1,30 @@
+
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .dev
+    (call .ipa.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+
+(block ipa
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/dev/ipa"
+        char
+        nodedev_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+       (macro obj_type_transition_nodedev ((type ARG1))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "ipa")))
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .dev.node.obj_template))

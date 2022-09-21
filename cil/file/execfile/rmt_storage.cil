@@ -42,4 +42,9 @@
 	   (call .sys.search_fs_dirs (subj))
 
 	;;(blockinherit .file.exec.obj_template)
+ 
+         (call .power.search_sysfile_dirs(subj))
+         (call .devices.search_sysfile_dirs(subj))
+         (call .class.search_sysfile_dirs(subj))
+
 )

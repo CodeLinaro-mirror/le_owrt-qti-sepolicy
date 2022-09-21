@@ -11,8 +11,9 @@ you can see different cil file   place in each directory based on the type of
 resource /bin.
 
 
-Make file: 
-Local reference of Makefile :   package/system/selinux-policy/Makefile
+Make file:
+Local reference of Makefile :
+package/system/selinux-policy/Makefile
 https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=package/system/selinux-policy/Makefile
 
 To compile just sepolicy :
@@ -27,11 +28,12 @@ To compile just sepolicy :
  As we are enabling  global selinux to enforce  we have to take care of upstream sepolicy
  All uptream sepolicy  are added to  qexec and qlibs  cil file
 
+#### Policy restriction
+#1. dac_override/dac_search  are allowed for upstream only  - TOBE FIXED
+#2. exemem and exemod   are allowed only for upstream
 
-For example you can refer 
+For example you can refer
 build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/selinux-policy-0.8/src
-
 
 Other doc/links :
 https://openwrt.org/packages/pkgdata/selinux-policy
-

@@ -1,6 +1,8 @@
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-;; SPDX-FileCopyrightText: © 2021 Dominick Grift <dominick.grift@defensec.nl>
-;; SPDX-License-Identifier: Unlicense
 
 (in .file
  ;;   (call .shell.obj_type_transition_execfile (unconfined.subj_typeattr))

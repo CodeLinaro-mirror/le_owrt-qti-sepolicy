@@ -1,7 +1,7 @@
-;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-
 ;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
 (in .sys
     (call .qtether.subj_type_transition (subj)))

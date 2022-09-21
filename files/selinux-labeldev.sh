@@ -1,5 +1,11 @@
 #!/bin/sh
- 
+
+# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+
+
+
 /usr/sbin/selinuxenabled 2>/dev/null || exit 0
 
 CHCON=/usr/bin/chcon

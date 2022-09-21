@@ -28,4 +28,6 @@
 	   ;;which is done on start /Stop  of services
 	   (call .file.search_conffile_dirs (subj))
 ;	   (blockinherit .file.exec.obj_template)
+        (call .debug.search_fs_dirs(subj))
+        (call .unknown.search_miscfile_dirs(subj))
 )

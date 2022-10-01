@@ -46,6 +46,17 @@
 
     (allow subj loc_launcher.subj (unix_stream_socket (read write)))
 
+    ;; read resolv.conf
+    (call .resolv.read.subj_type (subj))
+
+    (call .net.egress_netifs (subj))
+    (call .net.recvfromsendto_netnodes (subj))
+
+    (call .net.udp_bind_netnodes (subj))
+
+    ;; Create udp_socket
+    (allow subj self create_udp_socket)
+
     ;; read urandom
     (call .random.read_nodedev_chr_files (subj))
 

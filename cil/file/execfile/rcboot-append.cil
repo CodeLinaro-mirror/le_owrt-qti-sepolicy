@@ -8,6 +8,7 @@
 ;; policy
 
     (blockinherit .agent.base_template))
-    (allow subj self (capability (dac_override dac_read_search)))
+    (allow subj self (capability (dac_override dac_read_search fowner)))
     (allow subj .tmpfile.locktmpfile (dir (setattr)))
+    (call .rcuhttpd.execute_initscriptfile_files (subj))
 )

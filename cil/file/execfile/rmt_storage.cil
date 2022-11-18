@@ -15,6 +15,7 @@
 	;;
        ;; Contexts
        ;;
+	(typepermissive subj)
 	(filecon
 		"/usr/bin/rmt_storage"
 		file

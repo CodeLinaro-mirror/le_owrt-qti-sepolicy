@@ -1,0 +1,160 @@
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+    (call .qcril.subj_type_transition (subj)))
+
+(in .file
+    (call .qcril.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .qcril.obj_type_transition_datafile (unconfined.subj_typeattr))
+    (call .qcril.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr)))
+
+(block qcril
+
+    ;;
+    ;; Contexts
+    ;;
+
+    (filecon
+        "/usr/bin/qcrilNrd"
+        file
+        execfile_file_context)
+
+    (filecon
+        "/dev/socket/qcrild"
+        dir
+        runtimetmpfile_file_context)
+
+    (filecon
+        "/dev/socket/qcrild/.*"
+        any
+        runtimetmpfile_file_context)
+
+    (filecon
+        "/tmp/shm/dbstate_shm"
+        any
+        runtimetmpfile_file_context)
+
+    (filecon
+        "/data/vendor/modem_config"
+        dir
+        datafile_file_context)
+
+    (filecon
+        "/data/vendor/modem_config/.*"
+        any
+        datafile_file_context)
+
+    (filecon
+        "/data/vendor/radio"
+        dir
+        datafile_file_context)
+
+    (filecon
+        "/data/vendor/radio/.*"
+        any
+        datafile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+
+    (macro obj_type_transition_execfile ((type ARG1))
+        (call .file.execfile_obj_type_transition
+            (ARG1 execfile file "qcrilNrd")))
+
+    (macro obj_type_transition_datafile ((type ARG1))
+        (call .file.datafile_obj_type_transition
+            (ARG1 datafile dir "vendor"))
+        (call .file.datafile_obj_type_transition
+            (ARG1 datafile dir "radio"))
+        (call .file.datafile_obj_type_transition
+            (ARG1 datafile dir "modem_config"))
+        (call .file.datafile_obj_type_transition
+            (ARG1 datafile dir "qcrilNr.db"))
+        (call .file.datafile_obj_type_transition
+            (ARG1 datafile dir "qcrilNr_.*.db")))
+
+    (macro obj_type_transition_runtimetmpfile ((type ARG1))
+        (call .tmpfile.runtimetmpfile_obj_type_transition
+            (ARG1 runtimetmpfile sock_file "rild.*")))
+
+    ;;
+    ;; Policy
+    ;;
+
+    (blockinherit .agent.base_template)
+    (blockinherit .dev.node.obj_template)
+    (blockinherit .file.data.obj_template)
+    (blockinherit .file.lib.obj_template)
+    (blockinherit .tmpfile.runtime.obj_template)
+
+    ;; Search in config files is needed which is done on start / stop  of services
+    (call .file.search_conffile_dirs (subj))
+    (call .file.read_conffile_lnk_files (subj))
+
+    ;; Search and read sysfs files
+    (call .sys.search_fs_dirs (subj))
+    (call .sys.read_fs_lnk_files (subj))
+    ;; Search on sysfile dir
+    (call .fs.search_sysfile_dirs (subj))
+    (call .kernel.search_sysfile_dirs (subj))
+
+    ;; Socket permissions
+    (allow subj self create_packet_socket)
+    (allow subj self create_udp_socket)
+    (allow subj self create_netlink_route_socket)
+    (allow subj self (netlink_route_socket (nlmsg_read)))
+    (allow subj self create_netlink_socket)
+    (allow subj self create_qipcrtr_socket)
+    (allow subj self create_unix_dgram_socket)
+    (allow subj self create_unix_stream_socket)
+    (allow subj self (unix_stream_socket (connectto sendto listen accept)))
+    (call .sys.connectto_unix_stream_sockets(subj))
+
+    ;; Connect to diag-router
+    (call .diag-router.unix_stream_connect(subj))
+
+    ;; Socket in /dev/socket/qcrild/ directory
+    (call .qcril.search_runtimetmpfile_dirs (subj))
+    (call .qcril.addname_runtimetmpfile_dirs (subj))
+    (call .qcril.write_runtimetmpfile_dirs (subj))
+    (call .qcril.create_runtimetmpfile_sock_files (subj))
+    (call .qcril.readwrite_runtimetmpfile_sock_files (subj))
+    (call .qcril.manage_runtimetmpfile_sock_files (subj))
+    ;; Access to /dev/socket/qcrild/rild0
+    (allow subj tmp.fs (sock_file (create setattr)))
+
+    ;; Manage files in /data/vendor/
+    (call .qcril.manage_datafile_dirs (subj))
+    (call .qcril.manage_datafile_files (subj))
+
+    ;; Read devices sysfile
+    (call .devices.search_sysfile_dirs (subj))
+    (call .devices.read_sysfile_files (subj))
+
+    (allow subj self (fifo_file (open getattr read write append ioctl lock)))
+    (allow subj self (process (signal)))
+    (allow subj self (capability (net_admin net_raw)))
+
+    ;; Permissions for /sys/power/wake_lock /sys/power/wake_unlock
+    (call .power.readwrite_sysfile_files (subj))
+    (call .power.search_sysfile_dirs(subj))
+    (call .sys.search_sysctlfile_dirs (subj))
+
+    ;; Access to /tmp/shm/dbstate_shm
+    (call .qcril.readwrite_runtimetmpfile (subj))
+
+    ;; Data module policies
+    (call .qcmap_cm.search_conffile_dirs (subj))
+    (call .qcmap_cm.readwrite_conffile_files (subj))
+
+    ;; dev_read_urand
+    (call .random.read_nodedev_chr_files (subj))
+
+    ;; Rules for /proc/sys/vm
+    (call .vmstat.read_procfile_files (subj))
+
+)

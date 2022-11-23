@@ -8,4 +8,8 @@
        ;; policy
 
        (blockinherit .agent.base_template))
+         (call .uci.search_conffile_dirs (subj))
+         (call .uci.read_conffile_files (subj))
+         (call .uci.search_tmpfile_dirs (subj))
+         (call .random.read_nodedev_chr_files (subj))
          (allow subj self (capability (dac_read_search))))

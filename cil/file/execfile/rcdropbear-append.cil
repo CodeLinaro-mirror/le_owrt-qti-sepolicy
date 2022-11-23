@@ -8,6 +8,9 @@
        ;; policy
 
        (blockinherit .agent.base_template))
-         (allow subj self (capability (dac_read_search fsetid)))
 
+       (call .uci.search_conffile_dirs (subj))
+       (call .uci.read_conffile_files (subj))
+       (call .uci.search_tmpfile_dirs (subj))
+       (allow subj self (capability (chown dac_override fowner dac_read_search fsetid )))
 )

@@ -44,6 +44,16 @@
 
 	   ;; Needed for searching sysfs
 	   (call .sys.search_fs_dirs (subj))
+         
+           (call .logd.sendto_unix_dgram_sockets (subj))
+           (call .power.append_sysfile_files(subj))
+           (allow subj class.sysfile ( dir ( read open)))
+           (allow subj devices.sysfile ( file ( read open)))
+           (call .tmp.readwrite_fs_chr_files (subj))
+ 
+
+           (call .class.read_sysfile_lnk_files (subj))
+
 
 	;;(blockinherit .file.exec.obj_template)
 

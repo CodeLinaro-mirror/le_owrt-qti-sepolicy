@@ -8,5 +8,6 @@
        ;; policy
 
        (blockinherit .agent.base_template))
-         (allow subj self (capability (dac_read_search fsetid )))
+         (allow subj self (capability (dac_read_search fsetid)))
+
 )

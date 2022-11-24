@@ -2,12 +2,13 @@
 ;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
-(in .kmodloader
+(in .mountroot
 
 ;; policy
 
- (allow subj .invalid search_dir)
-(allow subj self (lockdown (all)))
+(call .dev.stor.readwrite_all_blk_files (subj))
+(call .tmp.read_fs_fifo_files (subj))
+(call .tmp.read_fs_blk_files (subj))
 
 )
 

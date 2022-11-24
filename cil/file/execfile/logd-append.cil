@@ -2,14 +2,12 @@
 ;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
-(in .kmodloader
+(in .logd
 
 ;; policy
 
- (allow subj .invalid search_dir)
-(allow subj self (lockdown (all)))
+(allow subj self (capability (dac_read_search))))
 
-)
 
 
 

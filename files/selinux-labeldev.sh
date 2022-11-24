@@ -28,9 +28,7 @@ ${CHCON} -t `${MATCHPATHCON} -n /dev/console | cut -d: -f3` /dev/console
 # only thing in tmpfs are to be done here other should move
 # from this file over the period of time
 ${RESTORECON} -RF /dev
-${RESTORECON} -RF /etc
-#TODO : this 2 line need to removed
-#       to later stage
-${RESTORECON} -RF /usr  /bin  /sbin /lib
-${RESTORECON} -F /data /var
+${RESTORECON} -RF /var
+${RESTORECON} -RF /tmp
+
 exit 0

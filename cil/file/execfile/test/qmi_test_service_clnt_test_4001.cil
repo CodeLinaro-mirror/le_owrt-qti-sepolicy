@@ -1,0 +1,44 @@
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+        (call .qmi_test_service_clnt_test_4001.subj_type_transition (subj)))
+
+(block qmi_test_service_clnt_test_4001
+;(in .file
+;       (call .qmi_test_service_clnt_test_4001.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+        ;; Contexts
+        ;;
+
+        (filecon
+                "/usr/bin/qmi-framework-tests/qmi_test_service_clnt_test_4001"
+                file
+                execfile_file_context)
+
+        ;;
+        ;; Macros
+        ;;
+
+        (macro obj_type_transition_execfile ((type ARG1))
+                (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "qmi_test_service_clnt_test_4001")))
+        ;;
+        ;; Policy
+        ;;
+
+	(call .shell.mapexecute_execfile_files(subj))
+
+        ;;(blockinherit .file.exec.obj_template)
+        (blockinherit .agent.base_template)
+         (allow subj  self  create_qipcrtr_socket)
+
+        ;; search in config files is needed
+        ;;which is done on start /Stop  of services
+        (call .file.search_conffile_dirs (subj)))
+
+        ;;(blockinherit .tmpfile.runtime.obj_template)
+;
+

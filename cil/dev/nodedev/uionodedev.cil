@@ -1,0 +1,32 @@
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .dev
+    (call .uio.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+
+(block uio
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/dev/uio([0-1])+"
+        char
+        nodedev_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+       (macro obj_type_transition_nodedev ((type ARG1))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "uio")))
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .dev.node.obj_template))
+
+

@@ -36,5 +36,7 @@
 	;; search in config files is needed
 	;;which is done on start /Stop  of services
 	(call .file.search_conffile_dirs (subj))
+	(allow subj  self  create_qipcrtr_socket)
+	(allow subj self (capability (net_admin)))
       ;;(blockinherit .tmpfile.runtime.obj_template)
 	)

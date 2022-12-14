@@ -9,8 +9,8 @@
 (in .file
     (call .qcmap_cm.obj_type_transition_execfile (unconfined.subj_typeattr))
     (call .qcmap_cm.obj_type_transition_conffile (unconfined.subj_typeattr))
-    (call .qcmap_cm.obj_type_transition_datafile (unconfined.subj_typeattr))
-    (call .qcmap_cm.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr)))
+    (call .qcmap_cm.obj_type_transition_datafile (unconfined.subj_typeattr dir data_qcmap))
+    (call .qcmap_cm.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr dir data)))
 
 (block qcmap_cm
         ;;
@@ -18,6 +18,11 @@
         ;;
         (filecon
         "/usr/bin/QCMAP_ConnectionManager"
+        file
+        execfile_file_context)
+
+        (filecon
+        "/usr/bin/QCMAP_CLI"
         file
         execfile_file_context)
 
@@ -37,19 +42,19 @@
         datafile_file_context)
 
         (filecon
-        "/data/data_qcmap/LOGs\.txt"
-        file
+        "/data/data_qcmap/.*"
+        any
         datafile_file_context)
 
         (filecon
-        "/dev/socket/data"
-        dir
-        runtimetmpfile_file_context)
+        "/dev/socket/data/.*"
+        socket
+        tmpfile_file_context)
 
         (filecon
-        "/dev/socket/data/*"
-        any
-        runtimetmpfile_file_context)
+        "/dev/socket/data/netmgr_connect_socket"
+        socket
+        tmpfile_file_context)
 
         (filecon
         "/tmp/run/qnicorn_connect"
@@ -58,42 +63,67 @@
 
         (filecon
         "/tmp/data"
+        dir
+        tmpfile_file_context)
+
+        (filecon
+        "/tmp/data/*"
         any
+        tmpfile_file_context)
+
+        (filecon
+        "/tmp/run/data"
+         dir
+         runtimetmpfile_file_context)
+
+        (filecon
+       "/tmp/ipv4config([0-9])+"
+        file
+        runtimetmpfile_file_context)
+
+        (filecon
+       "/tmp/ipv6config([0-9])+"
+        file
         runtimetmpfile_file_context)
 
         ;; Macros
         ;;
 
         (macro obj_type_transition_execfile ((type ARG1))
-               (call .file.execfile_obj_type_transition
+              (call .file.execfile_obj_type_transition
                         (ARG1 execfile file "qcmap_cm")))
 
         (macro obj_type_transition_conffile ((type ARG1))
               (call .file.conffile_obj_type_transition
                     (ARG1 conffile dir "data")))
 
-        (macro obj_type_transition_datafile ((type ARG1))
-              (call .file.datafile_obj_type_transition
-                    (ARG1 datafile dir "data"))
-              (call .file.datafile_obj_type_transition
-                    (ARG1 datafile dir "data_qcmap"))
-              (call .file.datafile_obj_type_transition
-                    (ARG1 datafile file "LOGs.txt"))
-              (call .file.datafile_obj_type_transition
-                    (ARG1 datafile file "qnicorn_connect"))
-              (call .file.datafile_obj_type_transition
-                    (ARG1 datafile file "data")))
+        (macro obj_type_transition_datafile ((type ARG1)(class ARG2)(name ARG3))
+               (call .file.datafile_obj_type_transition
+                        (ARG1 datafile ARG2 ARG3)))
 
-        (macro obj_type_transition_runtimetmpfile ((type ARG1))
-              (call .tmpfile.runtimetmpfile_obj_type_transition
-                    (ARG1 runtimetmpfile dir "data")))
+        (macro obj_type_transition_runtimetmpfile ((type ARG1)(class ARG2)(name ARG3))
+               (call .tmpfile.runtimetmpfile_obj_type_transition
+                     (ARG1 runtimetmpfile ARG2 ARG3)))
+
+        (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+               (call .tmp.fs_obj_type_transition
+                           (ARG1 tmpfile ARG2 ARG3)))
 
         ;; Policy
            (blockinherit .agent.base_template)
            (blockinherit file.conf.obj_template)
            (blockinherit .tmpfile.runtime.obj_template)
            (blockinherit file.data.obj_template)
+           (blockinherit .tmpfile.obj_template)
         ;; (blockinherit .subj.subj_all_macro_template)
+
+           (call obj_type_transition_runtimetmpfile (subj file "*"))
+           (call obj_type_transition_tmpfile (subj sock_file "*"))
+           (call obj_type_transition_tmpfile (subj sock_file "netmgr_connect_socket"))
+           (call obj_type_transition_tmpfile (subj file "*"))
+           (call obj_type_transition_datafile (subj dir "data_qcmap"))
+           (call obj_type_transition_datafile (subj dir "qti"))
+           (call .xtables.obj_type_transition_runtimetmpfile (subj))
 
         ;; Need creat for packet_socket, rawip_socket, udp_socket, qipcrtr_socket, unix_dgram_socket, unix_stream_socket, netlink_socket,
         ;; netlink_kobject_uevent_socket
@@ -105,6 +135,7 @@
            (allow subj self create_unix_dgram_socket)
            (allow subj self create_unix_stream_stream_socket)
            (allow subj self create_netlink_kobject_uevent_socket)
+           (allow subj self create_netlink_netfilter_socket)
 
         ;; Need search on config files is needed - which is done on start /Stop  of services
           (call .qcmap_cm.search_conffile_dirs (subj))
@@ -166,8 +197,10 @@
         ;; Need for search of net
            (call .net.search_sysctlfile_dirs (subj))
 
-        ;; Need for create sock_file of nl_qcmap_uds_file
-           (call .qcmap_cm.create_runtimetmpfile_sock_files (subj))
+        ;; Need for create sock_file of nl_qcmap_uds_file tcontext qcmap_cm.tmpfile
+           (call .qcmap_cm.create_tmpfile_sock_files (subj))
+           (call .qcmap_cm.manage_tmpfile_sock_files (subj))
+           (call .qcmap_cm.manage_tmpfile_dirs (subj))
 
         ;; Need module_request for kmod="netdev-rndis0" tcontext=u:r:sys.subj
            (call .sys.requestmodule (subj))
@@ -183,6 +216,7 @@
 
         ;; Need nlmsg_read for netlink_route_socket
            (allow subj self (netlink_route_socket (nlmsg_read)))
+           (allow subj self (netlink_route_socket (nlmsg_write)))
 
         ;; TODO : Have to move these dhcp_hosts denials to QCMAP LAN LIB file.Once we start handling the denials for QCMAP LAN LIB service.
         ;; Need create, read, write on name="dhcp_hosts" file
@@ -191,6 +225,7 @@
         ;; Need write, add_name on /etc/data dir
            (call .qcmap_cm.addname_conffile_dirs(subj))
            (call .qcmap_cm.write_conffile_dirs(subj))
+           (call .qcmap_cm.manage_conffile_files (subj))
 
         ;; Need search for fs dir with tcontext=u:r:fs.sysfile
            (call .fs.search_sysfile_dirs (subj))
@@ -200,5 +235,56 @@
            (call .selinux.search_conffile_dirs(subj))
         ;; Need gettarr on selinux filesystem
            (call .selinux.getattr_filesystems(subj))
-)
 
+        ;; Need create, write, open, read on runtimetmpfile_files
+           (call .qcmap_cm.create_runtimetmpfile_files (subj))
+           (call .qcmap_cm.write_runtimetmpfile_files (subj))
+           (call .qcmap_cm.read_runtimetmpfile_files (subj))
+           (call .qcmap_cm.manage_runtimetmpfile_files (subj))
+
+        ;; Need connectto for diag-router unix_stream_socket
+           (call .diag-router.connectto_unix_stream_sockets (subj))
+
+        ;; Need unlink for file tcontext qcmap_cm.conffile
+           (allow subj qcmap_cm.conffile (file (unlink)))
+
+        ;; Need read, open, execute on /usr/sbin/xtables-legacy-multi tcontext xtables.execfile
+           (call .xtables.execute_execfile_files (subj))
+           (call .xtables.read_execfile_files (subj))
+           (call .xtables.manage_execfile_files (subj))
+           (call .xtables.mapexecute_execfile_files (subj))
+
+       ;; Need read, open, create on /tmp/run/xtables.lock tcontext xtables.runtimetmpfile
+          (call .xtables.create_runtimetmpfile_files (subj))
+          (call .xtables.read_runtimetmpfile_files(subj))
+          (call .xtables.manage_runtimetmpfile_files (subj))
+          (call .xtables.addname_runtimetmpfile_dirs (subj))
+
+          (call .kpi_values.append_sysfile_files (subj))
+          (call .kpi_values.manage_sysfile_files (subj))
+          (call .kernel.search_sysfile_dirs (subj))
+
+      ;; Need open, iotcl, read, write on /tmp/data/kernel_ver.txt tcontext qcmap_cm.tmpfile
+          (call .qcmap_cm.manage_tmpfile_files (subj))
+      ;; Need remove_name for sock_files
+      ;;  (allow subj tmp.fs (sock_file (remove_name)))
+
+      ;; Need read, open, execute on /usr/libexec/ip-tiny tcontext ip.execfile
+         (call .ip.manage_execfile_files (subj))
+         (call .ip.mapexecute_execfile_files (subj))
+         (allow subj ip.execfile (file (execute_no_trans)))
+      ;; Need manage permissions on /dev/ipa target ipa.nodedev
+         (call .ipa.manage_nodedev_chr_files (subj))
+      ;; Need getattribute on /proc/3289/net/ip_tables_names
+         (call .net.manage_procfile_files (subj))
+         (call .proc.getattr_filesystems(subj))
+         (call .proc.manage_fs_dirs (subj))
+      ;; Need execute, read , execute_no_trans on rmnet_update.sh
+         (call .netifd.read_miscfile_files (subj))
+         (call .netifd.execute_miscfile_files (subj))
+         (allow subj netifd.miscfile (file (execute_no_trans)))
+      ;; Need execute, read , execute_no_trans on /sbin/uci
+         (call .uci.read_execfile_files (subj))
+         (call .uci.execute_execfile_files (subj))
+         (allow subj uci.execfile (file (execute_no_trans)))
+)

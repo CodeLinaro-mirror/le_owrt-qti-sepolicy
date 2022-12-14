@@ -1,0 +1,172 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+	(call .ipacm.subj_type_transition (subj))
+)
+
+(in .file
+	(call .ipacm.obj_type_transition_execfile (unconfined.subj_typeattr))
+	(call .ipacm.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr))
+	(call .ipacm.obj_type_transition_tmpfile (unconfined.subj_typeattr))
+	(call .ipacm.obj_type_transition_libfile (unconfined.subj_typeattr))
+	(call .ipacm.obj_type_transition_conffile (unconfined.subj_typeattr))
+)
+
+(block ipacm
+
+	; Contexts
+
+	(filecon
+	"/usr/bin/ipacm"
+	file
+	execfile_file_context)
+
+	(filecon
+	"/tmp/run/data/ipa/ipacm\.pid"
+	file
+	runtimetmpfile_file_context)
+
+	(filecon
+	"/tmp/run/data/ipa"
+	dir
+	runtimetmpfile_file_context)
+
+	(filecon
+	"/dev/socket/data/ipa"
+	dir
+	tmpfile_file_context)
+
+	(filecon
+	"/tmp/data_ipa"
+	dir
+	runtimetmpfile_file_context)
+
+	(filecon
+	"/tmp/data_ipa/ipa_fdb_table.txt"
+	file
+	runtimetmpfile_file_context)
+
+	(filecon
+	"/usr/lib/libipanat\.so"
+	file
+	libfile_file_context)
+
+	(filecon
+	"/etc/data/ipa/IPACM_cfg.xml"
+	file
+	conffile_file_context)
+
+	(filecon
+	"/etc/data/ipa/factory_IPACM_cfg.xml"
+	file
+	conffile_file_context)
+
+	(filecon
+	"/etc/data/ipa"
+	dir
+	conffile_file_context)
+
+	;;
+
+	;; Macros
+
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "ipacm")))
+
+	(macro obj_type_transition_runtimetmpfile ((type ARG1))
+		(call .qcmap_cm.runtimetmpfile_obj_type_transition
+			(ARG1 runtimetmpfile file "ipacm.pid"))
+		(call .qcmap_cm.runtimetmpfile_obj_type_transition
+			(ARG1 runtimetmpfile dir "ipa"))
+		(call .tmp.fs_obj_type_transition
+			(ARG1 runtimetmpfile dir "data_ipa"))
+		(call .tmp.fs_obj_type_transition
+			(ARG1 runtimetmpfile file "ipa_fdb_table.txt")))
+
+	(macro obj_type_transition_tmpfile ((type ARG1))
+		(call .tmp.fs_obj_type_transition
+			(ARG1 tmpfile dir "ipa")))
+
+	(macro obj_type_transition_libfile ((type ARG1))
+		(call .sys.rootfile_obj_type_transition
+			(ARG1 libfile file "libipanat.so")))
+
+	(macro obj_type_transition_conffile ((type ARG1))
+		(call .qcmap_cm.conffile_obj_type_transition
+			(ARG1 conffile dir "ipa"))
+		(call .qcmap_cm.conffile_obj_type_transition
+			(ARG1 conffile file "IPACM_cfg.xml"))
+		(call .qcmap_cm.conffile_obj_type_transition
+			(ARG1 conffile file "factory_IPACM_cfg.xml")))
+
+	;;
+
+	;; Policy
+
+	(call obj_type_transition_tmpfile (subj))
+	(call obj_type_transition_runtimetmpfile (subj))
+	(call obj_type_transition_conffile (subj))
+
+	(blockinherit .subj.subj_all_macro_template)
+	(blockinherit .agent.base_template)
+	(blockinherit .tmpfile.runtime.obj_template)
+	(blockinherit .tmpfile.obj_template)
+	(blockinherit .file.conf.obj_template)
+	(blockinherit .file.lib.obj_template)
+
+	(allow subj self create_udp_socket)
+	(allow subj self (unix_dgram_socket (create)))
+	(allow subj self write_unix_dgram_socket)
+	(allow subj ipacmdiag.subj (unix_dgram_socket (create ioctl sendto)))
+	(allow subj self create_netlink_netfilter_socket)
+	(allow subj self readwrite_netlink_netfilter_socket)
+	(allow subj self create_netlink_route_socket)
+	(allow subj self (netlink_route_socket (nlmsg_read)))
+	(allow subj self (netlink_route_socket (write)))
+	(allow subj self (capability (net_admin)))
+
+	(call .ipa.readwrite_nodedev_chr_files (subj))
+
+	(call .ipacm.readwrite_libfile_files (subj))
+	(call .ipacm.mapexecute_libfile_files (subj))
+
+	(call .ipacm.search_conffile_dirs (subj))
+	(allow subj conffile (file (open getattr)))
+	(call .ipacm.read_conffile_files (subj))
+	(call .file.search_conffile_dirs (subj))
+
+	(call .ipacm.search_tmpfile_dirs (subj))
+	(call .ipacm.search_tmpfile_dirs (subj))
+	(call .ipacm.write_tmpfile_sock_files (subj))
+
+	(call .tmpfile.search_runtimetmpfile_dirs (subj))
+	(call .ipacm.readwrite_runtimetmpfile_dirs (subj))
+	(call .ipacm.search_runtimetmpfile_dirs (subj))
+	(call .ipacm.manage_runtimetmpfile_dirs (subj))
+	(call .ipacm.addname_runtimetmpfile_dirs (subj))
+	(call .ipacm.readwrite_runtimetmpfile_dirs (subj))
+	(call .ipacm.create_runtimetmpfile_dirs (subj))
+	(call .ipacm.readwrite_runtimetmpfile_files (subj))
+	(call .ipacm.manage_runtimetmpfile_files (subj))
+	(call .ipacm.create_runtimetmpfile_files (subj))
+	(allow subj ip.execfile (file(read open execute getattr execute_no_trans map)))
+
+	(call .sys.search_fs_dirs (subj))
+	(call .sys.search_sysctlfile_dirs (subj))
+	(call .fs.search_sysfile_dirs (subj))
+
+	(call .selinux.search_conffile_dirs (subj))
+	(call .selinux.getattr_filesystems(subj))
+
+	(call .shell.execute_execfile_files (subj))
+
+	(call .net.search_sysctlfile_dirs (subj))
+	(call .netfilter.search_sysctlfile_dirs (subj))
+	(call .netfilter.readwrite_sysctlfile_files (subj))
+
+	;;
+)

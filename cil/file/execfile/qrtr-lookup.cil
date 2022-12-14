@@ -41,4 +41,5 @@
 	;;which is done on start /Stop  of services
 	(call .file.search_conffile_dirs (subj))
        ;;(blockinherit .tmpfile.runtime.obj_template)
+	(allow subj  self  create_qipcrtr_socket)
 	 )

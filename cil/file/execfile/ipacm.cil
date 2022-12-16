@@ -121,7 +121,7 @@
 	(allow subj self create_udp_socket)
 	(allow subj self (unix_dgram_socket (create)))
 	(allow subj self write_unix_dgram_socket)
-	(allow subj ipacmdiag.subj (unix_dgram_socket (create ioctl sendto)))
+	(allow subj self (unix_dgram_socket (create ioctl sendto)))
 	(allow subj self create_netlink_netfilter_socket)
 	(allow subj self readwrite_netlink_netfilter_socket)
 	(allow subj self create_netlink_route_socket)

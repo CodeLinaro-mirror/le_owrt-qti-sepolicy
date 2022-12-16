@@ -25,7 +25,11 @@
        ;;
        (macro obj_type_transition_nodedev ((type ARG1))
               (call .tmp.fs_obj_type_transition
-                    (ARG1 nodedev chr_file "smdcntl8")))
+                    (ARG1 nodedev chr_file "smdcntl8"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "smdcntl1"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "smdcntl0")))
        ;;
        ;; Policy
        ;;

@@ -15,4 +15,5 @@
        (call .ipv6.search_sysctlfile_dirs (subj))
        (call .ipv6.write_sysctlfile_files (subj))
        (allow subj self (capability (dac_read_search)))
+       (call .xtables.subj_type_transition (subj))
 )

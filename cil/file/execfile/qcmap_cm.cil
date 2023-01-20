@@ -22,11 +22,6 @@
         execfile_file_context)
 
         (filecon
-        "/usr/bin/QCMAP_CLI"
-        file
-        execfile_file_context)
-
-        (filecon
         "/etc/data"
         dir
         conffile_file_context)
@@ -52,11 +47,6 @@
         tmpfile_file_context)
 
         (filecon
-        "/dev/socket/data/netmgr_connect_socket"
-        socket
-        tmpfile_file_context)
-
-        (filecon
         "/tmp/run/qnicorn_connect"
         any
         runtimetmpfile_file_context)
@@ -75,16 +65,6 @@
         "/tmp/run/data"
          dir
          runtimetmpfile_file_context)
-
-        (filecon
-       "/tmp/ipv4config([0-9])+"
-        file
-        runtimetmpfile_file_context)
-
-        (filecon
-       "/tmp/ipv6config([0-9])+"
-        file
-        runtimetmpfile_file_context)
 
         ;; Macros
         ;;
@@ -119,8 +99,6 @@
 
            (call obj_type_transition_runtimetmpfile (subj file "*"))
            (call obj_type_transition_tmpfile (subj sock_file "*"))
-           (call obj_type_transition_tmpfile (subj sock_file "netmgr_connect_socket"))
-           (call obj_type_transition_tmpfile (subj file "*"))
            (call obj_type_transition_datafile (subj dir "data_qcmap"))
            (call obj_type_transition_datafile (subj dir "qti"))
            (call .xtables.obj_type_transition_runtimetmpfile (subj))
@@ -266,25 +244,18 @@
 
       ;; Need open, iotcl, read, write on /tmp/data/kernel_ver.txt tcontext qcmap_cm.tmpfile
           (call .qcmap_cm.manage_tmpfile_files (subj))
-      ;; Need remove_name for sock_files
-      ;;  (allow subj tmp.fs (sock_file (remove_name)))
+      ;; Need write permission on netmgr_connect_socket
+      ;; Ownership to label file is with Linux data team
+      ;; TODO : This allow rule has to to be removed once netmgrd.cil gets merged
+          (allow subj tmp.fs (sock_file (write)))
+      ;; Need manage on netmgr_connect_socket
+      ;; TODO : Uncomment below lines once netmgrd.cil gets merged
+      ;;  (call .netmgrd.manage_tmpfile_sock_files (subj))
+      ;;  (call .netmgrd.connectto_unix_stream_sockets (subj))
+      ;; Need remove on /tmp/ipv{4/6}config[0-9]+
+          (call .qcmap_cli.manage_tmpfile_files (subj))
+      ;; Need remove_name on /tmp/ to remove ipv{4/6}config[0-9]+ files
+      ;; TODO : Remove below rule after changing location of ipv{4/6}config file
+          (allow subj tmp.fs (dir(remove_name)))
 
-      ;; Need read, open, execute on /usr/libexec/ip-tiny tcontext ip.execfile
-         (call .ip.manage_execfile_files (subj))
-         (call .ip.mapexecute_execfile_files (subj))
-         (allow subj ip.execfile (file (execute_no_trans)))
-      ;; Need manage permissions on /dev/ipa target ipa.nodedev
-         (call .ipa.manage_nodedev_chr_files (subj))
-      ;; Need getattribute on /proc/3289/net/ip_tables_names
-         (call .net.manage_procfile_files (subj))
-         (call .proc.getattr_filesystems(subj))
-         (call .proc.manage_fs_dirs (subj))
-      ;; Need execute, read , execute_no_trans on rmnet_update.sh
-         (call .netifd.read_miscfile_files (subj))
-         (call .netifd.execute_miscfile_files (subj))
-         (allow subj netifd.miscfile (file (execute_no_trans)))
-      ;; Need execute, read , execute_no_trans on /sbin/uci
-         (call .uci.read_execfile_files (subj))
-         (call .uci.execute_execfile_files (subj))
-         (allow subj uci.execfile (file (execute_no_trans)))
 )

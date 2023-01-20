@@ -22,4 +22,8 @@
       (call .dma_heap.read_nodedev_chr_files (subj))
       (call .smcinvoke.read_nodedev_chr_files (subj)))
 
+;; Need for qcmap_cli
+      (call .qcmap_cli.use_fds (subj))
+      (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+      (allow .hotplugcall.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
 )

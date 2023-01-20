@@ -7,7 +7,13 @@
 ;; policy
 
 (allow subj self (capability (dac_read_search)))
-
+(call .netifd.use_fds (subj))
+(allow subj .netifd.subj (fifo_file (read write)))
+(allow subj .netifd.subj (netlink_route_socket (read write)))
+(allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+(call .qcmap_cli.use_fds (subj))
+(call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+(allow subj .qcmap_cli.subj (fifo_file (read write)))
 )
 
 

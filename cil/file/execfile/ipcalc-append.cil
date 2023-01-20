@@ -1,0 +1,10 @@
+;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .ipcalc
+     ;;policy
+     (allow subj self (capability (dac_read_search)))
+     (call .qcmap_cli.use_fds (subj))
+     (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+     (allow subj .qcmap_cli.subj (fifo_file (read write)))
+)

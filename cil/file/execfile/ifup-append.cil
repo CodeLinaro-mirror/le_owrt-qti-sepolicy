@@ -1,0 +1,17 @@
+;;copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .ifup
+
+  ;;policy
+
+  (call .qcmap_cli.use_fds (subj))
+  (call .netifd.use_fds (subj))
+  (allow subj self (capability (dac_read_search)))
+  (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+  (allow .ifup.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+  (allow .ifup.subj .netifd.subj (fifo_file (read write)))
+  (allow .ifup.subj .netifd.subj (netlink_route_socket (read write)))
+  (allow .ifup.subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+  (call .netifd.manage_miscfile_dirs (subj))
+)

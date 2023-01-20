@@ -7,7 +7,12 @@
 ;; policy
 
 (allow subj self create_unix_stream_stream_socket)
-
+(call .qcmap_cli.use_fds (subj))
+(allow subj self (capability (dac_read_search)))
+(call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+(allow .ubus.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+;; Need manage on /tmp/ipv{4/6}config[0-9]+
+(call .qcmap_cli.manage_tmpfile_files (subj))
 )
 
 

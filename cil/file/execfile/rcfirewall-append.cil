@@ -8,5 +8,11 @@
        ;; policy
 
        (blockinherit .agent.base_template))
-         (allow subj self (capability (dac_read_search)))
+       (call .random.read_nodedev_chr_files (subj))
+       (call .sys.search_sysctlfile_dirs (subj))
+       (call .ipv4.search_sysctlfile_dirs (subj))
+       (call .ipv4.write_sysctlfile_files (subj))
+       (call .ipv6.search_sysctlfile_dirs (subj))
+       (call .ipv6.write_sysctlfile_files (subj))
+       (allow subj self (capability (dac_read_search)))
 )

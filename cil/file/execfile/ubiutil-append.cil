@@ -1,0 +1,15 @@
+
+
+;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .ubiutil
+
+;; policy
+
+(call .file.writeinherited_all_fifo_files(subj))
+
+)
+
+
+

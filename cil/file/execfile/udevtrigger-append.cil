@@ -10,6 +10,8 @@
        (blockinherit .agent.base_template))
        (allow subj .zram_uevent.sysfile (file (open write getattr)))
        (allow subj .zram_dev.sysfile (file (getattr)))
+       (call .zram.search_sysfile_dirs (subj))
+
 )
 (block zram_dev
        ;;

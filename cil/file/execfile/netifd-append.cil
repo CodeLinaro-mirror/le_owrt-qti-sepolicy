@@ -9,4 +9,6 @@
 
        (blockinherit .agent.base_template))
          (allow subj self (capability (dac_override dac_read_search)))
+         (call .nameservice.read_miscfile_files (subj))
+         (call .ifup.use_fds (subj))
 )

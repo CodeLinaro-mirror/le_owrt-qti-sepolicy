@@ -1,0 +1,50 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+    (call .qseecomd.subj_type_transition (subj)))
+
+(block qseecomd
+        ;;
+        ;; Contexts
+        ;;
+        (filecon
+            "/usr/bin/qseecomd"
+            file
+            execfile_file_context)
+        ;;
+        ;; Macros
+        ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                          (ARG1 execfile file "qseecomd")))
+        ;;
+        ;;Policy
+        ;;
+        (blockinherit .agent.base_template)
+
+
+;;needed for commuication on /dev/smcinvoke
+        (call .smcinvoke.readwrite_nodedev_chr_files (subj))
+
+;;needed for searching /etc
+        (call .file.search_conffile_dirs (subj))
+
+;;needed for reading of /proc/cmdline
+        (call .cmdline.read_procfile_files (subj))
+
+
+;;need for creating and read/write to unix_dgram_socket
+        (allow subj self create_unix_dgram_socket)
+
+
+;;access on /dev/log
+       (call .logd.write_miscfile_sock_files(subj))
+       (call .logd.sendto_unix_dgram_sockets(subj))
+
+;;need to access  /dev/dma_heap/....
+       (call .dma_heap.readwrite_nodedev_chr_files (subj))
+
+)
+

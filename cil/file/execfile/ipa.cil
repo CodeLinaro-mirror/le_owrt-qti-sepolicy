@@ -1,0 +1,44 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+	(call .ipacli.subj_type_transition (subj))
+)
+
+(in .file
+	(call .ipacli.obj_type_transition_execfile (unconfined.subj_typeattr))
+)
+
+(block ipacli
+
+	; Contexts
+
+	(filecon
+	"/usr/bin/ipa"
+	file
+	execfile_file_context)
+
+	;;
+
+	;; Macros
+
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "ipa")))
+
+	;;
+
+	;; Policy
+
+	(blockinherit .subj.subj_all_macro_template)
+	(blockinherit .agent.base_template)
+
+        (call .ipa.readwrite_nodedev_chr_files (subj))
+
+        (call .selinux.search_conffile_dirs (subj))
+	(call .selinux.getattr_filesystems(subj))
+
+	;;
+)

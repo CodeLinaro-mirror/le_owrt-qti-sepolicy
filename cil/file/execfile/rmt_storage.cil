@@ -66,7 +66,8 @@
 	(call .uio.readwrite_nodedev_chr_files(subj))
 	(call .logd.write_miscfile_sock_files(subj))
 	(call .tmp.list_fs_dirs(subj))
-
+	(call .uio.readwrite_nodedev_chr_files (subj))
+	(allow subj self (capability2 (block_suspend)))
  
          (call .power.search_sysfile_dirs(subj))
          (call .devices.search_sysfile_dirs(subj))

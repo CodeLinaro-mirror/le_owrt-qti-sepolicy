@@ -22,4 +22,7 @@
          (call .qcmap_cli.use_fds (subj))
          (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
          (allow subj .qcmap_cli.subj (fifo_file (read write)))
+         (call .qcmap_cm.obj_type_transition_tmpfile (subj dir "data"))
+         (call .qcmap_cm.manage_tmpfile_dirs (subj))
+         (call .qcmap_cm.manage_tmpfile_files (subj))
 )

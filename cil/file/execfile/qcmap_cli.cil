@@ -111,5 +111,9 @@
     ;; Need to create unix_dgram_socket
     (allow subj self create_unix_dgram_socket)
     (call .nameservice.read_miscfile_files (subj))
-
+    ;; Need this to indicate IPA on first vlan creation
+    (allow ipacli.subj qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow ipacli.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow ipacli.subj qcmap_cli.subj (fd (use)))
+    (allow ipacli.subj file.conffile (dir (search)))
 )

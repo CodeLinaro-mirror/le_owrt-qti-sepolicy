@@ -46,5 +46,12 @@
 ;;need to access  /dev/dma_heap/....
        (call .dma_heap.readwrite_nodedev_chr_files (subj))
 
+       (allow  qseecomd.subj  dma_heap.nodedev  (dir (search)))
+       (allow  qseecomd.subj.  file.conffile ( file (getattr read open)))
+       (allow qseecomd.subj. persist.miscfile (dir (search read write open add_name create remove_name)))
+       (allow qseecomd.subj. persist.miscfile (file (create read write open getattr unlink)))
+       (allow qseecomd.subj. qseecomd.subj (unix_stream_socket (create connect write read)))
+       (allow qseecomd.subj. leprop.miscfile (sock_file (write)))
+       (allow qseecomd.subj. leprop.subj (unix_stream_socket (connectto)))
 )
 

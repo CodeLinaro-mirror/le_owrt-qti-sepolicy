@@ -53,5 +53,7 @@
        (allow qseecomd.subj. qseecomd.subj (unix_stream_socket (create connect write read)))
        (allow qseecomd.subj. leprop.miscfile (sock_file (write)))
        (allow qseecomd.subj. leprop.subj (unix_stream_socket (connectto)))
+       (allow  qseecomd.subj.  file.datafile ( dir (read write open add_name create remove_name rmdir)))
+       (allow  qseecomd.subj.  file.datafile ( file (create read write open getattr unlink)))
 )
 

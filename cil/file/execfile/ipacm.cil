@@ -128,6 +128,7 @@
 	(allow subj self (netlink_route_socket (nlmsg_read)))
 	(allow subj self (netlink_route_socket (write)))
 	(allow subj self (capability (net_admin)))
+        (allow subj ipacmdiag.subj (unix_dgram_socket (sendto)))
 
 	(call .ipa.readwrite_nodedev_chr_files (subj))
 

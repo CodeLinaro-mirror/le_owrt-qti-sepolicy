@@ -6,4 +6,22 @@
   ;; policy
 
   (allow subj self (capability (dac_read_search)))
+  ;; TODO : Observing this denials due to domain transition to netmgrd
+  ;; But currently netmgrd is running in sys.subj
+  ;; Need to remove this once netmgrd.cil gets merged
+  (allow subj .sys.subj (fifo_file (read write)))
+  (allow subj .sys.subj (netlink_socket (read write)))
+  (allow subj .sys.subj (netlink_route_socket (read write)))
+  (allow subj .sys.subj (netlink_kobject_uevent_socket (read write)))
+  (call .sys.readwrite_unix_stream_sockets (subj))
+  (call .qcmap_cm.use_fds (subj))
+  (allow subj .qcmap_cm.subj (fifo_file (read write ioctl)))
+  (allow subj .qcmap_cm.subj (netlink_socket (read write)))
+  (allow subj .qcmap_cm.subj (packet_socket (read write)))
+  (allow subj .qcmap_cm.subj (netlink_route_socket (read write)))
+  (allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+  (call .qcmap_cm.readwrite_unix_stream_sockets (subj))
+  ;; Need ioctl write on /tmp/data/tmpfdbtable.txt
+  (call .qcmap_cm.write_tmpfile_files (subj))
+  (allow subj .qcmap_cm.tmpfile (file (ioctl)))
 )

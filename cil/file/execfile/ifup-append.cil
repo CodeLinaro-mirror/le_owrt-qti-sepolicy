@@ -14,4 +14,7 @@
   (allow .ifup.subj .netifd.subj (netlink_route_socket (read write)))
   (allow .ifup.subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
   (call .netifd.manage_miscfile_dirs (subj))
+  (allow .ifup.subj .qcmap_cli.subj (fifo_file (read write)))
+  (allow .ifup.subj .qcmap_cli.subj (netlink_route_socket (read write)))
+  (allow .ifup.subj .qcmap_cli.subj (netlink_kobject_uevent_socket (read write)))
 )

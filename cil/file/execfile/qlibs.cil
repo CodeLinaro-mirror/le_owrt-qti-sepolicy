@@ -33,3 +33,21 @@
     (call datafile_obj_type_transition_libfile (unconfined.subj_typeattr))
     (call obj_type_transition_libfile (unconfined.subj_typeattr))
 )
+(block qcfirmware
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/firmware"
+        dir
+       miscfile_file_context)
+
+         (macro obj_type_transition_miscfile ((type ARG1))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 miscfile dir "firmware")))
+
+        (call .xattr.associate_filesystems (miscfile))
+        (blockinherit file.misc.obj_template)
+)

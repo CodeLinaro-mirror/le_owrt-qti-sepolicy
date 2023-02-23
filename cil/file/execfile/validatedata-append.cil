@@ -6,7 +6,9 @@
 ;; policy
 
     (allow subj self (capability (dac_override dac_read_search)))
-
+    (call .qcmap_cli.use_fds (subj))
+    (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+    (allow .validatedata.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
 )
 
 

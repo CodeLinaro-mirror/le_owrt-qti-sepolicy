@@ -1,0 +1,29 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+
+(in .hotplugcall
+
+    (block hotplugcalltmp
+
+;;Needed for search on /dev dir
+      (allow  subj  dma_heap.nodedev  search_dir)
+
+;;Need for setattr
+      (allow  subj smcinvoke.nodedev  (chr_file (setattr)))
+      (allow  subj dma_heap.nodedev (chr_file (setattr)))
+
+;;Needed to do  chown/chmod/fowner/fsetid on the new node
+      (allow subj self (capability (chown fowner fsetid )))
+
+;;Need to update dma_heap/qcom,qseecom and smcinvoke for getattr
+      (call .dma_heap.read_nodedev_chr_files (subj))
+      (call .smcinvoke.read_nodedev_chr_files (subj)))
+
+;; Need for qcmap_cli
+      (call .qcmap_cli.use_fds (subj))
+      (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+      (allow .hotplugcall.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+)

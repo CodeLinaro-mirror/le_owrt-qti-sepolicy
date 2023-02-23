@@ -1,0 +1,9 @@
+;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .ip
+
+  ;; policy
+
+  (allow subj self (capability (dac_read_search)))
+)

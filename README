@@ -11,13 +11,35 @@ you can see different cil file   place in each directory based on the type of
 resource /bin.
 
 
+Folder Org :
+
+├── cil
+│   ├── dev
+│   │   └── nodedev
+│   ├── file
+│   │   └── execfile
+│   │       └──test
+│   ├── initscript
+│   └── upstream
+├── files
+
+1st Level :  cil:  contails all the sepolicy files
+             files : place holder for patches to selinux upstream code
+2nd level :
+            dev -> place holder for all device nodes /dev....
+            nodedev -> mostly device node added
+            files:  conteails all the  execfiles/binfile/libs sepolicy
+            initscript : hold as the initscript related seploicy
+            upstream :   this will hold all the  sepolicy needed for upstream service
+            test folder : use this folder for policy writen for test code .
+
 Make file:
-Local reference of Makefile :
+Local reference of Makefile:
 package/system/selinux-policy/Makefile
 https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=package/system/selinux-policy/Makefile
 
 To compile just sepolicy :
- make -j16  V=sc  package/system/selinux-policy 
+ make -j16  V=sc  package/system/selinux-policy
 
  Please note: Qti sepolicy change will only take effect once you clean and  rebuild SEpolicy
  to clean and compile just sepolicy
@@ -30,7 +52,8 @@ To compile just sepolicy :
 
 #### Policy restriction
 #1. dac_override/dac_search  are allowed for upstream only  - TOBE FIXED
-#2. exemem and exemod   are allowed only for upstream
+#2. exemem and exemod   are allowed only for upstream      native code should still use PIC /PIE flag
+
 
 For example you can refer
 build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/selinux-policy-0.8/src

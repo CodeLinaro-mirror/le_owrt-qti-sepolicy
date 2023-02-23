@@ -11,4 +11,10 @@
          (allow subj self (capability (dac_override dac_read_search)))
          (call .nameservice.read_miscfile_files (subj))
          (call .ifup.use_fds (subj))
+          (call .iproute2.search_conffile_dirs (subj))
+          ;; Need manage on /tmp/ipv{4/6}config[0-9]+
+          (call .qcmap_cli.manage_tmpfile_files (subj))
+          (call .ifup.subj_type_transition (subj))
+          (call .rcdnsmasq.subj_type_transition (subj))
+          (call .file.search_initscriptfile_dirs (subj))
 )

@@ -6,7 +6,12 @@
 
 ;; policy
 
- (allow subj self (capability (dac_override))))
+ (allow subj self (capability (dac_override)))
+ (call .qcmap_cli.use_fds (subj))
+ (allow subj self (capability (dac_read_search)))
+ (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+ (allow .jshn.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+)
 
 
 

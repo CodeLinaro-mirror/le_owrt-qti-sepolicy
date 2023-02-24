@@ -13,4 +13,6 @@
          (allow subj self (capability (dac_override)))
          (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
          (allow .rcnetwork.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+         (call .qcmap_cm.search_tmpfile_dirs (subj))
+         (allow subj .qcmap_cm.tmpfile (dir (getattr)))
 )

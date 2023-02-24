@@ -54,4 +54,54 @@
 	(call .devices.search_sysfile_dirs (subj))
 
 	;;(blockinherit .file.exec.obj_template)
+	(allow subj .coresight-tmc-etr.sysfile (file (open read write setattr)))
 )
+(block coresight-tmc-etr
+
+       ;;
+       ;; Contexts
+       ;;
+
+     (genfscon
+        "sysfs"
+        "/sys/devices/platform/soc/24048000.tmc/coresight-tmc-etr"
+        sysfile_file_context)
+
+    (blockinherit .sysfile.module.obj_template))
+
+(in .sysfile
+
+    (block coresight-tmc-etr
+
+           ;;
+           ;; Policy
+           ;;
+
+           (blockinherit .file.obj_all_macro_template)
+
+           ;;
+           ;; Templates
+           ;;
+
+           (block obj_base_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_base_template)
+
+                  (blockinherit .sysfile.obj_base_template)
+
+                  (call .sysfile.coresight-tmc-etr.obj_type (sysfile)))
+
+           (block obj_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_template)
+
+                  (blockinherit .sysfile.coresight-tmc-etr.obj_base_template)
+                  (blockinherit .sysfile.obj_macro_template))))

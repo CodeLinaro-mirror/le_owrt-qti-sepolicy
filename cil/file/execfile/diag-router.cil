@@ -64,8 +64,12 @@
 	;;need for /dev/logd or logging
 	;; this will add write permission also
 	   (call .logd.unix_dgram_send(subj))
+
 	;; search  /dev tree .
 	(call .devices.search_sysfile_dirs (subj))
+	(call .devices.read_sysfile_files (subj))
+
+	(allow subj .devices.sysfile (file (open)))
 
 	;;(blockinherit .file.exec.obj_template)
 	(allow subj .kpi_values.sysfile readwrite_file)

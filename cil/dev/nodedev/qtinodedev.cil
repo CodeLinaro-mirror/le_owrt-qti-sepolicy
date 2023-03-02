@@ -1,0 +1,44 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .dev
+    (call .qti.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+
+(block qti
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/dev/mhi_pipe_14"
+        char
+        nodedev_file_context)
+
+       (filecon
+        "/dev/mhi_ctrl"
+        char
+        nodedev_file_context)
+
+        (filecon
+        "/dev/rmnet_v2x_ctrl"
+        char
+        nodedev_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+       (macro obj_type_transition_nodedev ((type ARG1))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "mhi_pipe_14"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "mhi_ctrl"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "rmnet_v2x_ctrl")))
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .dev.node.obj_template))

@@ -127,4 +127,8 @@
        (call .qtether.create_tmpfile_sock_files (subj))
        (call .qtether.manage_tmpfile_sock_files (subj))
        (call .qtether.manage_tmpfile_dirs (subj))
+    ;; Need read write on /dev/mhi_ctrl chr_file
+       (call .qti.readwrite_nodedev_chr_files (subj))
+    ;; Need read write on /dev/ipa chr_file
+       (call .ipa.readwrite_nodedev_chr_files (subj))
 )

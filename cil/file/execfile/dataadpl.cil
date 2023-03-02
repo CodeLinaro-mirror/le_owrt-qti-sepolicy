@@ -119,4 +119,6 @@
        (call .dataadpl.create_tmpfile_sock_files (subj))
        (call .dataadpl.manage_tmpfile_sock_files (subj))
        (call .dataadpl.manage_tmpfile_dirs (subj))
+    ;; Need read write on /dev/mhi_ctrl chr_file
+       (call .qti.readwrite_nodedev_chr_files (subj))
 )

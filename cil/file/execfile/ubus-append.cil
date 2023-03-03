@@ -1,5 +1,5 @@
 
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .ubus
@@ -13,6 +13,8 @@
 (allow .ubus.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
 ;; Need manage on /tmp/ipv{4/6}config[0-9]+
 (call .qcmap_cli.manage_tmpfile_files (subj))
+
+(allow subj .wifi.subj (fifo_file (write ioctl)))
 )
 
 

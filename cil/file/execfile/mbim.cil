@@ -80,6 +80,9 @@
         ;; permission to read/write /dev/kmsg
         (call .kmsg.readwrite_nodedev_chr_files (subj))
 
+        ;; read urandom
+        (call .random.read_nodedev_chr_files (subj))
+
         ;; permission to access device nodes
         (call .android_mbim.readwrite_nodedev_chr_files (subj))
         (call .smdcntl.readwrite_nodedev_chr_files (subj))

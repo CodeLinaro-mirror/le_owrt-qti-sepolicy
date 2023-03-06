@@ -79,7 +79,7 @@
     (call .netifd.execute_miscfile_files (subj))
     (call .netifd.manage_miscfile_files (subj))
     (call .uci.subj_type_transition (subj))
-    ;;(call .ifup.subj_type_transition (subj))
+    (call .ifup.subj_type_transition (subj))
     (call .ubus.subj_type_transition (subj))
     (call .rcnetwork.subj_type_transition (subj))
     (call .rcfirewall.subj_type_transition (subj))
@@ -103,5 +103,17 @@
     (call .rcdnsmasq.subj_type_transition (subj))
     ;; Need permission to reboot on first vlan creation
     (allow subj .sys.subj (process(signal)))
-
+    (call .uci.search_conffile_dirs (subj))
+    ;; Need permissions on /tmp/data/
+    (call .qcmap_cm.manage_tmpfile_dirs (subj))
+    ;; Need to print on adb shell
+    (call .sys.readwriteinherited_ptydev_chr_files (subj))
+    ;; Need to create unix_dgram_socket
+    (allow subj self create_unix_dgram_socket)
+    (call .nameservice.read_miscfile_files (subj))
+    ;; Need this to indicate IPA on first vlan creation
+    (allow ipacli.subj qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow ipacli.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow ipacli.subj qcmap_cli.subj (fd (use)))
+    (allow ipacli.subj file.conffile (dir (search)))
 )

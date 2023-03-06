@@ -69,4 +69,7 @@
 
     ;; read /etc/group
     (call .nameservice.read_miscfile_files (subj))
+
+   ;; needed to read  /dev/socket/leprop-service
+    (allow subj  leprop.miscfile  (sock_file  (read write)))
 )

@@ -64,4 +64,6 @@
 
     ;; read kernel sysfs
     (call .kernel.search_sysfile_dirs (subj))
+    (allow subj  leprop.miscfile  (sock_file  (read write)))
+
 )

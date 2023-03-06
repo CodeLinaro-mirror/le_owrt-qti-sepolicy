@@ -32,7 +32,17 @@
 
     (call datafile_obj_type_transition_libfile (unconfined.subj_typeattr))
     (call obj_type_transition_libfile (unconfined.subj_typeattr))
+
 )
+(in .file
+    (call .qcfirmware.rootfile_obj_type_transition_miscfile
+          (unconfined.subj_typeattr)))
+
+(in .file
+    (call .persist.rootfile_obj_type_transition_miscfile
+          (unconfined.subj_typeattr)))
+
+
 (block qcfirmware
 
        ;;
@@ -43,11 +53,43 @@
         "/firmware"
         dir
        miscfile_file_context)
+      
+      (filecon
+        "/firmware/.*"
+        any
+        miscfile_file_context)
 
-         (macro obj_type_transition_miscfile ((type ARG1))
-              (call .tmp.fs_obj_type_transition
+
+ (macro rootfile_obj_type_transition_miscfile ((type ARG1))
+              (call .sys.rootfile_obj_type_transition
                     (ARG1 miscfile dir "firmware")))
 
         (call .xattr.associate_filesystems (miscfile))
         (blockinherit file.misc.obj_template)
 )
+
+(block persist
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/persist"
+        dir
+       miscfile_file_context)
+
+      (filecon
+        "/persist/.*"
+        any
+        miscfile_file_context)
+
+    (macro rootfile_obj_type_transition_miscfile ((type ARG1))
+              (call .sys.rootfile_obj_type_transition
+                    (ARG1 miscfile dir "persist")))
+
+
+        (call .xattr.associate_filesystems (miscfile))
+        (blockinherit file.misc.obj_template)
+)
+

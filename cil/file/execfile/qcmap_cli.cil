@@ -146,4 +146,10 @@
     (allow subj .tmpfile.runtimetmpfile (dir (search)))
 
     (allow subj self (process (setfscreate)))
+    ;; Need read search /sys/class/net
+    (call .class.list_sysfile_dirs(subj))
+    (call .class.read_sysfile_lnk_files (subj))
+    ;; Need read search /sys/devices/soc0/platform_subtype_id
+    (call .devices.search_sysfile_dirs(subj))
+    (call .devices.read_sysfile_files (subj))
 )

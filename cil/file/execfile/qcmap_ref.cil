@@ -1,0 +1,165 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .qcmap_ref.subj_type_transition (subj)))
+
+(in .file
+    (call .qcmap_ref.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block qcmap_ref
+    ;;
+    ;;Contexts
+    ;;
+
+    (filecon
+    "/usr/bin/QCMAP_Ref_Daemon"
+    file
+    execfile_file_context)
+
+    (filecon
+    "/tmp/*"
+    file
+    tmpfile_file_context)
+
+    (macro obj_type_transition_execfile ((type ARG1))
+          (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "QCMAP_Ref_Daemon")))
+
+    (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+           (call .tmp.fs_obj_type_transition
+                       (ARG1 tmpfile ARG2 ARG3)))
+
+    ;; Policy
+    (blockinherit .agent.base_template)
+    (blockinherit .tmpfile.obj_template)
+    (blockinherit .dev.tty.obj_template)
+
+    (call obj_type_transition_tmpfile (subj file "*"))
+
+    ;; Need create for qipcrtr_socket, unix_stream_socket
+    (allow subj self create_qipcrtr_socket)
+
+    (call .shell.mapexecute_execfile_files (subj))
+    (call .shell.manage_execfile_files (subj))
+    (allow subj .shell.execfile (file (execute_no_trans)))
+
+    ;; Need gettarr on selinux filesystem
+    (call .selinux.getattr_filesystems (subj))
+
+    ;; Need search on selinux dir
+    (call .selinux.search_conffile_dirs(subj))
+    (call .dev.readwriteinherited_ttydev_chr_files (subj))
+    (call .console.readwriteinherited_ttydev_chr_files (subj))
+    (call .ttyd.readwriteinherited_ptydev_chr_files (subj))
+    (allow subj  ttydev readwriteinherited_chr_file)
+
+    ;; Need to print on adb shell
+    (call .sys.readwriteinherited_ptydev_chr_files (subj))
+
+    ;; Need search for fs dir with tcontext=u:r:fs.sysfile
+    (call .fs.search_sysfile_dirs (subj))
+
+    ;; Need search for tcontext=u:r:sys.fs tclass=dir
+    (call .sys.search_fs_dirs (subj))
+
+    (call .netifd.search_miscfile_dirs (subj))
+    (call .netifd.execute_miscfile_files (subj))
+    (call .netifd.manage_miscfile_files (subj))
+    (call .functions.manage_miscfile_files (subj))
+    (call .functions.search_miscfile_dirs (subj))
+
+    ;; Need manage on /tmp/ipv{4/6}config[0-9]+
+    (call .qcmap_ref.manage_tmpfile_files (subj))
+    ;; Need permissions on /tmp/data/
+    (call .qcmap_cm.manage_tmpfile_dirs (subj))
+    (call .file.search_conffile_dirs (subj))
+    (call .uci.search_conffile_dirs (subj))
+    (call .uci.subj_type_transition (subj))
+    (call .diag-router.connectto_unix_stream_sockets (subj))
+
+    (call .sys.connectto_unix_stream_sockets(subj))
+    (call .ifup.subj_type_transition (subj))
+    (call .ubus.subj_type_transition (subj))
+    (call .rcnetwork.subj_type_transition (subj))
+    (call .rcfirewall.subj_type_transition (subj))
+
+    ;; Needed for the /dev/kmsg write
+    (call .kmsg.readwrite_nodedev_chr_files (subj))
+
+    ;; Need this to indicate IPA on first vlan creation
+    (allow ipacli.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow ipacli.subj qcmap_ref.subj readwriteinherited_fifo_file)
+    (allow ipacli.subj qcmap_ref.subj (fd (use)))
+    (allow ipacli.subj file.conffile (dir (search)))
+    ;; netlink_kobject_uevent_socket
+    (allow subj self create_unix_stream_socket)
+
+    ;; Need read open execute on files in /etc/data/
+    (call .qcmap_cm.search_conffile_dirs (subj))
+    (call .qcmap_cm.execute_conffile_files (subj))
+
+    ;; Need read write on /
+    (allow subj .sys.rootfile (dir(open read)))
+
+    ;; Need remove_name on /tmp/ to remove ipv{4/6}config[0-9]+ files
+    (allow subj tmp.fs (dir(remove_name)))
+
+    ;; Need read open on libubox
+    (call .libubox.search_datafile_dirs (subj))
+    (call .libubox.manage_datafile_files (subj))
+
+    ;; Need this to indicate uci during subject type transition
+    (allow uci.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow uci.subj qcmap_ref.subj readwriteinherited_fifo_file)
+    (allow uci.subj qcmap_ref.subj (fd (use)))
+    (allow uci.subj file.conffile (dir (search)))
+
+    ;; Need this to indicate uci during subject type transition
+    (allow ifup.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow ifup.subj qcmap_ref.subj readwriteinherited_fifo_file)
+    (allow ifup.subj qcmap_ref.subj (fd (use)))
+
+    (allow ubus.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow ubus.subj qcmap_ref.subj readwriteinherited_fifo_file)
+    (allow ubus.subj qcmap_ref.subj (fd (use)))
+
+    ;; Need open write on /etc/firewall.user
+    (call .firewall.manage_conffile_files (subj))
+
+    (allow subj self (capability (net_raw net_admin)))
+
+    (allow subj conntrack.execfile ( file ( getattr)))
+    (call .conntrack.read_execfile_files (subj))
+    (call .conntrack.subj_type_transition (subj))
+    (allow conntrack.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow conntrack.subj qcmap_ref.subj readwriteinherited_fifo_file)
+    (allow conntrack.subj qcmap_ref.subj (fd (use)))
+
+    (call .qcmap_cm.manage_tmpfile_files (subj))
+
+    ;; Need to create unix_dgram_socket
+    (allow subj self create_unix_dgram_socket)
+    (call .nameservice.read_miscfile_files (subj))
+
+    ;; Need permission to reboot on first vlan creation
+    (allow subj .sys.subj (process(signal)))
+
+    ;; Need transition to run dnsmasq restart
+    (call .rcdnsmasq.subj_type_transition (subj))
+
+    ;; Need read, execute on /etc/init.d/network
+    (call .file.search_initscriptfile_dirs (subj))
+
+    (call .qcmap_cm.manage_conffile_dirs (subj))
+
+    (allow subj self create_netlink_route_socket)
+    (allow subj self create_rawip_socket)
+
+    (call .class.search_sysfile_dirs (subj))
+
+    (allow .qcmap_ref.subj .class.sysfile (dir (read open)))
+
+)

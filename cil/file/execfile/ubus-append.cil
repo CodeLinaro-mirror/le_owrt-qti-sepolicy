@@ -15,6 +15,11 @@
 (call .qcmap_cli.manage_tmpfile_files (subj))
 
 (allow subj .wifi.subj (fifo_file (write ioctl)))
+;; Need manage on /tmp/ipv{4/6}config[0-9]+
+(call .qcmap_ref.manage_tmpfile_files (subj))
+(call .qcmap_ref.use_fds (subj))
+(call .qcmap_ref.readwrite_unix_stream_sockets (subj))
+(allow .ubus.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
 )
 
 

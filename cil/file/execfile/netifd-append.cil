@@ -23,4 +23,8 @@
           (allow xtables.subj netifd.subj (fd (use)))
           (allow xtables.subj netifd.subj (netlink_route_socket (read write)))
           (allow xtables.subj netifd.subj (netlink_kobject_uevent_socket (read write)))
+	  ;; Need manage on /tmp/ipv{4/6}config[0-9]+
+	  (call .qcmap_ref.manage_tmpfile_files (subj))
+
+	  (call .qcmap_cm.search_tmpfile_dirs (subj))
 )

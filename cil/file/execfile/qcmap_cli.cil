@@ -19,11 +19,6 @@
     file
     execfile_file_context)
 
-    (filecon
-    "/tmp/*"
-    file
-    tmpfile_file_context)
-
     (macro obj_type_transition_execfile ((type ARG1))
           (call .file.execfile_obj_type_transition
                     (ARG1 execfile file "QCMAP_CLI")))
@@ -165,4 +160,5 @@
     (call .qcmap_cm.search_datafile_dirs (subj))
     (call .qcmap_cm.manage_datafile_files (subj))
 
+    (allow subj .qcmap_ref.tmpfile (file (getattr)))
 )

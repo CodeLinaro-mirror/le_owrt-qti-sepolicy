@@ -26,6 +26,7 @@
       (call .qcmap_cli.use_fds (subj))
       (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
       (allow .hotplugcall.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+
 ;; Need for sdcard
       (call .file.read_conffile_files(subj))
       (allow  .hotplugcall.subj .mnt.miscfile (dir (search mounton getattr write add_name create)))
@@ -51,4 +52,9 @@
       (allow subj mwan3.conffile (file(getattr)))
       (call .mwan3.read_conffile_files (subj))
       (call .mwan3.execute_conffile_files (subj))
+
+;; Need for qcmap_ref
+      (call .qcmap_ref.use_fds (subj))
+      (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
+      (allow .hotplugcall.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
 )

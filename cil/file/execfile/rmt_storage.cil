@@ -29,6 +29,8 @@
        ;; Policy
        ;;
        (blockinherit .agent.base_template)
+       (blockinherit .dev.stor.obj_template)
+
 	   ;; search in config files is needed
 	   ;;which is done on start /Stop  of services
 	   (call .file.search_conffile_dirs (subj))
@@ -69,8 +71,8 @@
 	(call .uio.readwrite_nodedev_chr_files (subj))
 	(allow subj self (capability2 (block_suspend)))
  
-         (call .power.search_sysfile_dirs(subj))
-         (call .devices.search_sysfile_dirs(subj))
-         (call .class.search_sysfile_dirs(subj))
-
+        (call .power.search_sysfile_dirs(subj))
+        (call .devices.search_sysfile_dirs(subj))
+        (call .class.search_sysfile_dirs(subj))
+        (call .mmc.readwrite_stordev_blk_files (subj))
 )

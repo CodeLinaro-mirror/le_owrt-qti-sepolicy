@@ -68,4 +68,7 @@
     (call .wifi.read_runtimetmpfile_files (subj))
     ;; Need read on sysfile phy80211
     (allow subj .devices.sysfile (lnk_file (read)))
+
+    ;; Need to print on adb shell, such as hostapd_cli/wpa_cli
+    (call .sys.readwriteinherited_ptydev_chr_files (subj))
 )

@@ -65,6 +65,7 @@
         (call .openssl.execute_execfile_files (subj))
 
         (allow netmgrd.subj .sys.subj (system (module_request)))
+        (allow netmgrd.subj .xtables.execfile (file (read open execute)))
         (allow subj .devices.sysfile (file (open)))
         (allow netmgrd.subj .ipv6.sysctlfile (file (open ioctl)))
         (allow subj self (process (getcap)))
@@ -72,6 +73,7 @@
         (allow subj .qcmap_cm.conffile (file (read open write)))
         (allow netmgrd.subj .ipv4.sysctlfile (file (open ioctl)))
         (allow subj netmgrd.tmpfile (sock_file (create setattr)))
+        (allow subj self (capability (net_admin net_raw)))
 
         ;; default create_netlink_route_socket does not contain below permissions
         (allow subj netmgrd.subj (netlink_route_socket (nlmsg_write nlmsg_read)))
@@ -95,5 +97,6 @@
         (allow ip.subj netmgrd.subj (unix_stream_socket (read write)))
         (allow ip.subj netmgrd.subj readwriteinherited_fifo_file)
         (allow ip.subj netmgrd.subj (fd (use)))
+        (allow netmgrd.subj .ip.subj (process2 (nnp_transition)))
 )
 

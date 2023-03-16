@@ -3,6 +3,7 @@
 
 (in .file
     (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "wlan0_defer"))
+    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "qcacld32_commands.txt"))
     (call .wifi.obj_type_transition_runtimetmpfile_all (unconfined.subj_typeattr))
 )
 
@@ -11,6 +12,7 @@
     ;; Contexts
     ;;
     (filecon "/tmp/wlan0_defer" file tmpfile_file_context)
+    (filecon "/tmp/qcacld32_commands\.txt" file tmpfile_file_context)
     (filecon "/tmp/run/wifilock" file runtimetmpfile_file_context)
     (filecon "/tmp/run/wlan_mode_info" file runtimetmpfile_file_context)
     (filecon "/tmp/run/wpa_supplicant-wlan[0-9]+\.lock" file runtimetmpfile_file_context)
@@ -80,6 +82,7 @@
     (blockinherit .tmpfile.conf.obj_template)
 
     (call obj_type_transition_tmpfile (subj file "wlan0_defer"))
+    (call obj_type_transition_tmpfile (subj file "qcacld32_commands.txt"))
     (call obj_type_transition_runtimetmpfile_all (subj))
 
     (allow subj .sys.subj (process (signal)))
@@ -98,8 +101,8 @@
     (allow subj .network.miscfile (dir (read search open)))
     (allow subj .network.miscfile (file (getattr read open)))
 
-    ;; Need open on /dev/console
-    (allow subj .console.ttydev (chr_file (open)))
+    ;; Need to print on /dev/console
+    (allow subj .console.ttydev (chr_file (open write)))
 
     ;; Need search getattr on /sys/module/{wlan_firmware_service cnss_plat_ipc_qmi_svc}
     (allow subj .module.sysfile (dir (search getattr)))
@@ -137,4 +140,12 @@
     ;; Need to read template files under /etc/misc/wifi
     (call .wpad.search_miscfile_dirs (subj))
     (call .wpad.read_miscfile_files (subj))
+
+    ;; Need to run command 'date' for logs in qcacld32.sh
+    (allow subj .file.conffile (lnk_file (read)))
+    (call .locale.read_miscfile_files (subj))
+    (call .locale.map_miscfile_files (subj))
+
+    ;; Need to print on adb shell if 'ENABLE_WLAN_SCRIPT_LOG=1'
+    (call .sys.readwriteinherited_ptydev_chr_files (subj))
 )

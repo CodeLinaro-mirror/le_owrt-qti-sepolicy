@@ -132,6 +132,7 @@
     ;; Manage files in /data/vendor/
     (call .qcril.manage_datafile_dirs (subj))
     (call .qcril.manage_datafile_files (subj))
+    (allow subj .qcril.datafile (file (watch watch_reads)))
 
     ;; Read devices sysfile
     (call .devices.search_sysfile_dirs (subj))

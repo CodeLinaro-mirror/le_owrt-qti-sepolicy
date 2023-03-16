@@ -71,4 +71,7 @@
 
     ;; Need to print on adb shell, such as hostapd_cli/wpa_cli
     (call .sys.readwriteinherited_ptydev_chr_files (subj))
+
+    ;; Need to push template files to /etc/misc/wifi/ via adb
+    (call .xattr.associate_filesystems (miscfile))
 )

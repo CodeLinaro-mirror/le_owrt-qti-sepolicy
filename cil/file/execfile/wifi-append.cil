@@ -133,4 +133,8 @@
     ;; Need getattr execute read open on /etc/init.d/hostapd-daemon.init
     (allow subj .rcwpad.initscriptfile (file (getattr execute read open)))
     (call .rcwpad.subj_type_transition (subj))
+
+    ;; Need to read template files under /etc/misc/wifi
+    (call .wpad.search_miscfile_dirs (subj))
+    (call .wpad.read_miscfile_files (subj))
 )

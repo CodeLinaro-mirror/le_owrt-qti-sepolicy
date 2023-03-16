@@ -12,7 +12,8 @@
 (allow .uci.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
 ;; Need manage on /tmp/ipv{4/6}config[0-9]+
 (call .qcmap_cli.manage_tmpfile_files (subj))
-
+(call .mwan3.obj_type_transition_statetmpfile (subj))
+(call .mwan3.manage_statetmpfile_files (subj))
 )
 
 

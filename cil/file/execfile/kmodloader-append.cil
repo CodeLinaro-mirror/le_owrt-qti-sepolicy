@@ -1,14 +1,14 @@
 
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .kmodloader
 
 ;; policy
 
- (allow subj .invalid search_dir)
-(allow subj self (lockdown (all)))
-
+  (allow subj .invalid search_dir)
+  (allow subj self (lockdown (all)))
+  (allow subj .wifi.subj (fd (use)))
 )
 
 

@@ -73,4 +73,6 @@
       (call .ip.read_execfile_files (subj))
       (call .ip.execute_execfile_files (subj))
       (allow subj self create_netlink_route_socket)
+;; mount umount of sdcard need this
+      (allow subj self (capability (sys_admin)))
 )

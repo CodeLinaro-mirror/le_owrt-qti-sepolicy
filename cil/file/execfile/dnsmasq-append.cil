@@ -32,6 +32,8 @@
 (call .qcmap_cm.search_tmpfile_dirs (subj))
 (call .dnsmasq.read_conftmpfile_files (subj))
 (call .dnsmasq.search_conftmpfile_dirs (subj))
+;; Need name connect on tcp socket
+(allow subj .dns.netport (tcp_socket (name_connect)))
 )
 
 

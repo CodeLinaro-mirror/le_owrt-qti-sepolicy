@@ -244,14 +244,9 @@
 
       ;; Need open, iotcl, read, write on /tmp/data/kernel_ver.txt tcontext qcmap_cm.tmpfile
           (call .qcmap_cm.manage_tmpfile_files (subj))
-      ;; Need write permission on netmgr_connect_socket
-      ;; Ownership to label file is with Linux data team
-      ;; TODO : This allow rule has to to be removed once netmgrd.cil gets merged
-          (allow subj tmp.fs (sock_file (write)))
       ;; Need manage on netmgr_connect_socket
-      ;; TODO : Uncomment below lines once netmgrd.cil gets merged
-      ;;  (call .netmgrd.manage_tmpfile_sock_files (subj))
-      ;;  (call .netmgrd.connectto_unix_stream_sockets (subj))
+         (call .netmgrd.manage_tmpfile_sock_files (subj))
+         (call .netmgrd.connectto_unix_stream_sockets (subj))
       ;; Need remove on /tmp/ipv{4/6}config[0-9]+
           (call .qcmap_cli.manage_tmpfile_files (subj))
       ;; Need remove_name on /tmp/ to remove ipv{4/6}config[0-9]+ files

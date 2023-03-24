@@ -3,17 +3,17 @@
 
 (in .rcboot
 
-(block rcboottmp
-
 ;; policy
 
-    (blockinherit .agent.base_template))
-    (allow subj self (capability (dac_override dac_read_search fowner)))
     (allow subj .tmpfile.locktmpfile (dir (setattr)))
+    (allow subj self (capability (dac_override dac_read_search fowner)))
     (call .rcuhttpd.execute_initscriptfile_files (subj))
      (call .kmsg.readwrite_nodedev_chr_files (subj))
      (call .modules.read_procfile_files (subj))
      (call .tmpfile.manage_locktmpfile_files (subj))
      (call .tmpfile.create_logtmpfile_dirs (subj))
+     (allow subj .openssl.execfile (file (getattr)))
 
 )
+
+

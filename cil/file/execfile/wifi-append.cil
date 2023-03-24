@@ -171,4 +171,6 @@
 
     ;; Need to print on adb shell if 'ENABLE_WLAN_SCRIPT_LOG=1'
     (call .sys.readwriteinherited_ptydev_chr_files (subj))
+    ;; Need to print on serial console if 'ENABLE_WLAN_SCRIPT_LOG=1'
+    (call .dev.readwriteinherited_ttydev_chr_files (subj))
 )

@@ -133,6 +133,9 @@
     (allow subj .devices.sysfile (dir (search)))
     (allow subj .devices.sysfile (file (read open)))
 
+    ;; Need read on modules.procfile
+    (call .modules.read_procfile_files (subj))
+
     ;; Need read on /etc/init.d
     (allow subj .file.initscriptfile (dir (read)))
 

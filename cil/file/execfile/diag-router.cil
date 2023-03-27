@@ -74,6 +74,7 @@
 	;;(blockinherit .file.exec.obj_template)
 	(allow subj .kpi_values.sysfile readwrite_file)
 
+	(allow subj .qti.nodedev (chr_file (open read write)))
 )
 
 (block kpi_values

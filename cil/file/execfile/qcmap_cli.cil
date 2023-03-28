@@ -116,4 +116,40 @@
     (allow ipacli.subj qcmap_cli.subj readwriteinherited_fifo_file)
     (allow ipacli.subj qcmap_cli.subj (fd (use)))
     (allow ipacli.subj file.conffile (dir (search)))
+
+    ;; Need read open on /etc/misc/wifi/5g_wireless
+    (allow subj .wpad.miscfile (dir (search)))
+    (allow subj .wpad.miscfile (file (getattr read open)))
+    ;; To execute /usr/sbin/hostapd_cli
+    (call .wpad.subj_type_transition (subj))
+    (allow subj .wpad.execfile (file (getattr execute read open)))
+
+    ;; Need write add_name remove_name on /etc/config
+    (allow subj .uci.conffile (dir (write add_name remove_name)))
+    ;; Need create write open getattr read setattr rename unlink ioctl on /etc/config/5g_wireless
+    (allow subj .uci.conffile (file (create write open getattr read setattr rename unlink ioctl)))
+
+    (call .wifi.subj_type_transition (subj))
+    (call .jshn.subj_type_transition (subj))
+
+    (allow subj .qcmap_cli.tmpfile (file (relabelfrom relabelto)))
+    (allow .qcmap_cli.tmpfile .xattr.fs (filesystem (associate)))
+
+    ;; Need read open on /sys/devices/soc0/platform_subtype_id
+    (allow subj .devices.sysfile (dir (search)))
+    (allow subj .devices.sysfile (file (read open)))
+
+    ;; Need read on /etc/init.d
+    (allow subj .file.initscriptfile (dir (read)))
+
+    ;; Need search on /tmp/run/
+    (allow subj .tmpfile.runtimetmpfile (dir (search)))
+
+    (allow subj self (process (setfscreate)))
+    ;; Need read search /sys/class/net
+    (call .class.list_sysfile_dirs(subj))
+    (call .class.read_sysfile_lnk_files (subj))
+    ;; Need read search /sys/devices/soc0/platform_subtype_id
+    (call .devices.search_sysfile_dirs(subj))
+    (call .devices.read_sysfile_files (subj))
 )

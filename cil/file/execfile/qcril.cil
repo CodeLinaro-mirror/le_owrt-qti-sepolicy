@@ -78,7 +78,9 @@
             (ARG1 datafile dir "qcrilNr_.*.db")))
 
     (macro obj_type_transition_runtimetmpfile ((type ARG1))
-        (call .tmpfile.runtimetmpfile_obj_type_transition
+        (call .tmp.fs_obj_type_transition
+            (ARG1 runtimetmpfile dir "qcrild"))
+        (call .tmp.fs_obj_type_transition
             (ARG1 runtimetmpfile sock_file "rild.*")))
 
     ;;
@@ -130,6 +132,7 @@
     ;; Manage files in /data/vendor/
     (call .qcril.manage_datafile_dirs (subj))
     (call .qcril.manage_datafile_files (subj))
+    (allow subj .qcril.datafile (file (watch watch_reads)))
 
     ;; Read devices sysfile
     (call .devices.search_sysfile_dirs (subj))
@@ -157,4 +160,13 @@
     ;; Rules for /proc/sys/vm
     (call .vmstat.read_procfile_files (subj))
 
+    (call .locale.read_miscfile_files (subj))
+    (call .logd.write_miscfile_sock_files(subj))
+
+    (call .locale.mapexecute_miscfile_files(subj))
+
+    (call .bus.list_sysfile_dirs (subj))
+    (call .locale.manage_miscfile_files (subj))
+    (call .logd.write_miscfile_sock_files(subj))
+    (call .logd.sendto_unix_dgram_sockets (subj))
 )

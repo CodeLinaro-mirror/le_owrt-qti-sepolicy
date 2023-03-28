@@ -1,0 +1,34 @@
+;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .file
+    (call .rcwpad.obj_type_transition_initscriptfile_ext (unconfined.subj_typeattr))
+)
+
+(in .rcwpad
+    ;;
+    ;; Contexts
+    ;;
+    (filecon "/etc/init\.d/hostapd-daemon\.init" file initscriptfile_file_context)
+    (filecon "/etc/init\.d/wpa-supplicant_qcacld\.init" file initscriptfile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+    (macro obj_type_transition_initscriptfile_ext ((type ARG1))
+        (call .file.initscriptfile_obj_type_transition (ARG1 initscriptfile file "hostapd-daemon.init"))
+        (call .file.initscriptfile_obj_type_transition (ARG1 initscriptfile file "wpa-supplicant_qcacld.init"))
+    )
+
+    ;;
+    ;;Policy
+    ;;
+    (allow subj .qcmap_cli.subj (fd (use)))
+    (allow subj .qcmap_cli.subj (fifo_file (read write)))
+    (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow subj .wifi.subj (fd (use)))
+    (allow subj .kmsg.nodedev (chr_file (open write)))
+
+    ;; Need read on /tmp/run/{hostapd-wlanX.* wpa_supplicant-wlanX.*}
+    (call .wifi.read_runtimetmpfile_files (subj))
+)

@@ -54,8 +54,14 @@
 
     (call .net.udp_bind_netnodes (subj))
 
+    ;; Search system directory
+    (call .unknown.search_miscfile_dirs(subj))
+
     ;; Create udp_socket
     (allow subj self create_udp_socket)
+
+    ;; KPI node access
+    (call .kpi_values.manage_sysfile_files (subj))
 
     ;; read urandom
     (call .random.read_nodedev_chr_files (subj))
@@ -64,4 +70,6 @@
 
     ;; read kernel sysfs
     (call .kernel.search_sysfile_dirs (subj))
+    (allow subj  leprop.miscfile  (sock_file  (read write)))
+
 )

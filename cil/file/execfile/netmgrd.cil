@@ -1,0 +1,102 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .netmgrd.subj_type_transition (subj)))
+
+(in .file
+    (call .netmgrd.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block netmgrd
+        (filecon
+        "/usr/bin/netmgrd"
+        file
+        execfile_file_context)
+
+        (filecon
+        "/dev/socket/data/netmgr_connect_socket"
+        socket
+        tmpfile_file_context)
+
+        ;;
+        ;; Macros
+        ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "netmgrd")))
+
+        (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+               (call .tmp.fs_obj_type_transition
+                           (ARG1 tmpfile ARG2 ARG3)))
+
+        ;;
+        ;; Policy
+        ;;
+        (blockinherit .agent.base_template)
+        (blockinherit file.conf.obj_template)
+        (blockinherit .tmpfile.runtime.obj_template)
+        (blockinherit file.data.obj_template)
+        (blockinherit .tmpfile.obj_template)
+
+        (call obj_type_transition_tmpfile (subj sock_file "netmgr_connect_socket"))
+
+        (call .sys.search_sysctlfile_dirs (subj))
+        (call .file.search_conffile_dirs (subj))
+        (call .sys.search_fs_dirs (subj))
+        (call .selinux.search_conffile_dirs (subj))
+        (call .diag-router.connectto_unix_stream_sockets (subj))
+        (call .net.search_sysctlfile_dirs (subj))
+        (call .ipv4.search_sysctlfile_dirs (subj))
+        (call .ipv4.readwrite_sysctlfile_files (subj))
+        (call .ipv4.search_sysctlfile_dirs (subj))
+        (call .ipv6.search_sysctlfile_dirs (subj))
+        (call .ipv6.readwrite_sysctlfile_files (subj))
+        (call .shell.execute_execfile_files (subj))
+        (call .shell.mapexecute_execfile_files(subj))
+        (call .shell.read_execfile_files (subj))
+        (call .fs.search_sysfile_dirs (subj))
+        (call .devices.readwrite_sysfile_files (subj))
+        (call .devices.search_sysfile_dirs (subj))
+        (call .selinux.getattr_filesystems(subj))
+        (call .sys.requestmodule (subj))
+        (call .ip.subj_type_transition (subj))
+        (call .openssl.execute_execfile_files (subj))
+
+        (allow netmgrd.subj .sys.subj (system (module_request)))
+        (allow netmgrd.subj .xtables.execfile (file (read open execute)))
+        (allow subj .devices.sysfile (file (open)))
+        (allow netmgrd.subj .ipv6.sysctlfile (file (open ioctl)))
+        (allow subj self (process (getcap)))
+        (allow subj .qcmap_cm.conffile (dir (search)))
+        (allow subj .qcmap_cm.conffile (file (read open write)))
+        (allow netmgrd.subj .ipv4.sysctlfile (file (open ioctl)))
+        (allow subj netmgrd.tmpfile (sock_file (create setattr)))
+        (allow subj self (capability (net_admin net_raw)))
+
+        ;; default create_netlink_route_socket does not contain below permissions
+        (allow subj netmgrd.subj (netlink_route_socket (nlmsg_write nlmsg_read)))
+
+        (allow subj self create_packet_socket)
+        (allow subj self create_unix_stream_socket)
+        (allow subj self create_qipcrtr_socket)
+        (allow subj self create_netlink_route_socket)
+        (allow subj self create_rawip_socket)
+        (allow subj self create_udp_socket)
+        (allow subj self create_tcp_socket)
+        (allow subj self create_netlink_socket)
+        (allow subj self create_qipcrtr_socket)
+        (allow subj self create_unix_dgram_socket)
+        (allow subj self create_unix_stream_stream_socket)
+        (allow subj self create_netlink_kobject_uevent_socket)
+        (allow subj self create_netlink_netfilter_socket)
+
+        (allow ip.subj netmgrd.subj (netlink_route_socket (read write)))
+        (allow ip.subj netmgrd.subj (netlink_socket (read write)))
+        (allow ip.subj netmgrd.subj (unix_stream_socket (read write)))
+        (allow ip.subj netmgrd.subj readwriteinherited_fifo_file)
+        (allow ip.subj netmgrd.subj (fd (use)))
+        (allow netmgrd.subj .ip.subj (process2 (nnp_transition)))
+)
+

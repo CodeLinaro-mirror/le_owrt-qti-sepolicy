@@ -1,0 +1,280 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc.All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .qwesd.subj_type_transition (subj)))
+
+(in .file
+    (call .qwesd.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .qwesd.obj_type_transition_conffile (unconfined.subj_typeattr))
+    (call .qwesd.obj_type_transition_datafile (unconfined.subj_typeattr))
+    (call .qwesd_mink_socket.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+
+(block qwesd_mink_socket
+
+        ;;
+        ;;Contexts
+        ;;
+        (filecon
+        "/dev/socket/qwes"
+        dir
+        nodedev_file_context)
+
+        (filecon
+        "/dev/socket/qwes/qwes_ipc"
+        socket
+        nodedev_file_context)
+
+
+        (macro obj_type_transition_nodedev ((type ARG1))
+          (call .tmp.fs_obj_type_transition
+                (ARG1 nodedev dir "qwes"))
+          (call .tmp.fs_obj_type_transition
+                (ARG1 nodedev socket "qwes_ipc")))
+
+        (macro manage_qwes_ipc_socket_files ((type ARG1))
+          (call manage_nodedev_dirs (ARG1))
+          (call manage_nodedev_sock_files (ARG1)))
+
+
+       (blockinherit .dev.node.obj_template)
+)
+
+(block qwesd
+        ;;
+        ;;Contexts
+        ;;
+        (filecon
+        "/usr/bin/qwesd"
+        file
+        execfile_file_context)
+
+        (filecon
+        "/etc/qwesd.rc"
+        file
+        conffile_file_context)
+
+        (filecon
+        "/etc/sec_channel.rc"
+        file
+        conffile_file_context)
+
+        (filecon
+        "/data/qwes"
+        dir
+        datafile_file_context)
+
+        (filecon
+        "/data/qwes/token_cert"
+        file
+        datafile_file_context)
+
+        (filecon
+        "/data/qwes/qwesd.conf"
+        file
+        datafile_file_context)
+
+        (filecon
+        "/data/qwes/licenses"
+        dir
+        datafile_file_context)
+
+        (filecon
+        "/data/qwes/licenses/.*"
+        any
+        datafile_file_context)
+
+        ;; Macros
+        ;;
+
+
+        (macro obj_type_transition_execfile ((type ARG1))
+               (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "qwesd")))
+
+        (macro obj_type_transition_conffile ((type ARG1))
+              (call .file.conffile_obj_type_transition
+                    (ARG1 conffile file "qwesd.rc"))
+              (call .file.conffile_obj_type_transition
+                    (ARG1 conffile file "sec_channel.rc")))
+
+        (macro obj_type_transition_datafile ((type ARG1))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile dir "data"))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile dir "qwes"))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile dir "licenses"))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile file "token_cert"))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile file "qwesd.conf")))
+
+        ;; Policy
+           (blockinherit .agent.base_template)
+           (blockinherit file.conf.obj_template)
+           (blockinherit .tmpfile.runtime.obj_template)
+           (blockinherit file.data.obj_template)
+        ;; (blockinherit .subj.subj_all_macro_template)
+           (blockinherit .tmpfile.obj_template)
+
+        ;; qwes mink sockets inside /dev/socket/qwes
+                (call .qwesd_mink_socket.manage_qwes_ipc_socket_files (subj))
+
+        ;; Need creat for qipcrtr_socket, unix_stream_socket
+           (allow subj self create_qipcrtr_socket)
+           (allow subj self create_unix_stream_stream_socket)
+
+        ;; Need search on config files is needed - which is done on start /Stop  of services
+          (call .qwesd.search_conffile_dirs (subj))
+        ;; Need for search on etc dir
+          (call .file.search_conffile_dirs (subj))
+
+        ;; Need for /dev/logd or logging
+        ;; this will add write permission also
+           (call .logd.unix_dgram_send(subj))
+
+        ;; Need search on proc dir
+           (call .sys.search_sysctlfile_dirs (subj))
+
+        ;; (call .file.read_execfile_lnk_files (subj))
+
+        ;; Needed for the /dev/kmsg write
+           (call .kmsg.readwrite_nodedev_chr_files (subj))
+
+        ;; Needed for /dev/socket/qwes_ipc
+           (allow subj self (unix_stream_socket (sendto)))
+
+        ;; Need for busybox read, open, execute
+           (call .shell.execute_execfile_files (subj))
+
+
+        ;; Need for connecto of unix_stream_socket
+           (call .sys.connectto_unix_stream_sockets(subj))
+
+        ;; Need search for fs dir with tcontext=u:r:fs.sysfile
+           (call .fs.search_sysfile_dirs (subj))
+        ;; Need search for tcontext=u:r:sys.fs tclass=dir
+           (call .sys.search_fs_dirs (subj))
+        ;; Need search on selinux dir
+           (call .selinux.search_conffile_dirs(subj))
+        ;; Need gettarr on selinux filesystem
+           (call .selinux.getattr_filesystems(subj))
+
+        ;; Need create, write, open, read on runtimetmpfile_files
+           (call .qwesd.create_runtimetmpfile_files (subj))
+           (call .qwesd.write_runtimetmpfile_files (subj))
+           (call .qwesd.read_runtimetmpfile_files (subj))
+
+        ;; Need unlink for file tcontext qcmap_cm.conffile
+           (allow subj .qwesd.conffile (file (unlink)))
+
+        ;; Need unlink for file tcontext qcmap_cm.conffile
+           (allow subj .qwesd.runtimetmpfile (file (unlink)))
+
+           (allow subj self create_unix_dgram_socket)
+           (call .qwesd.write_unix_dgram_sockets(subj))
+
+        ;; CHECK IF NEEDED Need sento on unix_dgram_socket
+           (allow subj self (unix_dgram_socket (sendto)))
+
+        ;; Need read, write on /dev/socket/data dir
+           (call .qwesd.readwriteinherited_runtimetmpfile_dirs (subj))
+
+           (allow subj .smcinvoke.nodedev(chr_file(read write open ioctl)))
+           (allow subj self (dir (getattr)))
+           (call .qwesd.manage_datafile_dirs (subj))
+           (call .qwesd.manage_datafile_files (subj))
+           (allow subj .tmp.fs(dir(search)))
+           (allow subj .dma_heap.nodedev(dir(search)))
+           (allow subj .dma_heap.nodedev(chr_file(read open ioctl)))
+           (call .qwesd.create_tmpfile_sock_files (subj))
+           (call .qwesd.manage_tmpfile_sock_files (subj))
+
+        ;; Need create, read, write on name=" " file
+           (call .qwesd.create_conffile_files(subj))
+           (call .qwesd.readwrite_conffile_files (subj))
+           (call .qwesd.manage_conffile_files (subj))
+
+        ;; chown is required for license file permisions
+           (allow subj self (capability(chown fsetid )))
+           (allow subj self (process (signal signull)))
+
+           (allow subj self (fifo_file (open read write append ioctl lock)))
+
+
+
+        ;; Need to check qcfirmware changes merged
+           (allow subj .qcfirmware.miscfile(file(getattr read open)))
+           (allow subj .qcfirmware.miscfile(dir(search)))
+
+           (call .sys.sendto_unix_dgram_sockets (subj))
+)
+
+;;Policies for license store
+
+(in .sys
+        (call .qwes_license_store.subj_type_transition (subj)))
+
+(block qwes_license_store
+
+        ;; Contexts
+        ;;
+
+        (filecon
+                "/etc/init.d/qwes_license_store"
+                file
+                execfile_file_context)
+        ;;(filecon
+        ;;        "/persist/data"
+        ;;        dir
+        ;;        runtimetmpfile_file_context)
+        ;;(filecon
+        ;;        "/persist/data/pfm"
+        ;;        dir
+        ;;        runtimetmpfile_file_context)
+        ;;(filecon
+        ;;        "/persist/data/pfm/licenses"
+        ;;        dir
+        ;;        runtimetmpfile_file_context)
+
+        ;;
+        ;; Macros
+        ;;
+
+        (macro obj_type_transition_execfile ((type ARG1))
+                (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "qwes_license_store")))
+        ;;(macro obj_type_transition_runtimetmpfile ((type ARG1))
+        ;;      (call .tmpfile.runtimetmpfile_obj_type_transition
+        ;;           (ARG1 runtimetmpfile dir "data"))
+        ;;      (call .tmpfile.runtimetmpfile_obj_type_transition
+        ;;           (ARG1 runtimetmpfile dir "pfm"))
+        ;;      (call .tmpfile.runtimetmpfile_obj_type_transition
+        ;;            (ARG1 runtimetmpfile dir "licenses")))
+
+
+        ;;
+        ;; Policy
+        ;;
+
+        ;;(blockinherit .file.exec.obj_template)
+        (blockinherit .agent.base_template)
+
+        ;; search in config files is needed
+        ;; which is done on start /Stop  of services
+           (call .file.search_conffile_dirs (subj))
+
+           (call .nameservice.read_miscfile_files (subj))
+
+        ;; (call .qseecomd.manage_datafile_dirs (subj))
+
+           (call .qwesd.manage_datafile_dirs (subj))
+
+           (allow subj self readwrite_fifo_file)
+
+           (call .kmsg.readwrite_nodedev_chr_files (subj))
+
+           (allow subj self(capability(fowner chown)))
+
+)

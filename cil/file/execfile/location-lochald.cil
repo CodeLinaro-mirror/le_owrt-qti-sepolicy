@@ -36,9 +36,12 @@
     ;; Set supplementary groups
     (allow subj self (capability (setgid)))
 
+    (allow subj self (unix_dgram_socket (sendto)))
     ;; communicate with location daemons via unix dgram sockets
     (call .loc_xtra_daemon.sendto_unix_dgram_sockets (subj))
     (call .loc_edgnss_daemon.sendto_unix_dgram_sockets (subj))
+    (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
+    (call .loc_launcher.sendto_unix_dgram_sockets (subj))
 
     ;; communicate with location test apps which runs in sys.subj ctxt
     (call .sys.sendto_unix_dgram_sockets (subj))
@@ -60,6 +63,12 @@
 
     ;; read /etc/group
     (call .nameservice.read_miscfile_files (subj))
+
+    ;; Search system directory
+    (call .unknown.search_miscfile_dirs(subj))
+
+    ;; manage loc_socket nodedev link files
+    (call .loc_socket.manage_nodedev_lnk_files (subj))
 
     ;; Needed to for diagrebootapp to connect to diag-router
     (call .diag-router.unix_stream_connect(subj))

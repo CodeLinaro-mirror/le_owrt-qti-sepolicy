@@ -48,5 +48,9 @@
     ;; connect to loc_launcher target stream
     (call .loc_launcher.connectto_unix_stream_sockets (subj))
 
+    (allow subj self (unix_dgram_socket (sendto)))
+    ;; communicate with location daemons via unix dgram sockets
+    (call .loc_launcher.sendto_unix_dgram_sockets (subj))
+
     (call .loc_launcher.use_fds (subj))
 )

@@ -158,4 +158,11 @@
     (allow conntrack.subj qcmap_cli.subj (unix_stream_socket (read write)))
     (allow conntrack.subj qcmap_cli.subj readwriteinherited_fifo_file)
     (allow conntrack.subj qcmap_cli.subj (fd (use)))
+
+    ;; Need write for /dev/kmsg
+    (call .kmsg.readwrite_nodedev_chr_files (subj))
+    ;; Need search management for /data/data_qcmap/
+    (call .qcmap_cm.search_datafile_dirs (subj))
+    (call .qcmap_cm.manage_datafile_files (subj))
+
 )

@@ -19,4 +19,8 @@
           (call .file.search_initscriptfile_dirs (subj))
           ;; Need read , open, append on /etc/iproute2/rt_tables
           (call .iproute2.readwrite_conffile_files (subj))
+          (call .sys.readwriteinherited_fifo_files (subj))
+          (allow xtables.subj netifd.subj (fd (use)))
+          (allow xtables.subj netifd.subj (netlink_route_socket (read write)))
+          (allow xtables.subj netifd.subj (netlink_kobject_uevent_socket (read write)))
 )

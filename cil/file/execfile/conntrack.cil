@@ -1,0 +1,40 @@
+
+;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .sys
+    (call .conntrack.subj_type_transition (subj)))
+
+(in .file
+    (call .conntrack.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block conntrack
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/usr/bin/conntrack"
+        file
+        execfile_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "conntrack")))
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .agent.base_template)
+	   (allow subj self create_netlink_netfilter_socket)
+	   (call .file.search_conffile_dirs (subj))
+	   (allow subj self readwrite_netlink_netfilter_socket)
+           (allow subj self (capability (net_admin)))
+	   (call .qcmap_cm.read_tmpfile_files (subj))
+       )

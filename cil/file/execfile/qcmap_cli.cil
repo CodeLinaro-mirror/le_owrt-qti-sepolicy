@@ -116,7 +116,6 @@
     (allow ipacli.subj qcmap_cli.subj readwriteinherited_fifo_file)
     (allow ipacli.subj qcmap_cli.subj (fd (use)))
     (allow ipacli.subj file.conffile (dir (search)))
-
     ;; Need read open on /etc/misc/wifi/5g_wireless
     (allow subj .wpad.miscfile (dir (search)))
     (allow subj .wpad.miscfile (file (getattr read open)))
@@ -152,4 +151,11 @@
     ;; Need read search /sys/devices/soc0/platform_subtype_id
     (call .devices.search_sysfile_dirs(subj))
     (call .devices.read_sysfile_files (subj))
+    (call .qcmap_cm.manage_tmpfile_files (subj))
+    (allow subj conntrack.execfile ( file ( getattr)))
+    (call .conntrack.read_execfile_files (subj))
+    (call .conntrack.subj_type_transition (subj))
+    (allow conntrack.subj qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow conntrack.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow conntrack.subj qcmap_cli.subj (fd (use)))
 )

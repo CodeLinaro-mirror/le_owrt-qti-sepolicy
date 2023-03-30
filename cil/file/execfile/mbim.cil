@@ -29,15 +29,15 @@
          any
          datafile_file_context)
 
-	(filecon
-	 "/tmp/run/mbim"
-	 dir
-	 runtimetmpfile_file_context)
+        (filecon
+         "/tmp/run/mbim"
+         dir
+         runtimetmpfile_file_context)
 
-	(filecon
-	 "/tmp/run/mbim/.*"
-	 any
-	 runtimetmpfile_file_context)
+        (filecon
+         "/tmp/run/mbim/.*"
+         any
+         runtimetmpfile_file_context)
 
         ;;
         ;; Macros
@@ -51,8 +51,8 @@
                 (ARG1 datafile dir "mbimd")))
 
         (macro obj_type_transition_runtimetmpfile ((type ARG1))
-	    (call .tmpfile.runtimetmpfile_obj_type_transition
-	        (ARG1 runtimetmpfile dir "mbim")))
+            (call .tmpfile.runtimetmpfile_obj_type_transition
+                (ARG1 runtimetmpfile dir "mbim")))
 
         ;;
         ;; Policy
@@ -60,7 +60,13 @@
         (blockinherit .agent.base_template)
         (blockinherit .file.data.obj_template)
         (blockinherit .file.data.obj_macro_template)
-	(blockinherit .tmpfile.runtime.obj_template)
+        (blockinherit .tmpfile.runtime.obj_template)
+
+        ;; permission to create netlink_kobject_uevent_socket
+        (allow subj self create_netlink_kobject_uevent_socket)
+
+        ;; permission to read from netlink_kobject_uevent_socket
+        (call .devices.read_sysfile_files (subj))
 
         ;; permission for unix_stream_socket, qipcrtr_socket
         (allow subj self create_unix_stream_socket)
@@ -74,14 +80,36 @@
         (call .mbim.manage_datafile_dirs (subj))
         (call .mbim.manage_datafile_files (subj))
 
-	;; permission to manage runtime files under /tmp/run/mbim
-	(call .mbim.manage_runtimetmpfile (subj))
+        ;; permission to manage runtime files under /tmp/run/mbim
+        (call .mbim.manage_runtimetmpfile (subj))
+
+        ;; permission to search tmpfile.runtimetmpfile
+        (call .tmpfile.search_runtimetmpfile_dirs (subj))
 
         ;; permission to read/write /dev/kmsg
         (call .kmsg.readwrite_nodedev_chr_files (subj))
 
-        ;; read urandom
+        ;; Need search for tcontext=u:r:sys.fs tclass=dir
+        (call .sys.search_fs_dirs (subj))
+
+        ;; Permissions to search kernel sys files
+        (call .kernel.search_sysfile_dirs (subj))
+
+        ;; Permissions for /sys/power/wake_lock /sys/power/wake_unlock
+        (call .power.readwrite_sysfile_files (subj))
+        (call .power.search_sysfile_dirs (subj))
+
+        ;; search  /dev tree
+         (call .devices.search_sysfile_dirs (subj))
+
+        ;; permission to read from urandom
         (call .random.read_nodedev_chr_files (subj))
+        (allow subj .kpi_values.sysfile readwrite_file)
+        (allow subj self (capability2 (block_suspend)))
+
+        ;; Permissions to access fimware directory and Ver_Info.txt
+        (allow subj .qcfirmware.miscfile (dir (search)))
+        (allow subj .qcfirmware.miscfile (file (getattr read open)))
 
         ;; permission to access device nodes
         (call .android_mbim.readwrite_nodedev_chr_files (subj))

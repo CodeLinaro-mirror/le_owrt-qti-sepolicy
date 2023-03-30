@@ -29,6 +29,10 @@
     (allow subj .wifi.subj (fd (use)))
     (allow subj .kmsg.nodedev (chr_file (open write)))
 
-    ;; Need read on /tmp/run/{hostapd-wlanX.* wpa_supplicant-wlanX.*}
-    (call .wifi.read_runtimetmpfile_files (subj))
+    ;; Need read on /data/vendor/wifi/{hostapd-wlanX.* wpa_supplicant-wlanX.*}
+    (call .wifi.read_datafile_files (subj))
+    (call .wifi.search_datafile_dirs (subj))
+
+    ;; Need search on /sys/class/net
+    (call .class.search_sysfile_dirs (subj))
 )

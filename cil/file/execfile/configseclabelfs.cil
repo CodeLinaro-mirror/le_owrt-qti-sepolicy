@@ -1,0 +1,26 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(block config
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (genfscon
+        "configfs"
+        "/"
+        fs_context)
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .fs.obj_file_macro_template)
+       (blockinherit .fs.seclabel.obj_template)
+
+       (allow fs self (filesystem (associate)))
+)
+

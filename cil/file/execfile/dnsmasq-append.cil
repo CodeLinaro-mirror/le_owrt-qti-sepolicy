@@ -4,6 +4,19 @@
 
 (in .dnsmasq
 
+  ;; Need this to label dnsmasq.conf.* file.
+  ;; This is temporary workaround to label file when /tmp/etc is coming in tmp.fs(default context)
+  ;; When /tmp/etc dir comes with unique context(proper context)
+  ;; relabelling doesn't takes place as it is not needed.
+  (filecon
+     "/tmp/etc/*"
+     file
+     conftmpfile_file_context)
+
+  (macro obj_type_transition_conftmpfile_2 ((type ARG1)(class ARG2)(name ARG3))
+      (call .tmp.fs_obj_type_transition
+         (ARG1 conftmpfile ARG2 ARG3)))
+
 ;; policy
 
 (allow subj self (capability (dac_read_search)))
@@ -17,6 +30,10 @@
 ;; Need open read append getattr on /tmp/data/dhcp.leases
 (call .qcmap_cm.manage_tmpfile_files (subj))
 (call .qcmap_cm.search_tmpfile_dirs (subj))
+(call .dnsmasq.read_conftmpfile_files (subj))
+(call .dnsmasq.search_conftmpfile_dirs (subj))
+;; Need name connect on tcp socket
+(allow subj .dns.netport (tcp_socket (name_connect)))
 )
 
 

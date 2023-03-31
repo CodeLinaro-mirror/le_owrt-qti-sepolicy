@@ -1,39 +1,35 @@
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
 (in .dev
-    (call .ipa.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+    (call .snd.obj_type_transition_nodedev (unconfined.subj_typeattr)))
 
-(block ipa
+(block snd
 
        ;;
        ;; Contexts
        ;;
 
        (filecon
-        "/dev/ipa"
+        "/dev/snd"
+        dir
+        nodedev_file_context)
+
+
+       (filecon
+        "/dev/snd/.*"
         char
         nodedev_file_context)
 
        (filecon
-        "/dev/wwan_ioctl"
+        "/dev/aud_pasthru_modem"
         char
         nodedev_file_context)
 
        (filecon
-        "/dev/ipaNatTable"
-        char
-        nodedev_file_context)
-
-       (filecon
-        "/dev/ipa_adpl"
-        char
-        nodedev_file_context)
-
-       (filecon
-        "/dev/ipaIpv6CTTable"
+        "/dev/msm_audio_ion"
         char
         nodedev_file_context)
 
@@ -42,16 +38,17 @@
        ;;
        (macro obj_type_transition_nodedev ((type ARG1))
               (call .tmp.fs_obj_type_transition
-                    (ARG1 nodedev chr_file "ipa"))
+                    (ARG1 nodedev dir  "snd"))
               (call .tmp.fs_obj_type_transition
-                    (ARG1 nodedev chr_file "wwan_ioctl"))
+                    (ARG1 nodedev chr_file "pcmC0D3p"))
               (call .tmp.fs_obj_type_transition
-                    (ARG1 nodedev chr_file "ipaNatTable"))
+                    (ARG1 nodedev chr_file "pcmC0D4p"))
               (call .tmp.fs_obj_type_transition
-                    (ARG1 nodedev chr_file "ipa_adpl"))
+                    (ARG1 nodedev chr_file "aud_pasthru_modem"))
               (call .tmp.fs_obj_type_transition
-                    (ARG1 nodedev chr_file "ipaIpv6CTTable")))
-
+                    (ARG1 nodedev chr_file "msm_audio_ion"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "controlC0")))
        ;;
        ;; Policy
        ;;

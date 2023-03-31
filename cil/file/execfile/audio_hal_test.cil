@@ -1,4 +1,4 @@
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -70,6 +70,75 @@
 
     (call .shell.execute_execfile_files (subj))
 
+    ;;search sysfs files
+    (call .sys.search_fs_dirs (subj))
+
+    ;;getattr selinuxfs files
+    (call .selinux.getattr_filesystems (subj))
+
+    ;;search selinux conffile
+    (call .selinux.search_conffile_dirs (subj))
+
+    ;;search power sysfile
+    (call .power.search_sysfile_dirs (subj))
+
+    ;;write/open power sysfile
+    (allow subj power.sysfile ( file ( write open)))
+
+    ;;self block_suspend
+    (allow subj self (capability2(block_suspend)))
+
+    ;;read conffile
+    (call .file.read_conffile_files (subj))
+
+     ;;search snd dev node dir
+    (call .snd.search_nodedev_dirs (subj))
+
+     ;;read proc fs files
+    (call .proc.read_fs_files (subj))
+
+     ;;read/write/map snd chr files
+    (call .snd.readwrite_nodedev_chr_files (subj))
+    (call .snd.mapexecute_nodedev_chr_files (subj))
+
+    ;;read conffile dir
+    (call .file.readwrite_conffile_dirs (subj))
+
+    ;;read dma_heap node chr files
+    (call .dma_heap.read_nodedev_chr_files (subj))
+
+     ;;read dma_heap node dir
+    (call .dma_heap.search_nodedev_dirs (subj))
+
+     ;; data files read/write/create
+    (call .file.read_datafile_lnk_files (subj))
+    (call .file.write_datafile_dirs (subj))
+    (call .file.create_datafile_files (subj))
+    (call .file.write_datafile_files(subj))
+
+     ;;search/write kernel sysfile dir
+    (call .kernel.search_sysfile_dirs (subj))
+    (call .kernel.write_sysfile (subj))
+
+    ;;connect to leprop socket
+    (call .leprop.connectto_unix_stream_sockets (subj))
+
+     ;;write leprop sock files
+    (call .leprop.write_miscfile_sock_files (subj))
+
+
+     ;;read/write sys chr files
+    (call .sys.readwriteinherited_ptydev_chr_files (subj))
+
+    ;;read/open proc fs dir
+    (allow subj proc.fs (dir (read open)))
+
+    ;;connectto diag-router unix_stream_socket
+    (call .diag-router.connectto_unix_stream_sockets (subj))
+
+    ;;read/open/search debug fs dir
+    (allow subj debug.fs (dir (read open search)))
+
 )
 
 (block hal_play_test
@@ -126,5 +195,82 @@
     ;;  (call .fs.search_tracefile_dirs (subj))
 
     (call .shell.execute_execfile_files (subj))
+    ;;search sysfs files
+    (call .sys.search_fs_dirs (subj))
 
+    ;;getattr selinuxfs files
+    (call .selinux.getattr_filesystems (subj))
+
+    ;;search selinux conffile
+    (call .selinux.search_conffile_dirs (subj))
+
+    ;;search power sysfile
+    (call .power.search_sysfile_dirs (subj))
+
+    ;;write power sysfile
+    (call .power.write_sysfile_files (subj))
+
+    ;;write/open power sysfile
+    (allow subj power.sysfile ( file ( write open)))
+
+    ;;self block_suspend
+    (allow subj self (capability2(block_suspend)))
+
+    ;;read conffile
+    (call .file.read_conffile_files (subj))
+
+    ;;read/open procfs
+    (allow subj proc.fs (dir (read open)))
+
+    ;;read/open/search debugfs
+    (allow subj debug.fs (dir (read open search)))
+
+    ;;connectto diag-router unix_stream_socket
+    (call .diag-router.connectto_unix_stream_sockets (subj))
+
+    ;;open nodedev
+    (allow subj dma_heap.nodedev (chr_file (open)))
+
+    ;; manage tmp/proc file
+    (allow subj proc.fs (file (open read)))
+
+    (call .file.readwrite_conffile_dirs(subj))
+
+    ;; search/read dma_heap nodedev dir/files
+    (call .dma_heap.search_nodedev_dirs(subj))
+    (call .dma_heap.read_nodedev_chr_files(subj))
+
+    ;;open sysfile
+    (allow subj power.sysfile (file (open)))
+
+    ;;open conffile
+    (allow subj file.conffile (file (open)))
+
+    ;;connect/search/read-write socket/dir/file
+    (call .sys.search_fs_dirs(subj))
+    (call .sys.readwriteinherited_ptydev_chr_files (subj))
+
+    ;;search/getattr selinux file/dir
+    (call .selinux.search_conffile_dirs(subj))
+    (call .selinux.getattr_filesystems(subj))
+
+     ;;read datafiles
+    (call .file.read_datafile_lnk_files(subj))
+    (call .file.read_datafile_files(subj))
+
+    ;;open datafile
+    (allow subj file.datafile (file (open)))
+
+    ;; search/read/write/map pcm dev nodes
+    (call .snd.search_nodedev_dirs (subj))
+    (call .snd.readwrite_nodedev_chr_files(subj))
+    (call .snd.mapexecute_nodedev_chr_files (subj))
+
+     ;;search/write kernel dir/files
+    (call .kernel.search_sysfile_dirs(subj))
+    (call .kernel.write_sysfile_files(subj))
+
+    ;; connect/write leprop socket/sock files
+    (call .leprop.connectto_unix_stream_sockets (subj))
+    (call .leprop.write_miscfile_sock_files(subj))
 )

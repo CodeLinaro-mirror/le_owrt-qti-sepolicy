@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -262,4 +262,7 @@
           (call .ip.subj_type_transition (subj))
       ;; Need read on dhcp.leases
           (call .qcmap_cm.read_tmpfile_files (subj))
+
+      ;; To kill hostapd/wpa_supplicant
+      (allow subj .proc.fs (dir (read open)))
 )

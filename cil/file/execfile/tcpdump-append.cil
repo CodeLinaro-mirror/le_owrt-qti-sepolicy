@@ -1,0 +1,13 @@
+;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+
+(in .tcpdump
+
+    (call .class.read_sysfile_lnk_files (subj))
+    ;; Need create write to collect dumps in /tmp/data dir
+    (call .qcmap_cm.write_tmpfile_dirs (subj))
+    (call .qcmap_cm.search_tmpfile_dirs (subj))
+    (call .qcmap_cm.create_tmpfile_files (subj))
+    (call .qcmap_cm.write_tmpfile_files (subj))
+)

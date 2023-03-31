@@ -25,4 +25,11 @@
          (call .qcmap_cm.obj_type_transition_tmpfile (subj dir "data"))
          (call .qcmap_cm.manage_tmpfile_dirs (subj))
          (call .qcmap_cm.manage_tmpfile_files (subj))
+
+         ;; Need this to label dnsmasq.conf.* file.
+         ;; This is temporary workaround to label file when /tmp/etc is coming in tmp.fs(default context)
+         ;; When /tmp/etc dir comes with unique context(proper context)
+         ;; relabelling doesn't takes place as it is not needed
+         (call .dnsmasq.obj_type_transition_conftmpfile_2 (subj file "*"))
+         (call .dnsmasq.manage_conftmpfile_files (subj))
 )

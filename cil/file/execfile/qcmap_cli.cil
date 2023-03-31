@@ -161,4 +161,8 @@
     (call .qcmap_cm.manage_datafile_files (subj))
 
     (allow subj .qcmap_ref.tmpfile (file (getattr)))
+    (call .sys.search_sysctlfile_dirs (subj))
+    (call .net.search_sysctlfile_dirs (subj))
+    (call .netfilter.search_sysctlfile_dirs (subj))
+    (call .netfilter.readwrite_sysctlfile_files (subj))
 )

@@ -4,6 +4,7 @@
 (in .file
     (call .wifi.obj_type_transition_execfile_ext (unconfined.subj_typeattr))
     (call .wifi.obj_type_transition_datafile (unconfined.subj_typeattr))
+    (call .wifi.obj_type_transition_nodedev (unconfined.subj_typeattr))
 )
 
 (in .wifi
@@ -13,6 +14,7 @@
     (filecon "/usr/sbin/wlan_services" file execfile_file_context)
     (filecon "/data/vendor/wifi" dir datafile_file_context)
     (filecon "/data/vendor/wifi/.*" any datafile_file_context)
+    (filecon "/dev/wlan" char nodedev_file_context)
 
     ;;
     ;; Macros
@@ -24,14 +26,18 @@
         (call .file.datafile_obj_type_transition
             (ARG1 datafile dir "wifi")))
 
+    (macro obj_type_transition_nodedev ((type ARG1))
+        (call .tmp.fs_obj_type_transition (ARG1 nodedev chr_file "wlan")))
+
     ;;
     ;; Policy
     ;;
     (blockinherit .file.data.obj_template)
+    (blockinherit .dev.node.obj_template)
 
     (call obj_type_transition_execfile_ext (subj))
+    (call obj_type_transition_nodedev (subj))
 
-    (allow subj .sys.subj (process (signal)))
     (allow subj .sys.subj (fifo_file (read write ioctl)))
     (allow subj .sys.subj (unix_stream_socket (read write)))
     (allow subj .qcmap_cli.subj (fd (use)))
@@ -98,4 +104,7 @@
     (call .uci.subj_type_transition (subj))
     (call .jshn.subj_type_transition (subj))
     (call .ubus.subj_type_transition (subj))
+
+    ;; Need write on /dev/wlan
+    (call .wifi.write_nodedev_chr_files (subj))
 )

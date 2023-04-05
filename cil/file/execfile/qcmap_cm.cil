@@ -264,4 +264,7 @@
       (call .ipv6.read_sysctlfile_files (subj))
       ;; Need remove on /tmp/ipv{4/6}config[0-9]+
        (call .qcmap_ref.manage_tmpfile_files (subj))
+      ;; Need for conntrack
+      (call .conntrack.read_execfile_files (subj))
+      (call .conntrack.execute_execfile_files (subj))
 )

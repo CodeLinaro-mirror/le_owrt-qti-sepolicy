@@ -27,4 +27,11 @@
 	  (call .qcmap_ref.manage_tmpfile_files (subj))
 
 	  (call .qcmap_cm.search_tmpfile_dirs (subj))
+          ;; Need execute, read open on /etc/init.d/odhcpd
+          (call .rcodhcpd.execute_initscriptfile_files (subj))
+          (call .rcodhcpd.read_initscriptfile_files (subj))
+          (call .rccommon.read_conffile_files (subj))
+          ;; Need search, read on /tmp/lock/procd_odhcpd.lock
+          (call .tmpfile.search_locktmpfile_dirs (subj))
+          (call .tmpfile.read_locktmpfile_files (subj))
 )

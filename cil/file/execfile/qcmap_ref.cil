@@ -203,4 +203,11 @@
     (call .kernel.search_sysfile_dirs(subj))
     (call .debug.search_fs_dirs (subj))
     (call .file.execute_initscriptfile_files (subj))
+
+    ;; Need execute for /usr/sbin/hostapd_cli
+    (call .wpad.subj_type_transition (subj))
+    (allow subj .wpad.execfile (file (getattr execute read open)))
+
+    (call .tmpfile.readwrite_runtimetmpfile_dirs (subj))
+
 )

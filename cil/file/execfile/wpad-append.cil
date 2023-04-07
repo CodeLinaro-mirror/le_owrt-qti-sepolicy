@@ -16,6 +16,12 @@
     (filecon "/etc/misc/wifi/.*" any miscfile_file_context)
     (filecon "/etc/misc/wifi" dir miscfile_file_context)
 
+    (filecon "/tmp/hostapd\.txt" file tmpfile_file_context)
+    (filecon "/tmp/wpa_supplicant\.txt" file tmpfile_file_context)
+    (filecon "/var/run/hostapd.*\.pid" file runtimetmpfile_file_context)
+    (filecon "/var/run/wpa_supplicant.*\.pid" file runtimetmpfile_file_context)
+    (filecon "/var/run/wpa_supplicantglobal" socket runtimetmpfile_file_context)
+
     ;;
     ;; Macros
     ;;
@@ -28,12 +34,25 @@
     (macro obj_type_transition_miscfile ((type ARG1) (class ARG2) (name ARG3))
         (call .sys.rootfile_obj_type_transition (ARG1 miscfile ARG2 ARG3)))
 
+    (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+        (call .tmp.fs_obj_type_transition
+            (ARG1 tmpfile ARG2 ARG3)))
+
+    (macro obj_type_transition_runtimetmpfile ((type ARG1)(class ARG2)(name ARG3))
+        (call .tmpfile.runtimetmpfile_obj_type_transition
+            (ARG1 runtimetmpfile ARG2 ARG3)))
+
     ;;
     ;; Policy
     ;;
     (blockinherit .file.misc.obj_template)
     (call obj_type_transition_miscfile (subj dir "wifi"))
     (call obj_type_transition_execfile_ext (subj))
+
+    (call obj_type_transition_tmpfile (subj file "hostapd.txt"))
+    (call obj_type_transition_tmpfile (subj file "wpa_supplicant.txt"))
+    (call obj_type_transition_runtimetmpfile (subj file "*"))
+    (call obj_type_transition_runtimetmpfile (subj sock_file "wpa_supplicantglobal"))
 
     (allow subj .qcmap_cli.subj (fd (use)))
     (allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
@@ -74,4 +93,9 @@
     (call .selinux.getattr_filesystems (subj))
     ;; Need search for fs dir with tcontext=u:r:fs.sysfile
     (call .fs.search_sysfile_dirs (subj))
+
+    (allow subj .unreserved.netport (udp_socket (name_bind)))
+    (allow subj .wpad.runtimetmpfile (file (create read write append open ioctl)))
+    (allow subj .wpad.runtimetmpfile (sock_file (create)))
+    (allow subj .sys.subj (fifo_file (write)))
 )

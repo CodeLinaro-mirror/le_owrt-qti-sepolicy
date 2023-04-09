@@ -26,6 +26,10 @@
       (call .qcmap_cli.use_fds (subj))
       (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
       (allow .hotplugcall.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+      (call .qcmap_cm.addname_tmpfile_dirs (subj))
+      (call .qcmap_cm.create_tmpfile_files (subj))
+      (call .qcmap_cm.manage_tmpfile_files (subj))
+      (call .qcmap_cm.manage_tmpfile_dirs (subj))
 
 ;; Need for sdcard
       (call .file.read_conffile_files(subj))

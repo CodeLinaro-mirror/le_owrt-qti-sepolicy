@@ -33,4 +33,34 @@
 
 
     (call .file.search_conffile_dirs (subj))
+    (call .logd.write_miscfile_sock_files (subj))
+    (call .leprop.write_miscfile_sock_files (subj))
+    (call .logd.sendto_unix_dgram_sockets (subj))
+
+    (call .leprop.connectto_unix_stream_sockets (subj))
+    (call .file.read_conffile_files (subj))
+    (call .sys.search_fs_dirs (subj))
+    (call .kernel.search_sysfile_dirs(subj))
+    (call .diag-router.connectto_unix_stream_sockets (subj))
+    (call .leprop.connectto_unix_stream_sockets (subj))
+
+    (allow subj self create_qipcrtr_socket)
+    (allow subj self create_unix_dgram_socket)
+    (allow subj self create_unix_stream_socket)
+    (allow subj self (unix_stream_socket (connect read write)))
+    (allow subj file.conffile (file (open)))
+    (allow subj proc.fs (dir (read open)))
+    (allow subj debug.fs (dir (read open search)))
+    (allow subj snd.nodedev (chr_file (open ioctl)))
+
+    (call .snd.search_nodedev_dirs (subj))
+    (call .proc.read_fs_files (subj))
+    (call .snd.readwrite_nodedev_chr_files(subj))
+    (call .file.readwrite_conffile_dirs (subj))
+    (call .dma_heap.search_nodedev_dirs(subj))
+    (allow subj self (capability (dac_override dac_read_search)))
+    (call .dma_heap.read_nodedev_chr_files(subj))
+    (allow subj dma_heap.nodedev (chr_file (open ioctl)))
+    (call .file.read_datafile_lnk_files (subj))
+
 )

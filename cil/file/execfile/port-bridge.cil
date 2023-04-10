@@ -1,0 +1,60 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .port-bridge.subj_type_transition (subj)))
+
+(in .file
+    (call .port-bridge.obj_type_transition_execfile (unconfined.subj_typeattr)))
+    (call .port-bridge.obj_type_transition_tmpfile (unconfined.subj_typeattr chr_file "at_mdm0"))
+    (call .port-bridge.obj_type_transition_tmpfile (unconfined.subj_typeattr chr_file "at_usb0"))
+
+(block port-bridge
+        (filecon
+        "/usr/bin/port-bridge"
+        file
+        execfile_file_context)
+
+
+        ;;
+        ;; Macros
+        ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "port-bridge")))
+
+        (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+               (call .tmp.fs_obj_type_transition
+                           (ARG1 tmpfile ARG2 ARG3)))
+
+
+
+        ;;
+        ;; Policy
+        ;;
+        (blockinherit .agent.base_template)
+        (blockinherit file.conf.obj_template)
+        (blockinherit .tmpfile.runtime.obj_template)
+        (blockinherit file.data.obj_template)
+        (blockinherit .tmpfile.obj_template)
+
+        (call obj_type_transition_tmpfile (subj chr_file "at_mdm0"))
+        (call obj_type_transition_tmpfile (subj chr_file "at_usb0"))
+
+        (call .shell.mapexecute_execfile_files(subj))
+        (call .shell.read_execfile_files (subj))
+        (call .fs.search_sysfile_dirs (subj))
+        (call .devices.readwrite_sysfile_files (subj))
+        (call .devices.search_sysfile_dirs (subj))
+        (call .sys.search_fs_dirs (subj))
+        (call .selinux.getattr_filesystems(subj))
+        (call .selinux.search_conffile_dirs (subj))
+
+        (dontaudit subj .shell.execfile (file (execute_no_trans open read execute)))
+        (allow subj file.conffile (dir (search)))
+        (allow subj .qcmap_cm.conffile (dir (search)))
+        (allow subj .qcmap_cm.conffile (file (read open write)))
+        (allow subj port-bridge.tmpfile (chr_file (open read write ioctl)))
+)

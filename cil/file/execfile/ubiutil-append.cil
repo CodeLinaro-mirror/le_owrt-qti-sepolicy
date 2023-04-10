@@ -8,6 +8,7 @@
 ;; policy
 
 (call .file.writeinherited_all_fifo_files(subj))
+(dontaudit subj .sys.subj (fifo_file (write)))
 
 )
 

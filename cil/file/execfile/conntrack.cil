@@ -37,4 +37,11 @@
 	   (allow subj self readwrite_netlink_netfilter_socket)
            (allow subj self (capability (net_admin)))
 	   (call .qcmap_cm.read_tmpfile_files (subj))
+           ;; Need to print conntrack output on console
+           ;; conntrack -L | grep <port_number>
+           ;; Here we are grepping on conntrack.
+           ;; grep process runs with sys.subj context.
+           ;; For grep process to run we need to provide write and ioctl permissions
+           (allow subj .sys.subj (fifo_file (write ioctl)))
+           (call .dev.readwriteinherited_ttydev_chr_files (subj))
        )

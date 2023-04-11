@@ -57,4 +57,9 @@
       (call .qcmap_ref.use_fds (subj))
       (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
       (allow .hotplugcall.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
+      (call .netifd.manage_runtimetmpfile_files(subj))
+;; Need execute read on ip.execfile
+      (call .ip.read_execfile_files (subj))
+      (call .ip.execute_execfile_files (subj))
+      (allow subj self create_netlink_route_socket)
 )

@@ -161,5 +161,46 @@
     (call .class.search_sysfile_dirs (subj))
 
     (allow .qcmap_ref.subj .class.sysfile (dir (read open)))
-
+    (call .resolv.manage_tmpfile_files (subj))
+    ;; Need execute o jsonfilter.execfile
+    (call .jsonfilter.read_execfile_files (subj))
+    (call .jsonfilter.execute_execfile_files (subj))
+    (allow jsonfilter.subj qcmap_ref.subj (fd (use)))
+    (allow jsonfilter.subj qcmap_ref.subj readwriteinherited_fifo_file)
+    (allow jsonfilter.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    ;; Need permissions on mwan3
+    (call .mwan3.search_runtimetmpfile_dirs (subj))
+    (call .mwan3.create_runtimetmpfile_dirs (subj))
+    (call .mwan3.addname_runtimetmpfile_dirs (subj))
+    (call .mwan3.manage_runtimetmpfile_files(subj))
+    (allow subj mwan3.conffile (file(getattr)))
+    (call .mwan3.read_conffile_files (subj))
+    (call .sys.search_sysctlfile_dirs (subj))
+    (call .logd.write_miscfile_sock_files(subj))
+    ;; Need permissions for ipcalc.sh
+    (allow ipcalc.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow ipcalc.subj qcmap_ref.subj readwriteinherited_fifo_file)
+    (allow ipcalc.subj qcmap_ref.subj (fd (use)))
+    ;; Need permission for jshn
+    (allow jshn.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow jshn.subj qcmap_ref.subj readwriteinherited_fifo_file)
+    (allow jshn.subj qcmap_ref.subj (fd (use)))
+    ;; Need read list on brctl show
+    (call .class.list_sysfile_dirs(subj))
+    (call .class.read_sysfile_lnk_files (subj))
+    ;; Need read search /sys/devices/virtual/br-lan
+    (call .devices.search_sysfile_dirs(subj))
+    (call .devices.read_sysfile_files (subj))
+    (allow subj .devices.sysfile (dir (read open)))
+    ;; Need subj_type_transition for ethtool utility
+    (call .file.execute_execfile_files (subj))
+    (call .file.read_execfile_files (subj))
+    (allow subj self create_udp_socket)
+    (call .config.create_fs_files (subj))
+    (call .config.readwrite_fs_files (subj))
+    (call .config.addname_fs_dirs (subj))
+    (call .config.search_fs_dirs (subj))
+    (call .kernel.search_sysfile_dirs(subj))
+    (call .debug.search_fs_dirs (subj))
+    (call .file.execute_initscriptfile_files (subj))
 )

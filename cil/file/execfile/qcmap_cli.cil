@@ -181,4 +181,11 @@
     (call .debug.search_fs_dirs (subj))
     ;; Need read write /data/vendor/wifi
     (call .wifi.readwrite_datafile_dirs (subj))
+    (call .qcmap_ref.manage_tmpfile_files (subj))
+    ;; Need read on /etc/localtime
+    (call .file.read_conffile_lnk_files (subj))
+    (call .locale.read_miscfile_files (subj))
+    ;; Need permissions on /etc/uci-defaults
+    (allow subj .uci.defaults.conffile (dir (create search read write add_name)))
+    (allow subj .uci.defaults.conffile (file (create read open write)))
 )

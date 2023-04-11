@@ -267,4 +267,8 @@
       ;; Need for conntrack
       (call .conntrack.read_execfile_files (subj))
       (call .conntrack.execute_execfile_files (subj))
+
+      ;;Need search read on etc/data/ipa
+      (call .ipacm.search_conffile_dirs (subj))
+      (call .ipacm.read_conffile_files (subj))
 )

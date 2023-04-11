@@ -179,4 +179,6 @@
     (call .config.search_fs_dirs (subj))
     (call .kernel.search_sysfile_dirs(subj))
     (call .debug.search_fs_dirs (subj))
+    ;; Need read write /data/vendor/wifi
+    (call .wifi.readwrite_datafile_dirs (subj))
 )

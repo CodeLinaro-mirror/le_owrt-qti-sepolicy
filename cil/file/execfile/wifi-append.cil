@@ -2,10 +2,6 @@
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
-    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "wlan0_defer"))
-    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "qcacld32_commands.txt"))
-    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "wlan_services.log"))
-    (call .wifi.obj_type_transition_runtimetmpfile_all (unconfined.subj_typeattr))
     (call .wifi.obj_type_transition_execfile_ext (unconfined.subj_typeattr))
     (call .wifi.obj_type_transition_datafile (unconfined.subj_typeattr))
 )
@@ -14,74 +10,13 @@
     ;;
     ;; Contexts
     ;;
-    (filecon "/tmp/wlan0_defer" file tmpfile_file_context)
-    (filecon "/tmp/qcacld32_commands\.txt" file tmpfile_file_context)
-    (filecon "/tmp/wlan_services\.log" file tmpfile_file_context)
-    (filecon "/tmp/run/wifilock" file runtimetmpfile_file_context)
-    (filecon "/tmp/run/wlan_mode_info" file runtimetmpfile_file_context)
-    (filecon "/tmp/run/wpa_supplicant-wlan[0-9]+\.lock" file runtimetmpfile_file_context)
-    (filecon "/tmp/run/wpa_supplicant-wlan[0-9]+\.conf" file runtimetmpfile_file_context)
-    (filecon "/tmp/run/wpa_supplicant-wlan[0-9]+-temp\.conf" file runtimetmpfile_file_context)
-    (filecon "/tmp/run/wpa_supplicant-wlan[0-9]+\.pid" file runtimetmpfile_file_context)
-    (filecon "/tmp/run/hostapd-wlan[0-9]+\.lock" file runtimetmpfile_file_context)
-    (filecon "/tmp/run/hostapd-wlan[0-9]+\.conf" file runtimetmpfile_file_context)
-    (filecon "/tmp/run/hostapd-wlan[0-9]+\.pid" file runtimetmpfile_file_context)
     (filecon "/usr/sbin/wlan_services" file execfile_file_context)
     (filecon "/data/vendor/wifi" dir datafile_file_context)
     (filecon "/data/vendor/wifi/.*" any datafile_file_context)
-    (filecon "/tmp/run/wlan_services\.pid" file runtimetmpfile_file_context)
 
     ;;
     ;; Macros
     ;;
-    (macro obj_type_transition_tmpfile ((type ARG1) (class ARG2) (name ARG3))
-        (call .tmp.fs_obj_type_transition (ARG1 tmpfile ARG2 ARG3)))
-
-    (macro obj_type_transition_runtimetmpfile ((type ARG1) (class ARG2) (name ARG3))
-        (call .tmpfile.runtimetmpfile_obj_type_transition (ARG1 runtimetmpfile ARG2 ARG3)))
-
-    (macro obj_type_transition_runtimetmpfile_all ((type ARG1))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wlan_mode_info"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wifilock"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan0.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan0-temp.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan0.lock"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan0.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan0.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan0.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan1.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan1-temp.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan1.lock"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan1.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan1.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan1.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan2.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan2-temp.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan2.lock"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan2.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan2.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan2.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan3.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan3-temp.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan3.lock"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan3.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan3.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan3.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan4.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan4-temp.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan4.lock"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan4.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan4.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan4.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan5.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan5-temp.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan5.lock"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wpa_supplicant-wlan5.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan5.conf"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "hostapd-wlan5.pid"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wlan_services.pid"))
-    )
-
     (macro obj_type_transition_execfile_ext ((type ARG1))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "wlan_services")))
 
@@ -92,19 +27,13 @@
     ;;
     ;; Policy
     ;;
-    (blockinherit .tmpfile.obj_template)
-    (blockinherit .tmpfile.runtime.obj_template)
-    (blockinherit .tmpfile.lock.obj_template)
-    (blockinherit .tmpfile.conf.obj_template)
     (blockinherit .file.data.obj_template)
 
-    (call obj_type_transition_tmpfile (subj file "wlan0_defer"))
-    (call obj_type_transition_tmpfile (subj file "qcacld32_commands.txt"))
-    (call obj_type_transition_tmpfile (subj file "wlan_services.log"))
-    (call obj_type_transition_runtimetmpfile_all (subj))
     (call obj_type_transition_execfile_ext (subj))
 
     (allow subj .sys.subj (process (signal)))
+    (allow subj .sys.subj (fifo_file (read write ioctl)))
+    (allow subj .sys.subj (unix_stream_socket (read write)))
     (allow subj .qcmap_cli.subj (fd (use)))
     (allow subj .qcmap_cli.subj (fifo_file (read write)))
     (allow subj .qcmap_cli.subj (fifo_file (ioctl)))
@@ -133,26 +62,16 @@
     (allow subj .file.modulesfile (dir (getattr read open search)))
     (allow subj .file.modulesfile (file (getattr)))
 
-    ;; Need write add_name create remove_name on /tmp (in qcacld32.sh)
-    (allow subj .tmp.fs (dir (write add_name create remove_name)))
-
     ;; Need read open on /etc/openwrt_release
     (allow subj .osrelease.miscfile (file (read open)))
 
     ;; Need open write on /dev/kmsg
     (allow subj .kmsg.nodedev (chr_file (open write)))
 
-    ;; Need manage /tmp/wlan0_defer
-    (call .wifi.manage_tmpfile_files (subj))
-    ;; Need manage /tmp/run/{wifilock wlan_mode_info wpa_supplicant-wlanX.* hostapd-wlanX.*}
-    (call .tmpfile.readwrite_runtimetmpfile_dirs (subj))
-    (call .wifi.manage_runtimetmpfile_files (subj))
-    ;; Need getattr read open rmdir on /tmp/run/wpa_supplicant and /tmp/run/wpa_supplicant/*
-    (allow subj .wpad.runtimetmpfile (dir (getattr read open rmdir)))
-
-    ;; Need manage /data/vendor/wifi
+    ;; Need manage on /data/vendor/wifi
     (call .wifi.manage_datafile_dirs (subj))
     (call .wifi.manage_datafile_files (subj))
+    (call .wifi.manage_datafile_sock_files (subj))
 
     ;; Need search on /etc/init.d
     (allow subj .file.initscriptfile (dir (search)))
@@ -173,4 +92,10 @@
     (call .sys.readwriteinherited_ptydev_chr_files (subj))
     ;; Need to print on serial console if 'ENABLE_WLAN_SCRIPT_LOG=1'
     (call .dev.readwriteinherited_ttydev_chr_files (subj))
+
+    ;; wlan_services needs to call uci/jshn/ubus when tyring
+    ;; to stop/start WLAN
+    (call .uci.subj_type_transition (subj))
+    (call .jshn.subj_type_transition (subj))
+    (call .ubus.subj_type_transition (subj))
 )

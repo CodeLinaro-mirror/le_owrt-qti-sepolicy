@@ -188,4 +188,12 @@
     ;; Need permissions on /etc/uci-defaults
     (allow subj .uci.defaults.conffile (dir (create search read write add_name)))
     (allow subj .uci.defaults.conffile (file (create read open write)))
+
+    ;; Need read execute for hostapd /data/vendor/wifi/
+    (allow subj .rcwpad.initscriptfile (file (getattr execute read open)))
+    (call .rcwpad.subj_type_transition (subj))
+    (allow subj .file.execfile (file (getattr)))
+    (call .tmpfile.search_locktmpfile_dirs (subj))
+    (call .tmpfile.readwrite_locktmpfile_dirs (subj))
+    (call .rccommon.read_conffile_files (subj))
 )

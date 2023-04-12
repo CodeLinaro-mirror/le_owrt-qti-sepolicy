@@ -11,22 +11,62 @@
  ;   (call .tftp_server.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
 (block tftp_server
-	   ;;
+       ;;
        ;; Contexts
        ;;
 	(filecon
-		"/usr/sbin/tftp_server"
-		file
-		execfile_file_context)
+	"/usr/bin/tftp_server"
+	file
+	execfile_file_context)
        ;;
        ;; Macros
        ;;
-		(macro obj_type_transition_execfile ((type ARG1))
-			(call .file.execfile_obj_type_transition
-				(ARG1 execfile file "tftp_server")))
-	   ;;
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "tftp_server")))
+       ;;
        ;; Policy
        ;;
        (blockinherit .agent.base_template)
-;		(blockinherit .file.exec.obj_template)
+       ;; search in config files is needed
+       ;;which is done on start /Stop  of services
+       (call .file.search_conffile_dirs (subj))
+
+       ;; Need qipcrtr socket creations
+       (allow subj  self  create_qipcrtr_socket)
+
+       ;; Needed for  unix_dgram socket creation
+       (allow subj self create_unix_dgram_socket)
+
+        ;; needed for writing to dev/kmsg
+	(call .kmsg.readwrite_nodedev_chr_files (subj))
+
+	;; Needed for searching sysfs
+	(call .sys.search_fs_dirs (subj))
+
+	(call .logd.sendto_unix_dgram_sockets (subj))
+	(call .power.append_sysfile_files(subj))
+	(allow subj class.sysfile ( dir ( read open)))
+	(allow subj devices.sysfile ( file ( read open)))
+
+        (call .class.read_sysfile_lnk_files (subj))
+        ;;(blockinherit .file.exec.obj_template)
+
+	;;Latest denials
+	(allow subj file.datafile (dir (setattr write)))
+	(allow subj file.datafile (dir (read add_name)))
+	(allow subj file.datafile (dir (open create remove_name)))
+	(allow subj power.sysfile (dir (search)))
+	(allow subj devices.sysfile (dir (search)))
+	(allow subj qcfirmware.miscfile (dir (search)))
+	(allow subj qcfirmware.miscfile (file (read open)))
+	(allow subj logd.miscfile (sock_file (write)))
+	(allow subj file.datafile (file (setattr create ioctl)))
+	(allow subj file.datafile (file (read unlink write open)))
+	(allow subj self (capability (dac_override dac_read_search)))
+	(allow subj self (capability (chown setuid)))
+	(allow subj self (capability (setpcap setgid)))
+	(allow subj self (capability2 (block_suspend)))
+	(allow subj self (process (setcap)))
+	(allow subj unknown.miscfile (dir (search)))
 )

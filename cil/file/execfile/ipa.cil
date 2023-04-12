@@ -44,15 +44,25 @@
 	(call .sys.connectto_unix_stream_sockets (subj))
 
 	(call .ipacm.readwrite_conffile_files (subj))
+	(call .ipacm.create_conffile_files(subj))
+	(call .ipacm.addname_conffile_dirs (subj))
+	(call .ipacm.readwrite_conffile_dirs (subj))
+	(call .ipacm.search_conffile_dirs (subj))
 	(call .qcmap_cm.create_conffile_files(subj))
 	(call .qcmap_cm.addname_conffile_dirs (subj))
 	(call .qcmap_cm.readwrite_conffile_dirs (subj))
 	(call .qcmap_cm.search_conffile_dirs (subj))
+	(allow subj ipacm.conffile (file (unlink)))
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
 
         (call .selinux.search_conffile_dirs (subj))
 	(call .selinux.getattr_filesystems(subj))
+
+	(call .shell.execute_execfile_files (subj))
+
+	(call .fs.search_sysfile_dirs (subj))
+	(call .sys.search_fs_dirs (subj))
 
 	;;
 )

@@ -37,6 +37,13 @@
       (allow  .hotplugcall.subj .dos.fs (filesystem (relabelfrom)))
       (allow  .mnt.miscfile  .mnt.miscfile (filesystem (associate)))
       (allow  .sys.subj  .mnt.miscfile (filesystem (getattr)))
+
+;; Needed for the mount as this will be running in sys.subj
+      (allow  .sys.subj  qcfirmware.miscfile (filesystem ( relabelto relabelfrom mount unmount getattr)))
+      (allow  .qcfirmware.miscfile  qcfirmware.miscfile (filesystem (associate)))
+
+
+
 ;; Need permissions on xtables-legacy-multi
       (call .xtables.manage_runtimetmpfile_files(subj))
       (call .xtables.read_execfile_files (subj))

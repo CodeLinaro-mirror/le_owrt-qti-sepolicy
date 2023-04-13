@@ -271,4 +271,15 @@
       ;;Need search read on etc/data/ipa
       (call .ipacm.search_conffile_dirs (subj))
       (call .ipacm.read_conffile_files (subj))
+
+      ;; Need open read on /
+      (allow subj .sys.rootfile (dir(open read)))
+
+      ;; Need execute on /sbin/uci
+      (call .uci.execute_execfile_files (subj))
+      (allow subj .uci.execfile (file(getattr read open map)))
+
+      (call .uci.search_conffile_dirs (subj))
+      (call .uci.readwrite_conffile_files (subj))
+      (call .uci.manage_conffile_files (subj))
 )

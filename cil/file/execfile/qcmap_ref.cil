@@ -210,4 +210,8 @@
 
     (call .tmpfile.readwrite_runtimetmpfile_dirs (subj))
 
+    (call .file.write_conffile_dirs (subj))
+
+    ;; Need to create create_netlink_netfilter_socket
+    (allow subj self create_netlink_netfilter_socket)
 )

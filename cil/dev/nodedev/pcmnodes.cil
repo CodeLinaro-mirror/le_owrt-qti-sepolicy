@@ -46,9 +46,7 @@
               (call .tmp.fs_obj_type_transition
                     (ARG1 nodedev chr_file "aud_pasthru_modem"))
               (call .tmp.fs_obj_type_transition
-                    (ARG1 nodedev chr_file "msm_audio_ion"))
-              (call .tmp.fs_obj_type_transition
-                    (ARG1 nodedev chr_file "controlC0")))
+                    (ARG1 nodedev chr_file "msm_audio_ion")))
        ;;
        ;; Policy
        ;;

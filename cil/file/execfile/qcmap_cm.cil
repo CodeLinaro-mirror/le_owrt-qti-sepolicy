@@ -265,6 +265,4 @@
 
       ;; To kill hostapd/wpa_supplicant
       (allow subj .proc.fs (dir (read open)))
-      ;; Need read on ipv6.sysctlfile
-      (call .ipv6.read_sysctlfile_files (subj))
 )

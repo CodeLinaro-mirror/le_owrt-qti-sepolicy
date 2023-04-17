@@ -7,6 +7,7 @@
 
 (in .file
     (call .leprop.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .leprop.obj_type_transition_conffile (unconfined.subj_typeattr))
     (call .leprop.tmp_obj_type_transition_miscfile (unconfined.subj_typeattr)))
 
 (block leprop
@@ -25,6 +26,11 @@
         file
         execfile_file_context)
 
+       (filecon
+        "/etc/proptrigger.conf"
+        file
+        conffile_file_context)
+
        ;;
        ;; Macros
        ;;
@@ -35,6 +41,10 @@
        (macro obj_type_transition_execfile ((type ARG1))
               (call .file.execfile_obj_type_transition
                     (ARG1 execfile file "leprop-service")))
+
+       (macro obj_type_transition_conffile ((type ARG1))
+              (call .file.conffile_obj_type_transition
+                    (ARG1 conffile file "proptrigger.conf")))
 
        (macro tmp_obj_type_transition_miscfile ((type ARG1))
               (call .tmp.fs_obj_type_transition
@@ -52,6 +62,7 @@
        (blockinherit .agent.base_template)
        (blockinherit .file.misc.obj_template)
        (blockinherit .file.data.obj_template)
+       (blockinherit .file.conf.obj_template)
        (blockinherit .tmpfile.runtime.obj_template)
        (blockinherit .tmpfile.obj_template)
 
@@ -59,6 +70,17 @@
        (allow subj self create_unix_stream_socket)
        (allow subj self (unix_stream_socket (connectto sendto listen accept)))
        (call .file.search_conffile_dirs (subj))
+       (allow subj .file.conffile (file (open read execute execute_no_trans)))
+       (allow subj .shell.execfile (file (open read execute execute_no_trans)))
+       (allow subj .file.datafile ( dir (read write open add_name create remove_name rmdir)))
+       (allow subj .file.datafile ( file (create read write open getattr unlink append)))
+       (call .shell.mapexecute_execfile_files(subj))
+       (call .logd.unix_dgram_send(subj))
+       (call .sys.search_fs_dirs (subj))
+       (call .fs.search_sysfile_dirs (subj))
+       (call .selinux.getattr_filesystems(subj))
+       (call .selinux.search_conffile_dirs (subj))
+       (allow subj .filesystems.procfile (file (read open)))
 
        (call .kmsg.read_procfile_files (subj))
 

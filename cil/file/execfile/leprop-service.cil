@@ -3,11 +3,123 @@
 
 
 (in .sys
+    (call .leprop_scripts_external.subj_type_transition (subj))
+    (call .leprop_scripts.subj_type_transition (subj))
     (call .leprop.subj_type_transition (subj)))
 
 (in .file
+    (call .leprop_scripts_external.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .leprop_scripts.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .leprop_scripts.obj_type_transition_conffile (unconfined.subj_typeattr))
     (call .leprop.obj_type_transition_execfile (unconfined.subj_typeattr))
     (call .leprop.tmp_obj_type_transition_miscfile (unconfined.subj_typeattr)))
+
+(block leprop_scripts_external
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/etc/scripts/init.qti.kernel.debug.sh"
+        file
+        execfile_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "init.qti.kernel.debug.sh")))
+
+       (macro manage_script_files ((type ARG1))
+              (call .shell.mapexecute_execfile_files (ARG1))
+              (call .shell.manage_execfile_files (ARG1)))
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .agent.base_template)
+
+       (call .shell.mapexecute_execfile_files (subj))
+       (call .file.search_conffile_dirs (subj))
+
+       (call .fs.search_sysfile_dirs (subj))
+       (call .sys.search_fs_dirs (subj))
+       (allow subj .module.sysfile (dir (search getattr)))
+       (allow subj .filesystems.procfile (file (read)))
+       (allow subj .shell.execfile (file (open read execute getattr)))
+       (call .selinux.getattr_filesystems(subj))
+       (call .selinux.search_conffile_dirs (subj))
+       (call .shell.execute_execfile_files (subj))
+       (allow subj .bus.sysfile (dir (create)))
+)
+
+(block leprop_scripts
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/etc/proptrigger.sh"
+        file
+        execfile_file_context)
+
+       (filecon
+        "/etc/proptrigger.conf"
+        file
+        conffile_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "proptrigger.sh")))
+
+       (macro manage_script_files ((type ARG1))
+              (call .shell.mapexecute_execfile_files (ARG1))
+              (call .shell.manage_execfile_files (ARG1)))
+
+       (macro obj_type_transition_conffile ((type ARG1))
+              (call .file.conffile_obj_type_transition
+                    (ARG1 conffile file "proptrigger.conf")))
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .agent.base_template)
+       (blockinherit .file.conf.obj_template)
+
+       (call .leprop_scripts_external.manage_script_files (subj))
+       (call .leprop_scripts_external.subj_type_transition (subj))
+       (call .shell.mapexecute_execfile_files (subj))
+       (call .file.search_conffile_dirs (subj))
+       (call .fs.search_sysfile_dirs (subj))
+       (call .sys.search_fs_dirs (subj))
+       (allow subj .module.sysfile (dir (search getattr)))
+       (allow subj .filesystems.procfile (file (read)))
+       (allow subj .leprop.subj (fd (use)))
+       (allow subj .shell.execfile (file (open read execute getattr)))
+       (allow subj self create_unix_dgram_socket)
+       (allow subj self create_unix_stream_socket)
+       (allow subj logd.miscfile (sock_file (write)))
+       (allow subj leprop.miscfile (sock_file (write)))
+       (call .shell.execute_execfile_files (subj))
+       (call .selinux.getattr_filesystems(subj))
+       (call .selinux.search_conffile_dirs (subj))
+       (call .leprop.subj_type_transition (subj))
+       (call .leprop.unix_dgram_send (subj))
+       (allow subj .bus.sysfile (dir (search getattr)))
+       (allow subj .bus.sysfile (lnk_file (read)))
+       (allow subj .devices.sysfile (dir (search)))
+       (allow subj .kernel.sysfile (dir (search)))
+       (allow subj self create_qipcrtr_socket)
+       (call .logd.sendto_unix_dgram_sockets (subj))
+)
 
 (block leprop
 
@@ -55,11 +167,26 @@
        (blockinherit .tmpfile.runtime.obj_template)
        (blockinherit .tmpfile.obj_template)
 
+       (call .leprop_scripts.manage_script_files (subj))
+       (call .leprop_scripts.subj_type_transition (subj))
        (allow subj self create_unix_dgram_socket)
        (allow subj self create_unix_stream_socket)
        (allow subj self (unix_stream_socket (connectto sendto listen accept)))
+       (allow subj leprop_scripts.execfile (file (open read execute getattr)))
+       (allow subj leprop_scripts.conffile (file (open read getattr)))
+       (allow subj .file.execfile (file (getattr)))
+       (allow subj .filesystems.procfile (file (read)))
+       (allow subj module.sysfile (dir (search)))
+       (allow subj .kmsg.nodedev (chr_file (open write)))
+       (call .fs.search_sysfile_dirs (subj))
        (call .file.search_conffile_dirs (subj))
 
+       (call .selinux.getattr_filesystems(subj))
+       (call .selinux.search_conffile_dirs (subj))
+       (allow subj logd.miscfile (sock_file (write)))
+       (call .logd.sendto_unix_dgram_sockets (subj))
+       (call .shell.mapexecute_execfile_files (subj))
+       (call .sys.search_fs_dirs (subj))
        (call .kmsg.read_procfile_files (subj))
 
        (call .nameservice.read_miscfile_files (subj))

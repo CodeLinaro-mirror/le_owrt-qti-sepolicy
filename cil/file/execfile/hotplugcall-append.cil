@@ -36,19 +36,4 @@
       (allow  .hotplugcall.subj .dos.fs (filesystem (relabelfrom)))
       (allow  .mnt.miscfile  .mnt.miscfile (filesystem (associate)))
       (allow  .sys.subj  .mnt.miscfile (filesystem (getattr)))
-;; Need permissions on xtables-legacy-multi
-      (call .xtables.manage_runtimetmpfile_files(subj))
-      (call .xtables.read_execfile_files (subj))
-      (call .xtables.mapexecute_execfile_files (subj))
-      (call .xtables.subj_type_transition (subj))
-      (allow xtables.subj hotplugcall.subj (fd (use)))
-      (allow xtables.subj hotplugcall.subj readwriteinherited_fifo_file)
-      (call .sys.readwriteinherited_fifo_files (subj))
-
-;; Need permissions on mwan3
-      (call .mwan3.search_runtimetmpfile_dirs (subj))
-      (call .mwan3.manage_runtimetmpfile_files(subj))
-      (allow subj mwan3.conffile (file(getattr)))
-      (call .mwan3.read_conffile_files (subj))
-      (call .mwan3.execute_conffile_files (subj))
 )

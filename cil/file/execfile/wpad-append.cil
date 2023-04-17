@@ -74,7 +74,4 @@
 
     ;; Need to push template files to /etc/misc/wifi/ via adb
     (call .xattr.associate_filesystems (miscfile))
-
-    ;; Need read on /etc/group (hostapd calls getgrnam to get the group)
-    (call .nameservice.read_miscfile_files (subj))
 )

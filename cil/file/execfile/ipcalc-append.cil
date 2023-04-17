@@ -7,5 +7,4 @@
      (call .qcmap_cli.use_fds (subj))
      (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
      (allow subj .qcmap_cli.subj (fifo_file (read write)))
-     (call .qcmap_cm.search_tmpfile_dirs (subj))
 )

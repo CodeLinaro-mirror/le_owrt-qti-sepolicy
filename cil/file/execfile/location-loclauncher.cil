@@ -67,8 +67,10 @@
     ;; Set groups for child process
     (allow subj self (capability (setgid)))
 
+    (allow subj self (unix_dgram_socket (sendto)))
     ;; communicate with location daemons via unix dgram sockets
     (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
+    (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
 
     ;; read loc_socket nodedev link files
     (call .loc_socket.read_nodedev_lnk_files (subj))

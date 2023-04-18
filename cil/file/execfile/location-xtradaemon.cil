@@ -70,6 +70,9 @@
 
     ;; read kernel sysfs
     (call .kernel.search_sysfile_dirs (subj))
-    (allow subj  leprop.miscfile  (sock_file  (read write)))
 
+    ;; needed to access /dev/socket/leprop-service
+    (allow subj  leprop.miscfile  (sock_file  (read write)))
+    ;;connect to leprop socket
+    (call .leprop.connectto_unix_stream_sockets (subj))
 )

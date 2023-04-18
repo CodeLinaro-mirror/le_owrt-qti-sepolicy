@@ -19,6 +19,7 @@
     (filecon "/tmp/hostapd\.txt" file tmpfile_file_context)
     (filecon "/tmp/wpa_supplicant\.txt" file tmpfile_file_context)
     (filecon "/var/run/hostapd.*\.pid" file runtimetmpfile_file_context)
+    (filecon "/var/run/hostapd-wifi[0-9]+" dir runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant.*\.pid" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicantglobal" socket runtimetmpfile_file_context)
 
@@ -51,6 +52,9 @@
 
     (call obj_type_transition_tmpfile (subj file "hostapd.txt"))
     (call obj_type_transition_tmpfile (subj file "wpa_supplicant.txt"))
+    (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi0"))
+    (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi1"))
+    (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi2"))
     (call obj_type_transition_runtimetmpfile (subj file "*"))
     (call obj_type_transition_runtimetmpfile (subj sock_file "wpa_supplicantglobal"))
 
@@ -98,4 +102,13 @@
     (allow subj .wpad.runtimetmpfile (file (create read write append open ioctl)))
     (allow subj .wpad.runtimetmpfile (sock_file (create)))
     (allow subj .sys.subj (fifo_file (write)))
+
+    ;; Call wpad binaries from wifi scripts
+    (allow subj .wifi.subj (fd (use)))
+
+    ;; Use /dev/rfkill device
+    (allow subj .tmp.fs (chr_file (read getattr open)))
+
+    ;; Use /tmp/lock/procd_network.lock
+    (allow subj .rcnetwork.subj (fd (use)))
 )

@@ -72,6 +72,8 @@
 
     ;; needed to read  /dev/socket/leprop-service
     (allow subj  leprop.miscfile  (sock_file  (read write)))
+    ;;connect to leprop socket
+    (call .leprop.connectto_unix_stream_sockets (subj))
 
     ;; KPI node access
     (call .kpi_values.manage_sysfile_files (subj))

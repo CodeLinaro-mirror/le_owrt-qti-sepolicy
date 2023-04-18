@@ -121,7 +121,7 @@
     ;; Need write add_name remove_name on /etc/config
     (allow subj .uci.conffile (dir (write add_name remove_name)))
     ;; Need create write open getattr read setattr rename unlink ioctl on /etc/config/5g_wireless
-    (allow subj .uci.conffile (file (create write open getattr read setattr rename unlink ioctl)))
+    (allow subj .uci.conffile (file (create write open getattr read setattr rename unlink ioctl append)))
 
     (call .wifi.subj_type_transition (subj))
     (call .jshn.subj_type_transition (subj))
@@ -202,4 +202,16 @@
     (allow subj proc.fs (file (read open)))
     (allow subj .wpad.subj (dir (search read open getattr)))
     (allow subj .wpad.subj (file (read open)))
+
+
+    ;; Need permission for iw
+    (allow iw.subj qcmap_cli.subj (fd (use)))
+    (allow iw.subj qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow iw.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow subj .locale.miscfile (file (map)))
+
+    ;; Need rules for xtables
+    (allow xtables.subj qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow xtables.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow xtables.subj qcmap_cli.subj (fd (use)))
 )

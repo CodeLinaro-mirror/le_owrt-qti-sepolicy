@@ -12,6 +12,11 @@
 
   ;; Write /tmp/.wireless.tmp
   (allow subj .wifi.tmpfile (file (write)))
+
+  ;;
+  (allow subj .qcmap_cli.subj (fd (use)))
+  (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+  (allow subj .qcmap_cli.subj readwriteinherited_fifo_file)
 )
 
 

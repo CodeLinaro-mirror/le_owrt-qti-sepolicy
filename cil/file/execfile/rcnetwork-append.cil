@@ -15,4 +15,7 @@
          (allow .rcnetwork.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
          (call .qcmap_cm.search_tmpfile_dirs (subj))
          (allow subj .qcmap_cm.tmpfile (dir (getattr)))
+
+       ;;
+       (allow .iw.subj .rcnetwork.subj (fd (use)))
 )

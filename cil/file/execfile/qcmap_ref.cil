@@ -38,6 +38,8 @@
     (blockinherit .dev.tty.obj_template)
 
     (call obj_type_transition_tmpfile (subj file "*"))
+    ;; Need obj_type_transition on mwan3
+    (call .mwan3.obj_type_transition_runtimetmpfile (subj))
 
     ;; Need create for qipcrtr_socket, unix_stream_socket
     (allow subj self create_qipcrtr_socket)
@@ -272,4 +274,46 @@
     (call .net.search_sysctlfile_dirs (subj))
     (call .netfilter.search_sysctlfile_dirs (subj))
 
+    ;; Need read on rc.common
+    (call .rccommon.manage_conffile_files (subj))
+    ;; Need search on resolve.conf.d dir
+    (call .resolv.search_tmpfile_dirs (subj))
+    ;; Need permissions on mwan3
+    (call .mwan3.manage_runtimetmpfile_dirs (subj))
+    (call .mwan3.manage_runtimetmpfile_files(subj))
+    (call .mwan3.read_conffile_files (subj))
+    ;; Need execte on mwan3
+    (call .file.read_initscriptfile_files (subj))
+    (call .file.execute_initscriptfile_files (subj))
+    (call .tmpfile.search_locktmpfile_dirs (subj))
+    (allow subj .xtables.execfile ( file (getattr)))
+    (allow subj .tmpfile.locktmpfile (file (open)))
+    (call .net.search_sysctlfile_dirs (subj))
+    (call .hotplugcall.manage_execfile_files (subj))
+    ;; Need read execute on xtables
+    (call .xtables.execute_execfile_files (subj))
+    (call .xtables.readwrite_runtimetmpfile_files (subj))
+    (call .ip.execute_execfile_files (subj))
+    (call .ip.readwrite_execfile_files (subj))
+    (allow subj .jshn.execfile (file(getattr)))
+    (call .net.read_procfile_files (subj))
+    (call .net.read_procfile_lnk_files (subj))
+    (call .iproute2.search_conffile_dirs (subj))
+    (call .iproute2.read_conffile_files (subj))
+    (allow subj self (netlink_route_socket (nlmsg_read nlmsg_write)))
+    (call .proc.getattr_filesystems (subj))
+    ;; Need add_name, write on /etc/rc.d
+    (call .file.readwrite_conffile_dirs (subj))
+    ;; Need unlink, read , create, remove on /etc/rc.d/S19mwan3
+    (call .file.manage_conffile_lnk_files (subj))
+    (call .jshn.subj_type_transition (subj))
+    (call .hotplug.search_conffile_dirs (subj))
+    (call .hotplug.read_conffile_files (subj))
+    (call .random.read_nodedev_chr_files (subj))
+    (call .logd.sendto_unix_dgram_sockets(subj))
+    (allow ifstatus.subj qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow ifstatus.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow ifstatus.subj qcmap_cli.subj (fd (use)))
+    (call .tmpfile.search_hoststmpfile_dirs (subj))
+    (call .tmpfile.search_conftmpfile_dirs (subj))
 )

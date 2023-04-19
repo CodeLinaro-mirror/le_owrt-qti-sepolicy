@@ -19,11 +19,6 @@
     file
     execfile_file_context)
 
-    (filecon
-    "/tmp/*"
-    file
-    tmpfile_file_context)
-
     (macro obj_type_transition_execfile ((type ARG1))
           (call .file.execfile_obj_type_transition
                     (ARG1 execfile file "QCMAP_CLI")))
@@ -138,6 +133,9 @@
     (allow subj .devices.sysfile (dir (search)))
     (allow subj .devices.sysfile (file (read open)))
 
+    ;; Need read on modules.procfile
+    (call .modules.read_procfile_files (subj))
+
     ;; Need read on /etc/init.d
     (allow subj .file.initscriptfile (dir (read)))
 
@@ -165,4 +163,37 @@
     (call .qcmap_cm.search_datafile_dirs (subj))
     (call .qcmap_cm.manage_datafile_files (subj))
 
+    (call .qcmap_ref.manage_tmpfile_files (subj))
+    (call .sys.search_sysctlfile_dirs (subj))
+    (call .net.search_sysctlfile_dirs (subj))
+    (call .netfilter.search_sysctlfile_dirs (subj))
+    (call .netfilter.readwrite_sysctlfile_files (subj))
+    (allow subj .devices.sysfile (dir (read open)))
+    ;; Need subj_type_transition for ethtool utility
+    (call .file.execute_execfile_files (subj))
+    (call .file.read_execfile_files (subj))
+    (allow subj self create_udp_socket)
+    (call .config.create_fs_files (subj))
+    (call .config.readwrite_fs_files (subj))
+    (call .config.addname_fs_dirs (subj))
+    (call .config.search_fs_dirs (subj))
+    (call .kernel.search_sysfile_dirs(subj))
+    (call .debug.search_fs_dirs (subj))
+    ;; Need read write /data/vendor/wifi
+    (call .wifi.readwrite_datafile_dirs (subj))
+    (call .qcmap_ref.manage_tmpfile_files (subj))
+    ;; Need read on /etc/localtime
+    (call .file.read_conffile_lnk_files (subj))
+    (call .locale.read_miscfile_files (subj))
+    ;; Need permissions on /etc/uci-defaults
+    (allow subj .uci.defaults.conffile (dir (create search read write add_name)))
+    (allow subj .uci.defaults.conffile (file (create read open write)))
+
+    ;; Need read execute for hostapd /data/vendor/wifi/
+    (allow subj .rcwpad.initscriptfile (file (getattr execute read open)))
+    (call .rcwpad.subj_type_transition (subj))
+    (allow subj .file.execfile (file (getattr)))
+    (call .tmpfile.search_locktmpfile_dirs (subj))
+    (call .tmpfile.readwrite_locktmpfile_dirs (subj))
+    (call .rccommon.read_conffile_files (subj))
 )

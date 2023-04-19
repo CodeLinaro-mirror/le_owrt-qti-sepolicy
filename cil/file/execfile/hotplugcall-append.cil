@@ -26,6 +26,11 @@
       (call .qcmap_cli.use_fds (subj))
       (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
       (allow .hotplugcall.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+      (call .qcmap_cm.addname_tmpfile_dirs (subj))
+      (call .qcmap_cm.create_tmpfile_files (subj))
+      (call .qcmap_cm.manage_tmpfile_files (subj))
+      (call .qcmap_cm.manage_tmpfile_dirs (subj))
+
 ;; Need for sdcard
       (call .file.read_conffile_files(subj))
       (allow  .hotplugcall.subj .mnt.miscfile (dir (search mounton getattr write add_name create)))
@@ -36,4 +41,36 @@
       (allow  .hotplugcall.subj .dos.fs (filesystem (relabelfrom)))
       (allow  .mnt.miscfile  .mnt.miscfile (filesystem (associate)))
       (allow  .sys.subj  .mnt.miscfile (filesystem (getattr)))
+
+;; Needed for the mount as this will be running in sys.subj
+      (allow  .sys.subj  qcfirmware.miscfile (filesystem ( relabelto relabelfrom mount unmount getattr)))
+      (allow  .qcfirmware.miscfile  qcfirmware.miscfile (filesystem (associate)))
+
+
+
+;; Need permissions on xtables-legacy-multi
+      (call .xtables.manage_runtimetmpfile_files(subj))
+      (call .xtables.read_execfile_files (subj))
+      (call .xtables.mapexecute_execfile_files (subj))
+      (call .xtables.subj_type_transition (subj))
+      (allow xtables.subj hotplugcall.subj (fd (use)))
+      (allow xtables.subj hotplugcall.subj readwriteinherited_fifo_file)
+      (call .sys.readwriteinherited_fifo_files (subj))
+
+;; Need permissions on mwan3
+      (call .mwan3.search_runtimetmpfile_dirs (subj))
+      (call .mwan3.manage_runtimetmpfile_files(subj))
+      (allow subj mwan3.conffile (file(getattr)))
+      (call .mwan3.read_conffile_files (subj))
+      (call .mwan3.execute_conffile_files (subj))
+
+;; Need for qcmap_ref
+      (call .qcmap_ref.use_fds (subj))
+      (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
+      (allow .hotplugcall.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
+      (call .netifd.manage_runtimetmpfile_files(subj))
+;; Need execute read on ip.execfile
+      (call .ip.read_execfile_files (subj))
+      (call .ip.execute_execfile_files (subj))
+      (allow subj self create_netlink_route_socket)
 )

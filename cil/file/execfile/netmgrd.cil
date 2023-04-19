@@ -63,17 +63,26 @@
         (call .sys.requestmodule (subj))
         (call .ip.subj_type_transition (subj))
         (call .openssl.execute_execfile_files (subj))
+        (call .xtables.subj_type_transition (subj))
 
+        (allow netmgrd.subj .xtables.subj (process2 (nnp_transition)))
         (allow netmgrd.subj .sys.subj (system (module_request)))
-        (allow netmgrd.subj .xtables.execfile (file (read open execute)))
+        (allow netmgrd.subj .xtables.execfile (file (read open execute map)))
         (allow subj .devices.sysfile (file (open)))
         (allow netmgrd.subj .ipv6.sysctlfile (file (open ioctl)))
         (allow subj self (process (getcap)))
         (allow subj .qcmap_cm.conffile (dir (search)))
         (allow subj .qcmap_cm.conffile (file (read open write)))
         (allow netmgrd.subj .ipv4.sysctlfile (file (open ioctl)))
-        (allow subj netmgrd.tmpfile (sock_file (create setattr)))
+        (allow subj netmgrd.tmpfile (sock_file (create setattr unlink)))
         (allow subj self (capability (net_admin net_raw)))
+        (dontaudit subj .net.procfile (file (read open)))
+        (dontaudit subj .net.procfile (lnk_file (read)))
+        (dontaudit subj .tmpfile.runtimetmpfile (dir (search)))
+
+
+        ;; Need remove_name on /tmp/ to remove ipv{4/6}config[0-9]+ files
+        (allow subj tmp.fs (dir(remove_name)))
 
         ;; default create_netlink_route_socket does not contain below permissions
         (allow subj netmgrd.subj (netlink_route_socket (nlmsg_write nlmsg_read)))
@@ -97,6 +106,11 @@
         (allow ip.subj netmgrd.subj (unix_stream_socket (read write)))
         (allow ip.subj netmgrd.subj readwriteinherited_fifo_file)
         (allow ip.subj netmgrd.subj (fd (use)))
+        (allow xtables.subj netmgrd.subj (fd (use)))
+        (allow xtables.subj netmgrd.subj (netlink_route_socket (read write)))
+        (allow xtables.subj netmgrd.subj (netlink_socket (read write)))
+        (allow xtables.subj netmgrd.subj (unix_stream_socket (read write)))
+        (allow xtables.subj netmgrd.subj readwriteinherited_fifo_file)
         (allow netmgrd.subj .ip.subj (process2 (nnp_transition)))
 )
 

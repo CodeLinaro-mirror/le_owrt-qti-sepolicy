@@ -9,6 +9,9 @@
   (allow subj .invalid search_dir)
   (allow subj self (lockdown (all)))
   (allow subj .wifi.subj (fd (use)))
+
+  ;; Write /tmp/.wireless.tmp
+  (allow subj .wifi.tmpfile (file (write)))
 )
 
 

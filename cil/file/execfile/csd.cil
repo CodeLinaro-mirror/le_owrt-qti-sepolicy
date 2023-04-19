@@ -1,0 +1,66 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+    (call .csd_server.subj_type_transition (subj)))
+
+(in .file
+    (call .csd_server.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+
+(block csd_server
+    ;;
+    ;; Contexts
+    ;;
+    (filecon
+        "/usr/bin/csd_server"
+        file
+        execfile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+    (macro obj_type_transition_execfile ((type ARG1))
+        (call .file.execfile_obj_type_transition
+            (ARG1 execfile file "csd_server")))
+
+
+    ;; Policy
+    ;;
+    (blockinherit .agent.base_template)
+
+
+    (call .file.search_conffile_dirs (subj))
+    (call .logd.write_miscfile_sock_files (subj))
+    (call .leprop.write_miscfile_sock_files (subj))
+    (call .logd.sendto_unix_dgram_sockets (subj))
+
+    (call .leprop.connectto_unix_stream_sockets (subj))
+    (call .file.read_conffile_files (subj))
+    (call .sys.search_fs_dirs (subj))
+    (call .kernel.search_sysfile_dirs(subj))
+    (call .diag-router.connectto_unix_stream_sockets (subj))
+    (call .leprop.connectto_unix_stream_sockets (subj))
+
+    (allow subj self create_qipcrtr_socket)
+    (allow subj self create_unix_dgram_socket)
+    (allow subj self create_unix_stream_socket)
+    (allow subj self (unix_stream_socket (connect read write)))
+    (allow subj file.conffile (file (open)))
+    (allow subj proc.fs (dir (read open)))
+    (allow subj debug.fs (dir (read open search)))
+    (allow subj snd.nodedev (chr_file (open ioctl)))
+
+    (call .snd.search_nodedev_dirs (subj))
+    (call .proc.read_fs_files (subj))
+    (call .snd.readwrite_nodedev_chr_files(subj))
+    (call .file.readwrite_conffile_dirs (subj))
+    (call .dma_heap.search_nodedev_dirs(subj))
+    (allow subj self (capability (dac_override dac_read_search)))
+    (call .dma_heap.read_nodedev_chr_files(subj))
+    (allow subj dma_heap.nodedev (chr_file (open ioctl)))
+    (call .file.read_datafile_lnk_files (subj))
+
+)

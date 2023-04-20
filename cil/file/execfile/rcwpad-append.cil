@@ -35,4 +35,8 @@
 
     ;; Need search on /sys/class/net
     (call .class.search_sysfile_dirs (subj))
+
+    (allow subj .qcmap_ref.subj (fd (use)))
+    (allow subj .qcmap_ref.subj (fifo_file (read write)))
+    (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
 )

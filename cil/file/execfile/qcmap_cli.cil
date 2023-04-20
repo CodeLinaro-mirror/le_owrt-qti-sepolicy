@@ -238,4 +238,8 @@
     (allow subj .file.modulesfile (file (getattr)))
     (call .kmodloader.subj_type_transition (subj))
     (allow subj .kmodloader.execfile (file (getattr)))
+    (allow subj .wifi.datafile (file (lock unlink)))
+    (call .qcmap_cm.create_datafile_dirs (subj))
+    (allow subj .file.datafile (file(append)))
+    (call .locale.map_miscfile_files (subj))
 )

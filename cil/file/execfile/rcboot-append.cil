@@ -13,6 +13,7 @@
      (call .tmpfile.manage_locktmpfile_files (subj))
      (call .tmpfile.create_logtmpfile_dirs (subj))
      (allow subj .openssl.execfile (file (getattr)))
+     (call .openssl.execute_execfile_files(subj))
 
 )
 

@@ -64,4 +64,7 @@
           ;; Need permission for nf_conntrack
           (allow subj netifd.subj (dir (write add_name)))
           (allow subj netifd.subj (file (create)))
+          ;;Need permission to manage conffile files and dirs
+          (call .qcmap_cm.search_conffile_dirs (subj))
+          (call .qcmap_cm.manage_conffile_files (subj))
 )

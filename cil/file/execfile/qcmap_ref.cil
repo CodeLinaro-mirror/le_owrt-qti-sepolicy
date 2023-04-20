@@ -214,4 +214,6 @@
 
     ;; Need to create create_netlink_netfilter_socket
     (allow subj self create_netlink_netfilter_socket)
+
+    (call .resolv.append_tmpfile_files (subj))
 )

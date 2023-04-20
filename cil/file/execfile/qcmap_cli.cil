@@ -196,4 +196,10 @@
     (call .tmpfile.search_locktmpfile_dirs (subj))
     (call .tmpfile.readwrite_locktmpfile_dirs (subj))
     (call .rccommon.read_conffile_files (subj))
+
+    ;; Need read open for /proc/pidof<wpa_supplicant or hostapd>
+    (allow subj proc.fs (dir (read open getattr)))
+    (allow subj proc.fs (file (read open)))
+    (allow subj .wpad.subj (dir (search read open getattr)))
+    (allow subj .wpad.subj (file (read open)))
 )

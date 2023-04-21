@@ -1,0 +1,51 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-		
+			
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.		
+;; SPDX-License-Identifier: BSD-3-Clause-Clear		
+			
+(in .sys		
+    (call .mwan3.subj_type_transition (subj)))		
+		
+(in .file		
+    (call .mwan3.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr))		
+    (call .mwan3.obj_type_transition_statetmpfile (unconfined.subj_typeattr))		
+    (call .mwan3.obj_type_transition_conffile (unconfined.subj_typeattr)))		
+			
+(block mwan3		
+			
+       ;;		
+       ;; Contexts		
+       ;;		
+			
+       (filecon  "/tmp/run/mwan3"  dir  runtimetmpfile_file_context)		
+       (filecon  "/tmp/run/mwan3/*"  dir  runtimetmpfile_file_context)		
+       (filecon  "/tmp/run/mwan3track"  dir  runtimetmpfile_file_context)		
+       (filecon  "/tmp/run/mwan3track/*"  dir  runtimetmpfile_file_context)		
+       (filecon  "/tmp/state/mwan3"  file  statetmpfile_file_context)		
+       (filecon  "/etc/mwan3\.user"  file  conffile_file_context)		
+			
+       ;;		
+       ;; Macros		
+       ;;		
+			
+       (macro obj_type_transition_runtimetmpfile ((type ARG1))		
+              (call .tmpfile.runtimetmpfile_obj_type_transition		
+                    (ARG1 runtimetmpfile dir "mwan3"))		
+              (call .tmpfile.runtimetmpfile_obj_type_transition		
+                    (ARG1 runtimetmpfile dir "mwan3track")))		
+			
+       (macro obj_type_transition_statetmpfile ((type ARG1))		
+              (call .tmpfile.statetmpfile_obj_type_transition		
+                    (ARG1 statetmpfile file "mwan3")))		
+			
+       (macro obj_type_transition_conffile ((type ARG1))		
+              (call .file.conffile_obj_type_transition		
+                    (ARG1 conffile file "mwan3.user")))		
+			
+			
+       ;; Policy		
+       (blockinherit .agent.base_template)		
+       (blockinherit .tmpfile.runtime.obj_template)		
+       (blockinherit .file.conf.obj_template)		
+       (blockinherit .tmpfile.state.obj_template)		
+) 

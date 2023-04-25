@@ -32,6 +32,8 @@
     (filecon "/etc/misc/ipq/.*" any conffile_file_context)
     (filecon "/data/vendor/ipq" dir datafile_file_context)
     (filecon "/data/vendor/ipq/.*" any datafile_file_context)
+    (filecon "/etc/sawf" dir conffile_file_context)
+    (filecon "/etc/sawf/.*" any conffile_file_context)
     (filecon "/var/run/hostapd-.*\.conf" file runtimetmpfile_file_context)
     (filecon "/var/run/hostapd-.*\.lock" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant-.*\.conf" file runtimetmpfile_file_context)
@@ -62,7 +64,8 @@
     )
 
     (macro obj_type_transition_conffile ((type ARG1))
-        (call .file.conffile_obj_type_transition (ARG1 conffile dir "*"))
+        (call .file.conffile_obj_type_transition (ARG1 conffile dir "ipq"))
+        (call .file.conffile_obj_type_transition (ARG1 conffile dir "sawf"))
     )
 
     (macro obj_type_transition_execfile_ext ((type ARG1))
@@ -307,4 +310,11 @@
 
     ;; /etc/init.d/ssid_steering
     (call .wifi.execute_initscriptfile_files (subj))
+
+    ;; Manage /tmp and /var/run files owned by wifi
+    (call .wifi.manage_tmpfile_files (subj))
+    (call .wifi.manage_runtimetmpfile_files (subj))
+
+    ;; Remove files written to /var/run
+    (allow subj .tmpfile.runtimetmpfile (dir (remove_name)))
 )

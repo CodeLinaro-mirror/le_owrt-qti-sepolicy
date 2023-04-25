@@ -282,4 +282,8 @@
       (call .uci.search_conffile_dirs (subj))
       (call .uci.readwrite_conffile_files (subj))
       (call .uci.manage_conffile_files (subj))
+
+      ;; Need read open and execute_no_trans permission on /usr/sbin/ebtables
+      (call .file.manage_conffile_files (subj))
+      (call .file.execute_execfile_files (subj))
 )

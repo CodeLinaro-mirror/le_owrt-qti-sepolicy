@@ -19,6 +19,11 @@
     file
     execfile_file_context)
 
+    (filecon
+    "/usr/bin/QCMAP_StaInterface"
+    file
+    execfile_file_context)
+
     (macro obj_type_transition_execfile ((type ARG1))
           (call .file.execfile_obj_type_transition
                     (ARG1 execfile file "QCMAP_CLI")))
@@ -37,7 +42,7 @@
     ;; Need for netlink_route_socket
     (allow subj self create_netlink_route_socket)
     (allow subj self create_rawip_socket)
-    (allow subj self (capability (net_raw net_admin)))
+    (allow subj self (capability (net_raw net_admin setgid setpcap setuid)))
     (allow subj self create_qipcrtr_socket)
     (allow subj self create_unix_stream_stream_socket)
     (call .diag-router.connectto_unix_stream_sockets (subj))
@@ -142,7 +147,7 @@
     ;; Need search on /tmp/run/
     (allow subj .tmpfile.runtimetmpfile (dir (search)))
 
-    (allow subj self (process (setfscreate)))
+    (allow subj self (process (setfscreate getcap setcap)))
     ;; Need read search /sys/class/net
     (call .class.list_sysfile_dirs(subj))
     (call .class.read_sysfile_lnk_files (subj))
@@ -292,4 +297,11 @@
 
     ;; Need map for /lib/wifi/qcacommands_ol_radio.xml
     (call .wifi.mapexecute_miscfile_files (subj))
+
+    (allow subj .wpad.subj (fd (use)))
+    (allow subj .wpad.subj (unix_dgram_socket (read write)))
+
+    ;; Need to access /dev/socket/data/qcmap_sta_uds_file
+    (call .qcmap_cm.write_tmpfile_sock_files(subj))
+    (call .qcmap_cm.sendto_unix_dgram_sockets (subj))
 )

@@ -216,4 +216,9 @@
     (allow subj self create_netlink_netfilter_socket)
 
     (call .resolv.append_tmpfile_files (subj))
+    (call .sys.search_sysctlfile_dirs (subj))
+    (call .net.search_sysctlfile_dirs (subj))
+    (call .netfilter.search_sysctlfile_dirs(subj))
+    (call .netfilter.readwrite_sysctlfile(subj))
+    (call .netfilter.readwrite_sysctlfile_sock_files (subj))
 )

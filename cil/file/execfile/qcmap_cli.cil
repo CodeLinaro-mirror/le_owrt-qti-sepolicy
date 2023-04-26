@@ -286,4 +286,10 @@
     (allow ifstatus.subj qcmap_cli.subj (fd (use)))
     (call .tmpfile.search_hoststmpfile_dirs (subj))
     (call .tmpfile.search_conftmpfile_dirs (subj))
+
+    ;; Need read write for wifilock
+    (call .tmpfile.readwrite_runtimetmpfile_files (subj))
+
+    ;; Need map for /lib/wifi/qcacommands_ol_radio.xml
+    (call .wifi.mapexecute_miscfile_files (subj))
 )

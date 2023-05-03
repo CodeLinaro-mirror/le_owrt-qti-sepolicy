@@ -20,6 +20,8 @@
 (call .qcmap_ref.use_fds (subj))
 (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
 (allow .ubus.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
+;; Need append on /tmp/resolve.conf
+(call .resolv.append_tmpfile_files (subj))
 )
 
 

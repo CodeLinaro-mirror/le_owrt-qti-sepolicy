@@ -221,7 +221,7 @@
     (allow subj .wifi.miscfile (dir (read open search)))
     (allow subj .wifi.miscfile (file (read open getattr)))
     (allow subj .net.procfile (lnk_file (read)))
-    (allow subj .net.procfile (file (read open)))
+    (allow subj .net.procfile (file (read open getattr)))
     (allow subj .iw.execfile (file (execute read open)))
     (call .iw.subj_type_transition (subj))
     (allow subj .iw.execfile (file (map)))
@@ -242,4 +242,48 @@
     (call .qcmap_cm.create_datafile_dirs (subj))
     (allow subj .file.datafile (file(append)))
     (call .locale.map_miscfile_files (subj))
+    ;; Need permission on mwan3
+    (call .mwan3.obj_type_transition_runtimetmpfile (subj))
+    (call .mwan3.manage_runtimetmpfile_dirs (subj))
+    (call .mwan3.manage_runtimetmpfile_files(subj))
+    (call .mwan3.read_conffile_files (subj))
+    (allow subj .xtables.execfile ( file (getattr)))
+    ;; Need write on kmsg
+    (call .kmsg.readwrite_nodedev_chr_files (subj))
+    ;; Need execute read on /etc/init.d/mwan3
+    (call .file.execute_initscriptfile_files (subj))
+    (call .file.read_initscriptfile_files (subj))
+    (call .locale.manage_miscfile_files (subj))
+    ;; Need execute read ip.execfile
+    (call .ip.execute_execfile_files (subj))
+    (call .ip.readwrite_execfile_files (subj))
+    ;; Need to create netlink_netfilter_socket
+    (allow subj self create_netlink_netfilter_socket)
+    (allow subj .tmpfile.locktmpfile (file (open)))
+    (call .iproute2.search_conffile_dirs (subj))
+    (call .iproute2.read_conffile_files (subj))
+    (allow subj self (netlink_route_socket (nlmsg_write nlmsg_read)))
+    ;; Need add_name, write on /etc/rc.d
+    (call .file.readwrite_conffile_dirs (subj))
+    ;; Need unlink, read , create, remove on /etc/rc.d/S19mwan3
+    (call .file.manage_conffile_lnk_files (subj))
+    ;; Need transition on xtables
+    (call .xtables.subj_type_transition (subj))
+    ;; Need transition on hotplugcall
+    (call .hotplugcall.subj_type_transition (subj))
+    ;; Need write read on log
+    (call .logd.readwrite_miscfile_files (subj))
+    (call .hotplug.search_conffile_dirs (subj))
+    (call .hotplug.read_conffile_files (subj))
+    ;; Need to remove mwan3 from /tmp/run dir
+    (call .tmpfile.deletename_runtimetmpfile_dirs (subj))
+    (call .logd.write_miscfile_sock_files (subj))
+    (call .logd.sendto_unix_dgram_sockets(subj))
+    (call .jsonfilter.execute_execfile_files (subj))
+    (call .random.read_nodedev_chr_files (subj))
+    (allow ifstatus.subj qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow ifstatus.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow ifstatus.subj qcmap_cli.subj (fd (use)))
+    (call .tmpfile.search_hoststmpfile_dirs (subj))
+    (call .tmpfile.search_conftmpfile_dirs (subj))
 )

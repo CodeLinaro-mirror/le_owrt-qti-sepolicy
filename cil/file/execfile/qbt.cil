@@ -1,0 +1,220 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .qbt.subj_type_transition (subj)))
+
+(in .file
+    (call .qbt_data.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .qbt.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .qbt.obj_type_transition_conffile (unconfined.subj_typeattr))
+    (call .qbt.obj_type_transition_datafile (unconfined.subj_typeattr)))
+
+(in .qcmap_cli
+    (call .qbt_data.mapexecute_execfile_files (subj))
+    (call .qbt_data.read_execfile_files (subj))
+    (call .logd.unix_dgram_send (subj))
+    (call .qbt.use_fd_readwrite_unix_stream_sockets (subj))
+    (call .qbt.connectto_unix_stream_sockets (subj))
+    (call .qbt.search_datafile_dirs (subj))
+    (call .qbt.readwrite_datafile_sock_files (subj)))
+
+(block qbt_data
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/usr/bin/qcbtdaemon"
+        file
+        execfile_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "qcbtdaemon")))
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .agent.base_template))
+
+(block qbt
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/usr/bin/btapp"
+        file
+        execfile_file_context)
+
+       (filecon
+        "/usr/bin/btproperty"
+        file
+        execfile_file_context)
+
+       (filecon
+        "/usr/bin/ftmdaemon"
+        file
+        execfile_file_context)
+
+
+       (filecon
+        "/etc/bluetooth"
+        dir
+        conffile_file_context)
+
+       (filecon
+        "/etc/bluetooth/.*"
+        any
+        conffile_file_context)
+
+
+       (filecon
+        "/data/misc/bluetooth"
+        dir
+        datafile_file_context)
+
+       (filecon
+        "/data/misc/bluetooth/.*"
+        any
+        datafile_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "btapp"))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "btproperty"))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "ftmdaemon")))
+
+       (macro obj_type_transition_conffile ((type ARG1))
+              (call .file.conffile_obj_type_transition
+                    (ARG1 conffile dir "bluetooth")))
+
+       (macro obj_type_transition_datafile ((type ARG1))
+              (call .file.datafile_obj_type_transition
+                    (ARG1 datafile dir "bluetooth")))
+
+       (macro use_fd_readwrite_unix_stream_sockets ((type ARG1))
+              (allow ARG1 subj (fd (use)))
+              (allow ARG1 subj (unix_stream_socket (read write))))
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .agent.base_template)
+       (blockinherit .file.conf.obj_template)
+       (blockinherit .file.data.obj_template)
+
+       ;; Need for /dev/logd or logging
+       ;; this will also add write permission
+       (call .logd.unix_dgram_send(subj))
+
+       ;; Needed for the /dev/kmsg write
+       (call .kmsg.readwrite_nodedev_chr_files (subj))
+
+       ;; Need connectto for diag-router unix_stream_socket
+       (call .diag-router.connectto_unix_stream_sockets (subj))
+
+       ;; Need these socket permissions
+       (allow subj self create_unix_dgram_socket)
+       (allow subj self create_unix_stream_stream_socket)
+       (allow subj self create_qipcrtr_socket)
+       (allow subj self create_tun_socket)
+       (allow subj self create_tcp_socket)
+       (allow subj self create_udp_socket)
+       (call connectto_unix_stream_sockets (subj))
+
+       ;; Read only /etc/bluetooth(/.*)?
+       (call .file.search_conffile_dirs (subj))
+       (call .file.read_conffile_lnk_files (subj))
+       (call search_conffile_dirs (subj))
+       (call read_conffile_files (subj))
+
+       ;; Manage /data/misc/bluetooth(/.*)?
+       (call .file.search_datafile_dirs (subj))
+       (call manage_datafile_dirs (subj))
+       (call manage_datafile_files (subj))
+       (call manage_datafile_sock_files (subj))
+
+       ;; Read /sys/class/rfkill/rfkill0/device/extldo
+       (call .sys.search_fs_dirs (subj))
+       (call .fs.search_sysfile_dirs (subj))
+       (call .class.search_sysfile_dirs (subj))
+       (call .class.read_sysfile_lnk_files (subj))
+       (call .devices.search_sysfile_dirs (subj))
+       (call .devices.read_sysfile_lnk_files (subj))
+       (call .devices.read_sysfile_files (subj))
+
+       (allow subj self (process (getsched setsched)))
+       (allow subj self (capability (sys_nice net_admin)))
+       (allow subj self (capability2 (wake_alarm block_suspend)))
+
+       ;; Permissions for /sys/power/wake_lock /sys/power/wake_unlock
+       (call .power.search_sysfile_dirs(subj))
+       (call .power.readwrite_sysfile_files (subj))
+
+       ;; Needed by BT profile GAP
+       (call .leprop.unix_dgram_send (subj))
+       (call .shell.execute_execfile_files (subj))
+       (call .qcfirmware.search_miscfile_dirs (subj))
+       (call .qcfirmware.read_miscfile_files (subj))
+       (call .qbt_dev.readwrite_nodedev_chr_files(subj))
+       (call .sys.readwriteinherited_ptydev_chr_files (subj))
+       (call .dev.readwriteinherited_ttydev_chr_files (subj))
+       (call .console.readwrite_ttydev_chr_files (subj))
+       (call .random.read_nodedev_chr_files (subj))
+
+       ;; Readwrite /dev/net/tun
+       (call .tmp.readwrite_fs_chr_files (subj))
+
+       (call .locale.read_miscfile_files (subj))
+       (call .locale.map_miscfile_files (subj))
+
+       (call .proc.list_fs_dirs (subj))
+       ;; Need gettarr on selinux filesystem
+       (call .selinux.getattr_filesystems(subj))
+       ;; Need for search on etc dir
+       (call .selinux.search_conffile_dirs (subj))
+
+       ;; Execute qcbtdaemon under the same domain as QCMAP_CLI
+       (call .qcmap_cli.subj_type_transition (subj))
+       (call .qbt_data.execfile_subj_type_transition (subj .qcmap_cli.subj))
+       (call .qbt_data.mapexecute_execfile_files (subj))
+       (call .qbt_data.read_execfile_files (subj))
+       (call .qbt_data.entrypoint_execfile_files (.qcmap_cli.subj))
+
+       ;; Only kill qcbtdaemon
+       (call .qcmap_cli.sigkill (subj))
+       (call .qcmap_cli.signal (subj))
+
+       ;; Fix these denials even if they don't impact BT profile PAN or RSP
+       (call use_fd_readwrite_unix_stream_sockets (.uci.subj))
+       (call use_fd_readwrite_unix_stream_sockets (.wifi.subj))
+       (call use_fd_readwrite_unix_stream_sockets (.jshn.subj))
+       (call use_fd_readwrite_unix_stream_sockets (.ubus.subj))
+       (call use_fd_readwrite_unix_stream_sockets (.iw.subj))
+       (call use_fd_readwrite_unix_stream_sockets (.rcwpad.subj))
+       (call use_fd_readwrite_unix_stream_sockets (.kmodloader.subj))
+       (call use_fd_readwrite_unix_stream_sockets (.rcnetwork.subj))
+
+       ;; Need to send btsnoop log out by tcp socket
+       (call .net.port.unreserved.tcp_bind_all_netports (subj))
+       (call .net.tcp_bind_netnodes (subj))
+
+       (call .subj.read_state_all (subj)))

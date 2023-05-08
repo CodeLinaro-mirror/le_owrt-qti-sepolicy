@@ -104,7 +104,7 @@
     (call .rcdnsmasq.subj_type_transition (subj))
     ;; Need permission to reboot on first vlan creation
     (allow subj .sys.subj (process(signal)))
-    (allow subj .sys.subj (file (read write)))
+    (allow subj .sys.subj (file (open read write)))
     (allow subj .sys.subj (dir (search)))
     (call .uci.search_conffile_dirs (subj))
     ;; Need permissions on /tmp/data/
@@ -211,6 +211,14 @@
     (allow subj .wpad.subj (dir (search read open getattr)))
     (allow subj .wpad.subj (file (read open)))
 
+    ;; Need rules for tinyproxy
+    (allow subj .rctinyproxy.initscriptfile (file (getattr execute read open)))
+    (call .rctinyproxy.subj_type_transition (subj))
+    (allow subj .tinyproxy.subj (dir (search read open getattr)))
+    (allow subj .tinyproxy.subj (file (read open)))
+    (allow subj .tinyproxy.subj (lnk_file (read open)))
+    (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
+    (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
 
     ;; Need permission for iw
     (allow iw.subj qcmap_cli.subj (fd (use)))

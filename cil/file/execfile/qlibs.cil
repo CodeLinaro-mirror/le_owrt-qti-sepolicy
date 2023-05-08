@@ -10,6 +10,7 @@
     ;; Contexts
     ;;
 
+	(call .sdcard.tmp_obj_type_transition_miscfile (unconfined.subj_typeattr))
 
 	(filecon
         "/lib"
@@ -91,5 +92,23 @@
 
         (call .xattr.associate_filesystems (miscfile))
         (blockinherit file.misc.obj_template)
+)
+(block sdcard
+
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/mnt/sdcard"
+        dir
+       miscfile_file_context)
+
+    (macro tmp_obj_type_transition_miscfile ((type ARG1))
+      (call .tmp.fs_obj_type_transition
+            (ARG1 miscfile dir "sdcard")))
+
+    (blockinherit file.misc.obj_template)
 )
 

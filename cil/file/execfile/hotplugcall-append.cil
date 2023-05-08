@@ -41,6 +41,9 @@
       (allow  .hotplugcall.subj .dos.fs (filesystem (relabelfrom)))
       (allow  .mnt.miscfile  .mnt.miscfile (filesystem (associate)))
       (allow  .sys.subj  .mnt.miscfile (filesystem (getattr)))
+      (allow  .hotplugcall.subj .sdcard.miscfile (dir (getattr mounton)))
+      (allow  .hotplugcall.subj dos.fs (filesystem (mount unmount)))
+      (allow  .hotplugcall.subj dos.fs (dir (getattr)))
 
 ;; Needed for the mount as this will be running in sys.subj
       (allow  .sys.subj  qcfirmware.miscfile (filesystem ( relabelto relabelfrom mount unmount getattr)))

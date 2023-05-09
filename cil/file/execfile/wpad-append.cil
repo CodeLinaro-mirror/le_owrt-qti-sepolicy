@@ -35,13 +35,13 @@
     (macro obj_type_transition_miscfile ((type ARG1) (class ARG2) (name ARG3))
         (call .sys.rootfile_obj_type_transition (ARG1 miscfile ARG2 ARG3)))
 
-    (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
-        (call .tmp.fs_obj_type_transition
-            (ARG1 tmpfile ARG2 ARG3)))
+;    (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+;        (call .tmp.fs_obj_type_transition
+;            (ARG1 tmpfile ARG2 ARG3)))
 
-    (macro obj_type_transition_runtimetmpfile ((type ARG1)(class ARG2)(name ARG3))
-        (call .tmpfile.runtimetmpfile_obj_type_transition
-            (ARG1 runtimetmpfile ARG2 ARG3)))
+;   (macro obj_type_transition_runtimetmpfile ((type ARG1)(class ARG2)(name ARG3))
+;        (call .tmpfile.runtimetmpfile_obj_type_transition
+;            (ARG1 runtimetmpfile ARG2 ARG3)))
 
     ;;
     ;; Policy

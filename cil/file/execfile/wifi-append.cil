@@ -7,7 +7,6 @@
     (call .wifi.obj_type_transition_nodedev (unconfined.subj_typeattr))
     (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "wireless.tmp"))
     (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file ".wifi-config-done"))
-    (call .wifi.obj_type_transition_initscriptfile (unconfined.subj_typeattr file "ssid_steering"))
 )
 
 (in .wifi
@@ -19,7 +18,7 @@
     (filecon "/data/vendor/wifi/.*" any datafile_file_context)
     (filecon "/dev/wlan" char nodedev_file_context)
 
-    (filecon "/etc/init\.d/ssid_steering" file initscriptfile_file_context)
+
     (filecon "/usr/bin/cfg80211tool" file execfile_file_context)
     (filecon "/usr/bin/cfg80211tool.1" file execfile_file_context)
     (filecon "/usr/bin/wlanconfig" file execfile_file_context)
@@ -48,8 +47,7 @@
         (allow ARG1 ARG2 (lnk_file (read)))
     )
 
-    (macro obj_type_transition_initscriptfile ((type ARG1) (class ARG2) (name ARG3))
-        (call .file.initscriptfile_obj_type_transition (ARG1 initscriptfile ARG2 ARG3)))
+
 
     (macro obj_type_transition_tmpfile ((type ARG1) (class ARG2) (name ARG3))
         (call .tmp.fs_obj_type_transition (ARG1 tmpfile ARG2 ARG3)))
@@ -84,9 +82,7 @@
             (ARG1 datafile file "libqca_nl80211_wrapper.so"))
     )
 
-    (macro obj_type_transition_initscript_all ((type ARG1))
-        (call .wifi.obj_type_transition_initscriptfile (ARG1 file "ssid_steering"))
-    )
+
 
     (macro obj_type_transition_nodedev ((type ARG1))
         (call .tmp.fs_obj_type_transition (ARG1 nodedev chr_file "wlan")))
@@ -101,7 +97,7 @@
     (blockinherit .file.conf.obj_template)
     (blockinherit .file.data.obj_template)
     (blockinherit .dev.node.obj_template)
-    (blockinherit .initscript.base_template)
+
 
     (call obj_type_transition_runtimetmpfile_all (subj))
     (call obj_type_transition_execfile_ext (subj))
@@ -154,11 +150,16 @@
     (call .wifi.manage_datafile_files (subj))
     (call .wifi.manage_datafile_sock_files (subj))
 
-    ;; Need search on /etc/init.d
-    (allow subj .file.initscriptfile (dir (search)))
-    ;; Need getattr execute read open on /etc/init.d/hostapd-daemon.init
-    (allow subj .rcwpad.initscriptfile (file (getattr execute read open)))
-    (call .rcwpad.subj_type_transition (subj))
+    ;; Need permissions on /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
+    (call .file.search_initscriptfile_dirs (subj))
+    (call .file.execute_initscriptfile_files (subj))
+    ;; Need permissions on
+    ;; /tmp/lock/{procd_hostapd-daemon.init.lock procd_wpa-supplicant_qcacld.init.lock}
+    (call .tmpfile.readwrite_locktmpfile_dirs (subj))
+    (call .tmpfile.create_locktmpfile_files (subj))
+    (call .tmpfile.read_locktmpfile_files (subj))
+
+
 
     ;; Need to read template files under /etc/misc/wifi
     (call .wpad.search_miscfile_dirs (subj))
@@ -308,8 +309,9 @@
     (call .jsonfilter.mapexecute_execfile_files (subj))
     (call .jsonfilter.read_execfile_files (subj))
 
+
     ;; /etc/init.d/ssid_steering
-    (call .wifi.execute_initscriptfile_files (subj))
+
 
     ;; Manage /tmp and /var/run files owned by wifi
     (call .wifi.manage_tmpfile_files (subj))

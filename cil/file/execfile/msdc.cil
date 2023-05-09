@@ -1,0 +1,83 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+  (call .msdc.subj_type_transition (subj)))
+
+(in .file
+    (call .msdc.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .msdc.obj_type_transition_datafile (unconfined.subj_typeattr)))
+
+(block msdc
+
+    ;; Contexts
+
+    (filecon "/usr/bin/msdc_app" file execfile_file_context)
+
+    (filecon "/data/embms" dir datafile_file_context)
+
+    (filecon "/data/embms/.*" any datafile_file_context)
+
+    (filecon "/data/msc_internal" dir datafile_file_context)
+
+    (filecon "/data/msc_internal/.*" any datafile_file_context)
+
+    (macro obj_type_transition_execfile ((type ARG1))
+        (call .file.execfile_obj_type_transition
+           (ARG1 execfile file "msdc_app")))
+
+    (macro obj_type_transition_datafile ((type ARG1))
+        (call .file.datafile_obj_type_transition
+            (ARG1 datafile dir "embms"))
+        (call .file.datafile_obj_type_transition
+            (ARG1 datafile dir "qti"))
+        (call .file.datafile_obj_type_transition
+            (ARG1 datafile dir "msc_internal")))
+
+    (blockinherit .agent.base_template)
+    (blockinherit file.data.obj_template)
+    (blockinherit file.conf.obj_template)
+
+    ;; For sockets usage
+
+    (allow subj self create_udp_socket)
+    (allow subj self readwrite_udp_socket)
+    (allow subj self create_tcp_stream_socket)
+    (allow subj self readwrite_tcp_socket)
+    (allow subj self create_unix_stream_socket)
+    (allow subj .diag-router.subj (unix_stream_socket (connectto)))
+    (allow subj self create_qipcrtr_socket)
+    (allow subj self create_unix_dgram_socket)
+    (allow subj self create_netlink_socket)
+
+    (allow subj .net.netnode (udp_socket (node_bind)))
+    (allow subj .net.netnode (tcp_socket (node_bind)))
+    (allow subj .unreserved.netport (udp_socket (name_bind)))
+    (allow subj .unreserved.netport (tcp_socket (name_bind)))
+
+    (call .net.egress_netifs (subj))
+    (call .net.node.sendto_all_netnodes (subj))
+
+    ;; Directory, File access in /data/embms, /data/msc_internal
+
+    (call .msdc.manage_datafile_dirs (subj))
+    (call .msdc.manage_datafile_files (subj))
+
+    ;; For read access of a conf link file
+    ;; Access/Search in config files is needed which is done on start / stop  of services
+    ;; search in sysfs dir
+
+    (allow subj .file.conffile (dir(search)))
+    (allow subj .file.conffile (lnk_file(read)))
+    (allow subj .locale.miscfile (file(read getattr open map)))
+    (allow subj .qcmap_cm.conffile (dir(search)))
+    (allow subj .qcmap_cm.conffile (file(read open write)))
+    (allow subj .devices.sysfile (file(read open)))
+    (allow subj .devices.sysfile (dir(search)))
+
+    (call .sys.search_fs_dirs (subj))
+    (allow subj .sys.subj (fifo_file (read write)))
+
+)

@@ -42,6 +42,7 @@
 
        (macro unix_dgram_send ((type ARG1))
               (call sendto_unix_dgram_sockets (ARG1))
+              (call connectto_unix_stream_sockets (ARG1))
               (call write_miscfile_sock_files (ARG1)))
 
        ;;

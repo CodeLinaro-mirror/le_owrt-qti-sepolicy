@@ -9,6 +9,17 @@
   (allow subj .invalid search_dir)
   (allow subj self (lockdown (all)))
   (allow subj .wifi.subj (fd (use)))
+
+  ;; Write /tmp/.wireless.tmp
+  (allow subj .wifi.tmpfile (file (write)))
+
+  ;;
+  (allow subj .qcmap_cli.subj (fd (use)))
+  (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+  (allow subj .qcmap_cli.subj readwriteinherited_fifo_file)
+  (allow subj .qcmap_ref.subj (fd (use)))
+  (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
+  (allow subj .qcmap_ref.subj readwriteinherited_fifo_file)
 )
 
 

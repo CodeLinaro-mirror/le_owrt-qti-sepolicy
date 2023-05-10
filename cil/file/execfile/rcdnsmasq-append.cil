@@ -32,4 +32,7 @@
          ;; relabelling doesn't takes place as it is not needed
          (call .dnsmasq.obj_type_transition_conftmpfile_2 (subj file "*"))
          (call .dnsmasq.manage_conftmpfile_files (subj))
+         (call .qcmap_ref.use_fds (subj))
+         (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
+         (allow subj .qcmap_ref.subj (fifo_file (read write)))
 )

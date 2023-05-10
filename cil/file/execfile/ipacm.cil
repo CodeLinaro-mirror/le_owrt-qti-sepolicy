@@ -70,6 +70,11 @@
 	conffile_file_context)
 
 	(filecon
+	"/etc/data/ipa/IPACM_cfg_temporary.xml"
+	file
+	conffile_file_context)
+
+	(filecon
 	"/etc/data/ipa"
 	dir
 	conffile_file_context)
@@ -150,6 +155,9 @@
 	(allow subj conffile (file (open getattr)))
 	(call .ipacm.read_conffile_files (subj))
 	(call .file.search_conffile_dirs (subj))
+	(allow subj ipacm.conffile (dir (watch)))
+	(call .ipacm.readwrite_conffile_dirs(subj))
+	(allow subj qcmap_cm.conffile (dir (watch)))
 
 	(call .ipacm.search_tmpfile_dirs (subj))
 	(call .ipacm.search_tmpfile_dirs (subj))
@@ -179,6 +187,8 @@
 	(call .net.search_sysctlfile_dirs (subj))
 	(call .netfilter.search_sysctlfile_dirs (subj))
 	(call .netfilter.readwrite_sysctlfile_files (subj))
+
+	(call .sys.requestmodule (subj))
 
 	;;
 )

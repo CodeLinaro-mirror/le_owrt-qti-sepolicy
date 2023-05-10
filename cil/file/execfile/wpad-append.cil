@@ -2,7 +2,6 @@
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
-    (call .wpad.obj_type_transition_tmpfile_logs (unconfined.subj_typeattr))
     (call .wpad.obj_type_transition_miscfile (unconfined.subj_typeattr dir "wifi"))
     (call .wpad.obj_type_transition_execfile_ext (unconfined.subj_typeattr))
 )
@@ -16,27 +15,17 @@
     (filecon "/usr/bin/wpa_cli" file execfile_file_context)
     (filecon "/etc/misc/wifi/.*" any miscfile_file_context)
     (filecon "/etc/misc/wifi" dir miscfile_file_context)
-    (filecon "/tmp/hostapd-wlan[0-9]+\.log" file tmpfile_file_context)
-    (filecon "/tmp/wpa_supplicant-wlan[0-9]+\.log" file tmpfile_file_context)
+
+    (filecon "/tmp/hostapd\.txt" file tmpfile_file_context)
+    (filecon "/tmp/wpa_supplicant\.txt" file tmpfile_file_context)
+    (filecon "/var/run/hostapd.*\.pid" file runtimetmpfile_file_context)
+    (filecon "/var/run/hostapd-wifi[0-9]+" dir runtimetmpfile_file_context)
+    (filecon "/var/run/wpa_supplicant.*\.pid" file runtimetmpfile_file_context)
+    (filecon "/var/run/wpa_supplicantglobal" socket runtimetmpfile_file_context)
 
     ;;
     ;; Macros
     ;;
-    (macro obj_type_transition_tmpfile_logs ((type ARG1))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "hostapd-wlan0.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "hostapd-wlan1.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "hostapd-wlan2.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "hostapd-wlan3.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "hostapd-wlan4.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "hostapd-wlan5.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "wpa_supplicant-wlan0.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "wpa_supplicant-wlan1.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "wpa_supplicant-wlan2.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "wpa_supplicant-wlan3.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "wpa_supplicant-wlan4.log"))
-        (call .wpad.obj_type_transition_tmpfile (ARG1 file "wpa_supplicant-wlan5.log"))
-    )
-
     (macro obj_type_transition_execfile_ext ((type ARG1))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "wpa_supplicant"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "wpa_cli"))
@@ -46,35 +35,88 @@
     (macro obj_type_transition_miscfile ((type ARG1) (class ARG2) (name ARG3))
         (call .sys.rootfile_obj_type_transition (ARG1 miscfile ARG2 ARG3)))
 
+    (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+        (call .tmp.fs_obj_type_transition
+            (ARG1 tmpfile ARG2 ARG3)))
+
+    (macro obj_type_transition_runtimetmpfile ((type ARG1)(class ARG2)(name ARG3))
+        (call .tmpfile.runtimetmpfile_obj_type_transition
+            (ARG1 runtimetmpfile ARG2 ARG3)))
+
     ;;
     ;; Policy
     ;;
     (blockinherit .file.misc.obj_template)
-    (call obj_type_transition_tmpfile_logs (subj))
     (call obj_type_transition_miscfile (subj dir "wifi"))
     (call obj_type_transition_execfile_ext (subj))
+
+    (call obj_type_transition_tmpfile (subj file "hostapd.txt"))
+    (call obj_type_transition_tmpfile (subj file "wpa_supplicant.txt"))
+    (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi0"))
+    (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi1"))
+    (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi2"))
+    (call obj_type_transition_runtimetmpfile (subj file "*"))
+    (call obj_type_transition_runtimetmpfile (subj sock_file "wpa_supplicantglobal"))
 
     (allow subj .qcmap_cli.subj (fd (use)))
     (allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
     (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
     (allow subj .sys.subj (fifo_file (write)))
     (allow subj .tmp.fs (dir (remove_name)))
+    (allow subj .qcmap_ref.subj (fifo_file (read write ioctl)))
+    (allow subj .qcmap_ref.subj (fd (use)))
 
     (allow subj self create_qipcrtr_socket)
 
-    ;; Need create append open ioctl on /tmp/{hostapd-wlanX.log wpa_supplicant-wlanX.log}
-    (call .wpad.manage_tmpfile_files (subj))
-    ;; Need read open on /tmp/run/{hostapd-wlanX.* wpa_supplicant-wlanX.*}
-    (call .wifi.read_runtimetmpfile_files (subj))
+    ;; Need manage on /data/vendor/wifi/{hostapd-wlanX.* wpa_supplicant-wlanX.*}
+    (call .wifi.obj_type_transition_datafile(subj))
+    (call .wifi.manage_datafile_dirs (subj))
+    (call .wifi.manage_datafile_files (subj))
+    (call .wifi.manage_datafile_sock_files (subj))
+
     ;; Need read on sysfile phy80211
     (allow subj .devices.sysfile (lnk_file (read)))
 
     ;; Need to print on adb shell, such as hostapd_cli/wpa_cli
     (call .sys.readwriteinherited_ptydev_chr_files (subj))
+    ;; Need to print on serial console, such as hostapd_cli/wpa_cli
+    (call .dev.readwriteinherited_ttydev_chr_files (subj))
 
     ;; Need to push template files to /etc/misc/wifi/ via adb
     (call .xattr.associate_filesystems (miscfile))
 
     ;; Need read on /etc/group (hostapd calls getgrnam to get the group)
     (call .nameservice.read_miscfile_files (subj))
+
+    ;; Need to run busybox (such as /bin/chmod)
+    (allow subj shell.execfile (file (execute_no_trans)))
+    (call .shell.read_execfile_files(subj))
+    (call .shell.mapexecute_execfile_files(subj))
+    ;; Need search on selinux dir
+    (call .selinux.search_conffile_dirs(subj))
+    ;; Need gettarr on selinux filesystem
+    (call .selinux.getattr_filesystems (subj))
+    ;; Need search for fs dir with tcontext=u:r:fs.sysfile
+    (call .fs.search_sysfile_dirs (subj))
+
+    ;; Manage tmpfile owned by wpad
+    (call .wpad.manage_tmpfile_files (subj))
+
+    (allow subj .unreserved.netport (udp_socket (name_bind)))
+    (allow subj .wpad.runtimetmpfile (file (create read write append open ioctl)))
+    (allow subj .wpad.runtimetmpfile (sock_file (create)))
+    (allow subj .sys.subj (fifo_file (write)))
+
+    ;; Read config files generated by wifi
+    (call .wifi.read_runtimetmpfile_files (subj))
+
+    ;; Call wpad binaries from wifi scripts
+    (allow subj .wifi.subj (fd (use)))
+
+    ;; Use /dev/rfkill device
+    (allow subj .tmp.fs (chr_file (read getattr open)))
+
+    ;; Use /tmp/lock/procd_network.lock
+    (allow subj .rcnetwork.subj (fd (use)))
 )

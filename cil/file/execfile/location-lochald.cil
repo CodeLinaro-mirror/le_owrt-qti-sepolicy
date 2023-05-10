@@ -70,6 +70,14 @@
     ;; manage loc_socket nodedev link files
     (call .loc_socket.manage_nodedev_lnk_files (subj))
 
+    ;; needed to read  /dev/socket/leprop-service
+    (allow subj  leprop.miscfile  (sock_file  (read write)))
+    ;;connect to leprop socket
+    (call .leprop.connectto_unix_stream_sockets (subj))
+
+    ;; KPI node access
+    (call .kpi_values.manage_sysfile_files (subj))
+
     ;; Needed to for diagrebootapp to connect to diag-router
     (call .diag-router.unix_stream_connect(subj))
 )

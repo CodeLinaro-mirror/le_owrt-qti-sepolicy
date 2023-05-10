@@ -12,7 +12,19 @@
 (allow .uci.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
 ;; Need manage on /tmp/ipv{4/6}config[0-9]+
 (call .qcmap_cli.manage_tmpfile_files (subj))
+(call .mwan3.obj_type_transition_statetmpfile (subj))
+(call .mwan3.manage_statetmpfile_files (subj))
 
+(call .qcmap_ref.use_fds (subj))
+(call .qcmap_ref.readwrite_unix_stream_sockets (subj))
+(allow .uci.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
+;; Need manage on /tmp/ipv{4/6}config[0-9]+
+(call .qcmap_ref.manage_tmpfile_files (subj))
+;; Need append on /tmp/resolve.conf
+(call .resolv.append_tmpfile_files (subj))
+
+(call .qcmap_cm.manage_tmpfile_files (subj))
+(allow subj .qcmap_cm.tmpfile (file (getattr read open lock)))
 )
 
 

@@ -1,0 +1,117 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+
+(in .sys
+    (call .perf-hal-service.subj_type_transition (subj)))
+
+(in .file
+    (call .perf-hal-service.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .perf-hal-service.obj_type_transition_datafile (unconfined.subj_typeattr))
+    (call .perf-hal-service.tmp_obj_type_transition_miscfile (unconfined.subj_typeattr)))
+
+(block perf-hal-service
+    ;;
+    ;; Contexts
+    ;;
+        (filecon
+            "/usr/bin/perf-hal-service"
+            file
+            execfile_file_context)
+
+        (filecon
+            "/dev/socket/perfservice"
+            socket
+            miscfile_file_context)
+
+        (filecon
+            "/data/vendor/perfd"
+            dir
+            datafile_file_context)
+
+        (filecon
+            "/data/vendor/perfd/.*"
+            any
+            datafile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+
+      (macro obj_type_transition_execfile ((type ARG1))
+          (call .file.execfile_obj_type_transition
+              (ARG1 execfile file "perf-hal-service")))
+
+      (macro obj_type_transition_datafile ((type ARG1))
+          (call .file.datafile_obj_type_transition
+              (ARG1 datafile dir "perfd")))
+
+      (macro tmp_obj_type_transition_miscfile ((type ARG1))
+          (call .tmp.fs_obj_type_transition
+              (ARG1 miscfile sock_file "perfservice")))
+
+    ;;
+    ;; Policy
+    ;;
+       (blockinherit .agent.base_template)
+       (blockinherit .file.misc.obj_template)
+       (blockinherit .file.data.obj_template)
+       (blockinherit .tmpfile.runtime.obj_template)
+       (blockinherit .tmpfile.obj_template)
+
+      ;; search in config files is needed
+      ;;which is done on start /Stop  of services
+      (call .file.search_conffile_dirs (subj))
+      (call .file.readwrite_conffile_files (subj))
+      (call .meminfo.read_procfile_files (subj))
+
+      (call .sys.search_fs_dirs (subj))
+      (allow subj self (process (getsched setsched signal)))
+
+      ;; Needed for  unix_stream socket creation
+      (allow subj self create_unix_stream_socket)
+      (allow subj self (unix_stream_socket (connectto sendto listen accept)))
+      ;; Needed for  unix_stream socket connectto
+      (call .leprop.connectto_unix_stream_sockets(subj))
+
+      ;; Needed for  unix_dgram socket creation
+      (allow subj self create_unix_dgram_socket)
+
+      (allow subj leprop.miscfile (sock_file (write)))
+      (allow subj tmp.fs (dir (remove_name)))
+
+      ;;  New socket needs to be managed
+      (call manage_miscfile_sock_files (subj))
+      (call tmp_obj_type_transition_miscfile (subj))
+
+      ;; Manage files in /data/vendor/perfd
+
+      (allow subj perf-hal-service.datafile (dir (search read write add_name)))
+      (allow subj perf-hal-service.datafile (file (create read write open ioctl append)))
+
+      ;; Manage devices sysfile
+      (allow subj devices.sysfile ( dir (read open search)))
+      (call .devices.readwrite_sysfile_files (subj))
+      (call .devices.read_sysfile_lnk_files (subj))
+
+      (allow subj class.sysfile ( dir (read open search)))
+      (call .class.read_sysfile_lnk_files (subj))
+      (allow subj module.sysfile ( dir (search)))
+      (call .sys.search_sysctlfile_dirs (subj))
+      (call .sys.readwrite_sysctlfile_files (subj))
+
+      (call .kernel.search_sysfile_dirs (subj))
+      (call .kernel.readwrite_sysfile_files (subj))
+      (call .kernel.search_sysctlfile_dirs (subj))
+      (allow subj kernel.sysctlfile ( file (read open)))
+      (allow subj self(capability (sys_nice)))
+
+
+
+      (call .logd.write_miscfile_sock_files(subj))
+      (call .logd.sendto_unix_dgram_sockets (subj))
+
+)

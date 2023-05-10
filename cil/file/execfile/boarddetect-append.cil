@@ -7,7 +7,7 @@
 ;; policy
 
 (allow subj self (capability (dac_read_search dac_override )))
-
+(call .class.read_sysfile_lnk_files(subj))
 
 )
 

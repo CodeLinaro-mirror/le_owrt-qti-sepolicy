@@ -34,6 +34,9 @@
 (call .dnsmasq.search_conftmpfile_dirs (subj))
 ;; Need name connect on tcp socket
 (allow subj .dns.netport (tcp_socket (name_connect)))
+(call .qcmap_ref.use_fds (subj))
+(call .qcmap_ref.readwrite_unix_stream_sockets (subj))
+(allow subj .qcmap_ref.subj (fifo_file (read write)))
 )
 
 

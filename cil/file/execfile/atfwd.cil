@@ -1,0 +1,70 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .atfwd.subj_type_transition (subj)))
+
+(in .file
+    (call .atfwd.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .atfwd.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr)))
+
+(block atfwd
+        (filecon
+        "/usr/bin/atfwd-daemon"
+        file
+        execfile_file_context)
+
+        (filecon
+        "/dev/socket/atfwd"
+        dir
+        runtimetmpfile_file_context)
+
+        (filecon
+        "/dev/socket/atfwd/.*"
+        any
+        runtimetmpfile_file_context)
+
+        ;;
+        ;; Macros
+        ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "atfwd")))
+
+        (macro obj_type_transition_runtimetmpfile ((type ARG1))
+              (call .tmp.fs_obj_type_transition
+                        (ARG1 runtimetmpfile dir "atfwd"))
+              (call .tmp.fs_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "ds_at_connect_socket")))
+
+        ;;
+        ;; Policy
+        ;;
+        (blockinherit .agent.base_template)
+        (blockinherit file.conf.obj_template)
+        (blockinherit file.data.obj_template)
+        (blockinherit .tmpfile.runtime.obj_template)
+        (blockinherit .tmpfile.obj_template)
+
+        (call .shell.execute_execfile_files (subj))
+        (call .shell.read_execfile_files (subj))
+        (call .selinux.search_conffile_dirs (subj))
+        (call .selinux.getattr_filesystems (subj))
+        (call .diag-router.connectto_unix_stream_sockets (subj))
+        (call .sys.search_fs_dirs (subj))
+        (call .fs.search_sysfile_dirs (subj))
+
+
+        (allow subj self (capability (net_admin kill)))
+        (allow subj self (unix_stream_socket(create bind connect read write listen accept)))
+        (allow subj self (netlink_generic_socket(create write bind)))
+        (allow subj self (qipcrtr_socket(create getattr read setopt write)))
+        (allow subj self (dir (search write create)))
+        (allow subj file.conffile (dir (search)))
+        (allow subj atfwd.runtimetmpfile (dir (write remove_name search add_name)))
+        (allow subj atfwd.runtimetmpfile (sock_file (create setattr unlink)))
+
+        (allow subj .sys.subj (process(signal)))
+)

@@ -14,7 +14,6 @@
 	   ;;
        ;; Contexts
        ;;
-    ( typepermissive subj )
 	(filecon
 		"/usr/bin/diagrebootapp"
 		file
@@ -52,7 +51,9 @@
 	(call .sys.read_fs_lnk_files (subj))
 
 	(call .devices.search_sysfile_dirs (subj))
+	(call .devices.manage_sysfile_files (subj))
 
+	(allow subj .bus.sysfile (lnk_file (read)))
 	;;(blockinherit .file.exec.obj_template)
 	(allow subj .coresight-tmc-etr.sysfile (file (open read write setattr)))
 )

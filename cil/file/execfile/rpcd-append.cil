@@ -1,0 +1,13 @@
+;;Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .rpcd
+
+;; policy
+
+(call .functions.read_miscfile_files (subj))
+(call .functions.search_miscfile_dirs(subj))
+
+)
+
+

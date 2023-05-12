@@ -5,7 +5,9 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
 (in .sys
-    (call .diagrebootapp.subj_type_transition (subj)))
+    (call .diagrebootapp.subj_type_transition (subj))
+    (call .tmp.fs_obj_type_transition (subj diagrebootapp.tmpfile fifo_file "rebooterdev"))
+)
 
 ;(in .file
  ;   (call .diagrebootapp.obj_type_transition_execfile (unconfined.subj_typeattr)))
@@ -18,6 +20,11 @@
 		"/usr/bin/diagrebootapp"
 		file
 		execfile_file_context)
+	(filecon
+		"/dev/rebooterdev"
+		pipe
+		tmpfile_file_context)
+
        ;;
        ;; Macros
        ;;
@@ -30,6 +37,7 @@
        ;; Policy
        ;;
        (blockinherit .agent.base_template)
+       (blockinherit .tmpfile.obj_template)
 	   
 	;; search in config files is needed
 	;;which is done on start /Stop  of services
@@ -57,4 +65,6 @@
 	(allow diagrebootapp.subj tmp.fs (fifo_file (write open)))
 
 	;;(blockinherit .file.exec.obj_template)
+
+    (allow subj diagrebootapp.tmpfile (fifo_file (open write)))
 )

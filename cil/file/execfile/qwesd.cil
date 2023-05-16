@@ -209,6 +209,13 @@
            (allow subj .qcfirmware.miscfile(dir(search)))
 
            (call .sys.sendto_unix_dgram_sockets (subj))
+           (allow subj .power.sysfile (dir(search append open)))
+           (allow subj .power.sysfile (file(append open)))
+           (allow subj self (capability2(block_suspend)))
+           (allow subj self(tcp_socket(create connect write)))
+           (allow subj .httpproxy.netport (tcp_socket (name_connect)))
+           (allow subj .net.netif (netif (egress)))
+           (allow subj .net.netnode (node (sendto)))
 )
 
 ;;Policies for license store

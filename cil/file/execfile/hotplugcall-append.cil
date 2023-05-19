@@ -91,4 +91,6 @@
       (allow rcdnsmasq.subj hotplugcall.subj (fd (use)))
 ;; Need to share fifo_file for jsonfilter
       (allow .jsonfilter.subj .hotplugcall.subj (fifo_file (read write ioctl)))
+
+     (call .file.execute_execfile_files (subj))
 )

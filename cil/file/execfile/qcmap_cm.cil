@@ -312,4 +312,10 @@
       (allow subj dataadpl.conffile (dir (watch)))
       ;; Need permission for sysfs
       (allow subj .class.sysfile (lnk_file (read)))
+
+      ;; Need open on /etc/data/adpl/mhi_enable
+      (call .dataadpl.manage_conffile_files (subj))
+      ;; Need read on adpl dir
+      (call .dataadpl.manage_conffile_dirs (subj))
+
 )

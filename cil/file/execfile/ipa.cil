@@ -42,6 +42,9 @@
 	(allow subj self write_unix_stream_socket)
 	(allow subj self (unix_stream_socket (read)))
 	(call .sys.connectto_unix_stream_sockets (subj))
+	(allow subj self (unix_dgram_socket (create connect)))
+	(allow subj self write_unix_dgram_socket)
+	(call .logd.sendto_unix_dgram_sockets (subj))
 
 	(call .ipacm.readwrite_conffile_files (subj))
 	(call .ipacm.create_conffile_files(subj))
@@ -61,10 +64,11 @@
 	(allow subj .qcmap_cm.subj (fd (use)))
 	(call .qcmap_cm.read_tmpfile_files (subj))
 	(call .qcmap_cm.manage_tmpfile_dirs (subj))
+	(call .logd.write_miscfile_sock_files (subj))
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
 
-        (call .selinux.search_conffile_dirs (subj))
+	(call .selinux.search_conffile_dirs (subj))
 	(call .selinux.getattr_filesystems(subj))
 
 	(call .shell.execute_execfile_files (subj))

@@ -189,7 +189,6 @@
 	(call .netfilter.readwrite_sysctlfile_files (subj))
 
 	(call .sys.requestmodule (subj))
-	(allow subj .qcmap_cm.conffile (file (getattr)))
 
 	;;
 )

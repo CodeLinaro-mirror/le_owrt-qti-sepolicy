@@ -112,5 +112,6 @@
         (allow xtables.subj netmgrd.subj (unix_stream_socket (read write)))
         (allow xtables.subj netmgrd.subj readwriteinherited_fifo_file)
         (allow netmgrd.subj .ip.subj (process2 (nnp_transition)))
+        (allow subj logd.miscfile (sock_file (write)))
 )
 

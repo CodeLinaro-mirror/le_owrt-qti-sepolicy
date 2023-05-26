@@ -78,6 +78,7 @@
     (call .netifd.search_miscfile_dirs (subj))
     (call .netifd.execute_miscfile_files (subj))
     (call .netifd.manage_miscfile_files (subj))
+    (allow subj netifd.tmpfile (file (getattr)))
     (call .uci.subj_type_transition (subj))
     (call .ifup.subj_type_transition (subj))
     (call .ubus.subj_type_transition (subj))
@@ -270,6 +271,7 @@
     (allow subj self (netlink_route_socket (nlmsg_write nlmsg_read)))
     ;; Need add_name, write on /etc/rc.d
     (call .file.readwrite_conffile_dirs (subj))
+    (call .file.read_conffile_files (subj))
     ;; Need unlink, read , create, remove on /etc/rc.d/S19mwan3
     (call .file.manage_conffile_lnk_files (subj))
     ;; Need transition on xtables

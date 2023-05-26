@@ -70,6 +70,7 @@
     (call .netifd.search_miscfile_dirs (subj))
     (call .netifd.execute_miscfile_files (subj))
     (call .netifd.manage_miscfile_files (subj))
+    (allow subj .netifd.tmpfile (file (read open getattr)))
     (call .functions.manage_miscfile_files (subj))
     (call .functions.search_miscfile_dirs (subj))
 
@@ -296,6 +297,7 @@
     (allow subj .tmpfile.locktmpfile (file (open)))
     (call .net.search_sysctlfile_dirs (subj))
     (call .hotplugcall.manage_execfile_files (subj))
+    (allow subj .hotplugcall.execfile (file (execute)))
     ;; Need read execute on xtables
     (call .xtables.execute_execfile_files (subj))
     (call .xtables.readwrite_runtimetmpfile_files (subj))

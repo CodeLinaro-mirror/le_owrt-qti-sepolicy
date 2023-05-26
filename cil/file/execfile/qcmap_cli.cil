@@ -78,7 +78,7 @@
     (call .netifd.search_miscfile_dirs (subj))
     (call .netifd.execute_miscfile_files (subj))
     (call .netifd.manage_miscfile_files (subj))
-    (allow subj netifd.tmpfile (file (getattr)))
+    (allow subj netifd.tmpfile (file (getattr read open)))
     (call .uci.subj_type_transition (subj))
     (call .ifup.subj_type_transition (subj))
     (call .ubus.subj_type_transition (subj))
@@ -104,6 +104,8 @@
     (call .rcdnsmasq.subj_type_transition (subj))
     ;; Need permission to reboot on first vlan creation
     (allow subj .sys.subj (process(signal)))
+    (allow subj .sys.subj (file (read write)))
+    (allow subj .sys.subj (dir (search)))
     (call .uci.search_conffile_dirs (subj))
     ;; Need permissions on /tmp/data/
     (call .qcmap_cm.manage_tmpfile_dirs (subj))

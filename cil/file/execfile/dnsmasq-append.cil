@@ -46,6 +46,23 @@
 (call .libubox.manage_datafile_dirs (subj))
 (call .libubox.read_datafile_files (subj))
 (call .qcmap_cm.search_conffile_dirs (subj))
+
+;; for DHCP_SCRIPT.sh and dnsmasq_script.sh
+(call .shell.manage_execfile_files (subj))
+(call .libubox.search_datafile_dirs (subj))
+(allow subj qcmap_cm.conffile (file(getattr)))
+(allow subj .ubus.execfile (file (getattr)))
+(call .qcmap_cm.manage_conffile_files (subj))
+(call .qcmap_cm.execute_conffile_files (subj))
+(call .qcmap_cm.write_tmpfile_dirs (subj))
+(allow subj .jshn.execfile (file(getattr)))
+(call .ubus.execute_execfile_files (subj))
+(allow subj .ip.execfile (file(getattr)))
+(call .kernel.search_sysfile_dirs (subj))
+(call .kmsg.write_nodedev_chr_files (subj))
+(call .jshn.execute_execfile_files (subj))
+(call .ip.execute_execfile_files (subj))
+(call .kpi_values.append_sysfile_files(subj))
 )
 
 

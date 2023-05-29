@@ -268,7 +268,10 @@
     (allow subj .file.execfile (file (getattr)))
     (call .tmpfile.search_locktmpfile_dirs (subj))
     (call .tmpfile.readwrite_locktmpfile_dirs (subj))
+    (call .tmpfile.create_locktmpfile_files (subj))
     (call .rccommon.read_conffile_files (subj))
+    (call capabilities.getattr_conffile_files (subj))
+    (call capabilities.search_conffile_dirs (subj))
 
     ;; Need open and write permission on /proc/sys/net/netfilter/nf_conntrack_generic_timeout
     (call .netfilter.manage_sysctlfile_files (subj))

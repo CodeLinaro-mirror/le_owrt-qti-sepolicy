@@ -212,10 +212,10 @@
            (allow subj .power.sysfile (dir(search append open)))
            (allow subj .power.sysfile (file(append open)))
            (allow subj self (capability2(block_suspend)))
-           (allow subj self(tcp_socket(create connect write)))
-           (allow subj .httpproxy.netport (tcp_socket (name_connect)))
-           (allow subj .net.netif (netif (egress)))
-           (allow subj .net.netnode (node (sendto)))
+
+        ;; Need to read /dev/socket/powerstate/output_ds_notify
+	   (call .powerstate_socket.manage_powerstate_socket_files (subj))
+           (allow subj .powerstate.subj (unix_stream_socket (connectto)))
 )
 
 ;;Policies for license store

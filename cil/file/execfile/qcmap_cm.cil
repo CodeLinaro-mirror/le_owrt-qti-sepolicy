@@ -313,5 +313,8 @@
       (call .dataadpl.manage_conffile_files (subj))
       ;; Need read on adpl dir
       (call .dataadpl.manage_conffile_dirs (subj))
+      ;; Need permission for dhcp_release
+      (allow subj .net.netif (netif (egress)))
+      (allow subj .net.netnode (node (sendto)))
 
 )

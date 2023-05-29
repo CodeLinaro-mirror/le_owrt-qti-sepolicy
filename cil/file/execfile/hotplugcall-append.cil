@@ -95,4 +95,9 @@
       (allow .jsonfilter.subj .hotplugcall.subj (fifo_file (read write ioctl)))
 
      (call .file.execute_execfile_files (subj))
+
+;; Need to add rule for netfilter.
+      (allow subj .net.procfile (file (read open getattr)))
+;;
+
 )

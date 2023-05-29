@@ -131,4 +131,7 @@
        (call .qti.readwrite_nodedev_chr_files (subj))
     ;; Need read write on /dev/ipa chr_file
        (call .ipa.readwrite_nodedev_chr_files (subj))
+
+    ;; Need write permission for qti and adpl on sock_file
+    (call .logd.write_miscfile_sock_files (subj))
 )

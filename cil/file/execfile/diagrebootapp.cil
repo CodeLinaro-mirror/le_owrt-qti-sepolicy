@@ -54,5 +54,7 @@
 	(call .devices.manage_sysfile_files (subj))
 
 	(allow subj .bus.sysfile (lnk_file (read)))
+	(allow diagrebootapp.subj tmp.fs (fifo_file (write open)))
+
 	;;(blockinherit .file.exec.obj_template)
 )

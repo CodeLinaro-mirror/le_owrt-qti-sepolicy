@@ -80,4 +80,24 @@
     (call .sys.search_fs_dirs (subj))
     (allow subj .sys.subj (fifo_file (read write)))
 
+    ;; Need for /dev/logd or logging
+    ;; this will add write permission also
+    (call .logd.unix_dgram_send(subj))
+
+    (allow subj self (capability(net_admin)))
+    (allow subj self create_netlink_route_socket)
+    (allow subj self (netlink_route_socket (nlmsg_read nlmsg_write)))
+    (call .random.read_nodedev_chr_files (subj))
+    (allow subj .netmgrd.tmpfile (sock_file (write)))
+    (allow subj .netmgrd.subj (unix_stream_socket (connectto)))
+
+    ;; read /etc/hosts file
+    (call .nameservice.read_miscfile_files (subj))
+
+    ;; for http requests over http standard port
+    (allow subj .http.netport (tcp_socket (name_connect)))
+
+    ;; don't show denial when we try to check for sdcard
+    ;; this will just silence denials without providing permission
+    (dontaudit subj .mnt.miscfile manage_dir)
 )

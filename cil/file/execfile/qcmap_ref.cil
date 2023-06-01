@@ -325,4 +325,7 @@
     (allow rcnetwork.subj qcmap_ref.subj (fd (use)))
 
     (call .hotplugcall.mapexecute_execfile_files (subj))
+
+    ;; IPQ WLAN boot-up config
+    (call .wifi.subj_type_transition (subj))
 )

@@ -280,6 +280,8 @@
     ;; Sockets used by user-space tools
     (allow subj self create_netlink_generic_socket)
     (allow subj self create_unix_dgram_socket)
+    ;; acfg_tool
+    (allow subj self create_netlink_scsitransport_socket)
 
     ;; sysctl command on dev.nss nodes
     (allow subj .sys.sysctlfile (dir (search)))

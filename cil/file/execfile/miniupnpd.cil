@@ -1,0 +1,42 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .file
+    (call .miniupnpd.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr))
+    (call .miniupnpd.obj_type_transition_conftmpfile (unconfined.subj_typeattr)))
+
+(block miniupnpd
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon  "/tmp/run/miniupnpd\.leases"  file  runtimetmpfile_file_context)
+       (filecon  "/tmp/etc/miniupnpd\.conf"  file  conftmpfile_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_runtimetmpfile ((type ARG1))
+              (call .tmpfile.runtimetmpfile_obj_type_transition
+                   (ARG1 runtimetmpfile file "miniupnpd.leases")))
+
+       (macro obj_type_transition_conftmpfile ((type ARG1))
+              (call .tmpfile.conftmpfile_obj_type_transition
+                   (ARG1 conftmpfile file "miniupnpd.conf")))
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .agent.base_template)
+       (blockinherit .tmpfile.runtime.obj_template)
+       (blockinherit .tmpfile.conf.obj_template)
+       (call obj_type_transition_runtimetmpfile (subj))
+       (call obj_type_transition_conftmpfile (subj))
+
+
+)

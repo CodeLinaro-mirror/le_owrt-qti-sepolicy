@@ -332,6 +332,9 @@
     (allow rcnetwork.subj qcmap_ref.subj readwriteinherited_fifo_file)
     (allow rcnetwork.subj qcmap_ref.subj (fd (use)))
 
+    ;; Need permission to run init.d script
+    (allow subj .file.conffile (file(create)))
+
     (call .hotplugcall.mapexecute_execfile_files (subj))
 
     ;; IPQ WLAN boot-up config

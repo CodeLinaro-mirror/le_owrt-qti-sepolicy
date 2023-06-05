@@ -62,11 +62,6 @@
         file
         execfile_file_context)
 
-       (filecon
-        "/usr/bin/ftmdaemon"
-        file
-        execfile_file_context)
-
 
        (filecon
         "/etc/bluetooth"
@@ -97,9 +92,7 @@
               (call .file.execfile_obj_type_transition
                     (ARG1 execfile file "btapp"))
               (call .file.execfile_obj_type_transition
-                    (ARG1 execfile file "btproperty"))
-              (call .file.execfile_obj_type_transition
-                    (ARG1 execfile file "ftmdaemon")))
+                    (ARG1 execfile file "btproperty")))
 
        (macro obj_type_transition_conffile ((type ARG1))
               (call .file.conffile_obj_type_transition

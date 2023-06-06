@@ -39,15 +39,28 @@
 	(allow subj self create_unix_dgram_socket)
 	(allow subj self create_unix_stream_socket)
 	(allow subj self create_netlink_generic_socket)
+	(allow subj self create_qipcrtr_socket)
 
 	(call .logd.unix_dgram_send (subj))
 	(call .diag-router.connectto_unix_stream_sockets (subj))
 
 	(call .file.search_conffile_dirs (subj))
 	(call .file.read_conffile_lnk_files (subj))
+	(call .sys.search_fs_dirs (subj))
 
 	;; To access /dev/btpower
 	(call .qbt_dev.readwrite_nodedev_chr_files(subj))
+
+	;; Permissions for /sys/power/wake_lock /sys/power/wake_unlock
+	(call .power.search_sysfile_dirs(subj))
+	(call .power.readwrite_sysfile_files (subj))
+	(allow subj self (capability2 (wake_alarm block_suspend)))
+
+	(call .qbt.manage_datafile_dirs (subj))
+	(call .qbt.manage_datafile_files (subj))
+
+	(call .qcfirmware.search_miscfile_dirs (subj))
+	(call .qcfirmware.read_miscfile_files (subj))
 
 	;; To access /dev/socket/leprop-service
 	(call .leprop.unix_dgram_send (subj))

@@ -66,5 +66,8 @@
 
 	;;(blockinherit .file.exec.obj_template)
 
-    (allow subj diagrebootapp.tmpfile (fifo_file (open write)))
+        (allow subj diagrebootapp.tmpfile (fifo_file (open write)))
+
+	(allow diagrebootapp.subj logd.miscfile(sock_file(write)))
+
 )

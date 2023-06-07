@@ -98,6 +98,6 @@
 
 ;; Need to add rule for netfilter.
       (allow subj .net.procfile (file (read open getattr)))
-;;
 
+      (allow subj .sys.fs (filesystem (getattr)))
 )

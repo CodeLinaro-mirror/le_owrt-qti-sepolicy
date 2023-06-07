@@ -3,5 +3,11 @@
 
 (in .xtables
 
+  (filecon
+   "/usr/bin/xtables-nft-multi"
+   file
+   execfile_file_context)
+
   (call .sys.readinherited_fifo_files (subj))
+  (allow subj self create_netlink_netfilter_socket)
 )

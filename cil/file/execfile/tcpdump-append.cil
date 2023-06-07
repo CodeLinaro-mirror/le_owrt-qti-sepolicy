@@ -10,4 +10,9 @@
     (call .qcmap_cm.search_tmpfile_dirs (subj))
     (call .qcmap_cm.create_tmpfile_files (subj))
     (call .qcmap_cm.write_tmpfile_files (subj))
+    ;; Need permission to collect tcpdumps in /data/ dir
+    (call .file.write_datafile_dirs (subj))
+    (call .file.search_datafile_dirs (subj))
+    (call .file.create_datafile_files (subj))
+    (call .file.write_datafile_files (subj))
 )

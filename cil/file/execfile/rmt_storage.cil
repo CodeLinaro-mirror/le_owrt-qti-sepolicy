@@ -78,4 +78,6 @@
         (call .devices.search_sysfile_dirs(subj))
         (call .class.search_sysfile_dirs(subj))
         (call .mmc.readwrite_stordev_blk_files (subj))
+        (allow subj self (capability (dac_override )))
+
 )

@@ -352,4 +352,7 @@
     ;; Allow mv operation about backup WCNSS_qcom_cfg.ini
     (allow subj .wifi.subj (process (setfscreate)))
     (allow subj .wifi.datafile (file (relabelfrom relabelto)))
+
+    ;; To access /sys/kernel/boot_kpi/kpi_values
+    (call .kpi_values.readwrite_sysfile_files (subj))
 )

@@ -304,4 +304,13 @@
     ;; Need to access /dev/socket/data/qcmap_sta_uds_file
     (call .qcmap_cm.write_tmpfile_sock_files(subj))
     (call .qcmap_cm.sendto_unix_dgram_sockets (subj))
+
+    ;; Need transition to run odhcpd reload
+    (call .rcodhcpd.subj_type_transition (subj))
+    (allow subj .rcodhcpd.initscriptfile (file (getattr execute read open)))
+    (allow rcodhcpd.subj qcmap_cli.subj (fd (use)))
+    (allow rcodhcpd.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow rcodhcpd.subj qcmap_cli.subj (unix_stream_socket (read write)))
+
+
 )

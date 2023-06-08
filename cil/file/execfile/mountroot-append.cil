@@ -9,6 +9,8 @@
 (call .dev.stor.readwrite_all_blk_files (subj))
 (call .tmp.read_fs_fifo_files (subj))
 (call .tmp.read_fs_blk_files (subj))
+(allow subj .snd.nodedev  (dir ( getattr)))
+(allow subj .dma_heap.nodedev  (dir ( getattr)))
 
 )
 

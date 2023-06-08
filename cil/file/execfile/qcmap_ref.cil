@@ -241,6 +241,9 @@
     (allow subj .iw.execfile (file (execute read open)))
     (call .iw.subj_type_transition (subj))
     (allow subj .iw.execfile (file (map)))
+    (allow iw.subj qcmap_ref.subj (fd (use)))
+    (allow iw.subj qcmap_ref.subj (fifo_file (read write)))
+    (allow iw.subj qcmap_ref.subj (unix_stream_socket (read write)))
     (allow subj self create_netlink_generic_socket)
     (allow subj .wifi.datafile (file (read write append open create getattr lock unlink)))
     (allow subj .wifi.datafile (dir (search remove_name write add_name)))
@@ -316,4 +319,10 @@
     (allow ifstatus.subj qcmap_cli.subj (fd (use)))
     (call .tmpfile.search_hoststmpfile_dirs (subj))
     (call .tmpfile.search_conftmpfile_dirs (subj))
+    ;; Need for /etc/init.d/network reload
+    (allow rcnetwork.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow rcnetwork.subj qcmap_ref.subj readwriteinherited_fifo_file)
+    (allow rcnetwork.subj qcmap_ref.subj (fd (use)))
+
+    (call .hotplugcall.mapexecute_execfile_files (subj))
 )

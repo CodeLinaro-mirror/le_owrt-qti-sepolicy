@@ -7,9 +7,11 @@
     (call .port-bridge.subj_type_transition (subj)))
 
 (in .file
-    (call .port-bridge.obj_type_transition_execfile (unconfined.subj_typeattr)))
+    (call .port-bridge.obj_type_transition_execfile (unconfined.subj_typeattr))
     (call .port-bridge.obj_type_transition_tmpfile (unconfined.subj_typeattr chr_file "at_mdm0"))
     (call .port-bridge.obj_type_transition_tmpfile (unconfined.subj_typeattr chr_file "at_usb0"))
+    (call .port-bridge.obj_type_transition_tmpfile (unconfined.subj_typeattr chr_file "mhi_pipe_32"))
+)
 
 (block port-bridge
         (filecon
@@ -17,6 +19,20 @@
         file
         execfile_file_context)
 
+        (filecon
+         "/dev/mhi_pipe_32"
+         char
+         tmpfile_file_context)
+
+        (filecon
+         "/dev/at_usb0"
+         char
+         tmpfile_file_context)
+
+         (filecon
+         "/dev/at_mdm0"
+         char
+         tmpfile_file_context)
 
         ;;
         ;; Macros
@@ -39,9 +55,6 @@
         (blockinherit .tmpfile.runtime.obj_template)
         (blockinherit file.data.obj_template)
         (blockinherit .tmpfile.obj_template)
-
-        (call obj_type_transition_tmpfile (subj chr_file "at_mdm0"))
-        (call obj_type_transition_tmpfile (subj chr_file "at_usb0"))
 
         (call .shell.mapexecute_execfile_files(subj))
         (call .shell.read_execfile_files (subj))

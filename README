@@ -58,5 +58,32 @@ To compile just sepolicy :
 For example you can refer
 build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/selinux-policy-0.8/src
 
+22.0.3 version update
+with future upgrade to 22.0.3 selinux version will change from 0.8 to 1.1
+
 Other doc/links :
 https://openwrt.org/packages/pkgdata/selinux-policy
+
+####user_debug variable
+
+for DEBUG varaint we exposed user_debugas a global variable which can be used across  all the cil files (upstream and downstream)
+
+user_dedug will set to 0 if variant is selected as USER
+
+#declaration
+<workspace_location>/owrt-qti-sepolicy/cil/files/execute/user_debug/userdebug.cil
+
+# user_debug 
+
+user_debug is a global boolean varaible exposed by downstream selinux cil file <userdebug.cil> for DEBUG variant
+
+## How to use user_debug with cil file
+## Gnerally the case will be like you have rule in debug build but not on production build . So add rule if debug build and noting in user build.
+
+    (booleanif user_debug
+        (true
+            (allow subj xyz.conffile (file (rw_file_perms)))
+        )
+    )
+
+

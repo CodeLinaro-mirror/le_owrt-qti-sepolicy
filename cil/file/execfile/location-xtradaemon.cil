@@ -44,6 +44,7 @@
     ;; Need qipcrtr socket creations
     (allow subj  self  create_qipcrtr_socket)
 
+    (allow subj loc_launcher.subj (unix_dgram_socket (read write)))
     (allow subj loc_launcher.subj (unix_stream_socket (read write)))
 
     ;; read resolv.conf
@@ -67,6 +68,15 @@
     (call .random.read_nodedev_chr_files (subj))
 
     (call .loc_launcher.use_fds (subj))
+
+    ;; create tcp sockets
+    (allow subj self create_tcp_socket)
+
+    ;; read ssl certificates
+    (call .ssl.search_certfile_dirs (subj))
+    (call .ssl.read_certfile_files (subj))
+
+    (allow subj .http.netport (tcp_socket (name_connect)))
 
     ;; read kernel sysfs
     (call .kernel.search_sysfile_dirs (subj))

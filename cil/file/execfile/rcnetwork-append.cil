@@ -18,4 +18,6 @@
 
        ;;
        (allow .iw.subj .rcnetwork.subj (fd (use)))
+       ;; Need execute permission for wifi
+       (call .wifi.execute_execfile_files (subj))
 )

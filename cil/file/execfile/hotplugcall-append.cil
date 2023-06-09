@@ -6,7 +6,6 @@
 
 (in .hotplugcall
 
-    (block hotplugcalltmp
 
 ;;Needed for search on /dev dir
       (allow  subj  dma_heap.nodedev  search_dir)
@@ -16,11 +15,11 @@
       (allow  subj dma_heap.nodedev (chr_file (setattr)))
 
 ;;Needed to do  chown/chmod/fowner/fsetid on the new node
-      (allow subj self (capability (chown fowner fsetid )))
+      (allow subj self (capability (chown fowner fsetid net_admin net_raw)))
 
 ;;Need to update dma_heap/qcom,qseecom and smcinvoke for getattr
       (call .dma_heap.read_nodedev_chr_files (subj))
-      (call .smcinvoke.read_nodedev_chr_files (subj)))
+      (call .smcinvoke.read_nodedev_chr_files (subj))
 
 ;; Need for qcmap_cli
       (call .qcmap_cli.use_fds (subj))
@@ -41,6 +40,9 @@
       (allow  .hotplugcall.subj .dos.fs (filesystem (relabelfrom)))
       (allow  .mnt.miscfile  .mnt.miscfile (filesystem (associate)))
       (allow  .sys.subj  .mnt.miscfile (filesystem (getattr)))
+      (allow  .hotplugcall.subj .sdcard.miscfile (dir (getattr mounton)))
+      (allow  .hotplugcall.subj dos.fs (filesystem (mount unmount)))
+      (allow  .hotplugcall.subj dos.fs (dir (getattr)))
 
 ;; Needed for the mount as this will be running in sys.subj
       (allow  .sys.subj  qcfirmware.miscfile (filesystem ( relabelto relabelfrom mount unmount getattr)))
@@ -58,7 +60,8 @@
       (call .sys.readwriteinherited_fifo_files (subj))
 
 ;; Need permissions on mwan3
-      (call .mwan3.search_runtimetmpfile_dirs (subj))
+      (call .mwan3.obj_type_transition_runtimetmpfile (subj))
+      (call .mwan3.manage_runtimetmpfile_dirs (subj))
       (call .mwan3.manage_runtimetmpfile_files(subj))
       (allow subj mwan3.conffile (file(getattr)))
       (call .mwan3.read_conffile_files (subj))
@@ -71,6 +74,23 @@
       (call .netifd.manage_runtimetmpfile_files(subj))
 ;; Need execute read on ip.execfile
       (call .ip.read_execfile_files (subj))
-      (call .ip.execute_execfile_files (subj))
-      (allow subj self create_netlink_route_socket)
+      (call .ip.subj_type_transition (subj))
+      (allow ip.subj hotplugcall.subj (fd (use)))
+      (allow ip.subj hotplugcall.subj readwriteinherited_fifo_file)
+;; mount umount of sdcard need this
+      (allow subj self (capability (sys_admin)))
+;; Need create on netlink_netfilter_socket
+      (allow subj self create_netlink_netfilter_socket)
+;; Need permission on iproute2
+      (call .iproute2.search_conffile_dirs (subj))
+      (call .iproute2.read_conffile_files (subj))
+      (call .net.read_procfile_lnk_files (subj))
+      (allow subj .net.procfile (file(getattr)))
+;; Need for dnsmasq restart
+      (call .rcdnsmasq.subj_type_transition (subj))
+      (allow rcdnsmasq.subj hotplugcall.subj (fd (use)))
+;; Need to share fifo_file for jsonfilter
+      (allow .jsonfilter.subj .hotplugcall.subj (fifo_file (read write ioctl)))
+
+     (call .file.execute_execfile_files (subj))
 )

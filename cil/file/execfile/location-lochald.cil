@@ -52,6 +52,16 @@
     ;; connect to loc_launcher target stream
     (call .loc_launcher.connectto_unix_stream_sockets (subj))
 
+    ;; Need execute on shell.execfile files
+    (call .shell.execute_execfile_files (subj))
+    ;; Need search on sysfile dir
+    (call .fs.search_sysfile_dirs (subj))
+
+    ;; Need gettarr on selinux filesystem
+    (call .selinux.getattr_filesystems (subj))
+    ;; Need search on selinux dir
+    (call .selinux.search_conffile_dirs(subj))
+
     ;; Need qipcrtr socket creations
     (allow subj  self  create_qipcrtr_socket)
 
@@ -72,6 +82,12 @@
 
     ;; needed to read  /dev/socket/leprop-service
     (allow subj  leprop.miscfile  (sock_file  (read write)))
+    ;;connect to leprop socket
+    (call .leprop.connectto_unix_stream_sockets (subj))
+
+    ;; Need read open execute on /etc/data/backhaulWWANConfig.sh
+    (call .qcmap_cm.search_conffile_dirs (subj))
+    (call .qcmap_cm.execute_conffile_files (subj))
 
     ;; KPI node access
     (call .kpi_values.manage_sysfile_files (subj))

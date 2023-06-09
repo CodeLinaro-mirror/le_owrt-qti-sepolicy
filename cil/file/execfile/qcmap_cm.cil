@@ -204,6 +204,7 @@
            (call .qcmap_cm.addname_conffile_dirs(subj))
            (call .qcmap_cm.write_conffile_dirs(subj))
            (call .qcmap_cm.manage_conffile_files (subj))
+           (call .qcmap_cm.execute_conffile_files (subj))
 
         ;; Need search for fs dir with tcontext=u:r:fs.sysfile
            (call .fs.search_sysfile_dirs (subj))
@@ -268,9 +269,25 @@
       (call .conntrack.read_execfile_files (subj))
       (call .conntrack.execute_execfile_files (subj))
 
-      ;;Need search read on etc/data/ipa
+      ;;Need search read write on etc/data/ipa
       (call .ipacm.search_conffile_dirs (subj))
-      (call .ipacm.read_conffile_files (subj))
+      (call .ipacm.readwrite_conffile_files (subj))
+      (call .ipacm.readwrite_conffile_dirs (subj))
+      (call .ipacli.execute_execfile_files (subj))
+      (call .ipacli.read_execfile_files (subj))
+      (call .ipacm.addname_conffile_dirs (subj))
+      (call .ipacli.subj_type_transition (subj))
+      (call .ipacm.create_conffile_files(subj))
+      (allow subj ipacli.execfile (file (map)))
+      (allow subj ipacm.conffile (dir (remove_name)))
+      (allow subj .net.procfile (lnk_file (read)))
+      (allow subj .net.procfile (file (read open getattr)))
+      (allow subj proc.fs (filesystem (getattr)))
+      (call .resolv.read.subj_type (subj))
+      (call .resolv.manage_tmpfile_files (subj))
+      (call .resolv.search_tmpfile_dirs (subj))
+      (call .resolv.readwrite_tmpfile_files (subj))
+      (allow subj .net.netnode (udp_socket (node_bind)))
 
       ;; Need open read on /
       (allow subj .sys.rootfile (dir(open read)))
@@ -282,4 +299,23 @@
       (call .uci.search_conffile_dirs (subj))
       (call .uci.readwrite_conffile_files (subj))
       (call .uci.manage_conffile_files (subj))
+
+      ;; Need read open and execute_no_trans permission on /usr/sbin/ebtables
+      (call .file.manage_conffile_files (subj))
+      (call .file.execute_execfile_files (subj))
+
+      ;; Need search on adpl dir
+      (call .dataadpl.search_conffile_dirs (subj))
+      ;; Need open read on adpl dir
+      (call .dataadpl.read_conffile_files (subj))
+      ;; Need watch on adpl dir
+      (allow subj dataadpl.conffile (dir (watch)))
+      ;; Need permission for sysfs
+      (allow subj .class.sysfile (lnk_file (read)))
+
+      ;; Need open on /etc/data/adpl/mhi_enable
+      (call .dataadpl.manage_conffile_files (subj))
+      ;; Need read on adpl dir
+      (call .dataadpl.manage_conffile_dirs (subj))
+
 )

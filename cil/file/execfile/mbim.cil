@@ -111,6 +111,15 @@
         (allow subj .qcfirmware.miscfile (dir (search)))
         (allow subj .qcfirmware.miscfile (file (getattr read open)))
 
+        ;; Permissions to access productId
+        (allow subj .config.fs (dir (search)))
+        (allow subj .config.fs (file (getattr read open)))
+
+        ;; Permission to invoke init file via ubus
+        (call .ubusd.readwrite_runtimetmpfile_dirs(subj))
+        (call .ubusd.readwrite_runtimetmpfile_sock_files(subj))
+        (allow subj ubusd.subj (unix_stream_socket (connectto)))
+
         ;; permission to access device nodes
         (call .android_mbim.readwrite_nodedev_chr_files (subj))
         (call .smdcntl.readwrite_nodedev_chr_files (subj))

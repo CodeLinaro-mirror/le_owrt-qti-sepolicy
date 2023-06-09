@@ -65,6 +65,7 @@
         (allow subj file.conffile (dir (search)))
         (allow subj atfwd.runtimetmpfile (dir (write remove_name search add_name)))
         (allow subj atfwd.runtimetmpfile (sock_file (create setattr unlink)))
+        (dontaudit subj .sys.subj (process(signal)))
 
-        (allow subj .sys.subj (process(signal)))
+
 )

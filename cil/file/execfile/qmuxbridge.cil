@@ -59,6 +59,19 @@
 	;; permission to read/write /dev/kmsg
         (call .kmsg.readwrite_nodedev_chr_files (subj))
 
+        ;; permission to search conf file directory
+        (call .file.search_conffile_dirs (subj))
+
+        ;; permission to connectto diag-router socket
+        (call .diag-router.connectto_unix_stream_sockets (subj))
+
+        ;; Need search for tcontext=u:r:sys.fs tclass=dir
+        (call .sys.search_fs_dirs (subj))
+
+        ;; Need read open on /sys/devices/virtual/gsi_usb/gps/uevent
+        (allow subj .devices.sysfile (dir (search)))
+        (allow subj .devices.sysfile (file (read open)))
+
 	;; permission to access device nodes
         (call .gps.readwrite_nodedev_chr_files (subj))
         (call .smdcntl.readwrite_nodedev_chr_files (subj)))

@@ -1,0 +1,54 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+	(call .ipacmdiag.subj_type_transition (subj))
+)
+
+(in .file
+	(call .ipacmdiag.obj_type_transition_execfile (unconfined.subj_typeattr))
+)
+
+(block ipacmdiag
+
+	;;Contexts
+
+	(filecon
+	"/usr/bin/ipacmdiag"
+	file
+	execfile_file_context)
+
+	;;
+
+	;; Macros
+
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "ipacmdiag")))
+
+	;;
+
+	;; Policy
+
+	(blockinherit .agent.base_template)
+	(blockinherit .tmpfile.obj_template)
+
+	(allow subj self (unix_dgram_socket (create)))
+	(allow subj self readwrite_unix_dgram_socket)
+	(allow subj self create_unix_stream_socket)
+	(allow subj self write_unix_stream_socket)
+	(allow subj self (unix_stream_socket (read)))
+
+	(call .sys.connectto_unix_stream_sockets (subj))
+	(allow subj diag-router.subj (unix_stream_socket (connectto)))
+
+	(call .file.search_conffile_dirs (subj))
+	(call .ipacm.search_tmpfile_dirs (subj))
+	(call .ipacm.write_tmpfile_dirs (subj))
+	(call .ipacm.addname_tmpfile_dirs (subj))
+	(allow subj ipacm.tmpfile create_sock_file)
+
+	;;
+)

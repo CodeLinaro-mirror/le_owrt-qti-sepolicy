@@ -67,4 +67,13 @@
           ;;Need permission to manage conffile files and dirs
           (call .qcmap_cm.search_conffile_dirs (subj))
           (call .qcmap_cm.manage_conffile_files (subj))
+          ;; Need execute, read on /etc/init.d/network
+          (call .rcnetwork.execute_initscriptfile_files (subj))
+          (call .rcnetwork.read_initscriptfile_files (subj))
+          ;; Need permissions on /lib/network/config.sh
+          (call .network.search_miscfile_dirs (subj))
+          (call .network.readwrite_miscfile_dirs (subj))
+          (call .network.manage_miscfile_files (subj))
+          (call .kmsg.readwrite_nodedev_chr_files (subj))
+          (call .locale.manage_miscfile_files (subj))
 )

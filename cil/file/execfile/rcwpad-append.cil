@@ -1,24 +1,17 @@
 ;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
-(in .file
-    (call .rcwpad.obj_type_transition_initscriptfile_ext (unconfined.subj_typeattr))
-)
+;; These is upstream domain for rcfiles related to wpad
+
 
 (in .rcwpad
     ;;
     ;; Contexts
     ;;
-    (filecon "/etc/init\.d/hostapd-daemon\.init" file initscriptfile_file_context)
-    (filecon "/etc/init\.d/wpa-supplicant_qcacld\.init" file initscriptfile_file_context)
 
     ;;
     ;; Macros
     ;;
-    (macro obj_type_transition_initscriptfile_ext ((type ARG1))
-        (call .file.initscriptfile_obj_type_transition (ARG1 initscriptfile file "hostapd-daemon.init"))
-        (call .file.initscriptfile_obj_type_transition (ARG1 initscriptfile file "wpa-supplicant_qcacld.init"))
-    )
 
     ;;
     ;;Policy
@@ -35,4 +28,11 @@
 
     ;; Need search on /sys/class/net
     (call .class.search_sysfile_dirs (subj))
+    ;; Need search on /etc/init.d                                                                                                                                           |
+    (allow subj .file.initscriptfile (dir (search)))
+
+
+    (allow subj .qcmap_ref.subj (fd (use)))
+    (allow subj .qcmap_ref.subj (fifo_file (read write)))
+    (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
 )

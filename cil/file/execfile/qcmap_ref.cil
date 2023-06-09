@@ -38,6 +38,8 @@
     (blockinherit .dev.tty.obj_template)
 
     (call obj_type_transition_tmpfile (subj file "*"))
+    ;; Need obj_type_transition on mwan3
+    (call .mwan3.obj_type_transition_runtimetmpfile (subj))
 
     ;; Need create for qipcrtr_socket, unix_stream_socket
     (allow subj self create_qipcrtr_socket)
@@ -214,4 +216,113 @@
 
     ;; Need to create create_netlink_netfilter_socket
     (allow subj self create_netlink_netfilter_socket)
+
+    (call .resolv.append_tmpfile_files (subj))
+    (call .sys.search_sysctlfile_dirs (subj))
+    (call .net.search_sysctlfile_dirs (subj))
+    (call .netfilter.search_sysctlfile_dirs(subj))
+    (call .netfilter.readwrite_sysctlfile(subj))
+    (call .netfilter.readwrite_sysctlfile_sock_files (subj))
+
+    ;; Need read on /etc/localtime
+    (call .file.read_conffile_lnk_files (subj))
+    (call .locale.read_miscfile_files (subj))
+    (call .locale.map_miscfile_files (subj))
+    (call .qcmap_cm.search_datafile_dirs (subj))
+    (allow subj .qcmap_cm.datafile (file (append open)))
+    (allow subj .wifi.execfile (file (getattr execute read open)))
+
+    (allow subj .file.execfile (dir (read open getattr)))
+    (call .wifi.execute_execfile_files (subj))
+    (allow subj .wifi.miscfile (dir (read open search)))
+    (allow subj .wifi.miscfile (file (read open getattr)))
+    (allow subj .net.procfile (lnk_file (read)))
+    (allow subj .net.procfile (file (read open)))
+    (allow subj .iw.execfile (file (execute read open)))
+    (call .iw.subj_type_transition (subj))
+    (allow subj .iw.execfile (file (map)))
+    (allow iw.subj qcmap_ref.subj (fd (use)))
+    (allow iw.subj qcmap_ref.subj (fifo_file (read write)))
+    (allow iw.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow subj self create_netlink_generic_socket)
+    (allow subj .wifi.datafile (file (read write append open create getattr lock unlink)))
+    (allow subj .wifi.datafile (dir (search remove_name write add_name)))
+    (allow subj .jshn.execfile (file (getattr execute read open map)))
+    (call .jshn.subj_type_transition (subj))
+    (allow subj .network.miscfile (dir (read search open)))
+    (allow subj .network.miscfile (file (getattr read open)))
+    (allow subj .network.miscfile (dir (read search open)))
+    (allow subj .network.miscfile (file (getattr read open)))
+    (allow subj .osrelease.miscfile (file (read open)))
+    (allow subj .console.ttydev (chr_file (open write)))
+    (call .module.search_sysfile_dirs (subj))
+    (allow subj .file.modulesfile (dir (getattr read open search)))
+    (allow subj .file.modulesfile (file (getattr)))
+    (call .kmodloader.subj_type_transition (subj))
+    (allow subj .kmodloader.execfile (file (getattr)))
+    (allow subj .tmpfile.runtimetmpfile (file (open lock create)))
+
+    ;; Need read execute for hostapd /data/vendor/wifi/
+    (allow subj .rcwpad.initscriptfile (file (getattr execute read open)))
+    (call .rcwpad.subj_type_transition (subj))
+    (allow subj .file.execfile (file (getattr)))
+    (call .tmpfile.search_locktmpfile_dirs (subj))
+    (call .tmpfile.readwrite_locktmpfile_dirs (subj))
+    (call .rccommon.read_conffile_files (subj))
+
+    ;; Need open and write permission on /proc/sys/net/netfilter/nf_conntrack_generic_timeout
+    (call .netfilter.manage_sysctlfile_files (subj))
+
+    ;; Need search permission on net and netfilter
+    (call .net.search_sysctlfile_dirs (subj))
+    (call .netfilter.search_sysctlfile_dirs (subj))
+
+    ;; Need read on rc.common
+    (call .rccommon.manage_conffile_files (subj))
+    ;; Need search on resolve.conf.d dir
+    (call .resolv.search_tmpfile_dirs (subj))
+    ;; Need permissions on mwan3
+    (call .mwan3.manage_runtimetmpfile_dirs (subj))
+    (call .mwan3.manage_runtimetmpfile_files(subj))
+    (call .mwan3.read_conffile_files (subj))
+    ;; Need execte on mwan3
+    (call .file.read_initscriptfile_files (subj))
+    (call .file.execute_initscriptfile_files (subj))
+    (call .tmpfile.search_locktmpfile_dirs (subj))
+    (allow subj .xtables.execfile ( file (getattr)))
+    (allow subj .tmpfile.locktmpfile (file (open)))
+    (call .net.search_sysctlfile_dirs (subj))
+    (call .hotplugcall.manage_execfile_files (subj))
+    ;; Need read execute on xtables
+    (call .xtables.execute_execfile_files (subj))
+    (call .xtables.readwrite_runtimetmpfile_files (subj))
+    (call .ip.execute_execfile_files (subj))
+    (call .ip.readwrite_execfile_files (subj))
+    (allow subj .jshn.execfile (file(getattr)))
+    (call .net.read_procfile_files (subj))
+    (call .net.read_procfile_lnk_files (subj))
+    (call .iproute2.search_conffile_dirs (subj))
+    (call .iproute2.read_conffile_files (subj))
+    (allow subj self (netlink_route_socket (nlmsg_read nlmsg_write)))
+    (call .proc.getattr_filesystems (subj))
+    ;; Need add_name, write on /etc/rc.d
+    (call .file.readwrite_conffile_dirs (subj))
+    ;; Need unlink, read , create, remove on /etc/rc.d/S19mwan3
+    (call .file.manage_conffile_lnk_files (subj))
+    (call .jshn.subj_type_transition (subj))
+    (call .hotplug.search_conffile_dirs (subj))
+    (call .hotplug.read_conffile_files (subj))
+    (call .random.read_nodedev_chr_files (subj))
+    (call .logd.sendto_unix_dgram_sockets(subj))
+    (allow ifstatus.subj qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow ifstatus.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow ifstatus.subj qcmap_cli.subj (fd (use)))
+    (call .tmpfile.search_hoststmpfile_dirs (subj))
+    (call .tmpfile.search_conftmpfile_dirs (subj))
+    ;; Need for /etc/init.d/network reload
+    (allow rcnetwork.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow rcnetwork.subj qcmap_ref.subj readwriteinherited_fifo_file)
+    (allow rcnetwork.subj qcmap_ref.subj (fd (use)))
+
+    (call .hotplugcall.mapexecute_execfile_files (subj))
 )

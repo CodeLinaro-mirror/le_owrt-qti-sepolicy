@@ -72,6 +72,8 @@
       (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
       (allow .hotplugcall.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
       (call .netifd.manage_runtimetmpfile_files(subj))
+      (allow subj .netifd.subj (fifo_file (read write)))
+      (call .tmpfile.readwrite_runtimetmpfile_files (subj))
 ;; Need execute read on ip.execfile
       (call .ip.read_execfile_files (subj))
       (call .ip.subj_type_transition (subj))

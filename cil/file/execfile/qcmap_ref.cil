@@ -149,6 +149,8 @@
 
     ;; Need permission to reboot on first vlan creation
     (allow subj .sys.subj (process(signal)))
+    (allow subj .sys.subj (file (read write)))
+    (allow subj .sys.subj (dir (search)))
 
     ;; Need transition to run dnsmasq restart
     (call .rcdnsmasq.subj_type_transition (subj))
@@ -298,6 +300,7 @@
     (call .net.search_sysctlfile_dirs (subj))
     (call .hotplugcall.manage_execfile_files (subj))
     (allow subj .hotplugcall.execfile (file (execute)))
+    (call .hotplugcall.subj_type_transition (subj))
     ;; Need read execute on xtables
     (call .xtables.execute_execfile_files (subj))
     (call .xtables.readwrite_runtimetmpfile_files (subj))

@@ -7,8 +7,42 @@
 
 (in .file
     (call .leprop.obj_type_transition_execfile (unconfined.subj_typeattr))
-    (call .leprop.obj_type_transition_conffile (unconfined.subj_typeattr))
-    (call .leprop.tmp_obj_type_transition_miscfile (unconfined.subj_typeattr)))
+    (call .leprop.tmp_obj_type_transition_miscfile (unconfined.subj_typeattr))
+    (call .leprop_scripts.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .leprop_scripts.obj_type_transition_conffile (unconfined.subj_typeattr)))
+(block leprop_scripts
+       ;;
+       ;; Contexts
+       ;;
+       (filecon
+        "/etc/proptrigger.sh"
+        file
+        execfile_file_context)
+       (filecon
+        "/etc/scripts/init.qti.kernel.debug.sh"
+        file
+        execfile_file_context)
+       (filecon
+        "/etc/proptrigger.conf"
+        file
+        conffile_file_context)
+       ;;
+       ;; Macros
+       ;;
+       (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "proptrigger.sh"))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "init.qti.kernel.debug.sh")))
+       (macro manage_script_files ((type ARG1))
+              (call .shell.mapexecute_execfile_files (ARG1))
+              (call .shell.manage_execfile_files (ARG1)))
+       (macro obj_type_transition_conffile ((type ARG1))
+              (call .file.conffile_obj_type_transition
+                    (ARG1 conffile file "proptrigger.conf")))
+       (blockinherit .file.exec.obj_template)
+       (blockinherit .file.conf.obj_template)
+)
 
 (block leprop
 
@@ -26,10 +60,6 @@
         file
         execfile_file_context)
 
-       (filecon
-        "/etc/proptrigger.conf"
-        file
-        conffile_file_context)
 
        ;;
        ;; Macros
@@ -42,9 +72,6 @@
               (call .file.execfile_obj_type_transition
                     (ARG1 execfile file "leprop-service")))
 
-       (macro obj_type_transition_conffile ((type ARG1))
-              (call .file.conffile_obj_type_transition
-                    (ARG1 conffile file "proptrigger.conf")))
 
        (macro tmp_obj_type_transition_miscfile ((type ARG1))
               (call .tmp.fs_obj_type_transition
@@ -62,26 +89,29 @@
        (blockinherit .agent.base_template)
        (blockinherit .file.misc.obj_template)
        (blockinherit .file.data.obj_template)
-       (blockinherit .file.conf.obj_template)
        (blockinherit .tmpfile.runtime.obj_template)
        (blockinherit .tmpfile.obj_template)
 
+       (call .leprop_scripts.obj_type_transition_conffile (subj))
+       (call .leprop_scripts.obj_type_transition_execfile (subj))
+       (call .leprop_scripts.manage_script_files (subj))
        (allow subj self create_unix_dgram_socket)
        (allow subj self create_unix_stream_socket)
        (allow subj self (unix_stream_socket (connectto sendto listen accept)))
-       (call .file.search_conffile_dirs (subj))
-       (allow subj .file.conffile (file (open read execute execute_no_trans)))
-       (allow subj .shell.execfile (file (open read execute execute_no_trans)))
-       (allow subj .file.datafile ( dir (read write open add_name create remove_name rmdir)))
-       (allow subj .file.datafile ( file (create read write open getattr unlink append)))
-       (call .shell.mapexecute_execfile_files(subj))
-       (call .logd.unix_dgram_send(subj))
-       (call .sys.search_fs_dirs (subj))
+       (allow subj shell.execfile (file (execute_no_trans)))
+       (allow subj leprop_scripts.execfile (file (open read execute execute_no_trans getattr)))
+       (allow subj leprop_scripts.conffile (file (open read getattr)))
+       (allow subj .file.datafile (file (open read)))
+       (allow subj .filesystems.procfile (file (read)))
+       (allow subj .kmsg.nodedev (chr_file (open write)))
        (call .fs.search_sysfile_dirs (subj))
        (call .selinux.getattr_filesystems(subj))
        (call .selinux.search_conffile_dirs (subj))
-       (allow subj .filesystems.procfile (file (read open)))
+       (allow subj logd.miscfile (sock_file (write)))
+       (call .logd.sendto_unix_dgram_sockets (subj))
 
+       (call .sys.requestmodule (subj))
+       (call .sys.search_fs_dirs (subj))
        (call .kmsg.read_procfile_files (subj))
 
        (call .nameservice.read_miscfile_files (subj))

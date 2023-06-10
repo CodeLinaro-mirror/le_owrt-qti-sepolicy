@@ -1,0 +1,59 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+	(call .ftmdaemon.subj_type_transition (subj))
+)
+
+(in .file
+	(call .ftmdaemon.obj_type_transition_execfile (unconfined.subj_typeattr))
+)
+
+(block ftmdaemon
+
+	;;Contexts
+
+	(filecon
+	"/usr/bin/ftmdaemon"
+	file
+	execfile_file_context)
+
+	;;
+
+	;; Macros
+
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "ftmdaemon")))
+
+	;;
+
+	;; Policy
+
+	(blockinherit .agent.base_template)
+
+	(allow subj self (capability (net_admin)))
+
+	(allow subj self create_unix_dgram_socket)
+	(allow subj self create_unix_stream_socket)
+	(allow subj self create_netlink_generic_socket)
+
+	(call .logd.unix_dgram_send (subj))
+	(call .diag-router.connectto_unix_stream_sockets (subj))
+
+	(call .file.search_conffile_dirs (subj))
+	(call .file.read_conffile_lnk_files (subj))
+
+	;; To access /dev/btpower
+	(call .qbt_dev.readwrite_nodedev_chr_files(subj))
+
+	;; To access /dev/socket/leprop-service
+	(call .leprop.unix_dgram_send (subj))
+
+	;; Need to print on adb shell
+	(call .sys.readwriteinherited_ptydev_chr_files (subj))
+	;; Need to print on serial console
+	(call .dev.readwriteinherited_ttydev_chr_files (subj))
+)

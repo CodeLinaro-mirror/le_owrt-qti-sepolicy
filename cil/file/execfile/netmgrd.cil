@@ -65,6 +65,8 @@
         (call .openssl.execute_execfile_files (subj))
         (call .xtables.subj_type_transition (subj))
         (call .logd.sendto_unix_dgram_sockets (subj))
+        (call .class.search_sysfile_dirs (subj))
+        (call .class.read_sysfile_lnk_files (subj))
 
         (allow netmgrd.subj .xtables.subj (process2 (nnp_transition)))
         (allow netmgrd.subj .sys.subj (system (module_request)))

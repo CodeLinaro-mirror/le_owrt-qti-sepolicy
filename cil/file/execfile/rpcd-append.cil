@@ -8,6 +8,10 @@
 (call .functions.read_miscfile_files (subj))
 (call .functions.search_miscfile_dirs(subj))
 (call .libubox.search_datafile_dirs(subj))
+(call .libubox.read_datafile_files (subj))
+
+;;for /usr/libexec/rpcd/mwan3
+(call .jshn.subj_type_transition (subj))
 
 )
 

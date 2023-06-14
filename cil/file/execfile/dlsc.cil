@@ -1,0 +1,71 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .dlsc.subj_type_transition (subj)))
+
+(in .file
+    (call .dlsc.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block dlsc
+        (filecon
+        "/usr/bin/dlsc"
+        file
+        execfile_file_context)
+
+        ;;
+        ;; Macros
+        ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "dlsc")))
+
+        ;;
+        ;; Policy
+        ;;
+        (blockinherit .agent.base_template)
+        (blockinherit file.conf.obj_template)
+        (blockinherit .tmpfile.runtime.obj_template)
+        (blockinherit file.data.obj_template)
+        (blockinherit .tmpfile.obj_template)
+
+	;; Need search for fs dir with tcontext=u:r:fs.sysfile
+        (call .fs.search_sysfile_dirs (subj))
+        ;; Need search for tcontext=u:r:sys.fs tclass=dir
+        (call .sys.search_fs_dirs (subj))
+	;; Need search on selinux dir
+        (call .selinux.search_conffile_dirs(subj))
+        ;; Need gettarr on selinux filesystem
+        (call .selinux.getattr_filesystems(subj))
+
+	;; Need for busybox read, open, execute
+        (call .shell.execute_execfile_files (subj))
+
+	(call .logd.unix_dgram_send(subj))
+
+	(call .diag-router.connectto_unix_stream_sockets (subj))
+	(call .tlpd.connectto_unix_stream_sockets (subj))
+
+	(allow subj .qcmap_cm.runtimetmpfile (dir (search)))
+	(allow subj .qcmap_cm.runtimetmpfile (sock_file (read write)))
+	(allow subj .tmpfile.runtimetmpfile (dir (search)))
+	(allow subj self (capability (net_admin)))
+	(allow subj .locale.miscfile (file(read getattr open map)))
+	(allow subj file.conffile (dir (search)))
+        (allow subj file.conffile (lnk_file (read write)))
+	(allow subj self create_netlink_route_socket)
+	(allow subj self create_udp_socket)
+	(allow subj self create_unix_dgram_socket)
+	(allow subj self create_unix_stream_socket)
+	(allow subj self create_netlink_socket)
+	(allow subj .qcmap_cm.conffile (dir (search)))
+	(allow subj .qcmap_cm.conffile (file (read open)))
+	(allow subj .net.procfile (lnk_file (read)))
+	(allow subj .net.procfile (file (read open getattr)))
+	(allow subj self create_qipcrtr_socket)
+	(allow subj file.conffile (dir (search)))
+
+)
+

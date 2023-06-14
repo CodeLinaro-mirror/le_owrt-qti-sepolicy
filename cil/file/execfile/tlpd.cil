@@ -1,0 +1,78 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .tlpd.subj_type_transition (subj)))
+
+(in .file
+    (call .tlpd.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .tlpd.obj_type_transition_datafile (unconfined.subj_typeattr dir data_tlpd)))
+
+(block tlpd
+        (filecon
+        "/usr/bin/tlpd"
+        file
+        execfile_file_context)
+
+	(filecon
+        "/data/data_tlpd"
+        dir
+        datafile_file_context)
+
+        (filecon
+        "/data/data_tlpd/.*"
+        any
+        datafile_file_context)
+
+        ;;
+        ;; Macros
+        ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "tlpd")))
+
+        (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+               (call .tmp.fs_obj_type_transition
+                           (ARG1 tmpfile ARG2 ARG3)))
+
+	(macro obj_type_transition_datafile ((type ARG1)(class ARG2)(name ARG3))
+               (call .file.datafile_obj_type_transition
+                        (ARG1 datafile ARG2 ARG3)))
+
+        ;;
+        ;; Policy
+        ;;
+        (blockinherit .agent.base_template)
+        (blockinherit file.conf.obj_template)
+        (blockinherit .tmpfile.runtime.obj_template)
+        (blockinherit file.data.obj_template)
+        (blockinherit .tmpfile.obj_template)
+
+        (call .diag-router.connectto_unix_stream_sockets (subj))
+	(call .logd.sendto_unix_dgram_sockets (subj))
+
+        (allow subj .qcmap_cm.conffile (dir (search)))
+        (allow subj .qcmap_cm.runtimetmpfile (dir (search write add_name remove_name)))
+        (allow subj .qcmap_cm.runtimetmpfile (sock_file (read write create unlink)))
+        (allow subj .tmpfile.runtimetmpfile (dir (search)))
+        (allow subj .qcmap_cm.conffile (file (read open)))
+        (allow subj .tlpd.execfile (file (execute_no_trans)))
+        (allow subj file.conffile (dir (search)))
+	(allow subj file.conffile (lnk_file (read write)))
+	(allow subj logd.miscfile (sock_file (write)))
+	(allow subj .locale.miscfile (file(read getattr open map)))
+        (allow subj self create_qipcrtr_socket)
+        (allow subj self create_unix_dgram_socket)
+        (allow subj self create_unix_stream_socket)
+	(allow subj self create_netlink_socket)
+	(allow subj self (capability (net_raw net_admin)))
+	(allow ip.subj tlpd.subj (netlink_socket (bind create write read)))
+        (allow subj self (unix_stream_socket (listen connectto accept)))
+        (allow subj tlpd.runtimetmpfile (dir (write remove_name search add_name)))
+	(allow subj tlpd.datafile (dir (search write add_name)))
+	(allow subj tlpd.datafile (file (getattr create ioctl read write append open)))
+	(allow subj tlpd.datafile (fifo_file (getattr create read write open)))
+)
+

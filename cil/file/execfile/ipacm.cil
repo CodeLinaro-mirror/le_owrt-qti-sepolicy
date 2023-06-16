@@ -13,6 +13,7 @@
 	(call .ipacm.obj_type_transition_tmpfile (unconfined.subj_typeattr))
 	(call .ipacm.obj_type_transition_libfile (unconfined.subj_typeattr))
 	(call .ipacm.obj_type_transition_conffile (unconfined.subj_typeattr))
+	(call .ipacm.obj_type_transition_datafile (unconfined.subj_typeattr))
 )
 
 (block ipacm
@@ -84,6 +85,11 @@
 	file
 	conffile_file_context)
 
+	(filecon
+	"/data/data_ipa/ipacm_log.txt"
+	file
+	datafile_file_context)
+
 	;;
 
 	;; Macros
@@ -118,6 +124,11 @@
 		(call .qcmap_cm.conffile_obj_type_transition
 			(ARG1 conffile file "factory_IPACM_cfg.xml")))
 
+	(macro obj_type_transition_datafile ((type ARG1))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile file "ipacm_log.txt")))
+
+
 	;;
 
 	;; Policy
@@ -132,6 +143,7 @@
 	(blockinherit .tmpfile.obj_template)
 	(blockinherit .file.conf.obj_template)
 	(blockinherit .file.lib.obj_template)
+	(blockinherit .file.data.obj_template)
 
 	(allow subj self create_udp_socket)
 	(allow subj self (unix_dgram_socket (create)))
@@ -158,6 +170,8 @@
 	(allow subj ipacm.conffile (dir (watch)))
 	(call .ipacm.readwrite_conffile_dirs(subj))
 	(allow subj qcmap_cm.conffile (dir (watch)))
+
+	(call .ipacm.write_datafile (subj))
 
 	(call .ipacm.search_tmpfile_dirs (subj))
 	(call .ipacm.search_tmpfile_dirs (subj))

@@ -37,6 +37,10 @@
     (filecon "/var/run/hostapd-.*\.lock" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant-.*\.conf" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant-.*\.lock" file runtimetmpfile_file_context)
+    (filecon "/usr/bin/cnssdaemon" file execfile_file_context)
+    (filecon "/usr/bin/cnsscli" file execfile_file_context)
+    (filecon "/var/run/cnss_user_server" socket runtimetmpfile_file_context)
+    (filecon "/var/run/cnss_user_client" socket runtimetmpfile_file_context)
 
     ;;
     ;; Macros
@@ -59,6 +63,8 @@
         (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wifilock"))
         (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "load_module_lock"))
         (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "*"))
+        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 sock_file "cnss_user_server"))
+        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 sock_file "cnss_user_client"))
     )
 
     (macro obj_type_transition_conffile ((type ARG1))
@@ -226,6 +232,15 @@
 
     ;; Read debug.fs directories
     (allow subj .debug.fs (dir (search read open)))
+
+    ;; cnssdaemon and cnsscli support
+    (allow subj self create_netlink_socket)
+    (allow subj self create_qipcrtr_socket)
+    (allow subj .logd.miscfile (sock_file (write)))
+    (allow subj .logd.subj (unix_dgram_socket (sendto)))
+    (allow subj self (unix_dgram_socket (sendto)))
+    (allow subj .sys.subj (system (module_request)))
+    (call .wifi.manage_runtimetmpfile_sock_files (subj))
 
     ;; 'pgrep' and 'killall' commands permissions
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .proc.fs))

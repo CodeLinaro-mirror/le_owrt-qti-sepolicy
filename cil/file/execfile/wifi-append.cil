@@ -340,4 +340,12 @@
     ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
     (call capabilities.getattr_conffile_files (subj))
     (call capabilities.search_conffile_dirs (subj))
+
+    ;; Allow to create tmp file when update WCNSS_qcom_cfg.ini
+    (call .wpad.manage_miscfile_files (subj))
+    (call .wpad.write_miscfile_dirs (subj))
+
+    ;; Allow mv operation about backup WCNSS_qcom_cfg.ini
+    (allow subj .wifi.subj (process (setfscreate)))
+    (allow subj .wifi.datafile (file (relabelfrom relabelto)))
 )

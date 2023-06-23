@@ -24,4 +24,5 @@
   ;; Need ioctl write on /tmp/data/tmpfdbtable.txt
   (call .qcmap_cm.write_tmpfile_files (subj))
   (allow subj .qcmap_cm.tmpfile (file (ioctl)))
+  (call .qcmap_cm.read_conffile_files (subj))
 )

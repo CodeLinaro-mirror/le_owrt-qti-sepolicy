@@ -115,4 +115,7 @@
     (call .net.egress_netifs (subj))
     (call .net.recvfromsendto_netnodes (subj))
     (call .powerstate_socket.search_nodedev_dirs (subj))
+    (call .powerstate_socket.manage_powerstate_socket_files (subj))
+    (allow subj .powerstate.subj (unix_stream_socket (connectto)))
+
 )

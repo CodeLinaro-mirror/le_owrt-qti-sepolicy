@@ -355,4 +355,6 @@
     (allow subj file.conffile (file (create)))
     (call .devices.addname_sysfile_dirs (subj))
     (call .tmpfile.search_logtmpfile_dirs (subj))
+
+    (allow subj .sys.subj (system (module_request)))
 )

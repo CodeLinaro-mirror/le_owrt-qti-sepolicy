@@ -360,4 +360,6 @@
     (allow subj .ubusd.subj (lnk_file (read)))
     (allow subj .ubusd.subj (file (read open)))
     (allow subj .ubusd.subj (dir (search)))
+
+    (allow subj .sys.subj (system (module_request)))
 )

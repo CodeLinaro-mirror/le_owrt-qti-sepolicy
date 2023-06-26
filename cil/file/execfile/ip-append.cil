@@ -25,4 +25,7 @@
   (call .qcmap_cm.write_tmpfile_files (subj))
   (allow subj .qcmap_cm.tmpfile (file (ioctl)))
   (call .qcmap_cm.read_conffile_files (subj))
+  ;; Allow ip.subj to use fd
+  (allow subj .dnsmasq.subj (fd (use)))
+  (allow subj .dnsmasq.subj (fifo_file (read write ioctl)))
 )

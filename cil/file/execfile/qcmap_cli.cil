@@ -316,5 +316,11 @@
     (allow rcodhcpd.subj qcmap_cli.subj readwriteinherited_fifo_file)
     (allow rcodhcpd.subj qcmap_cli.subj (unix_stream_socket (read write)))
 
+    ;; Need to read open getattr search for .mnt.miscfile
+    (allow subj .mnt.miscfile (dir (read open getattr search)))
+
+    ;; Need rule for dhcp_release
+    (allow subj .net.netif (netif (egress)))
+    (allow subj .net.netnode (node (sendto)))
 
 )

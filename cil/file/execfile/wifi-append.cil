@@ -115,6 +115,10 @@
     (allow subj .qcmap_cli.subj (fifo_file (read write)))
     (allow subj .qcmap_cli.subj (fifo_file (ioctl)))
     (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow subj .qcmap_ref.subj (fd (use)))
+    (allow subj .qcmap_ref.subj (fifo_file (read write)))
+    (allow subj .qcmap_ref.subj (fifo_file (ioctl)))
+    (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
 
     ;; For ifconfig
     (allow subj self (capability (net_admin)))

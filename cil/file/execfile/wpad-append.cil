@@ -22,6 +22,7 @@
     (filecon "/var/run/hostapd-wifi[0-9]+" dir runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant.*\.pid" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicantglobal" socket runtimetmpfile_file_context)
+    (filecon "/var/run/wpa_supplicant-ath[0-9]+" dir runtimetmpfile_file_context)
 
     ;;
     ;; Macros
@@ -57,6 +58,8 @@
     (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi2"))
     (call obj_type_transition_runtimetmpfile (subj file "*"))
     (call obj_type_transition_runtimetmpfile (subj sock_file "wpa_supplicantglobal"))
+    ;; Transitions for /var/run/wpa_supplicant-ath* control interfaces
+    (call obj_type_transition_runtimetmpfile (subj dir "*"))
 
     (allow subj .qcmap_cli.subj (fd (use)))
     (allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))

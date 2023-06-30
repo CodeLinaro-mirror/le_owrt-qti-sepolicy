@@ -323,4 +323,9 @@
     (allow subj .net.netif (netif (egress)))
     (allow subj .net.netnode (node (sendto)))
 
+    ;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
+    ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
+    (call capabilities.getattr_conffile_files (subj))
+    (call capabilities.search_conffile_dirs (subj))
+
 )

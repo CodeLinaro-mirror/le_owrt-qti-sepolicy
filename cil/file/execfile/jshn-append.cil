@@ -12,6 +12,7 @@
  (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
  (allow .jshn.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
  (call .qcmap_ref.write_tmpfile_files (subj))
+ (allow subj .kmsg.nodedev (chr_file (open write)))
 )
 
 

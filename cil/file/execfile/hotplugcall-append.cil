@@ -99,4 +99,5 @@
 
       (allow .hotplugcall.subj .sys.fs (filesystem (getattr)))
       (allow subj .sys.fs (filesystem (getattr)))
+      (call .sys.search_fs_dirs (subj))
 )

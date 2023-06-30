@@ -139,4 +139,5 @@
        (call .logd.sendto_unix_dgram_sockets (subj))
        (call .dataadpl.readwrite_conffile_dirs (subj))
        (allow subj dataadpl.conffile (dir (watch)))
+       (allow subj .logd.miscfile (sock_file (write)))
 )

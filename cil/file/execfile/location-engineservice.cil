@@ -1,25 +1,25 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
-;; Sepolicy rules for location daemon - edgnss-daemon
+;; Sepolicy rules for location daemon - engine-service
 (in .file
     ;; location exec files transition
-    (call .loc_edgnss_daemon.obj_type_transition_execfile (unconfined.subj_typeattr)))
+    (call .loc_engine_service.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
-;;#============= EDgnss Daemon ==============
-(block loc_edgnss_daemon
+;;#============= Engine Service ==============
+(block loc_engine_service
     ;;
     ;; Contexts
     ;; --------
-    (filecon "/usr/bin/edgnss-daemon" file execfile_file_context)
+    (filecon "/usr/bin/engine-service" file execfile_file_context)
 
     ;;
     ;; Macros
     ;; ------
     (macro obj_type_transition_execfile ((type ARG1))
           (call .file.execfile_obj_type_transition
-                (ARG1 execfile file "edgnss-daemon")))
+                (ARG1 execfile file "engine-service")))
 
     ;;
     ;; Policy
@@ -31,12 +31,17 @@
     ;; import common rules for location deamons
     (call loc_daemons_common_rules (subj))
 
-    ;; communicate with location daemons via unix dgram sockets
-    (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
+    (call subj_type_transition (subj))
 
     (call .loc_launcher.use_fds (subj))
 
-    (allow subj loc_launcher.subj (unix_stream_socket (read write)))
+    ;; Needed to for diagrebootapp to connect to diag-router
+    (call .diag-router.unix_stream_connect(subj))
+
+    (allow subj self (unix_dgram_socket (sendto)))
+    ;; communicate with location daemons via unix dgram sockets
+    (call .loc_launcher.sendto_unix_dgram_sockets (subj))
+    (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
 
     ;; needed to read  /dev/socket/leprop-service
     (allow subj  leprop.miscfile  (sock_file  (read write)))

@@ -273,4 +273,14 @@
     ;; connect/write leprop socket/sock files
     (call .leprop.connectto_unix_stream_sockets (subj))
     (call .leprop.write_miscfile_sock_files(subj))
+
+    ;; manage miscfile
+    (call .mnt.search_miscfile_dirs(subj))
+    (call .mnt.read_miscfile_files(subj))
+    (allow subj mnt.miscfile (file (open)))
+
+    ;; manage sdcard miscfile
+    (call .sdcard.search_miscfile_dirs(subj))
+    (allow subj sdcard.miscfile (dir (search)))
+    (allow subj sdcard.miscfile (file (read open)))
 )

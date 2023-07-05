@@ -67,6 +67,9 @@
       (call .mwan3.read_conffile_files (subj))
       (call .mwan3.execute_conffile_files (subj))
 
+;; Need for call netifd
+     (call .netifd.subj_type_transition (subj))
+
 ;; Need for qcmap_ref
       (call .qcmap_ref.use_fds (subj))
       (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
@@ -74,6 +77,7 @@
       (call .netifd.manage_runtimetmpfile_files(subj))
       (allow subj .netifd.subj (fifo_file (read write)))
       (call .tmpfile.readwrite_runtimetmpfile_files (subj))
+
 ;; Need execute read on ip.execfile
       (call .ip.read_execfile_files (subj))
       (call .ip.subj_type_transition (subj))

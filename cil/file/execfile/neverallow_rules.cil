@@ -5,4 +5,31 @@
 
 ;; please use this cil file to define all neverallow rules .
 
+;; Restricting write access to sys.rootfile and selinux.conffile
+
+(in .file
+
+    (call .write.subj_type (unconfined.subj_typeattr)))
+
+ (block write
+
+              ;;
+              ;; Policy
+              ;;
+
+              (blockinherit .subj.subj_all_macro_template)
+
+              (typeattribute
+               not_subj_typeattr)
+
+              (typeattributeset
+               not_subj_typeattr
+               (not
+                subj_typeattr))
+ (neverallow not_subj_typeattr sys.rootfile
+                          (file ( write)))
+
+ (neverallow not_subj_typeattr selinux.conffile
+                          (file ( write)))
+)
 

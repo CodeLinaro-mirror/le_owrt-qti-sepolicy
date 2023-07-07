@@ -22,6 +22,7 @@
     (filecon "/usr/bin/cfg80211tool" file execfile_file_context)
     (filecon "/usr/bin/cfg80211tool.1" file execfile_file_context)
     (filecon "/usr/bin/wlanconfig" file execfile_file_context)
+    (filecon "/usr/bin/acfg_tool" file execfile_file_context)
     (filecon "/usr/local/lib/libqca_nl80211_wrapper.so" file datafile_file_context)
     (filecon "/tmp/sysinfo/board_name" file tmpfile_file_context)
     (filecon "/tmp/no_qca_da" file tmpfile_file_context)
@@ -41,6 +42,8 @@
     (filecon "/usr/bin/cnsscli" file execfile_file_context)
     (filecon "/var/run/cnss_user_server" socket runtimetmpfile_file_context)
     (filecon "/var/run/cnss_user_client" socket runtimetmpfile_file_context)
+    (filecon "/tmp/acfg-app" file tmpfile_file_context)
+    (filecon "/etc/acfg_common.conf" file conffile_file_context)
 
     ;;
     ;; Macros
@@ -77,6 +80,7 @@
         (call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool.1"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "wlanconfig"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "acfg_tool"))
     )
 
     (macro obj_type_transition_datafile ((type ARG1))
@@ -112,6 +116,7 @@
     (call obj_type_transition_tmpfile (subj file ".wifi-config-done"))
     (call obj_type_transition_tmpfile (subj file "first_boot_done"))
     (call obj_type_transition_tmpfile (subj file "no_qca_da"))
+    (call obj_type_transition_tmpfile (subj sock_file "acfg-app"))
     (call obj_type_transition_conffile (subj))
     (call obj_type_transition_datafile (subj))
 
@@ -309,8 +314,14 @@
     ;; Sockets used by user-space tools
     (allow subj self create_netlink_generic_socket)
     (allow subj self create_unix_dgram_socket)
+
     ;; acfg_tool
     (allow subj self create_netlink_scsitransport_socket)
+    (allow subj self create_netlink_route_socket)
+    (allow subj .tmp.fs (dir (remove_name)))
+    (call .wifi.create_tmpfile_sock_files (subj))
+    (call .wifi.delete_tmpfile_sock_files (subj))
+    (dontaudit subj self (capability (dac_override)))
 
     ;; sysctl command on dev.nss nodes
     (allow subj .sys.sysctlfile (dir (search)))
@@ -339,10 +350,6 @@
     ;; Execute /usr/bin/jsonfilter
     (call .jsonfilter.mapexecute_execfile_files (subj))
     (call .jsonfilter.read_execfile_files (subj))
-
-
-    ;; /etc/init.d/ssid_steering
-
 
     ;; Manage /tmp and /var/run files owned by wifi
     (call .wifi.manage_tmpfile_files (subj))

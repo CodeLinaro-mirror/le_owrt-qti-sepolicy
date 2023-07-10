@@ -44,6 +44,9 @@
 	(call .sys.connectto_unix_stream_sockets (subj))
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
 
+	(call .logd.sendto_unix_dgram_sockets (subj))
+	(call .logd.write_miscfile_sock_files (subj))
+
 	(call .file.search_conffile_dirs (subj))
 	(call .ipacm.search_tmpfile_dirs (subj))
 	(call .ipacm.write_tmpfile_dirs (subj))

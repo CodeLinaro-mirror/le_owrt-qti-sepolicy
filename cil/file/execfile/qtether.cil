@@ -131,4 +131,13 @@
        (call .qti.readwrite_nodedev_chr_files (subj))
     ;; Need read write on /dev/ipa chr_file
        (call .ipa.readwrite_nodedev_chr_files (subj))
+
+    ;; Need write permission for qti and adpl on sock_file
+    (call .logd.write_miscfile_sock_files (subj))
+
+    ;; Need read write watch permission /etc/data/adpl
+       (call .logd.sendto_unix_dgram_sockets (subj))
+       (call .dataadpl.readwrite_conffile_dirs (subj))
+       (allow subj dataadpl.conffile (dir (watch)))
+       (allow subj .logd.miscfile (sock_file (write)))
 )

@@ -78,6 +78,7 @@
     (call .netifd.search_miscfile_dirs (subj))
     (call .netifd.execute_miscfile_files (subj))
     (call .netifd.manage_miscfile_files (subj))
+    (allow subj netifd.tmpfile (file (getattr read open)))
     (call .uci.subj_type_transition (subj))
     (call .ifup.subj_type_transition (subj))
     (call .ubus.subj_type_transition (subj))
@@ -103,6 +104,8 @@
     (call .rcdnsmasq.subj_type_transition (subj))
     ;; Need permission to reboot on first vlan creation
     (allow subj .sys.subj (process(signal)))
+    (allow subj .sys.subj (file (read write)))
+    (allow subj .sys.subj (dir (search)))
     (call .uci.search_conffile_dirs (subj))
     ;; Need permissions on /tmp/data/
     (call .qcmap_cm.manage_tmpfile_dirs (subj))
@@ -270,6 +273,7 @@
     (allow subj self (netlink_route_socket (nlmsg_write nlmsg_read)))
     ;; Need add_name, write on /etc/rc.d
     (call .file.readwrite_conffile_dirs (subj))
+    (call .file.read_conffile_files (subj))
     ;; Need unlink, read , create, remove on /etc/rc.d/S19mwan3
     (call .file.manage_conffile_lnk_files (subj))
     ;; Need transition on xtables
@@ -304,4 +308,24 @@
     ;; Need to access /dev/socket/data/qcmap_sta_uds_file
     (call .qcmap_cm.write_tmpfile_sock_files(subj))
     (call .qcmap_cm.sendto_unix_dgram_sockets (subj))
+
+    ;; Need transition to run odhcpd reload
+    (call .rcodhcpd.subj_type_transition (subj))
+    (allow subj .rcodhcpd.initscriptfile (file (getattr execute read open)))
+    (allow rcodhcpd.subj qcmap_cli.subj (fd (use)))
+    (allow rcodhcpd.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow rcodhcpd.subj qcmap_cli.subj (unix_stream_socket (read write)))
+
+    ;; Need to read open getattr search for .mnt.miscfile
+    (allow subj .mnt.miscfile (dir (read open getattr search)))
+
+    ;; Need rule for dhcp_release
+    (allow subj .net.netif (netif (egress)))
+    (allow subj .net.netnode (node (sendto)))
+
+    ;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
+    ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
+    (call capabilities.getattr_conffile_files (subj))
+    (call capabilities.search_conffile_dirs (subj))
+
 )

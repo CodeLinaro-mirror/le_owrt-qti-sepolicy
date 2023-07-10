@@ -204,7 +204,6 @@
            (call .qcmap_cm.addname_conffile_dirs(subj))
            (call .qcmap_cm.write_conffile_dirs(subj))
            (call .qcmap_cm.manage_conffile_files (subj))
-           (call .qcmap_cm.execute_conffile_files (subj))
 
         ;; Need search for fs dir with tcontext=u:r:fs.sysfile
            (call .fs.search_sysfile_dirs (subj))
@@ -269,17 +268,14 @@
       (call .conntrack.read_execfile_files (subj))
       (call .conntrack.execute_execfile_files (subj))
 
-      ;;Need search read write on etc/data/ipa
-      (call .ipacm.search_conffile_dirs (subj))
-      (call .ipacm.readwrite_conffile_files (subj))
-      (call .ipacm.readwrite_conffile_dirs (subj))
-      (call .ipacli.execute_execfile_files (subj))
-      (call .ipacli.read_execfile_files (subj))
-      (call .ipacm.addname_conffile_dirs (subj))
+      ;;Need subj transition for ipa
       (call .ipacli.subj_type_transition (subj))
-      (call .ipacm.create_conffile_files(subj))
-      (allow subj ipacli.execfile (file (map)))
-      (allow subj ipacm.conffile (dir (remove_name)))
+      (allow ipacli.subj qcmap_cm.subj (unix_stream_socket (read write)))
+      (allow ipacli.subj qcmap_cm.subj readwriteinherited_fifo_file)
+      (allow ipacli.subj qcmap_cm.subj (fd (use)))
+      (allow ipacli.subj qcmap_cm.subj (netlink_socket (read write)))
+      (allow ipacli.subj qcmap_cm.subj (packet_socket (read write)))
+      (allow ipacli.subj qcmap_cm.subj (netlink_route_socket (read write)))
       (allow subj .net.procfile (lnk_file (read)))
       (allow subj .net.procfile (file (read open getattr)))
       (allow subj proc.fs (filesystem (getattr)))
@@ -317,5 +313,8 @@
       (call .dataadpl.manage_conffile_files (subj))
       ;; Need read on adpl dir
       (call .dataadpl.manage_conffile_dirs (subj))
+      ;; Need permission for dhcp_release
+      (allow subj .net.netif (netif (egress)))
+      (allow subj .net.netnode (node (sendto)))
 
 )

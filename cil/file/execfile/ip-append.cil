@@ -6,6 +6,8 @@
   ;; policy
 
   (allow subj self (capability (dac_read_search)))
+  ;; Need by "ip -6 addr" command
+  (allow subj self create_tcp_socket)
   ;; TODO : Observing this denials due to domain transition to netmgrd
   ;; But currently netmgrd is running in sys.subj
   ;; Need to remove this once netmgrd.cil gets merged
@@ -20,8 +22,13 @@
   (allow subj .qcmap_cm.subj (packet_socket (read write)))
   (allow subj .qcmap_cm.subj (netlink_route_socket (read write)))
   (allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+  (allow subj .tlpd.subj (netlink_socket (bind create write read)))
   (call .qcmap_cm.readwrite_unix_stream_sockets (subj))
   ;; Need ioctl write on /tmp/data/tmpfdbtable.txt
   (call .qcmap_cm.write_tmpfile_files (subj))
   (allow subj .qcmap_cm.tmpfile (file (ioctl)))
+  (call .qcmap_cm.read_conffile_files (subj))
+  ;; Allow ip.subj to use fd
+  (allow subj .dnsmasq.subj (fd (use)))
+  (allow subj .dnsmasq.subj (fifo_file (read write ioctl)))
 )

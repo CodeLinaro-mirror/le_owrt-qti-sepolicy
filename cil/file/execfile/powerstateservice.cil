@@ -1,0 +1,98 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+    (call .powerstate.subj_type_transition (subj)))
+
+(in .file
+    (call .powerstate.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .powerstate_socket.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+
+(block powerstate_socket
+       ;;
+       ;; Contexts
+       ;;
+
+        (filecon
+        "/dev/socket/powerstate"
+        dir
+        nodedev_file_context)
+
+        (filecon
+        "/dev/socket/powerstate/output_ds_notify"
+        socket
+        nodedev_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_nodedev ((type ARG1))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev dir "powerstate"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev socket "output_ds_notify")))
+
+       (macro manage_powerstate_socket_files ((type ARG1))
+              (call manage_nodedev_dirs (ARG1))
+              (call manage_nodedev_sock_files (ARG1)))
+
+       (blockinherit .dev.node.obj_template)
+)
+
+(block powerstate
+       ;;
+       ;; Contexts
+       ;;
+        (filecon
+        "/usr/bin/powerstateservice"
+	file
+        execfile_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "powerstateservice")))
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .agent.base_template)
+       (blockinherit .file.data.obj_template)
+       (blockinherit .file.conf.obj_template)
+       (blockinherit .tmpfile.obj_template)
+
+       ;; Need for /dev/socket/powerstate/output_ds_notify
+       (allow subj self create_unix_stream_socket)
+       (allow subj self (unix_stream_socket (connectto sendto listen accept)))
+       (allow subj self create_unix_dgram_socket)
+       (call .logd.sendto_unix_dgram_sockets (subj))
+       (call .powerstate_socket.manage_powerstate_socket_files (subj))
+
+       (call .selinux.search_conffile_dirs(subj))
+       (call .selinux.getattr_filesystems(subj))
+
+       ;; Need for uevent_open_socket()
+       (allow subj self create_netlink_kobject_uevent_socket)
+       (allow subj self create_qipcrtr_socket)
+       (allow subj logd.miscfile (sock_file (write)))
+       (allow subj .file.conffile (dir (search)))
+
+       ;; Need for read/write on /dev/power_state
+       (call .powerstate_dev.readwrite_nodedev_chr_files (subj))
+
+       ;; Need for reading /sys/power/wake_lock and writing /sys/power/state
+       (call .sys.search_fs_dirs (subj))
+       (call .power.search_sysfile_dirs (subj))
+       (allow subj .power.sysfile (file(open read write)))
+
+       ;; Need for setting deep.sleep.exit property
+       (allow subj .leprop.miscfile (sock_file (read write)))
+       (call .leprop.connectto_unix_stream_sockets (subj))
+)

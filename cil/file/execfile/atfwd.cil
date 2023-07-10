@@ -55,7 +55,7 @@
         (call .diag-router.connectto_unix_stream_sockets (subj))
         (call .sys.search_fs_dirs (subj))
         (call .fs.search_sysfile_dirs (subj))
-
+        (call .logd.sendto_unix_dgram_sockets (subj))
 
         (allow subj self (capability (net_admin kill)))
         (allow subj self (unix_stream_socket(create bind connect read write listen accept)))
@@ -65,7 +65,8 @@
         (allow subj file.conffile (dir (search)))
         (allow subj atfwd.runtimetmpfile (dir (write remove_name search add_name)))
         (allow subj atfwd.runtimetmpfile (sock_file (create setattr unlink)))
-        (dontaudit subj .sys.subj (process(signal)))
+        (allow subj .sys.subj (process(signal)))
 
-
+        (allow subj self create_unix_dgram_socket)
+        (allow subj logd.miscfile (sock_file (write)))
 )

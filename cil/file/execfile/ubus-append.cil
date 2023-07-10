@@ -22,6 +22,7 @@
 (allow .ubus.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
 ;; Need append on /tmp/resolve.conf
 (call .resolv.append_tmpfile_files (subj))
+(allow subj .kmsg.nodedev (chr_file (open write)))
 )
 
 

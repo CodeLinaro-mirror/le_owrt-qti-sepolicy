@@ -1,0 +1,13 @@
+;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .ssl
+
+    ;; policy
+
+    ;; Read SSL certs from wpa_supplicant
+    (allow .wpad.subj .tmpfile.conftmpfile (dir (search)))
+    (allow .wpad.subj .ssl.conftmpfile (dir (search)))
+    (allow .wpad.subj .ssl.conftmpfile (file (read_file)))
+)
+

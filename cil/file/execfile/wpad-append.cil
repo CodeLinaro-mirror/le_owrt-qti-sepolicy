@@ -4,6 +4,7 @@
 (in .file
     (call .wpad.obj_type_transition_miscfile (unconfined.subj_typeattr dir "wifi"))
     (call .wpad.obj_type_transition_execfile_ext (unconfined.subj_typeattr))
+    (call .wpad.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr dir "wpad"))
 )
 
 (in .wpad
@@ -22,6 +23,9 @@
     (filecon "/var/run/hostapd-wifi[0-9]+" dir runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant.*\.pid" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicantglobal" socket runtimetmpfile_file_context)
+    (filecon "/var/run/wpa_supplicant-ath[0-9]+" dir runtimetmpfile_file_context)
+    (filecon "/var/run/wpad" dir runtimetmpfile_file_context)
+    (filecon "/var/run/wpad/.*" any runtimetmpfile_file_context)
 
     ;;
     ;; Macros
@@ -57,6 +61,10 @@
     (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi2"))
     (call obj_type_transition_runtimetmpfile (subj file "*"))
     (call obj_type_transition_runtimetmpfile (subj sock_file "wpa_supplicantglobal"))
+    ;; Transitions for /var/run/wpa_supplicant-ath* control interfaces
+    (call obj_type_transition_runtimetmpfile (subj dir "*"))
+
+    (call obj_type_transition_runtimetmpfile (subj dir "wpad"))
 
     (allow subj .qcmap_cli.subj (fd (use)))
     (allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
@@ -66,6 +74,13 @@
     (allow subj .tmp.fs (dir (remove_name)))
     (allow subj .qcmap_ref.subj (fifo_file (read write ioctl)))
     (allow subj .qcmap_ref.subj (fd (use)))
+
+    (allow subj .qcmap_cm.subj (fd (use)))
+    (allow subj .qcmap_cm.subj readwriteinherited_fifo_file)
+    (call .qcmap_cm.readwrite_unix_stream_sockets (subj))
+    (allow subj .qcmap_cm.subj readwrite_netlink_route_socket)
+    (allow subj .qcmap_cm.subj readwrite_netlink_socket)
+    (allow subj .qcmap_cm.subj readwrite_packet_socket)
 
     (allow subj self create_qipcrtr_socket)
 

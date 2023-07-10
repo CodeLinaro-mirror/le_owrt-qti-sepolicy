@@ -23,8 +23,13 @@
 ;; Need append on /tmp/resolve.conf
 (call .resolv.append_tmpfile_files (subj))
 
+(call .odhcp6c.use_fds (subj))
+(call .odhcp6c.readwrite_unix_stream_sockets (subj))
+(allow .uci.subj .odhcp6c.subj (fifo_file (read write ioctl)))
+
 (call .qcmap_cm.manage_tmpfile_files (subj))
 (allow subj .qcmap_cm.tmpfile (file (getattr read open lock)))
+(allow subj .kmsg.nodedev (chr_file (open write)))
 )
 
 

@@ -299,6 +299,20 @@
     ;; Need read write for wifilock
     (call .tmpfile.readwrite_runtimetmpfile_files (subj))
 
+    ;; Need read/write/create for miniupnpd
+    (allow subj nftables.execfile (file ( getattr )))
+    (call .miniupnpd.obj_type_transition_conftmpfile(subj))
+    (call .miniupnpd.obj_type_transition_runtimetmpfile (subj))
+    (call .miniupnpd.readwrite_conftmpfile_files (subj))
+    (call .miniupnpd.readwrite_runtimetmpfile_files(subj))
+    (call .miniupnpd.create_conftmpfile_files (subj))
+    (call .miniupnpd.create_runtimetmpfile_files (subj))
+
+    ;; Need open for /proc/sys/kernel/random/uuid
+    (allow subj kernel.sysctlfile (dir ( search)))
+    (allow subj random.sysctlfile (dir ( search)))
+    (allow subj random.sysctlfile (file ( read open)))
+
     ;; Need map for /lib/wifi/qcacommands_ol_radio.xml
     (call .wifi.mapexecute_miscfile_files (subj))
 

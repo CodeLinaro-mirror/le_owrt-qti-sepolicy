@@ -51,6 +51,12 @@
 	(allow subj self create_unix_stream_socket)
 	(allow subj self create_qipcrtr_socket)
 	(allow subj self create_netlink_kobject_uevent_socket)
+        (allow subj self create_unix_dgram_socket)
+        (allow subj self readwrite_unix_dgram_socket)
+        (allow subj self (unix_dgram_socket (connect)))
+
+        (allow subj logd.subj (unix_dgram_socket (sendto)))
+        (allow subj logd.miscfile (sock_file (write)))
 
 	;; permission to access all configuration files under /data/qmuxbridge
         (call .qmuxbridge.manage_datafile_dirs (subj))

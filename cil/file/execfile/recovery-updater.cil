@@ -77,7 +77,7 @@
 	(allow subj file.conffile (lnk_file (read)))
 	(allow subj locale.miscfile (file (getattr map open read)))
 	(allow subj mtd.procfile (file (getattr open read)))
-	(allow subj sys.rootfile (file (create open read write)))
+	(allow subj sys.rootfile (file (create open read )))
 	(allow subj file.datafile (dir (open read)))
 	(allow subj class.sysfile (lnk_file (read)))
 	(allow subj tmp.fs (dir (add_name write)))

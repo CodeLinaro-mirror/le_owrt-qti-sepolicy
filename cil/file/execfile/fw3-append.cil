@@ -17,6 +17,7 @@
 (call .netifd.read_runtimetmpfile_files (subj))
 (call .netifd.manage_runtimetmpfile_files(subj))
 (call .mnt.search_miscfile_dirs (subj))
+(allow subj .debug.fs (dir (search read open)))
 )
 
 

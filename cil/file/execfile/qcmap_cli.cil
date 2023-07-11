@@ -349,5 +349,5 @@
     ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
     (call capabilities.getattr_conffile_files (subj))
     (call capabilities.search_conffile_dirs (subj))
-
+    (allow subj debug.fs (dir (read open search)))
 )

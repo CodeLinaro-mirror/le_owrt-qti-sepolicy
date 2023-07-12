@@ -43,6 +43,7 @@
     (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
     (call .loc_launcher.sendto_unix_dgram_sockets (subj))
     (call .loc_engine_service.sendto_unix_dgram_sockets (subj))
+    (call .mlid.sendto_unix_dgram_sockets (subj))
 
     ;; communicate with location test apps which runs in sys.subj ctxt
     (call .sys.sendto_unix_dgram_sockets (subj))

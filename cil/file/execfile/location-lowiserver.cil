@@ -57,5 +57,10 @@
     (call .loc_launcher.sendto_unix_dgram_sockets (subj))
     (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
 
+    (allow subj mlid.subj (unix_stream_socket (read write)))
+    ;;connect to mlid socket
+    (call .mlid.connectto_unix_stream_sockets (subj))
+    (call .mlid.sendto_unix_dgram_sockets (subj))
+
     (call .loc_launcher.use_fds (subj))
 )

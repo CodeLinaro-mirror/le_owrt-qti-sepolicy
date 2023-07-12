@@ -83,4 +83,6 @@
     (allow subj  leprop.miscfile  (sock_file  (read write)))
     ;;connect to leprop socket
     (call .leprop.connectto_unix_stream_sockets (subj))
+
+    (allow subj mlid.subj (unix_dgram_socket (sendto)))
 )

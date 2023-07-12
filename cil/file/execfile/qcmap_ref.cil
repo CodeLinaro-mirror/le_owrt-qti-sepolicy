@@ -339,4 +339,5 @@
 
     ;; IPQ WLAN boot-up config
     (call .wifi.subj_type_transition (subj))
+    (allow subj file.conffile (file (create)))
 )

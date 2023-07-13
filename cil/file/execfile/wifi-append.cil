@@ -377,4 +377,7 @@
 
     ;; To access /sys/kernel/boot_kpi/kpi_values
     (call .kpi_values.readwrite_sysfile_files (subj))
+
+    ;; Allow to check folder's group
+    (allow subj .nameservice.miscfile (file (open read)))
 )

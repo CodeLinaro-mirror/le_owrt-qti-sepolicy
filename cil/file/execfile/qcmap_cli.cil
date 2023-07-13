@@ -378,6 +378,15 @@
     (allow subj .net.netif (netif (egress)))
     (allow subj .net.netnode (node (sendto)))
 
+    ;; Need permission for backhaul status indicate feature
+    (allow subj .qcmap_cli.subj (capability (kill)))
+    (allow subj .qcmap_cm.subj (process (signal)))
+
+    ;; Need permission for proc/pidof QCMAP_ConnectionManager from backhaulCommonConfig.sh
+    (allow subj .qcmap_cm.subj (dir (search)))
+    (allow subj .qcmap_cm.subj (file (open read)))
+    (allow subj .qcmap_cm.subj (lnk_file (read)))
+
     ;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
     ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
     (call capabilities.getattr_conffile_files (subj))

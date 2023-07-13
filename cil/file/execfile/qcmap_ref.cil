@@ -283,6 +283,17 @@
     (call .net.search_sysctlfile_dirs (subj))
     (call .netfilter.search_sysctlfile_dirs (subj))
 
+    ;; Need rules for tinyproxy
+    (allow subj proc.fs (dir (read open getattr)))
+    (allow subj proc.fs (file (read open)))
+    (allow subj .rctinyproxy.initscriptfile (file (getattr execute read open)))
+    (call .rctinyproxy.subj_type_transition (subj))
+    (allow subj .tinyproxy.subj (dir (search read open getattr)))
+    (allow subj .tinyproxy.subj (file (read open)))
+    (allow subj .tinyproxy.subj (lnk_file (read open)))
+    (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
+    (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
+
     ;; Need read on rc.common
     (call .rccommon.manage_conffile_files (subj))
     ;; Need search on resolve.conf.d dir

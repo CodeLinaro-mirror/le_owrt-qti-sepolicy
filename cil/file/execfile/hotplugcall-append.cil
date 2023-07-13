@@ -102,4 +102,9 @@
       (call .sys.search_fs_dirs (subj))
       (allow subj .qcmap_cm.conffile (dir (search)))
       (allow subj .qcmap_cm.conffile (file (read open write)))
+
+;; Need search read and execute permissions for /etc/data/mbbUtils.sh
+      (call .qcmap_cm.search_conffile_dirs (subj))
+      (call .qcmap_cm.manage_conffile_files (subj))
+      (call .file.execute_execfile_files (subj))
 )

@@ -13,6 +13,10 @@
  (allow .jshn.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
  (call .qcmap_ref.write_tmpfile_files (subj))
  (allow subj .kmsg.nodedev (chr_file (open write)))
+
+ ;; IPQ sigma_dut
+ (allow subj .wifi.logtmpfile readwrite_file)
+ (allow subj .wifi.subj readwrite_tcp_socket)
 )
 
 

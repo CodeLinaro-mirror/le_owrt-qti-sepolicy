@@ -29,6 +29,9 @@
       (call .qcmap_cm.create_tmpfile_files (subj))
       (call .qcmap_cm.manage_tmpfile_files (subj))
       (call .qcmap_cm.manage_tmpfile_dirs (subj))
+;; For /etc/data/mbbUtils.sh
+      (allow subj .qcmap_cm.conffile search_dir)
+      (allow subj .qcmap_cm.conffile read_file)
 
 ;; Need for sdcard
       (call .file.read_conffile_files(subj))

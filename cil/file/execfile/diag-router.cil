@@ -75,6 +75,11 @@
 	(allow subj .kpi_values.sysfile readwrite_file)
 
 	(allow subj .qti.nodedev (chr_file (open read write)))
+
+	;; allow signal and kill capability
+	(allow subj .sys.subj (process (signal)))
+	(allow subj self (capability (kill)))
+
 )
 
 (block kpi_values

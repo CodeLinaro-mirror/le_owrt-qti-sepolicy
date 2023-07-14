@@ -121,4 +121,6 @@
 
     ;; Qwes related permissions
     (call .qwesd_mink_socket.search_nodedev_dirs (subj))
+    (call .qwesd_mink_socket.readwrite_nodedev_sock_files (subj))
+    (allow subj .qwesd.subj (unix_stream_socket (connectto)))
 )

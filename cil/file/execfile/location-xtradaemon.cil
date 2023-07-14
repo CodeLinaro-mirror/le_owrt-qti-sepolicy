@@ -1,4 +1,4 @@
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
@@ -73,8 +73,12 @@
     (allow subj self create_tcp_socket)
 
     ;; read ssl certificates
-    (call .ssl.search_certfile_dirs (subj))
+    (call .ssl.list_certfile_dirs (subj))
     (call .ssl.read_certfile_files (subj))
+    (call .ssl.read_certfile_lnk_files (subj))
+    (call .tmpfile.list_conftmpfile_dirs (subj))
+    (call .ssl.list_conftmpfile_dirs (subj))
+    (call .ssl.read_conftmpfile_files (subj))
 
     (allow subj .http.netport (tcp_socket (name_connect)))
 

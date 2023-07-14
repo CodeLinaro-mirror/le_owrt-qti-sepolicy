@@ -8,6 +8,5 @@
     ;; Read SSL certs from wpa_supplicant
     (allow .wpad.subj .tmpfile.conftmpfile (dir (search)))
     (allow .wpad.subj .ssl.conftmpfile (dir (search)))
-    (allow .wpad.subj .ssl.conftmpfile (file (read_file)))
+    (allow .wpad.subj .ssl.conftmpfile read_file)
 )
-

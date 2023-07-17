@@ -50,9 +50,6 @@
     ;;Needed for creating of unix stream socket
        (allow subj self create_unix_stream_stream_socket)
 
-    ;; TODO:we will allow this for intial version will remove later
-           (allow subj self (capability (dac_override dac_read_search)))
-
     ;; Need creat and read of this uevent socket
        (allow subj self create_netlink_kobject_uevent_socket)
 
@@ -175,9 +172,6 @@
 
     ;;Needed for creating of unix stream socket
        (allow subj self create_unix_stream_stream_socket)
-
-    ;; TODO:we will allow this for intial version will remove later
-           (allow subj self (capability (dac_override dac_read_search)))
 
     ;; Need creat and read of this uevent socket
        (allow subj self create_netlink_kobject_uevent_socket)

@@ -350,4 +350,10 @@
     (call capabilities.getattr_conffile_files (subj))
     (call capabilities.search_conffile_dirs (subj))
     (allow subj debug.fs (dir (read open search)))
+    (call .sys.requestmodule (subj))
+
+    ;; Need for link toggle from rmnet.script
+    (allow subj .netifd.subj (fd (use)))
+    (allow subj .netifd.subj readwrite_netlink_route_socket)
+    (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
 )

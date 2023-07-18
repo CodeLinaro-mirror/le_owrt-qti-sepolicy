@@ -9,5 +9,7 @@
    execfile_file_context)
 
   (call .sys.readinherited_fifo_files (subj))
+  ;; Need permission to run iptables in netifd script
+  (allow subj .netifd.subj readwriteinherited_fifo_file)
   (allow subj self create_netlink_netfilter_socket)
 )

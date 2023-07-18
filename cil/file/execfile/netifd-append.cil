@@ -27,6 +27,7 @@
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanusb"))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanbt"))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.waneth"))
+            (call obj_type_transition_tmpfile (ARG1 file "ipv4config.lan"))
        )
 
          (blockinherit .tmpfile.obj_template)
@@ -44,6 +45,7 @@
           (call .rcdnsmasq.subj_type_transition (subj))
           (call .conntrack.subj_type_transition (subj))
           (call .xtables.subj_type_transition (subj))
+          (call .ifstatus.subj_type_transition (subj))
           (call .file.search_initscriptfile_dirs (subj))
           (call .file.execute_initscriptfile_files (subj))
           (call .file.readwrite_conffile_dirs(subj))
@@ -77,6 +79,9 @@
           (call .fw3.execute_execfile_files (subj))
           (call .fw3.search_datafile_dirs (subj))
           (call .fw3.manage_datafile_files (subj))
+
+          (allow subj .tmpfile.runtimetmpfile (dir (create rmdir)))
+
           ;; Need read on fw3.state file
           (call .fw3.readwrite_runtimetmpfile_files (subj))
           (allow subj .fw3.runtimetmpfile (file (unlink)))
@@ -99,7 +104,8 @@
           (call .proc.getattr_filesystems (subj))
           (call .proc.associate_filesystems (subj))
           (allow subj .firewall.conffile (file (getattr)))
-          (call .firewall.readwrite_conffile_files (subj))
+          ;; Need open write on /etc/firewall.user
+          (call .firewall.manage_conffile_files (subj))
           (call .file.read_conffile_lnk_files (subj))
           (allow subj self create_netlink_netfilter_socket)
           (allow subj self readwrite_netlink_netfilter_socket)

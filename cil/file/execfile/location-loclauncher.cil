@@ -37,6 +37,7 @@
     (call .loc_xtwifi_client.execute_execfile_files (subj))
     (call .loc_xtwifi_inet.execute_execfile_files (subj))
     (call .loc_edgnss_daemon.execute_execfile_files (subj))
+    (call .loc_engine_service.execute_execfile_files (subj))
 
     ;; Execute these daemons with an automatic transition to required context by default
     (call .loc_lowi_server.subj_type_transition (subj))
@@ -49,6 +50,8 @@
     (call .loc_xtwifi_inet.execfile_subj_type_transition (subj .loc_xtwifi_inet.subj))
     (call .loc_edgnss_daemon.subj_type_transition (subj))
     (call .loc_edgnss_daemon.execfile_subj_type_transition (subj .loc_edgnss_daemon.subj))
+    (call .loc_engine_service.subj_type_transition (subj))
+    (call .loc_engine_service.execfile_subj_type_transition (subj .loc_engine_service.subj))
 
     ;; Below transition denials seen after adding ujail support in loc-launcher rc
     (call .loc_lowi_server.nnptransition (subj))
@@ -56,6 +59,7 @@
     (call .loc_xtwifi_client.nnptransition (subj))
     (call .loc_xtwifi_inet.nnptransition (subj))
     (call .loc_edgnss_daemon.nnptransition (subj))
+    (call .loc_engine_service.nnptransition (subj))
 
     ;; import common rules for location deamons
     (call loc_daemons_common_rules (subj))
@@ -71,9 +75,6 @@
     ;; communicate with location daemons via unix dgram sockets
     (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
     (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
-
-    ;; read loc_socket nodedev link files
-    (call .loc_socket.read_nodedev_lnk_files (subj))
 
     ;; read /etc/group
     (call .nameservice.read_miscfile_files (subj))

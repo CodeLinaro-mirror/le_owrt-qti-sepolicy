@@ -44,9 +44,6 @@
     ;; Create udp_socket
     (allow subj self create_udp_socket)
 
-    ;; read loc_socket nodedev link files
-    (call .loc_socket.read_nodedev_lnk_files (subj))
-
     (allow subj loc_launcher.subj (unix_stream_socket (read write)))
     (allow subj loc_launcher.subj (unix_dgram_socket (read write)))
 

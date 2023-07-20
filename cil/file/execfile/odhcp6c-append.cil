@@ -1,0 +1,39 @@
+;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .odhcp6c
+
+    (filecon
+    "/tmp/ipv6config.*"
+    file
+    tmpfile_file_context)
+
+     ;;macros
+   (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+        (call .tmp.fs_obj_type_transition
+            (ARG1 tmpfile ARG2 ARG3)))
+
+    (macro obj_type_transition_tmpfile_ext ((type ARG1))
+        (call obj_type_transition_tmpfile (ARG1 file "ipv6config.wanwlan"))
+        (call obj_type_transition_tmpfile (ARG1 file "ipv6config.wanusb"))
+        (call obj_type_transition_tmpfile (ARG1 file "ipv6config.wanbt"))
+        (call obj_type_transition_tmpfile (ARG1 file "ipv6config.waneth"))
+    )
+
+    ;;policy
+    (blockinherit .tmpfile.obj_template)
+    (call obj_type_transition_tmpfile_ext (subj))
+    (call .qcmap_cm.search_conffile_dirs (subj))
+    (call .qcmap_cm.readwrite_conffile_files (subj))
+    (call .qcmap_cm.execute_conffile_files (subj))
+    (allow subj odhcp6c.tmpfile (file (create write open append read getattr)))
+    ;; Need domian transition
+    (call .qcmap_cm.subj_type_transition (subj))
+    (call .uci.subj_type_transition (subj))
+    (call .netifd.read_miscfile_files (subj))
+    (allow qcmap_cli.subj odhcp6c.tmpfile (file (getattr read open)))
+    (allow qcmap_ref.subj odhcp6c.tmpfile (file (getattr)))
+    (allow subj .netifd.miscfile (dir (read open)))
+    (allow subj .tmp.fs (dir (remove_name)))
+    (allow subj odhcp6c.tmpfile (file (unlink)))
+)

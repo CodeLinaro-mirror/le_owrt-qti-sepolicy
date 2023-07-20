@@ -1,0 +1,18 @@
+;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .rctinyproxy
+    ;;
+    ;;Policy
+    ;;
+    (allow subj .qcmap_cli.subj (fd (use)))
+    (allow subj .qcmap_cli.subj (fifo_file (read write)))
+    (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow subj .qcmap_ref.subj (fd (use)))
+    (allow subj .qcmap_ref.subj (fifo_file (read write)))
+    (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow subj tmp.fs (dir (setattr)))
+    (allow subj tmp.fs (file (write read)))
+    (call .qcmap_cm.search_conffile_dirs (subj))
+
+)

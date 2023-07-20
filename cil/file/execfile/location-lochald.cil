@@ -92,6 +92,30 @@
     ;; KPI node access
     (call .kpi_values.manage_sysfile_files (subj))
 
+    ;; Need open read perm on /
+    (call .sys.list_rootfile_dirs (subj))
+
+    ;; Need execute on /sbin/uci
+    (call .uci.execute_execfile_files (subj))
+    (call .uci.read_execfile_files (subj))
+
+    ;; Need read perm on uci.conf files.
+    (call .uci.search_conffile_dirs (subj))
+    (call .uci.read_conffile_files (subj))
+
+    ;; Need read perm on uci.tmp files.
+    (call .uci.search_tmpfile_dirs (subj))
+    (call .uci.read_tmpfile_files (subj))
+
     ;; Needed to for diagrebootapp to connect to diag-router
     (call .diag-router.unix_stream_connect(subj))
+
+    ;; Deep sleep related
+    (call .httpproxy.tcp_connect_netports (subj))
+    (call .net.egress_netifs (subj))
+    (call .net.recvfromsendto_netnodes (subj))
+    (call .powerstate_socket.search_nodedev_dirs (subj))
+    (call .powerstate_socket.manage_powerstate_socket_files (subj))
+    (allow subj .powerstate.subj (unix_stream_socket (connectto)))
+
 )

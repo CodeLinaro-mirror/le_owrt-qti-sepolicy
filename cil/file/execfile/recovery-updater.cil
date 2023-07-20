@@ -1,0 +1,86 @@
+; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+	(call .recovery-updater.subj_type_transition (subj)))
+
+(in .file
+	(call .recovery-updater.obj_type_transition_execfile (unconfined.subj_typeattr))
+	(call .recovery-updater.obj_type_transition_conffile (unconfined.subj_typeattr)))
+
+
+(block recovery-updater
+
+	;; Contexts
+	;;
+	(typepermissive subj)
+	(filecon
+		"/bin/recovery-updater.sh"
+		file
+		execfile_file_context)
+	(filecon
+		"/cache/recoveryupgrade"
+		dir
+		conffile_file_context)
+
+	(filecon
+		"/cache/recoveryupgrade/log"
+		file
+		conffile_file_context)
+
+	(filecon
+		"/cache/recoveryupgrade/RECOVERY_UPGRADE_DONE"
+		file
+		conffile_file_context)
+	(filecon
+		"/data/ota_package/update_ext4.zip"
+		file
+		conffile_file_context)
+
+	;;
+	;; Macros
+	;;
+
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "recovery-updater")))
+	(macro obj_type_transition_conffile ((type ARG1))
+		(call .file.conffile_obj_type_transition
+			(ARG1 conffile dir "recoveryupgrade")))
+	;;
+	;; Policy
+	;;
+
+	;;(blockinherit .file.exec.obj_template)
+	(blockinherit .agent.base_template)
+	(blockinherit file.conf.obj_template)
+
+	;; search in config files is needed
+	;;which is done on start /Stop  of services
+	(call .file.search_conffile_dirs (subj))
+
+	;;(blockinherit .tmpfile.runtime.obj_template)
+	(allow subj class.sysfile (dir (open read search)))
+	(allow subj file.datafile (file (open read getattr)))
+	(allow subj file.execfile (file (getattr execute execute_no_trans map open read)))
+	(allow subj sys.rootfile (dir (add_name write)))
+	(allow subj sys.rootfile (file (ioctl)))
+	(allow subj tmp.fs (file (getattr open write create)))
+	(allow subj fs.sysfile (dir (search)))
+	(allow subj selinux.conffile (dir (search)))
+	(allow subj selinux.fs (filesystem (getattr)))
+	(allow subj shell.execfile (file (execute execute_no_trans getattr map open read)))
+	(allow subj sys.fs (dir (search)))
+	(allow subj sys.subj (fifo_file (write)))
+	(allow subj file.conffile (lnk_file (read)))
+	(allow subj locale.miscfile (file (getattr map open read)))
+	(allow subj mtd.procfile (file (getattr open read)))
+	(allow subj sys.rootfile (file (create open read )))
+	(allow subj file.datafile (dir (open read)))
+	(allow subj class.sysfile (lnk_file (read)))
+	(allow subj tmp.fs (dir (add_name write)))
+        (allow subj recovery-updater.conffile (dir ( getattr search write add_name)))
+        (allow subj recovery-updater.conffile (file ( open read write create getattr)))
+)

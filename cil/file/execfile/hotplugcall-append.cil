@@ -72,6 +72,8 @@
       (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
       (allow .hotplugcall.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
       (call .netifd.manage_runtimetmpfile_files(subj))
+      (allow subj .netifd.subj (fifo_file (read write)))
+      (call .tmpfile.readwrite_runtimetmpfile_files (subj))
 ;; Need execute read on ip.execfile
       (call .ip.read_execfile_files (subj))
       (call .ip.subj_type_transition (subj))
@@ -91,6 +93,13 @@
       (allow rcdnsmasq.subj hotplugcall.subj (fd (use)))
 ;; Need to share fifo_file for jsonfilter
       (allow .jsonfilter.subj .hotplugcall.subj (fifo_file (read write ioctl)))
+      (call .file.execute_execfile_files (subj))
+;; Need to add rule for netfilter.
+      (allow subj .net.procfile (file (read open getattr)))
 
-     (call .file.execute_execfile_files (subj))
+      (allow .hotplugcall.subj .sys.fs (filesystem (getattr)))
+      (allow subj .sys.fs (filesystem (getattr)))
+      (call .sys.search_fs_dirs (subj))
+      (allow subj .qcmap_cm.conffile (dir (search)))
+      (allow subj .qcmap_cm.conffile (file (read open write)))
 )

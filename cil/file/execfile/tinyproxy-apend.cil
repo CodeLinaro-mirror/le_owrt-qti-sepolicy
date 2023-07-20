@@ -1,0 +1,23 @@
+;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .tinyproxy
+
+    (filecon
+    "/var/log/tinyproxy.log"
+    file
+    logtmpfile_file_context)
+
+    ;;
+    ;;Policy
+    ;;
+    (call .tinyproxy.obj_type_transition_logtmpfile (subj))
+    (allow subj .qcmap_cli.subj (fd (use)))
+    (allow subj .qcmap_cli.subj (fifo_file (read write)))
+    (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow subj .qcmap_ref.subj (fd (use)))
+    (allow subj .qcmap_ref.subj (fifo_file (read write)))
+    (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
+    (call .qcmap_cm.search_conffile_dirs (subj))
+    (allow subj .httpproxy.netport (tcp_socket (name_connect)))
+)

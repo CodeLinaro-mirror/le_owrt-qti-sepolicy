@@ -1,6 +1,10 @@
 ;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
+(in .file
+    (call .netifd.obj_type_transition_tmpfile_ext (unconfined.subj_typeattr))
+)
+
 (in .netifd
 
 (block netifdtmp
@@ -8,6 +12,28 @@
        ;; policy
 
        (blockinherit .agent.base_template))
+
+       (filecon
+       "/tmp/ipv4config.*"
+       file
+       tmpfile_file_context)
+
+       (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+            (call .tmp.fs_obj_type_transition
+                (ARG1 tmpfile ARG2 ARG3)))
+
+       (macro obj_type_transition_tmpfile_ext ((type ARG1))
+            (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanwlan"))
+            (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanusb"))
+            (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanbt"))
+            (call obj_type_transition_tmpfile (ARG1 file "ipv4config.waneth"))
+       )
+
+         (blockinherit .tmpfile.obj_template)
+         (call obj_type_transition_tmpfile_ext (subj))
+         (allow subj netifd.tmpfile (file (create write open append read getattr unlink)))
+         (allow subj .tmp.fs (dir (remove_name)))
+         (allow subj odhcp6c.tmpfile (file (open read getattr)))
          (allow subj self (capability (dac_override dac_read_search)))
          (call .nameservice.read_miscfile_files (subj))
          (call .ifup.use_fds (subj))
@@ -16,7 +42,12 @@
           (call .qcmap_cli.manage_tmpfile_files (subj))
           (call .ifup.subj_type_transition (subj))
           (call .rcdnsmasq.subj_type_transition (subj))
+          (call .conntrack.subj_type_transition (subj))
+          (call .xtables.subj_type_transition (subj))
           (call .file.search_initscriptfile_dirs (subj))
+          (call .file.execute_initscriptfile_files (subj))
+          (call .file.readwrite_conffile_dirs(subj))
+          (call .file.readwrite_conffile_files (subj))
           ;; Need read , open, append on /etc/iproute2/rt_tables
           (call .iproute2.readwrite_conffile_files (subj))
           (call .sys.readwriteinherited_fifo_files (subj))
@@ -48,6 +79,12 @@
           (call .fw3.manage_datafile_files (subj))
           ;; Need read on fw3.state file
           (call .fw3.readwrite_runtimetmpfile_files (subj))
+          (allow subj .fw3.runtimetmpfile (file (unlink)))
+          ;; Need rules for mwan3
+          (call .mwan3.search_runtimetmpfile_dirs (subj))
+          (call .mwan3.manage_runtimetmpfile_files(subj))
+          (call .mwan3.create_runtimetmpfile_dirs (subj))
+          (call .mwan3.manage_runtimetmpfile_dirs (subj))
           (call .ipa.readwrite_nodedev_chr_files (subj))
           (allow subj diag-router.subj (unix_stream_socket (connectto)))
           (call .net.read_procfile_lnk_files (subj))
@@ -55,18 +92,24 @@
           (call .net.readwrite_procfile_files (subj))
           ;; Need read_write on xtables
           (call .xtables.readwrite_runtimetmpfile_files (subj))
+          (allow subj .xtables.execfile ( file (getattr)))
           ;; Need search, getattr on /sys/module/nf_conntrack_amanda
           (call .module.search_sysfile_dirs (subj))
           ;; Need getattr, associate on nf_conntrack
           (call .proc.getattr_filesystems (subj))
           (call .proc.associate_filesystems (subj))
           (allow subj .firewall.conffile (file (getattr)))
+          (call .firewall.readwrite_conffile_files (subj))
+          (call .file.read_conffile_lnk_files (subj))
+          (allow subj self create_netlink_netfilter_socket)
+          (allow subj self readwrite_netlink_netfilter_socket)
           ;; Need permission for nf_conntrack
           (allow subj netifd.subj (dir (write add_name)))
           (allow subj netifd.subj (file (create)))
           ;;Need permission to manage conffile files and dirs
           (call .qcmap_cm.search_conffile_dirs (subj))
           (call .qcmap_cm.manage_conffile_files (subj))
+          (call .qcmap_cm.execute_conffile_files (subj))
           ;; Need execute, read on /etc/init.d/network
           (call .rcnetwork.execute_initscriptfile_files (subj))
           (call .rcnetwork.read_initscriptfile_files (subj))
@@ -76,4 +119,6 @@
           (call .network.manage_miscfile_files (subj))
           (call .kmsg.readwrite_nodedev_chr_files (subj))
           (call .locale.manage_miscfile_files (subj))
+          (call .locale.read_miscfile_files (subj))
+          (call .locale.map_miscfile_files (subj))
 )

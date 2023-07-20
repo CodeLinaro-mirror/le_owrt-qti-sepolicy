@@ -121,4 +121,8 @@
        (call .dataadpl.manage_tmpfile_dirs (subj))
     ;; Need read write on /dev/mhi_ctrl chr_file
        (call .qti.readwrite_nodedev_chr_files (subj))
+    ;; Need write permission for qti and adpl on sock_file
+    (call .logd.write_miscfile_sock_files (subj))
+    (allow subj .logd.miscfile (sock_file (write)))
+    (allow subj logd.subj (unix_dgram_socket (sendto)))
 )

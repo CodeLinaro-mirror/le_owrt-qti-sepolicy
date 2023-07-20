@@ -22,6 +22,7 @@
     (filecon "/usr/bin/cfg80211tool" file execfile_file_context)
     (filecon "/usr/bin/cfg80211tool.1" file execfile_file_context)
     (filecon "/usr/bin/wlanconfig" file execfile_file_context)
+    (filecon "/usr/bin/acfg_tool" file execfile_file_context)
     (filecon "/usr/local/lib/libqca_nl80211_wrapper.so" file datafile_file_context)
     (filecon "/tmp/sysinfo/board_name" file tmpfile_file_context)
     (filecon "/tmp/no_qca_da" file tmpfile_file_context)
@@ -37,14 +38,20 @@
     (filecon "/var/run/hostapd-.*\.lock" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant-.*\.conf" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant-.*\.lock" file runtimetmpfile_file_context)
+    (filecon "/usr/bin/cnssdaemon" file execfile_file_context)
+    (filecon "/usr/bin/cnsscli" file execfile_file_context)
+    (filecon "/var/run/cnss_user_server" socket runtimetmpfile_file_context)
+    (filecon "/var/run/cnss_user_client" socket runtimetmpfile_file_context)
+    (filecon "/tmp/acfg-app" file tmpfile_file_context)
+    (filecon "/etc/acfg_common.conf" file conffile_file_context)
 
     ;;
     ;; Macros
     ;;
-    (macro search_pgrep_killall_perms ((type ARG1) (type ARG2))
-        (allow ARG1 ARG2 (dir (read open search)))
-        (allow ARG1 ARG2 (file (read open)))
-        (allow ARG1 ARG2 (lnk_file (read)))
+    (macro dontaudit_pgrep_killall_cmd_search_perms ((type ARG1) (type ARG2))
+        (dontaudit ARG1 ARG2 (dir (read open search)))
+        (dontaudit ARG1 ARG2 (file (read open)))
+        (dontaudit ARG1 ARG2 (lnk_file (read)))
     )
 
 
@@ -59,6 +66,8 @@
         (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wifilock"))
         (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "load_module_lock"))
         (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "*"))
+        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 sock_file "cnss_user_server"))
+        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 sock_file "cnss_user_client"))
     )
 
     (macro obj_type_transition_conffile ((type ARG1))
@@ -71,6 +80,7 @@
         (call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool.1"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "wlanconfig"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "acfg_tool"))
     )
 
     (macro obj_type_transition_datafile ((type ARG1))
@@ -106,6 +116,7 @@
     (call obj_type_transition_tmpfile (subj file ".wifi-config-done"))
     (call obj_type_transition_tmpfile (subj file "first_boot_done"))
     (call obj_type_transition_tmpfile (subj file "no_qca_da"))
+    (call obj_type_transition_tmpfile (subj sock_file "acfg-app"))
     (call obj_type_transition_conffile (subj))
     (call obj_type_transition_datafile (subj))
 
@@ -115,6 +126,10 @@
     (allow subj .qcmap_cli.subj (fifo_file (read write)))
     (allow subj .qcmap_cli.subj (fifo_file (ioctl)))
     (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow subj .qcmap_ref.subj (fd (use)))
+    (allow subj .qcmap_ref.subj (fifo_file (read write)))
+    (allow subj .qcmap_ref.subj (fifo_file (ioctl)))
+    (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
 
     ;; For ifconfig
     (allow subj self (capability (net_admin)))
@@ -223,35 +238,54 @@
     ;; Read debug.fs directories
     (allow subj .debug.fs (dir (search read open)))
 
-    ;; 'pgrep' and 'killall' permissions
-    (call search_pgrep_killall_perms (subj .proc.fs))
-    (call search_pgrep_killall_perms (subj .sys.subj))
-    (call search_pgrep_killall_perms (subj .ubusd.subj))
-    (call search_pgrep_killall_perms (subj .urngd.subj))
-    (call search_pgrep_killall_perms (subj .qwesd.subj))
-    (call search_pgrep_killall_perms (subj .diag-router.subj))
-    (call search_pgrep_killall_perms (subj .qseecomd.subj))
-    (call search_pgrep_killall_perms (subj .uhttpd.subj))
-    (call search_pgrep_killall_perms (subj .leprop.subj))
-    (call search_pgrep_killall_perms (subj .dropbear.subj))
-    (call search_pgrep_killall_perms (subj .ip.subj))
-    (call search_pgrep_killall_perms (subj .netifd.subj))
-    (call search_pgrep_killall_perms (subj .logd.subj))
-    (call search_pgrep_killall_perms (subj .rmt_storage.subj))
-    (call search_pgrep_killall_perms (subj .rpcd.subj))
-    (call search_pgrep_killall_perms (subj .diagrebootapp.subj))
-    (call search_pgrep_killall_perms (subj .dnsmasq.subj))
-    (call search_pgrep_killall_perms (subj .hotplugcall.subj))
-    (call search_pgrep_killall_perms (subj .rcdnsmasq.subj))
-    (call search_pgrep_killall_perms (subj .wpad.subj))
-    (call search_pgrep_killall_perms (subj .odhcpd.subj))
-    (call search_pgrep_killall_perms (subj .ipacm.subj))
-    (call search_pgrep_killall_perms (subj .ipacmdiag.subj))
-    (call search_pgrep_killall_perms (subj .netmgrd.subj))
-    (call search_pgrep_killall_perms (subj .qcmap_cm.subj))
-    (call search_pgrep_killall_perms (subj .qcmap_ref.subj))
-    (call search_pgrep_killall_perms (subj .loc_launcher.subj))
-    (call search_pgrep_killall_perms (subj .loc_lowi_server.subj))
+    ;; cnssdaemon and cnsscli support
+    (allow subj self create_netlink_socket)
+    (allow subj self create_qipcrtr_socket)
+    (allow subj .logd.miscfile (sock_file (write)))
+    (allow subj .logd.subj (unix_dgram_socket (sendto)))
+    (allow subj self (unix_dgram_socket (sendto)))
+    (allow subj .sys.subj (system (module_request)))
+    (call .wifi.manage_runtimetmpfile_sock_files (subj))
+
+    ;; 'pgrep' and 'killall' commands permissions
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .proc.fs))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .sys.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ubusd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .urngd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qwesd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .diag-router.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qseecomd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .uhttpd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .leprop.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .dropbear.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ip.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .netifd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .logd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .rmt_storage.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .rpcd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .diagrebootapp.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .dnsmasq.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .hotplugcall.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .rcdnsmasq.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .wpad.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .odhcpd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ipacm.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ipacmdiag.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .netmgrd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_cm.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_ref.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_launcher.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_lowi_server.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .tftp_server.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .fs-scrub-daemon.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .mbim.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_xtra_daemon.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_hal_daemon.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .dataadpl.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qtether.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .atfwd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .port-bridge.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_cli.subj))
 
     ;; Look for files in /tmp
     (allow subj .tmp.fs (file (read getattr open)))
@@ -281,6 +315,14 @@
     (allow subj self create_netlink_generic_socket)
     (allow subj self create_unix_dgram_socket)
 
+    ;; acfg_tool
+    (allow subj self create_netlink_scsitransport_socket)
+    (allow subj self create_netlink_route_socket)
+    (allow subj .tmp.fs (dir (remove_name)))
+    (call .wifi.create_tmpfile_sock_files (subj))
+    (call .wifi.delete_tmpfile_sock_files (subj))
+    (dontaudit subj self (capability (dac_override)))
+
     ;; sysctl command on dev.nss nodes
     (allow subj .sys.sysctlfile (dir (search)))
     (allow subj .dev.sysctlfile (dir (search)))
@@ -309,10 +351,6 @@
     (call .jsonfilter.mapexecute_execfile_files (subj))
     (call .jsonfilter.read_execfile_files (subj))
 
-
-    ;; /etc/init.d/ssid_steering
-
-
     ;; Manage /tmp and /var/run files owned by wifi
     (call .wifi.manage_tmpfile_files (subj))
     (call .wifi.manage_runtimetmpfile_files (subj))
@@ -328,4 +366,18 @@
     ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
     (call capabilities.getattr_conffile_files (subj))
     (call capabilities.search_conffile_dirs (subj))
+
+    ;; Allow to create tmp file when update WCNSS_qcom_cfg.ini
+    (call .wpad.manage_miscfile_files (subj))
+    (call .wpad.write_miscfile_dirs (subj))
+
+    ;; Allow mv operation about backup WCNSS_qcom_cfg.ini
+    (allow subj .wifi.subj (process (setfscreate)))
+    (allow subj .wifi.datafile (file (relabelfrom relabelto)))
+
+    ;; To access /sys/kernel/boot_kpi/kpi_values
+    (call .kpi_values.readwrite_sysfile_files (subj))
+
+    ;; Allow to check folder's group
+    (allow subj .nameservice.miscfile (file (open read)))
 )

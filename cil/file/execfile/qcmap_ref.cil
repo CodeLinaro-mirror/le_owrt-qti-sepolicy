@@ -70,6 +70,7 @@
     (call .netifd.search_miscfile_dirs (subj))
     (call .netifd.execute_miscfile_files (subj))
     (call .netifd.manage_miscfile_files (subj))
+    (allow subj .netifd.tmpfile (file (read open getattr)))
     (call .functions.manage_miscfile_files (subj))
     (call .functions.search_miscfile_dirs (subj))
 
@@ -148,6 +149,8 @@
 
     ;; Need permission to reboot on first vlan creation
     (allow subj .sys.subj (process(signal)))
+    (allow subj .sys.subj (file (read write)))
+    (allow subj .sys.subj (dir (search)))
 
     ;; Need transition to run dnsmasq restart
     (call .rcdnsmasq.subj_type_transition (subj))
@@ -268,7 +271,10 @@
     (allow subj .file.execfile (file (getattr)))
     (call .tmpfile.search_locktmpfile_dirs (subj))
     (call .tmpfile.readwrite_locktmpfile_dirs (subj))
+    (call .tmpfile.create_locktmpfile_files (subj))
     (call .rccommon.read_conffile_files (subj))
+    (call capabilities.getattr_conffile_files (subj))
+    (call capabilities.search_conffile_dirs (subj))
 
     ;; Need open and write permission on /proc/sys/net/netfilter/nf_conntrack_generic_timeout
     (call .netfilter.manage_sysctlfile_files (subj))
@@ -276,6 +282,17 @@
     ;; Need search permission on net and netfilter
     (call .net.search_sysctlfile_dirs (subj))
     (call .netfilter.search_sysctlfile_dirs (subj))
+
+    ;; Need rules for tinyproxy
+    (allow subj proc.fs (dir (read open getattr)))
+    (allow subj proc.fs (file (read open)))
+    (allow subj .rctinyproxy.initscriptfile (file (getattr execute read open)))
+    (call .rctinyproxy.subj_type_transition (subj))
+    (allow subj .tinyproxy.subj (dir (search read open getattr)))
+    (allow subj .tinyproxy.subj (file (read open)))
+    (allow subj .tinyproxy.subj (lnk_file (read open)))
+    (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
+    (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
 
     ;; Need read on rc.common
     (call .rccommon.manage_conffile_files (subj))
@@ -293,6 +310,8 @@
     (allow subj .tmpfile.locktmpfile (file (open)))
     (call .net.search_sysctlfile_dirs (subj))
     (call .hotplugcall.manage_execfile_files (subj))
+    (allow subj .hotplugcall.execfile (file (execute)))
+    (call .hotplugcall.subj_type_transition (subj))
     ;; Need read execute on xtables
     (call .xtables.execute_execfile_files (subj))
     (call .xtables.readwrite_runtimetmpfile_files (subj))
@@ -324,5 +343,12 @@
     (allow rcnetwork.subj qcmap_ref.subj readwriteinherited_fifo_file)
     (allow rcnetwork.subj qcmap_ref.subj (fd (use)))
 
+    ;; Need permission to run init.d script
+    (allow subj .file.conffile (file(create)))
+
     (call .hotplugcall.mapexecute_execfile_files (subj))
+
+    ;; IPQ WLAN boot-up config
+    (call .wifi.subj_type_transition (subj))
+    (allow subj file.conffile (file (create)))
 )

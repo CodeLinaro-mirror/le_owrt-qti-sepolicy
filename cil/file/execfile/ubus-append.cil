@@ -23,6 +23,7 @@
 ;; Need append on /tmp/resolve.conf
 (call .resolv.append_tmpfile_files (subj))
 (allow subj .kmsg.nodedev (chr_file (open write)))
+(call .fw3.write_runtimetmpfile_files (subj)) 
 )
 
 

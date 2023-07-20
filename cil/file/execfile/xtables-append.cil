@@ -12,4 +12,7 @@
   ;; Need permission to run iptables in netifd script
   (allow subj .netifd.subj readwriteinherited_fifo_file)
   (allow subj self create_netlink_netfilter_socket)
+  (allow subj .qcmap_ref.subj (fd (use)))
+  (allow subj .qcmap_ref.subj readwriteinherited_fifo_file)
+  (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
 )

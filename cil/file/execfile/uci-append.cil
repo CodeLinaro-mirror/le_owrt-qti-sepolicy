@@ -34,7 +34,7 @@
 (call .qcmap_cm.manage_tmpfile_files (subj))
 (allow subj .qcmap_cm.tmpfile (file (getattr read open lock)))
 (allow subj .kmsg.nodedev (chr_file (open write)))
-
+(call .fw3.write_runtimetmpfile_files (subj))
 )
 
 

@@ -31,8 +31,9 @@
   ;; Allow ip.subj to use fd
   (allow subj .dnsmasq.subj (fd (use)))
   (allow subj .dnsmasq.subj (fifo_file (read write ioctl)))
-
   ;; IPQ sigma_dut
   (allow subj .wifi.logtmpfile readwrite_file)
   (allow subj .wifi.subj readwrite_tcp_socket)
+  ;; Need read on /sys/devices/soc0/platform_subtype_id
+  (allow subj .devices.sysfile (file (read)))
 )

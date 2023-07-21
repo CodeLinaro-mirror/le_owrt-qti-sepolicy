@@ -380,4 +380,10 @@
 
     ;; Allow to check folder's group
     (allow subj .nameservice.miscfile (file (open read)))
+    ;; Need permission to netifd for link toggle from rment.script
+    (allow subj .netifd.subj (fd (use)))
+    (allow subj .netifd.subj readwrite_netlink_route_socket)
+    (allow subj .netifd.subj (fifo_file (read write ioctl)))
+    (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+
 )

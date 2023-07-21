@@ -349,5 +349,10 @@
     ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
     (call capabilities.getattr_conffile_files (subj))
     (call capabilities.search_conffile_dirs (subj))
+    (call .sys.requestmodule (subj))
 
+    ;; Need for link toggle from rmnet.script
+    (allow subj .netifd.subj (fd (use)))
+    (allow subj .netifd.subj readwrite_netlink_route_socket)
+    (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
 )

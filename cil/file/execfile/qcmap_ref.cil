@@ -80,6 +80,7 @@
     (call .qcmap_cm.manage_tmpfile_dirs (subj))
     (call .file.search_conffile_dirs (subj))
     (call .uci.search_conffile_dirs (subj))
+    (call .uci.readwrite_conffile_files (subj))
     (call .uci.subj_type_transition (subj))
     (call .diag-router.connectto_unix_stream_sockets (subj))
 
@@ -195,7 +196,8 @@
     (call .class.read_sysfile_lnk_files (subj))
     ;; Need read search /sys/devices/virtual/br-lan
     (call .devices.search_sysfile_dirs(subj))
-    (call .devices.read_sysfile_files (subj))
+    (call .devices.readwrite_sysfile_files (subj))
+
     (allow subj .devices.sysfile (dir (read open)))
     ;; Need subj_type_transition for ethtool utility
     (call .file.execute_execfile_files (subj))

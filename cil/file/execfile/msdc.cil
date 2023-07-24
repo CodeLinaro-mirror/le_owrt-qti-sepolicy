@@ -80,6 +80,12 @@
     (call .sys.search_fs_dirs (subj))
     (allow subj .sys.subj (fifo_file (read write)))
 
+    ;; Eventhough we are not using any fifo file by our module
+    ;; But we are seeing denials for ioctl call on fifo file
+    ;; We suspect may be one of our dependent libraries may need it
+    ;; So adding don't audit it for now
+    (dontaudit subj .sys.subj (fifo_file (ioctl)))
+
     ;; Need for /dev/logd or logging
     ;; this will add write permission also
     (call .logd.unix_dgram_send(subj))

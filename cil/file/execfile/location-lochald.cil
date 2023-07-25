@@ -101,12 +101,36 @@
     (call .uci.read_execfile_files (subj))
 
     ;; Need read perm on uci.conf files.
-    (call .uci.search_conffile_dirs (subj))
+    (call .uci.list_conffile_dirs (subj))
     (call .uci.read_conffile_files (subj))
 
     ;; Need read perm on uci.tmp files.
     (call .uci.search_tmpfile_dirs (subj))
     (call .uci.read_tmpfile_files (subj))
+
+    ;; Need read perm on libubox files.
+    (call .libubox.list_datafile_dirs(subj))
+    (call .libubox.read_datafile_files (subj))
+
+    ;; Need read perm on tmpfile.locktmpfile files.
+    (call .tmpfile.list_locktmpfile_dirs (subj))
+    (call .tmpfile.read_locktmpfile_files (subj))
+
+    ;; Need search, read on /etc/init.d - backhaulWWANCon
+    (call .file.list_initscriptfile_dirs (subj))
+    ;; Need execute, read on /etc/init.d/network - backhaulWWANCon
+    (call .rcnetwork.execute_initscriptfile_files (subj))
+    (call .rcnetwork.read_initscriptfile_files (subj))
+    ;; Need execute, read on /etc/init.d/firewall - backhaulWWANCon
+    (call .rcfirewall.execute_initscriptfile_files (subj))
+    (call .rcfirewall.read_initscriptfile_files (subj))
+
+    ;; Need read open on /etc/rc.common/network
+    (call .rccommon.read_conffile_files (subj))
+
+    ;;Need search read on /lib/functions.sh
+    (call .functions.list_miscfile_dirs(subj))
+    (call .functions.read_miscfile_files(subj))
 
     ;; Needed to for diagrebootapp to connect to diag-router
     (call .diag-router.unix_stream_connect(subj))

@@ -133,6 +133,9 @@
         ;; Need search on /tmp/run dir
            (call .tmpfile.search_runtimetmpfile_dirs (subj))
 
+        ;; Need search on /tmp/state/
+           (call .tmpfile.search_statetmpfile_dirs (subj))
+
         ;; Need search, add_name on /dev/socket/data dir
            (call .qcmap_cm.search_runtimetmpfile_dirs (subj))
            (call .qcmap_cm.addname_runtimetmpfile_dirs (subj))

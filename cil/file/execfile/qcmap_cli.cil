@@ -255,6 +255,7 @@
     (call .kmodloader.subj_type_transition (subj))
     (allow subj .kmodloader.execfile (file (getattr)))
     (allow subj .wifi.datafile (file (lock unlink)))
+    (allow subj .wifi.datafile (sock_file (getattr)))
     (call .qcmap_cm.create_datafile_dirs (subj))
     (allow subj .file.datafile (file(append)))
     (call .locale.map_miscfile_files (subj))

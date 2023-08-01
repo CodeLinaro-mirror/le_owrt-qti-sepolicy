@@ -362,4 +362,7 @@
     (allow subj .ubusd.subj (dir (search)))
 
     (allow subj .sys.subj (system (module_request)))
+
+    ;;Need to write to /sys/kernel/boot_kpi/kpi_values
+    (call .kpi_values.readwrite_sysfile_files (subj))
 )

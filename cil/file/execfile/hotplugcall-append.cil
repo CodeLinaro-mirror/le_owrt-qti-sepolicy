@@ -107,7 +107,7 @@
       (allow .hotplugcall.subj .sys.fs (filesystem (getattr)))
       (allow subj .sys.fs (filesystem (getattr)))
       (call .sys.search_fs_dirs (subj))
-      (allow subj .qcmap_cm.conffile (dir (search)))
+      (allow subj .qcmap_cm.conffile (dir (search read getattr)))
       (allow subj .qcmap_cm.conffile (file (read open write)))
 
 ;; Need search read and execute permissions for /etc/data/mbbUtils.sh

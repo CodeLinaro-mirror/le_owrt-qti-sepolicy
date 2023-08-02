@@ -95,4 +95,8 @@
        ;; Need for setting deep.sleep.exit property
        (allow subj .leprop.miscfile (sock_file (read write)))
        (call .leprop.connectto_unix_stream_sockets (subj))
+
+       ;; Need for reading /sys/kernel/power_state/deep_sleep_allowed
+       (call .kernel.search_sysfile_dirs(subj))
+       (allow subj .kernel.sysfile (file(open read)))
 )

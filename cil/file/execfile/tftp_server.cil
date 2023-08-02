@@ -85,6 +85,6 @@
 	(allow subj self (capability2 (block_suspend)))
 	(allow subj self (process (setcap)))
 	(allow subj unknown.miscfile (dir (search)))
-	(allow subj tftp_server.datafile (file (open setattr read)))
-	(allow subj tftp_server.datafile (dir (open setattr read search)))
+	(allow subj tftp_server.datafile (file (open setattr read create write ioctl)))
+	(allow subj tftp_server.datafile (dir (open setattr read search write add_name)))
 )

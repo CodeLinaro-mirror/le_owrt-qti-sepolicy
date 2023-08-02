@@ -35,10 +35,29 @@
     ;; read urandom
     (call .random.read_nodedev_chr_files (subj))
 
+    (allow subj loc_launcher.subj (unix_dgram_socket (read write)))
     (allow subj loc_launcher.subj (unix_stream_socket (read write)))
 
     ;; connect to loc_launcher target stream
     (call .loc_launcher.connectto_unix_stream_sockets (subj))
 
+    ;; Create udp_socket
+    (allow subj self create_udp_socket)
+
     (call .loc_launcher.use_fds (subj))
+
+    (allow subj self (unix_dgram_socket (sendto)))
+    ;; communicate with location daemons via unix dgram sockets
+    (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
+    (call .loc_launcher.sendto_unix_dgram_sockets (subj))
+    (call .loc_xtwifi_inet.sendto_unix_dgram_sockets (subj))
+    (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
+
+    ;; read /etc/hosts
+    (call .nameservice.read_miscfile_files (subj))
+
+    ;; needed to access /dev/socket/leprop-service
+    (allow subj  leprop.miscfile  (sock_file  (read write)))
+    ;;connect to leprop socket
+    (call .leprop.connectto_unix_stream_sockets (subj))
 )

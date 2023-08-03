@@ -37,9 +37,6 @@
     ;; read urandom
     (call .random.read_nodedev_chr_files (subj))
 
-    (allow subj loc_launcher.subj (unix_dgram_socket (read write)))
-    (allow subj loc_launcher.subj (unix_stream_socket (read write)))
-
     ;; connect to loc_launcher target stream
     (call .loc_launcher.connectto_unix_stream_sockets (subj))
 
@@ -47,7 +44,6 @@
 
     (call .unknown.search_miscfile_dirs(subj))
 
-    (allow subj self (unix_dgram_socket (sendto)))
     ;; communicate with location daemons via unix dgram sockets
     (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
     (call .loc_xtwifi_inet.sendto_unix_dgram_sockets (subj))

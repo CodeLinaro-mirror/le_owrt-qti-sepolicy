@@ -47,6 +47,8 @@
 
 	;; Needed for  unix_dgram socket creation
 	   (allow subj self create_unix_dgram_socket)
+	;; Need sendto on unix_dgram socket
+	   (call .logd.sendto_unix_dgram_sockets (subj))
 	   (allow subj self (capability (setgid setuid)))
 	   (allow subj self create_unix_stream_socket)
 	   (allow subj self (capability (setgid setuid chown)))

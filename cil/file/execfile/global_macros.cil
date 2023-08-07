@@ -2,3 +2,23 @@
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; please use this cil file to define global macros which can be used for all blocks.
+
+;; Macro to provide read write access to kmsg.nodedev
+(in .kmsg
+
+;; policy
+
+ (macro  readwrite_kmsg_nodedev_files ((type ARG1))
+        (call .kmsg.readwrite_nodedev_chr_files (ARG1))))
+
+
+;; Macro to provide read access to nameservice.miscfile
+
+(in .nameservice
+
+;; policy
+
+ (macro  read_nameservice_miscfile ((type ARG1))
+       (call .nameservice.read_miscfile_files (ARG1))))
+
+

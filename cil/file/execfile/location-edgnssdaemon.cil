@@ -37,4 +37,9 @@
     (call .loc_launcher.use_fds (subj))
 
     (allow subj loc_launcher.subj (unix_stream_socket (read write)))
+
+    ;; needed to read  /dev/socket/leprop-service
+    (allow subj  leprop.miscfile  (sock_file  (read write)))
+    ;;connect to leprop socket
+    (call .leprop.connectto_unix_stream_sockets (subj))
 )

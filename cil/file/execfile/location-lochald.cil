@@ -42,6 +42,7 @@
     (call .loc_edgnss_daemon.sendto_unix_dgram_sockets (subj))
     (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
     (call .loc_launcher.sendto_unix_dgram_sockets (subj))
+    (call .loc_engine_service.sendto_unix_dgram_sockets (subj))
 
     ;; communicate with location test apps which runs in sys.subj ctxt
     (call .sys.sendto_unix_dgram_sockets (subj))
@@ -118,4 +119,8 @@
     (call .powerstate_socket.manage_powerstate_socket_files (subj))
     (allow subj .powerstate.subj (unix_stream_socket (connectto)))
 
+    ;; Qwes related permissions
+    (call .qwesd_mink_socket.search_nodedev_dirs (subj))
+    (call .qwesd_mink_socket.readwrite_nodedev_sock_files (subj))
+    (allow subj .qwesd.subj (unix_stream_socket (connectto)))
 )

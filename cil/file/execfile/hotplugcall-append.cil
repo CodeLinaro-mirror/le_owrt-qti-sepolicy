@@ -29,6 +29,9 @@
       (call .qcmap_cm.create_tmpfile_files (subj))
       (call .qcmap_cm.manage_tmpfile_files (subj))
       (call .qcmap_cm.manage_tmpfile_dirs (subj))
+;; For /etc/data/mbbUtils.sh
+      (allow subj .qcmap_cm.conffile search_dir)
+      (allow subj .qcmap_cm.conffile read_file)
 
 ;; Need for sdcard
       (call .file.read_conffile_files(subj))
@@ -67,6 +70,9 @@
       (call .mwan3.read_conffile_files (subj))
       (call .mwan3.execute_conffile_files (subj))
 
+;; Need for call netifd
+     (call .netifd.subj_type_transition (subj))
+
 ;; Need for qcmap_ref
       (call .qcmap_ref.use_fds (subj))
       (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
@@ -74,6 +80,7 @@
       (call .netifd.manage_runtimetmpfile_files(subj))
       (allow subj .netifd.subj (fifo_file (read write)))
       (call .tmpfile.readwrite_runtimetmpfile_files (subj))
+
 ;; Need execute read on ip.execfile
       (call .ip.read_execfile_files (subj))
       (call .ip.subj_type_transition (subj))
@@ -100,4 +107,13 @@
       (allow .hotplugcall.subj .sys.fs (filesystem (getattr)))
       (allow subj .sys.fs (filesystem (getattr)))
       (call .sys.search_fs_dirs (subj))
+      (allow subj .qcmap_cm.conffile (dir (search)))
+      (allow subj .qcmap_cm.conffile (file (read open write)))
+
+;; Need search read and execute permissions for /etc/data/mbbUtils.sh
+      (call .qcmap_cm.search_conffile_dirs (subj))
+      (call .qcmap_cm.manage_conffile_files (subj))
+      (call .file.execute_execfile_files (subj))
+      (allow .hotplugcall.subj .logd.subj (unix_dgram_socket(sendto)))
+      (call .tmpfile.search_conftmpfile_dirs (subj))
 )

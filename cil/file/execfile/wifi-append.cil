@@ -22,6 +22,8 @@
     (filecon "/usr/bin/cfg80211tool" file execfile_file_context)
     (filecon "/usr/bin/cfg80211tool.1" file execfile_file_context)
     (filecon "/usr/bin/wlanconfig" file execfile_file_context)
+    (filecon "/usr/bin/acfg_tool" file execfile_file_context)
+    (filecon "/usr/bin/sigma_dut" file execfile_file_context)
     (filecon "/usr/local/lib/libqca_nl80211_wrapper.so" file datafile_file_context)
     (filecon "/tmp/sysinfo/board_name" file tmpfile_file_context)
     (filecon "/tmp/no_qca_da" file tmpfile_file_context)
@@ -37,6 +39,15 @@
     (filecon "/var/run/hostapd-.*\.lock" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant-.*\.conf" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant-.*\.lock" file runtimetmpfile_file_context)
+    (filecon "/usr/bin/cnssdaemon" file execfile_file_context)
+    (filecon "/usr/bin/cnsscli" file execfile_file_context)
+    (filecon "/var/run/cnss_user_server" socket runtimetmpfile_file_context)
+    (filecon "/var/run/cnss_user_client" socket runtimetmpfile_file_context)
+    (filecon "/tmp/acfg-app" file tmpfile_file_context)
+    (filecon "/etc/acfg_common.conf" file conffile_file_context)
+    ;; IPQ sigma-dut
+    (filecon "/var/log/sigma" file logtmpfile_file_context)
+    (filecon "/tmp/wpa_ctrl_[0-9]+\-[0-9]+" socket tmpfile_file_context)
 
     ;;
     ;; Macros
@@ -59,6 +70,8 @@
         (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wifilock"))
         (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "load_module_lock"))
         (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "*"))
+        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 sock_file "cnss_user_server"))
+        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 sock_file "cnss_user_client"))
     )
 
     (macro obj_type_transition_conffile ((type ARG1))
@@ -71,6 +84,8 @@
         (call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool.1"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "wlanconfig"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "acfg_tool"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "sigma_dut"))
     )
 
     (macro obj_type_transition_datafile ((type ARG1))
@@ -94,6 +109,7 @@
     (blockinherit .tmpfile.runtime.obj_template)
     (blockinherit .tmpfile.lock.obj_template)
     (blockinherit .tmpfile.conf.obj_template)
+    (blockinherit .tmpfile.log.obj_template)
     (blockinherit .file.conf.obj_template)
     (blockinherit .file.data.obj_template)
     (blockinherit .dev.node.obj_template)
@@ -106,8 +122,11 @@
     (call obj_type_transition_tmpfile (subj file ".wifi-config-done"))
     (call obj_type_transition_tmpfile (subj file "first_boot_done"))
     (call obj_type_transition_tmpfile (subj file "no_qca_da"))
+    (call obj_type_transition_tmpfile (subj sock_file "acfg-app"))
     (call obj_type_transition_conffile (subj))
     (call obj_type_transition_datafile (subj))
+    ;; Transitions for /tmp/wpa_ctrl_$pid-$cnt client sockets (IPQ sigma-dut)
+    (call obj_type_transition_tmpfile (subj sock_file "*"))
 
     (allow subj .sys.subj (fifo_file (read write ioctl)))
     (allow subj .sys.subj (unix_stream_socket (read write)))
@@ -227,6 +246,15 @@
     ;; Read debug.fs directories
     (allow subj .debug.fs (dir (search read open)))
 
+    ;; cnssdaemon and cnsscli support
+    (allow subj self create_netlink_socket)
+    (allow subj self create_qipcrtr_socket)
+    (allow subj .logd.miscfile (sock_file (write)))
+    (allow subj .logd.subj (unix_dgram_socket (sendto)))
+    (allow subj self (unix_dgram_socket (sendto)))
+    (allow subj .sys.subj (system (module_request)))
+    (call .wifi.manage_runtimetmpfile_sock_files (subj))
+
     ;; 'pgrep' and 'killall' commands permissions
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .proc.fs))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .sys.subj))
@@ -266,6 +294,11 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .atfwd.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .port-bridge.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_cli.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .odhcp6c.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qmuxbridge.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcril.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .msdc.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .perf-hal-service.subj))
 
     ;; Look for files in /tmp
     (allow subj .tmp.fs (file (read getattr open)))
@@ -294,8 +327,35 @@
     ;; Sockets used by user-space tools
     (allow subj self create_netlink_generic_socket)
     (allow subj self create_unix_dgram_socket)
+
     ;; acfg_tool
     (allow subj self create_netlink_scsitransport_socket)
+    (allow subj self create_netlink_route_socket)
+    (allow subj .tmp.fs (dir (remove_name)))
+    (call .wifi.create_tmpfile_sock_files (subj))
+    (call .wifi.delete_tmpfile_sock_files (subj))
+    (dontaudit subj self (capability (dac_override)))
+
+    ;; IPQ sigma_dut
+    (call .tmpfile.logtmpfile_obj_type_transition(subj logtmpfile file "sigma"))
+    (call .wifi.manage_logtmpfile_files (subj))
+    (call .wifi.readwrite_logtmpfile_files (.iw.subj))
+    (allow subj .ip.execfile execute_file)
+    (allow subj .ip.execfile (file (map)))
+    (allow subj self (netlink_route_socket (nlmsg_read nlmsg_write)))
+    (allow .iw.subj .wifi.subj readwrite_tcp_socket)
+    (allow subj .wpad.subj (unix_dgram_socket (sendto)))
+    (call .wpad.write_runtimetmpfile_sock_files (subj))
+    (call .file.execute_execfile_files (subj))
+    ;; uci-commit wireless
+    (allow subj .uci.conffile (dir (remove_name)))
+    (allow subj .uci.conffile (file (unlink)))
+    ;; Talk to sigma backbone
+    (allow subj .net.netif (netif (egress)))
+    (allow subj .net.netnode (node (sendto)))
+    (allow subj self create_tcp_stream_socket)
+    (allow subj .unreserved.netport (tcp_socket (name_bind name_connect)))
+    (allow subj .net.netnode (tcp_socket (node_bind)))
 
     ;; sysctl command on dev.nss nodes
     (allow subj .sys.sysctlfile (dir (search)))
@@ -325,10 +385,6 @@
     (call .jsonfilter.mapexecute_execfile_files (subj))
     (call .jsonfilter.read_execfile_files (subj))
 
-
-    ;; /etc/init.d/ssid_steering
-
-
     ;; Manage /tmp and /var/run files owned by wifi
     (call .wifi.manage_tmpfile_files (subj))
     (call .wifi.manage_runtimetmpfile_files (subj))
@@ -355,4 +411,13 @@
 
     ;; To access /sys/kernel/boot_kpi/kpi_values
     (call .kpi_values.readwrite_sysfile_files (subj))
+
+    ;; Allow to check folder's group
+    (allow subj .nameservice.miscfile (file (open read)))
+    ;; Need permission to netifd for link toggle from rment.script
+    (allow subj .netifd.subj (fd (use)))
+    (allow subj .netifd.subj readwrite_netlink_route_socket)
+    (allow subj .netifd.subj (fifo_file (read write ioctl)))
+    (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+
 )

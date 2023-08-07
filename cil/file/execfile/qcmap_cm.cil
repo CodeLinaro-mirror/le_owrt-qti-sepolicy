@@ -309,6 +309,15 @@
       ;; Need permission for sysfs
       (allow subj .class.sysfile (lnk_file (read)))
 
+      ;; Need permission to run init.d script
+      (call .wpad.subj_type_transition (subj))
+      (call .qcmap_cm.execute_conffile_files (subj))
+      (call .wifi.search_datafile_dirs (subj))
+      (call .file.execute_initscriptfile_files (subj))
+      (call .file.search_initscriptfile_dirs (subj))
+      (allow subj .wifi.datafile (sock_file (write)))
+      (allow subj .file.initscriptfile (file (execute read open)))
+
       ;; Need open on /etc/data/adpl/mhi_enable
       (call .dataadpl.manage_conffile_files (subj))
       ;; Need read on adpl dir

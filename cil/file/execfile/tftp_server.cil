@@ -10,6 +10,9 @@
 ;(in .file
  ;   (call .tftp_server.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
+(in .file
+(call .tftp_server.obj_type_transition_datafile (unconfined.subj_typeattr dir shared)))
+
 (block tftp_server
        ;;
        ;; Contexts
@@ -18,16 +21,29 @@
 	"/usr/bin/tftp_server"
 	file
 	execfile_file_context)
+	(filecon "/data/persist/hlos_rfs/shared/"
+	dir
+	datafile_file_context)
+	(filecon "/data/persist/hlos_rfs/shared/.*"
+	any
+	datafile_file_context)
+
        ;;
        ;; Macros
        ;;
 	(macro obj_type_transition_execfile ((type ARG1))
 		(call .file.execfile_obj_type_transition
 			(ARG1 execfile file "tftp_server")))
+
+	(macro obj_type_transition_datafile ((type ARG1)(class ARG2)(name ARG3))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile ARG2 ARG3)))
        ;;
        ;; Policy
        ;;
        (blockinherit .agent.base_template)
+       (blockinherit file.data.obj_template)
+       (call obj_type_transition_datafile (subj dir "shared"))
        ;; search in config files is needed
        ;;which is done on start /Stop  of services
        (call .file.search_conffile_dirs (subj))
@@ -69,4 +85,6 @@
 	(allow subj self (capability2 (block_suspend)))
 	(allow subj self (process (setcap)))
 	(allow subj unknown.miscfile (dir (search)))
+	(allow subj tftp_server.datafile (file (open setattr read)))
+	(allow subj tftp_server.datafile (dir (open setattr read search)))
 )

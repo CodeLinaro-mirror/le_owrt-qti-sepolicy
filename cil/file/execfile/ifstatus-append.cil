@@ -6,5 +6,10 @@
   ;;policy
 
   (allow subj .filesystems.procfile (file (read)))
+  (allow subj .sys.fs (filesystem (getattr)))
+  (allow subj .qcmap_ref.subj (fd (use)))
+  ;; Need permission to run ipstatus in netifd script
+  (allow subj .netifd.miscfile (dir (search getattr)))
+  (allow subj .netifd.subj readwriteinherited_fifo_file)
 
 )

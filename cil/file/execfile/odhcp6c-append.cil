@@ -18,6 +18,7 @@
         (call obj_type_transition_tmpfile (ARG1 file "ipv6config.wanusb"))
         (call obj_type_transition_tmpfile (ARG1 file "ipv6config.wanbt"))
         (call obj_type_transition_tmpfile (ARG1 file "ipv6config.waneth"))
+        (call obj_type_transition_tmpfile (ARG1 file "ipv6config.lan"))
     )
 
     ;;policy

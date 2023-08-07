@@ -1,25 +1,25 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
-;; Sepolicy rules for location daemon - lowi-server
+;; Sepolicy rules for location daemon - engine-service
 (in .file
     ;; location exec files transition
-    (call .loc_lowi_server.obj_type_transition_execfile (unconfined.subj_typeattr)))
+    (call .loc_engine_service.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
-;;#============= Lowi Server ==============
-(block loc_lowi_server
+;;#============= Engine Service ==============
+(block loc_engine_service
     ;;
     ;; Contexts
     ;; --------
-    (filecon "/usr/bin/lowi-server" file execfile_file_context)
+    (filecon "/usr/bin/engine-service" file execfile_file_context)
 
     ;;
     ;; Macros
     ;; ------
     (macro obj_type_transition_execfile ((type ARG1))
           (call .file.execfile_obj_type_transition
-                (ARG1 execfile file "lowi-server")))
+                (ARG1 execfile file "engine-service")))
 
     ;;
     ;; Policy
@@ -33,29 +33,21 @@
 
     (call subj_type_transition (subj))
 
-    (allow subj self (capability (net_admin)))
-
-    ;; netlink_route_socket
-    (allow subj self create_netlink_route_socket)
-
-    ;; netlink_generic_socket
-    (allow subj self create_netlink_generic_socket)
-
-    ;; Create udp_socket
-    (allow subj self create_udp_socket)
+    (call .loc_launcher.use_fds (subj))
 
     (allow subj loc_launcher.subj (unix_stream_socket (read write)))
     (allow subj loc_launcher.subj (unix_dgram_socket (read write)))
 
-    (call .sys.requestmodule (subj))
-
-    ;; connect to loc_launcher target stream
-    (call .loc_launcher.connectto_unix_stream_sockets (subj))
+    ;; Needed to for diagrebootapp to connect to diag-router
+    (call .diag-router.unix_stream_connect(subj))
 
     (allow subj self (unix_dgram_socket (sendto)))
     ;; communicate with location daemons via unix dgram sockets
     (call .loc_launcher.sendto_unix_dgram_sockets (subj))
     (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
 
-    (call .loc_launcher.use_fds (subj))
+    ;; needed to read  /dev/socket/leprop-service
+    (allow subj  leprop.miscfile  (sock_file  (read write)))
+    ;;connect to leprop socket
+    (call .leprop.connectto_unix_stream_sockets (subj))
 )

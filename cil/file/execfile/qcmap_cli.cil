@@ -63,6 +63,8 @@
     (call qcmap_cli.obj_type_transition_runtimetmpfile (subj sock_file "charon.ctl"))
     (call qcmap_cli.obj_type_transition_tmpfile (subj file "strongswan.conf"))
 
+    ;; Need obj_type_transition for /etc/firewall.user.*
+    (call .firewall.obj_type_transition_conffile_ext (subj))
     ;; Need for netlink_route_socket
     (allow subj self create_netlink_route_socket)
     (allow subj self create_rawip_socket)
@@ -352,6 +354,11 @@
 
     (allow subj .wpad.subj (fd (use)))
     (allow subj .wpad.subj (unix_dgram_socket (read write)))
+    (allow subj .file.conffile (file (create write setattr rename unlink)))
+
+    ;;Need rules for /sys/kernel/boot_kpi/kpi_values
+    (call .kpi_values.append_sysfile_files (subj))
+    (allow subj .kpi_values.sysfile (file (read)))
 
     ;; Need to access /dev/socket/data/qcmap_sta_uds_file
     (call .qcmap_cm.write_tmpfile_sock_files(subj))

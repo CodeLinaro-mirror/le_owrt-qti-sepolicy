@@ -40,7 +40,8 @@
     (call obj_type_transition_tmpfile (subj file "*"))
     ;; Need obj_type_transition on mwan3
     (call .mwan3.obj_type_transition_runtimetmpfile (subj))
-
+    ;; Need obj_type_transition for /etc/firewall.user.*
+    (call .firewall.obj_type_transition_conffile_ext (subj))
     ;; Need create for qipcrtr_socket, unix_stream_socket
     (allow subj self create_qipcrtr_socket)
 

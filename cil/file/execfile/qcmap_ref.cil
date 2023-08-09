@@ -150,7 +150,7 @@
 
     ;; Need permission to reboot on first vlan creation
     (allow subj .sys.subj (process(signal)))
-    (allow subj .sys.subj (file (read write)))
+    (allow subj .sys.subj (file (read write open)))
     (allow subj .sys.subj (dir (search)))
 
     ;; Need transition to run dnsmasq restart
@@ -355,4 +355,7 @@
     (allow subj file.conffile (file (create)))
     (call .devices.addname_sysfile_dirs (subj))
     (call .tmpfile.search_logtmpfile_dirs (subj))
+    (allow subj .ubusd.subj (lnk_file (read)))
+    (allow subj .ubusd.subj (file (read open)))
+    (allow subj .ubusd.subj (dir (search)))
 )

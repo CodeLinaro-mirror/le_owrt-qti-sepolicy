@@ -318,6 +318,10 @@
       (allow subj .wifi.datafile (sock_file (write)))
       (allow subj .file.initscriptfile (file (execute read open)))
 
+      ;; Need permissions write log from backhaulCommonConfig.sh
+      (call .qcmap_cm.search_datafile_dirs (subj))
+      (allow subj .qcmap_cm.datafile (file (append open)))
+
       ;; Need open on /etc/data/adpl/mhi_enable
       (call .dataadpl.manage_conffile_files (subj))
       ;; Need read on adpl dir

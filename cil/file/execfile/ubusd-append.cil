@@ -7,6 +7,9 @@
 ;; during run of mdns avahi-nodbus-daemon
 
 (allow subj .file.conffile (file (read open)))
+(allow subj .file.datafile (file (read)))
+(allow subj .kmsg.nodedev (chr_file (read write)))
+(allow subj .logd.miscfile (sock_file (write)))
 
 (block ubusdtmp
 

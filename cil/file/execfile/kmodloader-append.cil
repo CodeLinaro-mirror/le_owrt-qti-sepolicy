@@ -24,6 +24,8 @@
   ;; IPQ sigma_dut
   (allow subj .wifi.subj (tcp_socket (read write)))
   (allow subj .wifi.logtmpfile readwrite_file)
+
+  (allow subj .sys.subj (system (module_request)))
 )
 
 

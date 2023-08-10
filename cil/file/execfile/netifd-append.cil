@@ -86,7 +86,6 @@
           (call .fw3.readwrite_runtimetmpfile_files (subj))
           (allow subj .fw3.runtimetmpfile (file (unlink)))
           ;; Need rules for mwan3
-          (call .mwan3.obj_type_transition_runtimetmpfile (subj))
           (call .mwan3.search_runtimetmpfile_dirs (subj))
           (call .mwan3.manage_runtimetmpfile_files(subj))
           (call .mwan3.create_runtimetmpfile_dirs (subj))
@@ -147,12 +146,4 @@
           (call capabilities.getattr_conffile_files (subj))
           (call .wifi.search_datafile_dirs (subj))
           (call capabilities.search_conffile_dirs (subj))
-
-          ;; Need permissions write log from backhaulCommonConfig.sh
-          (call .qcmap_cm.search_datafile_dirs (subj))
-          (allow subj .qcmap_cm.datafile (file (append open)))
-
-          ;; Need permission for backhaul status indicate feature
-          (allow subj .netifd.subj (capability (kill)))
-          (allow subj .qcmap_cm.subj (process(signal)))
 )

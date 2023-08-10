@@ -37,23 +37,4 @@
     (allow subj .netifd.miscfile (dir (read open)))
     (allow subj .tmp.fs (dir (remove_name)))
     (allow subj odhcp6c.tmpfile (file (unlink)))
-
-    ;; Need permissions write log from backhaulCommonConfig.sh
-    (call .qcmap_cm.search_datafile_dirs (subj))
-    (allow subj .qcmap_cm.datafile (file (append open)))
-
-    ;; Need permission for backhaul status indicate feature
-    (call .file.read_conffile_lnk_files (subj))
-    (call .ip.execute_execfile_files (subj))
-    (call .iproute2.search_conffile_dirs (subj))
-    (allow subj .netifd.tmpfile (file (getattr read open)))
-    (allow subj .qcmap_cm.subj (process (signal)))
-    (allow subj .odhcp6c.subj (capability (kill)))
-
-    ;; Need permission for proc/pidof QCMAP_ConnectionManager from backhaulCommonConfig.sh
-    (allow subj .proc.fs (dir (read open)))
-    (allow subj .proc.fs (file (read open)))
-    (allow subj .qcmap_cm.subj (dir (search open read)))
-    (allow subj .qcmap_cm.subj (file (open read)))
-    (allow subj .qcmap_cm.subj (lnk_file (read)))
 )

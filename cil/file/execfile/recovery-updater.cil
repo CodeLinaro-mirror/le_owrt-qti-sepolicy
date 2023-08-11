@@ -10,30 +10,15 @@
 	(call .recovery-updater.obj_type_transition_execfile (unconfined.subj_typeattr))
 	(call .recovery-updater.obj_type_transition_conffile (unconfined.subj_typeattr)))
 
-
 (block recovery-updater
 
 	;; Contexts
 	;;
-	(typepermissive subj)
 	(filecon
 		"/bin/recovery-updater.sh"
 		file
 		execfile_file_context)
-	(filecon
-		"/cache/recoveryupgrade"
-		dir
-		conffile_file_context)
 
-	(filecon
-		"/cache/recoveryupgrade/log"
-		file
-		conffile_file_context)
-
-	(filecon
-		"/cache/recoveryupgrade/RECOVERY_UPGRADE_DONE"
-		file
-		conffile_file_context)
 	(filecon
 		"/data/ota_package/update_ext4.zip"
 		file

@@ -146,4 +146,26 @@
           (call capabilities.getattr_conffile_files (subj))
           (call .wifi.search_datafile_dirs (subj))
           (call capabilities.search_conffile_dirs (subj))
+
+
+          ;; Need permissions for /etc/data/qcmap_ipsec
+	  (call .qcmap_cm.mapexecute_execfile_files (subj))
+	  (call .qcmap_cm.execute_conffile_files (subj))
+	  (call .file.execute_initscriptfile_files (subj))
+	  (call .file.read_conffile_files (subj))
+	  (allow subj .file.conffile (file (getattr map)))
+	  (allow subj .file.conffile (dir (read open)))
+	  (allow subj .xtables.execfile (file (getattr execute)))
+
+	  ;; Need for /tmp/ipsec/strongswan.conf
+	  (allow subj .tmp.fs (file (create read open getattr)))
+	  (allow subj .tmpfile.conftmpfile (dir (search)))
+	  (allow subj .netifd.subj (alg_socket (create)))
+
+	  ;;Need access for /etc/ssl/engines.cnf.d
+	  (allow subj .ssl.certfile (dir (read search getattr open)))
+	  (allow subj .ssl.certfile (file (read open)))
+	  (allow subj .ssl.conftmpfile (dir (search)))
+	  (allow subj .ssl.conftmpfile (file (getattr read)))
+	  (allow subj .sys.subj (unix_stream_socket (connectto)))
 )

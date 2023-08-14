@@ -103,7 +103,7 @@
           ;; Need getattr, associate on nf_conntrack
           (call .proc.getattr_filesystems (subj))
           (call .proc.associate_filesystems (subj))
-          (allow subj .firewall.conffile (file (getattr)))
+          (allow subj .firewall.conffile (file (getattr create)))
           ;; Need open write on /etc/firewall.user
           (call .firewall.manage_conffile_files (subj))
           (call .file.read_conffile_lnk_files (subj))
@@ -130,6 +130,8 @@
           (allow subj .config.fs (dir (search getattr write add_name)))
           (allow subj .config.fs (file (create write open)))
           (allow subj .kernel.sysfile (dir (search)))
+	  ;; Need permission to create firewall.user
+	  (allow subj .file.conffile (file(create)))
           ;; Need permissions to allow link toggle from rmnet.script
           (call .debug.search_fs_dirs (subj))
           (call .wifi.subj_type_transition (subj))
@@ -168,4 +170,8 @@
 	  (allow subj .ssl.conftmpfile (dir (search)))
 	  (allow subj .ssl.conftmpfile (file (getattr read)))
 	  (allow subj .sys.subj (unix_stream_socket (connectto)))
+
+          ;; Need enable mwan3 for wanwlan 
+	  (allow subj hotplug.conffile (file (open read)))
+	  (allow subj hotplug.conffile (dir (search)))
 )

@@ -130,6 +130,7 @@
     (allow subj .sys.subj (process(signal)))
     (allow subj .sys.subj (file (open read write)))
     (allow subj .sys.subj (dir (search)))
+    (allow subj .sys.subj (lnk_file (read)))
     (call .uci.search_conffile_dirs (subj))
     ;; Need permissions on /tmp/data/
     (call .qcmap_cm.manage_tmpfile_dirs (subj))
@@ -405,4 +406,8 @@
 
     ;;Need transition for ipsec
     (call .file.execute_libfile_files (subj))
+
+    ;; Need to open read file for ubusd
+    (allow subj ubusd.subj (dir (search)))
+    (allow subj ubusd.subj (file (open read)))
 )

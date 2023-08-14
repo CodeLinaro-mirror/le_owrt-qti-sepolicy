@@ -20,6 +20,7 @@
   (allow subj .qcmap_cm.subj (fifo_file (read write ioctl)))
   (allow subj .qcmap_cm.subj (netlink_socket (read write)))
   (allow subj .qcmap_cm.subj (packet_socket (read write)))
+  (allow subj .qcmap_cm.subj (rawip_socket (read write)))
   (allow subj .qcmap_cm.subj (netlink_route_socket (read write)))
   (allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
   (allow subj .tlpd.subj (netlink_socket (bind create write read)))

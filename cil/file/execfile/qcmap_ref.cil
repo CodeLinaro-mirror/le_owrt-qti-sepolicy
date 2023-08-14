@@ -196,6 +196,7 @@
     (call .class.read_sysfile_lnk_files (subj))
     ;; Need read search /sys/devices/virtual/br-lan
     (call .devices.search_sysfile_dirs(subj))
+    (call .devices.create_sysfile_files  (subj))
     (call .devices.readwrite_sysfile_files (subj))
 
     (allow subj .devices.sysfile (dir (read open)))

@@ -82,6 +82,8 @@
 
           (allow subj .tmpfile.runtimetmpfile (dir (create rmdir)))
 
+          (allow subj miniupnpd.datafile (file (open read getattr)))
+
           ;; Need read on fw3.state file
           (call .fw3.readwrite_runtimetmpfile_files (subj))
           (allow subj .fw3.runtimetmpfile (file (unlink)))

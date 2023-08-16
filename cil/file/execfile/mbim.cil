@@ -118,6 +118,7 @@
         (allow subj .qcfirmware.miscfile (dir (search)))
         (allow subj .qcfirmware.miscfile (file (getattr read open)))
         (allow subj .xattr.fs (filesystem (getattr)))
+        (allow subj .cache.miscfile (file (read)))
 
         ;; Permissions to access productId
         (allow subj .config.fs (dir (search)))

@@ -365,4 +365,9 @@
 
     ;;Need to write to /sys/kernel/boot_kpi/kpi_values
     (call .kpi_values.readwrite_sysfile_files (subj))
+    (call .uci.write_conffile_dirs (subj))
+    (call .uci.create_conffile_files (subj))
+    (allow subj uci.conffile (file (setattr unlink)))
+    (call .uci.rename_conffile_files (subj))
+    (allow subj .ipacli.execfile (file (getattr)))
 )

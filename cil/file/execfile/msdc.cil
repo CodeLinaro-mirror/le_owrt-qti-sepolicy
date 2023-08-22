@@ -15,6 +15,7 @@
     ;; Contexts
 
     (filecon "/usr/bin/msdc_app" file execfile_file_context)
+    (filecon "/usr/bin/msdc_daemon" file execfile_file_context)
 
     (filecon "/data/embms" dir datafile_file_context)
 
@@ -26,7 +27,9 @@
 
     (macro obj_type_transition_execfile ((type ARG1))
         (call .file.execfile_obj_type_transition
-           (ARG1 execfile file "msdc_app")))
+           (ARG1 execfile file "msdc_app"))
+        (call .file.execfile_obj_type_transition
+           (ARG1 execfile file "msdc_daemon")))
 
     (macro obj_type_transition_datafile ((type ARG1))
         (call .file.datafile_obj_type_transition
@@ -80,6 +83,12 @@
     (call .sys.search_fs_dirs (subj))
     (allow subj .sys.subj (fifo_file (read write)))
 
+    ;; Eventhough we are not using any fifo file by our module
+    ;; But we are seeing denials for ioctl call on fifo file
+    ;; We suspect may be one of our dependent libraries may need it
+    ;; So adding don't audit it for now
+    (dontaudit subj .sys.subj (fifo_file (ioctl)))
+
     ;; Need for /dev/logd or logging
     ;; this will add write permission also
     (call .logd.unix_dgram_send(subj))
@@ -100,4 +109,8 @@
     ;; don't show denial when we try to check for sdcard
     ;; this will just silence denials without providing permission
     (dontaudit subj .mnt.miscfile manage_dir)
+
+    ;; to fork msdc process msdc_app from msdc_socket on socket read event
+    ;; also msdc_socket, msdc_app have same file contexts
+    (call .msdc.execute_execfile_files (subj))
 )

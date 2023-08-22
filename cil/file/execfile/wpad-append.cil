@@ -142,4 +142,11 @@
     (allow subj .netifd.subj (netlink_route_socket (read write)))
     (allow subj .netifd.subj (fifo_file (write ioctl)))
     (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+
+    ;; IPQ sigma_dut: access sigma log
+    (allow subj .wifi.logtmpfile readwrite_file)
+    (allow subj .wifi.subj (fifo_file (ioctl write)))
+    (allow subj .wifi.subj readwrite_tcp_socket)
+    (allow subj .wifi.tmpfile readwrite_sock_file)
+    (allow subj .wifi.subj (unix_dgram_socket (sendto)))
 )

@@ -23,6 +23,7 @@
     (filecon "/usr/bin/cfg80211tool.1" file execfile_file_context)
     (filecon "/usr/bin/wlanconfig" file execfile_file_context)
     (filecon "/usr/bin/acfg_tool" file execfile_file_context)
+    (filecon "/usr/bin/sigma_dut" file execfile_file_context)
     (filecon "/usr/local/lib/libqca_nl80211_wrapper.so" file datafile_file_context)
     (filecon "/tmp/sysinfo/board_name" file tmpfile_file_context)
     (filecon "/tmp/no_qca_da" file tmpfile_file_context)
@@ -44,6 +45,9 @@
     (filecon "/var/run/cnss_user_client" socket runtimetmpfile_file_context)
     (filecon "/tmp/acfg-app" file tmpfile_file_context)
     (filecon "/etc/acfg_common.conf" file conffile_file_context)
+    ;; IPQ sigma-dut
+    (filecon "/var/log/sigma" file logtmpfile_file_context)
+    (filecon "/tmp/wpa_ctrl_[0-9]+\-[0-9]+" socket tmpfile_file_context)
 
     ;;
     ;; Macros
@@ -81,6 +85,7 @@
         (call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool.1"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "wlanconfig"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "acfg_tool"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "sigma_dut"))
     )
 
     (macro obj_type_transition_datafile ((type ARG1))
@@ -104,6 +109,7 @@
     (blockinherit .tmpfile.runtime.obj_template)
     (blockinherit .tmpfile.lock.obj_template)
     (blockinherit .tmpfile.conf.obj_template)
+    (blockinherit .tmpfile.log.obj_template)
     (blockinherit .file.conf.obj_template)
     (blockinherit .file.data.obj_template)
     (blockinherit .dev.node.obj_template)
@@ -119,6 +125,8 @@
     (call obj_type_transition_tmpfile (subj sock_file "acfg-app"))
     (call obj_type_transition_conffile (subj))
     (call obj_type_transition_datafile (subj))
+    ;; Transitions for /tmp/wpa_ctrl_$pid-$cnt client sockets (IPQ sigma-dut)
+    (call obj_type_transition_tmpfile (subj sock_file "*"))
 
     (allow subj .sys.subj (fifo_file (read write ioctl)))
     (allow subj .sys.subj (unix_stream_socket (read write)))
@@ -286,6 +294,11 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .atfwd.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .port-bridge.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_cli.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .odhcp6c.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qmuxbridge.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcril.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .msdc.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .perf-hal-service.subj))
 
     ;; Look for files in /tmp
     (allow subj .tmp.fs (file (read getattr open)))
@@ -322,6 +335,27 @@
     (call .wifi.create_tmpfile_sock_files (subj))
     (call .wifi.delete_tmpfile_sock_files (subj))
     (dontaudit subj self (capability (dac_override)))
+
+    ;; IPQ sigma_dut
+    (call .tmpfile.logtmpfile_obj_type_transition(subj logtmpfile file "sigma"))
+    (call .wifi.manage_logtmpfile_files (subj))
+    (call .wifi.readwrite_logtmpfile_files (.iw.subj))
+    (allow subj .ip.execfile execute_file)
+    (allow subj .ip.execfile (file (map)))
+    (allow subj self (netlink_route_socket (nlmsg_read nlmsg_write)))
+    (allow .iw.subj .wifi.subj readwrite_tcp_socket)
+    (allow subj .wpad.subj (unix_dgram_socket (sendto)))
+    (call .wpad.write_runtimetmpfile_sock_files (subj))
+    (call .file.execute_execfile_files (subj))
+    ;; uci-commit wireless
+    (allow subj .uci.conffile (dir (remove_name)))
+    (allow subj .uci.conffile (file (unlink)))
+    ;; Talk to sigma backbone
+    (allow subj .net.netif (netif (egress)))
+    (allow subj .net.netnode (node (sendto)))
+    (allow subj self create_tcp_stream_socket)
+    (allow subj .unreserved.netport (tcp_socket (name_bind name_connect)))
+    (allow subj .net.netnode (tcp_socket (node_bind)))
 
     ;; sysctl command on dev.nss nodes
     (allow subj .sys.sysctlfile (dir (search)))

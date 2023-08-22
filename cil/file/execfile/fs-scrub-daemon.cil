@@ -10,26 +10,42 @@
 
 ;(in .file
  ;   (call .fs-scrub-daemon.obj_type_transition_execfile (unconfined.subj_typeattr)))
+(in .file
+	(call .fs-scrub-daemon.obj_type_transition_datafile (unconfined.subj_typeattr dir fs_scrub)))
 
 (block fs-scrub-daemon
 	;;
-       ;; Contexts
-       ;;
-	(typepermissive subj)
+	;; Contexts
+	;;
 	(filecon
 		"/usr/bin/fs-scrub-daemon"
 		file
 		execfile_file_context)
-       ;;
-       ;; Macros
-       ;;
+	(filecon
+		"/data/fs_scrub"
+		dir
+		datafile_file_context)
+	(filecon
+		"/data/fs_scrub/.*"
+		any
+		datafile_file_context)
+
+	;;
+	;; Macros
+	;;
 		(macro obj_type_transition_execfile ((type ARG1))
 			(call .file.execfile_obj_type_transition
 				(ARG1 execfile file "fs-scrub-daemon")))
+
+		(macro obj_type_transition_datafile ((type ARG1)(class ARG2)(name ARG3))
+			(call .file.datafile_obj_type_transition
+				(ARG1 datafile ARG2 ARG3)))
 	;;
-       ;; Policy
-       ;;
-       (blockinherit .agent.base_template)
+	;; Policy
+	;;
+	(blockinherit .agent.base_template)
+	(blockinherit file.data.obj_template)
+	(call obj_type_transition_datafile (subj dir "fs_scrub"))
 	   ;; search in config files is needed
 	   ;;which is done on start /Stop  of services
 	   (call .file.search_conffile_dirs (subj))
@@ -57,4 +73,52 @@
 
 	;;Latest denials
         (allow subj logd.miscfile (sock_file ( write)))
+	(allow subj fs-scrub-daemon.datafile (dir ( write add_name remove_name search)))
+	(allow subj class.sysfile (dir ( search)))
+	(allow subj devices.sysfile (dir ( search)))
+	(allow subj devices.sysfile (file ( write)))
+	(allow subj fs-scrub-daemon.datafile (file ( read create write open rename
+	unlink getattr )))
+	(allow subj tmp.fs (chr_file ( getattr)))
+	(allow subj mtd.stordev (chr_file ( open ioctl)))
+	(dontaudit subj mtd.stordev (chr_file ( read )))
+
 )
+
+(block fs_scrub
+	(genfscon
+		"sysfs"
+		"/sys/class/ubi/ubi[0-9]/scrub_all"
+		sysfile_file_context)
+	(blockinherit .sysfile.module.obj_template))
+
+(in .sysfile
+	(block fs_scrub
+
+	;;
+	;; Policy
+	;;
+	(blockinherit .file.obj_all_macro_template)
+
+	;;
+	;; Templates
+	;;
+	(block obj_base_template
+
+		;;
+		;; Policy
+		;;
+
+		(blockabstract obj_base_template)
+		(blockinherit .sysfile.obj_base_template)
+		(call .sysfile.fs_scrub.obj_type (sysfile)))
+
+	(block obj_template
+
+		;;
+		;; Policy
+		;;
+
+		(blockabstract obj_template)
+		(blockinherit .sysfile.fs_scrub.obj_base_template)
+		(blockinherit .sysfile.obj_macro_template))))

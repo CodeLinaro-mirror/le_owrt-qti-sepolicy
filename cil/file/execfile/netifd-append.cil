@@ -27,6 +27,7 @@
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanusb"))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanbt"))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.waneth"))
+            (call obj_type_transition_tmpfile (ARG1 file "ipv4config.lan"))
        )
 
          (blockinherit .tmpfile.obj_template)
@@ -44,6 +45,7 @@
           (call .rcdnsmasq.subj_type_transition (subj))
           (call .conntrack.subj_type_transition (subj))
           (call .xtables.subj_type_transition (subj))
+          (call .ifstatus.subj_type_transition (subj))
           (call .file.search_initscriptfile_dirs (subj))
           (call .file.execute_initscriptfile_files (subj))
           (call .file.readwrite_conffile_dirs(subj))
@@ -77,6 +79,9 @@
           (call .fw3.execute_execfile_files (subj))
           (call .fw3.search_datafile_dirs (subj))
           (call .fw3.manage_datafile_files (subj))
+
+          (allow subj .tmpfile.runtimetmpfile (dir (create rmdir)))
+
           ;; Need read on fw3.state file
           (call .fw3.readwrite_runtimetmpfile_files (subj))
           (allow subj .fw3.runtimetmpfile (file (unlink)))
@@ -98,8 +103,9 @@
           ;; Need getattr, associate on nf_conntrack
           (call .proc.getattr_filesystems (subj))
           (call .proc.associate_filesystems (subj))
-          (allow subj .firewall.conffile (file (getattr)))
-          (call .firewall.readwrite_conffile_files (subj))
+          (allow subj .firewall.conffile (file (getattr create)))
+          ;; Need open write on /etc/firewall.user
+          (call .firewall.manage_conffile_files (subj))
           (call .file.read_conffile_lnk_files (subj))
           (allow subj self create_netlink_netfilter_socket)
           (allow subj self readwrite_netlink_netfilter_socket)
@@ -124,6 +130,8 @@
           (allow subj .config.fs (dir (search getattr write add_name)))
           (allow subj .config.fs (file (create write open)))
           (allow subj .kernel.sysfile (dir (search)))
+	  ;; Need permission to create firewall.user
+	  (allow subj .file.conffile (file(create)))
           ;; Need permissions to allow link toggle from rmnet.script
           (call .debug.search_fs_dirs (subj))
           (call .wifi.subj_type_transition (subj))
@@ -134,6 +142,36 @@
           (allow subj .wifi.miscfile (file (read open getattr)))
           (allow subj .wifi.datafile (file (lock unlink)))
           (allow subj .wifi.datafile (file (read write append open create getattr)))
+          (allow subj .wifi.datafile (sock_file (getattr)))
+          (allow subj .wifi.datafile (dir (search read open getattr)))
+          (allow subj .kpi_values.sysfile readwrite_file)
+          (call capabilities.getattr_conffile_files (subj))
           (call .wifi.search_datafile_dirs (subj))
           (call capabilities.search_conffile_dirs (subj))
+
+
+          ;; Need permissions for /etc/data/qcmap_ipsec
+	  (call .qcmap_cm.mapexecute_execfile_files (subj))
+	  (call .qcmap_cm.execute_conffile_files (subj))
+	  (call .file.execute_initscriptfile_files (subj))
+	  (call .file.read_conffile_files (subj))
+	  (allow subj .file.conffile (file (getattr map)))
+	  (allow subj .file.conffile (dir (read open)))
+	  (allow subj .xtables.execfile (file (getattr execute)))
+
+	  ;; Need for /tmp/ipsec/strongswan.conf
+	  (allow subj .tmp.fs (file (create read open getattr)))
+	  (allow subj .tmpfile.conftmpfile (dir (search)))
+	  (allow subj .netifd.subj (alg_socket (create)))
+
+	  ;;Need access for /etc/ssl/engines.cnf.d
+	  (allow subj .ssl.certfile (dir (read search getattr open)))
+	  (allow subj .ssl.certfile (file (read open)))
+	  (allow subj .ssl.conftmpfile (dir (search)))
+	  (allow subj .ssl.conftmpfile (file (getattr read)))
+	  (allow subj .sys.subj (unix_stream_socket (connectto)))
+
+          ;; Need enable mwan3 for wanwlan 
+	  (allow subj hotplug.conffile (file (open read)))
+	  (allow subj hotplug.conffile (dir (search)))
 )

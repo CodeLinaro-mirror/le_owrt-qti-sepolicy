@@ -22,8 +22,12 @@
 (allow .ubus.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
 ;; Need append on /tmp/resolve.conf
 (call .resolv.append_tmpfile_files (subj))
-(allow subj .kmsg.nodedev (chr_file (open write)))
-)
+(allow subj .kmsg.nodedev (chr_file (open write ioctl)))
+(call .fw3.write_runtimetmpfile_files (subj)) 
 
+;; IPQ sigma_dut
+(allow subj .wifi.logtmpfile readwrite_file)
+(allow subj .wifi.subj readwrite_tcp_socket)
+)
 
 

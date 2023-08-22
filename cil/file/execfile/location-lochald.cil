@@ -42,6 +42,10 @@
     (call .loc_edgnss_daemon.sendto_unix_dgram_sockets (subj))
     (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
     (call .loc_launcher.sendto_unix_dgram_sockets (subj))
+    (call .loc_engine_service.sendto_unix_dgram_sockets (subj))
+    (call .mlid.sendto_unix_dgram_sockets (subj))
+    (call .loc_xtwifi_client.sendto_unix_dgram_sockets (subj))
+    (call .loc_xtwifi_inet.sendto_unix_dgram_sockets (subj))
 
     ;; communicate with location test apps which runs in sys.subj ctxt
     (call .sys.sendto_unix_dgram_sockets (subj))
@@ -100,12 +104,36 @@
     (call .uci.read_execfile_files (subj))
 
     ;; Need read perm on uci.conf files.
-    (call .uci.search_conffile_dirs (subj))
+    (call .uci.list_conffile_dirs (subj))
     (call .uci.read_conffile_files (subj))
 
     ;; Need read perm on uci.tmp files.
     (call .uci.search_tmpfile_dirs (subj))
     (call .uci.read_tmpfile_files (subj))
+
+    ;; Need read perm on libubox files.
+    (call .libubox.list_datafile_dirs(subj))
+    (call .libubox.read_datafile_files (subj))
+
+    ;; Need read perm on tmpfile.locktmpfile files.
+    (call .tmpfile.list_locktmpfile_dirs (subj))
+    (call .tmpfile.read_locktmpfile_files (subj))
+
+    ;; Need search, read on /etc/init.d - backhaulWWANCon
+    (call .file.list_initscriptfile_dirs (subj))
+    ;; Need execute, read on /etc/init.d/network - backhaulWWANCon
+    (call .rcnetwork.execute_initscriptfile_files (subj))
+    (call .rcnetwork.read_initscriptfile_files (subj))
+    ;; Need execute, read on /etc/init.d/firewall - backhaulWWANCon
+    (call .rcfirewall.execute_initscriptfile_files (subj))
+    (call .rcfirewall.read_initscriptfile_files (subj))
+
+    ;; Need read open on /etc/rc.common/network
+    (call .rccommon.read_conffile_files (subj))
+
+    ;;Need search read on /lib/functions.sh
+    (call .functions.list_miscfile_dirs(subj))
+    (call .functions.read_miscfile_files(subj))
 
     ;; Needed to for diagrebootapp to connect to diag-router
     (call .diag-router.unix_stream_connect(subj))
@@ -118,4 +146,8 @@
     (call .powerstate_socket.manage_powerstate_socket_files (subj))
     (allow subj .powerstate.subj (unix_stream_socket (connectto)))
 
+    ;; Qwes related permissions
+    (call .qwesd_mink_socket.search_nodedev_dirs (subj))
+    (call .qwesd_mink_socket.readwrite_nodedev_sock_files (subj))
+    (allow subj .qwesd.subj (unix_stream_socket (connectto)))
 )

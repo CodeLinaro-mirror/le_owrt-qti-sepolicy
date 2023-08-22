@@ -108,7 +108,8 @@
 
     (macro manage_loc_socket_files ((type ARG1))
           (call manage_nodedev_dirs (ARG1))
-          (call manage_nodedev_sock_files (ARG1)))
+          (call manage_nodedev_sock_files (ARG1))
+          (call read_nodedev_lnk_files (ARG1)))
 
     ;;
     ;; Policy

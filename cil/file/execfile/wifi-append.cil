@@ -392,6 +392,11 @@
     ;; Remove files written to /var/run
     (allow subj .tmpfile.runtimetmpfile (dir (remove_name)))
 
+    ;; IPQ AFC
+    (allow subj .afc.subj (dir (read open search)))
+    (allow subj .afc.subj (file (read open)))
+    (allow subj .afc.subj (lnk_file (read)))
+
     ;; Read /lib/wifi/qcacld32-modules
     (allow subj .wifi.miscfile (lnk_file (read)))
     (allow subj .wpad.miscfile (lnk_file (read)))

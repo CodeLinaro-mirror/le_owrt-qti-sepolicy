@@ -67,6 +67,7 @@
 	(allow subj class.sysfile (lnk_file (read)))
 	(allow subj tmp.fs (dir (add_name write)))
 	(allow  .sys.subj  cache.miscfile (filesystem ( relabelto relabelfrom mount unmount getattr)))
+	(allow .cache.miscfile  cache.miscfile (filesystem (associate)))
         (allow subj recovery-updater.conffile (dir ( getattr search write add_name)))
         (allow subj recovery-updater.conffile (file ( open read write create getattr)))
 )

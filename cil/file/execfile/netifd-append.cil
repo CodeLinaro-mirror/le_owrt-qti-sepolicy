@@ -184,4 +184,7 @@
           ;; Need enable mwan3 for wanwlan 
 	  (allow subj hotplug.conffile (file (open read)))
 	  (allow subj hotplug.conffile (dir (search)))
+
+          ;; Needed for rmnet.script
+          (dontaudit subj .tmpfile.locktmpfile (dir (write)))
 )

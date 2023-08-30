@@ -37,4 +37,5 @@
   (allow subj .wifi.subj readwrite_tcp_socket)
   ;; Need read on /sys/devices/soc0/platform_subtype_id
   (allow subj .devices.sysfile (file (read)))
+  (allow subj .qcmap_cm.tmpfile (file (read)))
 )

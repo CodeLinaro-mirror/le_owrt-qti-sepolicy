@@ -332,5 +332,5 @@
       ;; Need permission for dhcp_release
       (allow subj .net.netif (netif (egress)))
       (allow subj .net.netnode (node (sendto)))
-
+      (call .tmpfile.search_statetmpfile_dirs (subj))
 )

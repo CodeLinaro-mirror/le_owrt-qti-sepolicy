@@ -79,6 +79,5 @@
         (call .class.search_sysfile_dirs(subj))
         (call .mmc.readwrite_stordev_blk_files (subj))
         (call .dev.stor.readwrite.subj_type (subj))
-        (allow subj self (capability (dac_override )))
 
 )

@@ -260,6 +260,10 @@
     (call .wifi.manage_runtimetmpfile_sock_files (subj))
     (call .wifi.manage_runtimetmpfile_dirs (subj))
 
+    ;; Do not audit dac_read_search for boot_kpi dir since kpi_values file has
+    ;; permissions
+    (dontaudit subj self (capability (dac_read_search)))
+
     ;; 'pgrep' and 'killall' commands permissions
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .proc.fs))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .sys.subj))

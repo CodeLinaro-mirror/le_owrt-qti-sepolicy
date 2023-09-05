@@ -149,6 +149,9 @@
     (allow subj .net.procfile (lnk_file (read)))
     (allow subj self (udp_socket (create ioctl)))
 
+    ;; To add MLD with bridge
+    (allow subj self create_tcp_socket)
+
     ;; Need read on /lib/network/config.sh
     (allow subj .network.miscfile (dir (read search open)))
     (allow subj .network.miscfile (file (getattr read open)))

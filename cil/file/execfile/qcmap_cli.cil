@@ -427,4 +427,6 @@
     (allow subj ubusd.subj (dir (search)))
     (allow subj ubusd.subj (file (open read)))
     (call .file.read_datafile_files (subj))
+    ;;Need create permission for hostapd-daemon
+    (call .tmpfile.create_locktmpfile_files (subj))
 )

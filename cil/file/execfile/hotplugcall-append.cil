@@ -117,4 +117,9 @@
       (call .file.execute_execfile_files (subj))
       (allow .hotplugcall.subj .logd.subj (unix_dgram_socket(sendto)))
       (call .tmpfile.search_conftmpfile_dirs (subj))
+
+;; Need execute and getattr permission for mwan3 and /etc/hotplug.d/iface/
+      (call .file.execute_datafile_files (subj))
+      (allow subj file.datafile (file(getattr)))
+
 )

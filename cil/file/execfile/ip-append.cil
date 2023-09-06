@@ -38,4 +38,6 @@
   ;; Need read on /sys/devices/soc0/platform_subtype_id
   (allow subj .devices.sysfile (file (read)))
   (allow subj .qcmap_cm.tmpfile (file (read)))
+  ;; rule for iptables
+  (allow subj .qcmap_cm.runtimetmpfile (file (create read write append open ioctl)))
 )

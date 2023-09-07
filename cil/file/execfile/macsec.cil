@@ -1,0 +1,306 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Sepolicy rules for MACsec
+
+(in .sys
+	(call .mka_supplicant.subj_type_transition (subj))
+	(call .mka_authenticator.subj_type_transition (subj))
+)
+
+(in .file
+	(call .mka_supplicant.obj_type_transition_conffile (unconfined.subj_typeattr))
+	(call .mka_supplicant.obj_type_transition_execfile (unconfined.subj_typeattr))
+	(call .mka_supplicant.obj_type_transition_initscriptfile (unconfined.subj_typeattr))
+	(call .mka_supplicant.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr))
+	(call .mka_authenticator.obj_type_transition_conffile (unconfined.subj_typeattr))
+	(call .mka_authenticator.obj_type_transition_execfile (unconfined.subj_typeattr))
+	(call .mka_authenticator.obj_type_transition_initscriptfile (unconfined.subj_typeattr))
+	(call .mka_authenticator.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr))
+)
+
+(block mka_supplicant
+	;;
+	;; Contexts
+	;; --------
+	(filecon "/usr/bin/mka_supplicant" file execfile_file_context)
+	(filecon "/etc/mka_supplicant-eth0\.conf" file conffile_file_context)
+	(filecon "/etc/mka_supplicant-eth1\.conf" file conffile_file_context)
+	(filecon "/etc/init\.d/mka-supplicant\.init" file initscriptfile_file_context)
+	(filecon "/var/run/mka_supplicant" dir runtimetmpfile_file_context)
+	(filecon "/var/run/mka_supplicant/.*" any runtimetmpfile_file_context)
+	(filecon "/var/run/mka_supplicant/eth[0-9]+" socket runtimetmpfile_file_context)
+	(filecon "/var/run/mka_supplicant/eth[0-9]+" dir runtimetmpfile_file_context)
+
+	;;
+	;; Macros and Transitions
+	;; ----------------------
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "mka_supplicant"))
+	)
+
+	(macro obj_type_transition_conffile ((type ARG1))
+		(call .file.conffile_obj_type_transition
+			(ARG1 conffile file "mka_supplicant-eth0.conf"))
+		(call .file.conffile_obj_type_transition
+			(ARG1 conffile file "mka_supplicant-eth1.conf"))
+	)
+
+	(macro obj_type_transition_initscriptfile ((type ARG1))
+        (call .file.initscriptfile_obj_type_transition
+            (ARG1 initscriptfile file "mka-supplicant.init"))
+	)
+
+	(macro obj_type_transition_runtimetmpfile ((type ARG1))
+        (call .tmpfile.runtimetmpfile_obj_type_transition
+			(ARG1 runtimetmpfile dir "mka_supplicant"))
+    )
+
+	;;
+	;; Policy
+	;; ------
+	(blockinherit .agent.base_template)
+	(blockinherit .file.conf.obj_template)
+	(blockinherit .tmpfile.runtime.obj_template)
+	(blockinherit .tmpfile.obj_template)
+	(blockinherit .file.initscript.obj_template)
+
+	;; Need search for conffiles
+	(call .file.search_conffile_dirs (subj))
+
+	;; Need search for tcontext=u:r:sys.fs tclass=dir
+	(call .sys.search_fs_dirs (subj))
+	;; Need search for fs dir with tcontext=u:r:fs.sysfile
+	(call .fs.search_sysfile_dirs (subj))
+
+	;; Need gettarr on selinux filesystem
+	(call .selinux.getattr_filesystems(subj))
+	;; Need search on selinux dir
+	(call .selinux.search_conffile_dirs(subj))
+
+	;; Need read on rccommon.conffile
+	(allow subj .rccommon.conffile (file (read open)))
+
+	;; Need read, write, create, setopt, ioctl, bind on packet_socket
+	(allow subj mka_supplicant.subj (packet_socket (read write create setopt ioctl bind)))
+
+	;; Need getopt, ioctl, bind, create, connect on unix_dgram_socket
+	(allow subj mka_supplicant.subj (unix_dgram_socket (getopt ioctl bind create connect)))
+
+	;; Need read, write, nlmsg_read, nlmsg_write, getattr, create, setopt, bind on netlink_route socket
+	(allow subj mka_supplicant.subj (netlink_route_socket (read write nlmsg_read nlmsg_write getattr create setopt bind)))
+
+	;; Need net_admin, net_raw on capability
+	(allow subj mka_supplicant.subj (capability (net_admin net_raw)))
+
+	;; Nead read, write on netlink_generic_socket
+	(allow subj mka_supplicant.subj (netlink_generic_socket (read write)))
+
+	;; Need module_request on sys.subj
+	(allow subj .sys.subj (system (module_request)))
+
+	;; Need read, search on /lib/functions.sh
+	(call .functions.read_miscfile_files (subj))
+	(call .functions.search_miscfile_dirs(subj))
+
+	;; Need search on /etc/init.d
+	(allow subj .file.initscriptfile (dir (search)))
+
+	;; Need search, read,  open on libubox
+	(call .libubox.search_datafile_dirs (subj))
+	(call .libubox.manage_datafile_files (subj))
+
+	;; Need getattr, execute, read open, map on ubus
+	(call .ubus.subj_type_transition (subj))
+	(allow subj .ubus.execfile (file (getattr execute read open map)))
+
+	;; Need read, open on random.nodedev chr_files
+	(call .random.read_nodedev_chr_files (subj))
+
+	;; Need read, open on mka_supplicant.conffile's
+	(allow subj mka_supplicant.conffile (file (read open)))
+
+	;; Need create, open, search, write, add_name on tmpfile.locktmpfile files.
+	(allow subj .tmpfile.locktmpfile (file (open)))
+	(allow subj .tmpfile.locktmpfile (dir (search)))
+
+	;; netlink_generic_socket
+	(allow subj self create_netlink_generic_socket)
+
+	;; Create udp_socket
+	(allow subj self create_udp_socket)
+
+	;; Need getattr on jshn.execfile
+	(call .jshn.subj_type_transition (subj))
+	(allow subj .jshn.execfile (file (getattr execute read open map)))
+
+	;; Need execute on jsonfilter.execfile
+	(call .jsonfilter.subj_type_transition (subj))
+	(call .jsonfilter.read_execfile_files (subj))
+	(allow subj .jsonfilter.execfile (file (getattr execute map)))
+
+	;; Need search on /tmp/run/
+	(allow subj .tmpfile.runtimetmpfile (dir (search)))
+
+	;; Need search on runtimetmpfile
+	(allow subj mka_supplicant.runtimetmpfile (dir (search write remove_name add_name)))
+	(allow subj mka_supplicant.runtimetmpfile (sock_file (unlink create setattr)))
+
+	;; Need read, write, create, connect, connecto on mka_supplicant.subj unix_stream_socket
+	(allow subj mka_supplicant.subj (unix_stream_socket (read write create connect connectto)))
+
+	;; Need connectto on ubusd.subj unix_stream_socket
+	(allow subj .ubusd.subj (unix_stream_socket (connectto)))
+
+	;; Need search, read, write on ubus.runtimetmpfile sock_file
+	(allow subj .ubusd.runtimetmpfile (dir (search)))
+	(allow subj .ubusd.runtimetmpfile (sock_file (read write)))
+)
+
+(block mka_authenticator
+	;;
+	;; Contexts
+	;; --------
+	(filecon "/usr/bin/mka_authenticator" file execfile_file_context)
+	(filecon "/etc/mka_authenticator-eth0\.conf" file conffile_file_context)
+	(filecon "/etc/mka_authenticator-eth1\.conf" file conffile_file_context)
+	(filecon "/etc/init\.d/mka-authenticator\.init" file initscriptfile_file_context)
+	(filecon "/var/run/mka_authenticator" dir runtimetmpfile_file_context)
+	(filecon "/var/run/mka_authenticator/.*" any runtimetmpfile_file_context)
+	(filecon "/var/run/mka_authenticator/eth[0-9]+" socket runtimetmpfile_file_context)
+	(filecon "/var/run/mka_authenticator/eth[0-9]+" dir runtimetmpfile_file_context)
+
+	;;
+	;; Macros and Transitions
+	;; ----------------------
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "mka_authenticator"))
+	)
+
+	(macro obj_type_transition_conffile ((type ARG1))
+		(call .file.conffile_obj_type_transition
+			(ARG1 conffile file "mka_authenticator-eth0.conf"))
+		(call .file.conffile_obj_type_transition
+			(ARG1 conffile file "mka_authenticator-eth1.conf"))
+	)
+
+	(macro obj_type_transition_initscriptfile ((type ARG1))
+        (call .file.initscriptfile_obj_type_transition
+            (ARG1 initscriptfile file "mka-authenticator.init"))
+	)
+
+	(macro obj_type_transition_runtimetmpfile ((type ARG1))
+        (call .tmpfile.runtimetmpfile_obj_type_transition
+			(ARG1 runtimetmpfile dir "mka_authenticator"))
+    )
+
+	;;
+	;; Policy
+	;; ------
+	(blockinherit .agent.base_template)
+	(blockinherit .file.conf.obj_template)
+	(blockinherit .tmpfile.runtime.obj_template)
+	(blockinherit .tmpfile.obj_template)
+	(blockinherit .file.initscript.obj_template)
+
+	;; Need search for conffiles
+	(call .file.search_conffile_dirs (subj))
+
+	;; Need search for tcontext=u:r:sys.fs tclass=dir
+	(call .sys.search_fs_dirs (subj))
+	;; Need search for fs dir with tcontext=u:r:fs.sysfile
+	(call .fs.search_sysfile_dirs (subj))
+
+	;; Need gettarr on selinux filesystem
+	(call .selinux.getattr_filesystems(subj))
+	;; Need search on selinux dir
+	(call .selinux.search_conffile_dirs(subj))
+
+	;; Need read on rccommon.conffile
+	(allow subj .rccommon.conffile (file (read open)))
+
+	;; Need read, write, create, setopt, ioctl, bind on packet_socket
+	(allow subj mka_authenticator.subj (packet_socket (read write create setopt ioctl bind)))
+
+	;; Need getopt, ioctl, bind, create, connect, write on unix_dgram_socket
+	(allow subj mka_authenticator.subj (unix_dgram_socket (getopt ioctl bind create connect write)))
+
+	;; Need read, write, nlmsg_read, nlmsg_write, getattr, create, setopt, bind on netlink_route socket
+	(allow subj mka_authenticator.subj (netlink_route_socket (read write nlmsg_read nlmsg_write getattr create setopt bind)))
+
+	;; Need net_admin, net_raw on capability
+	(allow subj mka_authenticator.subj (capability (net_admin net_raw)))
+
+	;; Nead read, write on netlink_generic_socket
+	(allow subj mka_authenticator.subj (netlink_generic_socket (read write)))
+
+	;; Need module_request on sys.subj
+	(allow subj .sys.subj (system (module_request)))
+
+	;; Need read, search on /lib/functions.sh
+	(call .functions.read_miscfile_files (subj))
+	(call .functions.search_miscfile_dirs(subj))
+
+	;; Need search on /etc/init.d
+	(allow subj .file.initscriptfile (dir (search)))
+
+	;; Need search, read,  open on libubox
+	(call .libubox.search_datafile_dirs (subj))
+	(call .libubox.manage_datafile_files (subj))
+
+	;; Need getattr, execute, read open, map on ubus
+	(call .ubus.subj_type_transition (subj))
+	(allow subj .ubus.execfile (file (getattr execute read open map)))
+
+	;; Need read, open on random.nodedev chr_files
+	(call .random.read_nodedev_chr_files (subj))
+
+	;; Need read, open on mka_authenticator.conffile's
+	(allow subj mka_authenticator.conffile (file (read open)))
+
+	;; Need create, open, search, write, add_name on tmpfile.locktmpfile files.
+	(allow subj .tmpfile.locktmpfile (file (open)))
+	(allow subj .tmpfile.locktmpfile (dir (search)))
+
+	;; netlink_generic_socket
+	(allow subj self create_netlink_generic_socket)
+
+	;; Create udp_socket
+	(allow subj self create_udp_socket)
+
+	;; Need getattr on jshn.execfile
+	(call .jshn.subj_type_transition (subj))
+	(allow subj .jshn.execfile (file (getattr execute read open map)))
+
+	;; Need execute on jsonfilter.execfile
+	(call .jsonfilter.subj_type_transition (subj))
+	(call .jsonfilter.read_execfile_files (subj))
+	(allow subj .jsonfilter.execfile (file (getattr execute map)))
+
+	;; Need search on /tmp/run/
+	(allow subj .tmpfile.runtimetmpfile (dir (search)))
+
+	;; Need search on runtimetmpfile
+	(allow subj mka_authenticator.runtimetmpfile (dir (search write remove_name add_name)))
+	(allow subj mka_authenticator.runtimetmpfile (sock_file (unlink create setattr)))
+
+	;; Need read, write, create, connect, connecto on mka_authenticator.subj unix_stream_socket
+	(allow subj mka_authenticator.subj (unix_stream_socket (read write create connect connectto)))
+
+	;; Need connectto on ubusd.subj unix_stream_socket
+	(allow subj .ubusd.subj (unix_stream_socket (connectto)))
+
+	;; Need search, read, write on ubus.runtimetmpfile sock_file
+	(allow subj .ubusd.runtimetmpfile (dir (search)))
+	(allow subj .ubusd.runtimetmpfile (sock_file (read write)))
+
+	;; Need write on logd.misfile sock_file
+	(allow subj logd.miscfile (sock_file (write)))
+
+	;; Need sendto on logd.subj unix_dgram_socket
+	(allow subj logd.subj (unix_dgram_socket (sendto)))
+)

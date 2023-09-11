@@ -40,7 +40,8 @@
     (call obj_type_transition_tmpfile (subj file "*"))
     ;; Need obj_type_transition on mwan3
     (call .mwan3.obj_type_transition_runtimetmpfile (subj))
-
+    ;; Need obj_type_transition for /etc/firewall.user.*
+    (call .firewall.obj_type_transition_conffile_ext (subj))
     ;; Need create for qipcrtr_socket, unix_stream_socket
     (allow subj self create_qipcrtr_socket)
 
@@ -150,7 +151,7 @@
 
     ;; Need permission to reboot on first vlan creation
     (allow subj .sys.subj (process(signal)))
-    (allow subj .sys.subj (file (read write)))
+    (allow subj .sys.subj (file (read write open)))
     (allow subj .sys.subj (dir (search)))
 
     ;; Need transition to run dnsmasq restart
@@ -196,6 +197,7 @@
     (call .class.read_sysfile_lnk_files (subj))
     ;; Need read search /sys/devices/virtual/br-lan
     (call .devices.search_sysfile_dirs(subj))
+    (call .devices.create_sysfile_files  (subj))
     (call .devices.readwrite_sysfile_files (subj))
 
     (allow subj .devices.sysfile (dir (read open)))
@@ -355,4 +357,17 @@
     (allow subj file.conffile (file (create)))
     (call .devices.addname_sysfile_dirs (subj))
     (call .tmpfile.search_logtmpfile_dirs (subj))
+    (allow subj .ubusd.subj (lnk_file (read)))
+    (allow subj .ubusd.subj (file (read open)))
+    (allow subj .ubusd.subj (dir (search)))
+
+    (allow subj .sys.subj (system (module_request)))
+
+    ;;Need to write to /sys/kernel/boot_kpi/kpi_values
+    (call .kpi_values.readwrite_sysfile_files (subj))
+    (call .uci.write_conffile_dirs (subj))
+    (call .uci.create_conffile_files (subj))
+    (allow subj uci.conffile (file (setattr unlink)))
+    (call .uci.rename_conffile_files (subj))
+    (allow subj .ipacli.execfile (file (getattr)))
 )

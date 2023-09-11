@@ -10,30 +10,15 @@
 	(call .recovery-updater.obj_type_transition_execfile (unconfined.subj_typeattr))
 	(call .recovery-updater.obj_type_transition_conffile (unconfined.subj_typeattr)))
 
-
 (block recovery-updater
 
 	;; Contexts
 	;;
-	(typepermissive subj)
 	(filecon
 		"/bin/recovery-updater.sh"
 		file
 		execfile_file_context)
-	(filecon
-		"/cache/recoveryupgrade"
-		dir
-		conffile_file_context)
 
-	(filecon
-		"/cache/recoveryupgrade/log"
-		file
-		conffile_file_context)
-
-	(filecon
-		"/cache/recoveryupgrade/RECOVERY_UPGRADE_DONE"
-		file
-		conffile_file_context)
 	(filecon
 		"/data/ota_package/update_ext4.zip"
 		file
@@ -81,6 +66,8 @@
 	(allow subj file.datafile (dir (open read)))
 	(allow subj class.sysfile (lnk_file (read)))
 	(allow subj tmp.fs (dir (add_name write)))
+	(allow  .sys.subj  cache.miscfile (filesystem ( relabelto relabelfrom mount unmount getattr)))
+	(allow .cache.miscfile  cache.miscfile (filesystem (associate)))
         (allow subj recovery-updater.conffile (dir ( getattr search write add_name)))
         (allow subj recovery-updater.conffile (file ( open read write create getattr)))
 )

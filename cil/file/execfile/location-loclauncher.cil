@@ -71,7 +71,6 @@
     ;; Set groups for child process
     (allow subj self (capability (setgid)))
 
-    (allow subj self (unix_dgram_socket (sendto)))
     ;; communicate with location daemons via unix dgram sockets
     (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
     (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
@@ -83,4 +82,6 @@
     (allow subj  leprop.miscfile  (sock_file  (read write)))
     ;;connect to leprop socket
     (call .leprop.connectto_unix_stream_sockets (subj))
+
+    (allow subj mlid.subj (unix_dgram_socket (sendto)))
 )

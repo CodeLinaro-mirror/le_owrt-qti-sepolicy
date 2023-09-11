@@ -81,7 +81,6 @@
         (allow subj self (capability (net_admin net_raw)))
         (dontaudit subj .net.procfile (file (read open)))
         (dontaudit subj .net.procfile (lnk_file (read)))
-        (dontaudit subj .tmpfile.runtimetmpfile (dir (search)))
 
 
         ;; Need remove_name on /tmp/ to remove ipv{4/6}config[0-9]+ files
@@ -116,5 +115,11 @@
         (allow xtables.subj netmgrd.subj readwriteinherited_fifo_file)
         (allow netmgrd.subj .ip.subj (process2 (nnp_transition)))
         (allow subj logd.miscfile (sock_file (write)))
+
+        ;; Allow ubus calls
+        (allow subj .tmpfile.runtimetmpfile (dir (search)))
+        (allow subj .ubusd.runtimetmpfile (dir (search)))
+        (allow subj .ubusd.runtimetmpfile (sock_file (read write)))
+        (allow subj ubusd.subj (unix_stream_socket (connectto)))
 )
 

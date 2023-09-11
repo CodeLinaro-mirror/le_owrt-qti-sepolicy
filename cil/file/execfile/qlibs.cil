@@ -43,6 +43,10 @@
     (call .persist.rootfile_obj_type_transition_miscfile
           (unconfined.subj_typeattr)))
 
+(in .file
+    (call .cache.rootfile_obj_type_transition_miscfile
+          (unconfined.subj_typeattr)))
+
 
 (block qcfirmware
 
@@ -112,3 +116,26 @@
     (blockinherit file.misc.obj_template)
 )
 
+(block cache
+
+	;;
+	;; Contexts
+	;;
+
+	(filecon
+		"/cache"
+		dir
+		miscfile_file_context)
+
+	(filecon
+		"/cache/.*"
+		any
+		miscfile_file_context)
+
+	(macro rootfile_obj_type_transition_miscfile ((type ARG1))
+		(call .sys.rootfile_obj_type_transition
+			(ARG1 miscfile dir "cache")))
+
+		(call .xattr.associate_filesystems (miscfile))
+	(blockinherit file.misc.obj_template)
+)

@@ -37,10 +37,25 @@
     ;; read urandom
     (call .random.read_nodedev_chr_files (subj))
 
-    (allow subj loc_launcher.subj (unix_stream_socket (read write)))
-
     ;; connect to loc_launcher target stream
     (call .loc_launcher.connectto_unix_stream_sockets (subj))
 
     (call .loc_launcher.use_fds (subj))
+
+    (call .unknown.search_miscfile_dirs(subj))
+
+    ;; communicate with location daemons via unix dgram sockets
+    (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
+    (call .loc_xtwifi_inet.sendto_unix_dgram_sockets (subj))
+    (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
+    (call .loc_launcher.sendto_unix_dgram_sockets (subj))
+
+    ;; needed to access /dev/socket/leprop-service
+    (allow subj  leprop.miscfile  (sock_file  (read write)))
+    ;;connect to leprop socket
+    (call .leprop.connectto_unix_stream_sockets (subj))
+
+    ;; TDP file download in hlos_rfs shared folder
+    (allow subj tftp_server.datafile (dir (getattr open read search)))
+    (allow subj tftp_server.datafile (file (open read write ioctl)))
 )

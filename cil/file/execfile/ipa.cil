@@ -59,6 +59,7 @@
 	(call .logd.write_miscfile_sock_files (subj))
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
+	(allow .sdcard.miscfile .xattr.fs (filesystem (associate)))
 
 	(call .selinux.search_conffile_dirs (subj))
 	(call .selinux.getattr_filesystems(subj))

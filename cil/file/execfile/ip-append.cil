@@ -20,6 +20,7 @@
   (allow subj .qcmap_cm.subj (fifo_file (read write ioctl)))
   (allow subj .qcmap_cm.subj (netlink_socket (read write)))
   (allow subj .qcmap_cm.subj (packet_socket (read write)))
+  (allow subj .qcmap_cm.subj (rawip_socket (read write)))
   (allow subj .qcmap_cm.subj (netlink_route_socket (read write)))
   (allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
   (allow subj .tlpd.subj (netlink_socket (bind create write read)))
@@ -31,8 +32,10 @@
   ;; Allow ip.subj to use fd
   (allow subj .dnsmasq.subj (fd (use)))
   (allow subj .dnsmasq.subj (fifo_file (read write ioctl)))
-
   ;; IPQ sigma_dut
   (allow subj .wifi.logtmpfile readwrite_file)
   (allow subj .wifi.subj readwrite_tcp_socket)
+  ;; Need read on /sys/devices/soc0/platform_subtype_id
+  (allow subj .devices.sysfile (file (read)))
+  (allow subj .qcmap_cm.tmpfile (file (read)))
 )

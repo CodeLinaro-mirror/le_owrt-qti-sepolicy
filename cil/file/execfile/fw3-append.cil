@@ -10,7 +10,7 @@
 (call .qcmap_cli.use_fds (subj))
 (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
 (allow .fw3.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
-
+(allow subj .fw3.execfile (file (execute_no_trans execute map read write open)))
 (call .qcmap_ref.use_fds (subj))
 (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
 (allow .fw3.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
@@ -40,6 +40,8 @@
 ;; denied { execute_no_trans } for  pid=11079 comm="sh" path="/sbin/fw3"
 ;; dev="mmcblk0p40" ino=1385 scontext=u:r:fw3.subj tcontext=u:r:fw3.execfile tclass=file
 (call .fw3.subj_type_transition (subj))
+(call .fw3.mapexecute_execfile_files(subj))
+(call .fw3.read_execfile_files (subj))
 )
 
 

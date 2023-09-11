@@ -1,0 +1,120 @@
+; Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+	(call .recovery.subj_type_transition (subj)))
+
+(in .file
+	(call .recovery.obj_type_transition_execfile (unconfined.subj_typeattr))
+	(call .recovery.obj_type_transition_datafile (unconfined.subj_typeattr))
+	(call .recovery.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr))
+)
+
+(block recovery
+	;;
+	;; Contexts
+	;;
+	(filecon
+		"/usr/bin/recovery"
+		file
+		execfile_file_context)
+	(filecon
+		"/data/full_update_ext4_ab.zip"
+		file
+		datafile_file_context)
+	(filecon
+		"/data/full_update_ubi_ab.zip"
+		file
+		datafile_file_context)
+
+	(filecon
+		"/tmp/update_binary"
+		file
+		runtimetmpfile_file_context)
+
+	(filecon
+		"/tmp/system.img"
+		file
+		runtimetmpfile_file_context)
+
+	(filecon
+		"/tmp/recovery.log"
+		file
+		tmpfile_file_context)
+
+	(filecon
+		"/tmp/last_install"
+		file
+		tmpfile_file_context)
+
+	;;
+	;; Macros
+	;;
+
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "recovery")))
+	(macro obj_type_transition_datafile ((type ARG1))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile file "full_update_ext4_ab.zip"))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile file "full_update_ubi_ab.zip")))
+	(macro obj_type_transition_runtimetmpfile ((type ARG1))
+		(call .tmp.fs_obj_type_transition (ARG1 runtimetmpfile file "update_binary"))
+		(call .tmp.fs_obj_type_transition (ARG1 runtimetmpfile file "system.img")))
+
+	(macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+		(call .tmp.fs_obj_type_transition
+				(ARG1 tmpfile ARG2 ARG3)))
+	;;
+	;; Policy
+	;;
+	(blockinherit .agent.base_template)
+    (blockinherit .file.data.obj_template)
+	(blockinherit .tmpfile.runtime.obj_template)
+	(blockinherit .tmpfile.obj_template)
+
+	;; search in config files is needed
+	;;which is done on start /Stop  of services
+	(call .file.search_conffile_dirs (subj))
+
+	(call obj_type_transition_runtimetmpfile(subj))
+	(call obj_type_transition_tmpfile (subj file "recovery.log"))
+	(call obj_type_transition_tmpfile (subj file "last_install"))
+
+	(allow cache.miscfile self (filesystem (associate)))
+	(allow subj cache.miscfile (dir ( create getattr open read remove_name rmdir add_name search write )))
+	(allow subj cache.miscfile (file ( ioctl read setattr unlink create open write rename )))
+	(allow subj cache.miscfile (filesystem ( getattr )))
+	(allow subj file.conffile(lnk_file (read)))
+	(allow subj file.conffile (file ( open read )))
+	(allow subj fs.sysfile(dir (search)))
+	(allow subj selinux.conffile(dir (search)))
+	(allow subj self(capability ( chown dac_override dac_read_search fowner fsetid sys_resource)))
+	(allow subj selinux.fs(filesystem (getattr)))
+	(allow subj sys.fs(dir (search)))
+	;;the recovery binary reads the logs from stdout and redirects to a file
+	(allow subj sys.subj(system (syslog_read)))
+	(allow subj kmsg.nodedev (chr_file ( open write )))
+	(allow subj recovery.runtimetmpfile (file ( execute_no_trans create unlink execute map open read write getattr )))
+	(allow subj recovery.tmpfile (file ( append create ioctl open write read )))
+	(allow subj shell.execfile (file ( execute_no_trans execute map open read write )))
+	(allow subj recovery.datafile (file ( open read getattr map)))
+	(allow subj leprop.miscfile (sock_file ( write )))
+	(allow subj leprop.subj (unix_stream_socket ( connectto )))
+	(allow subj self (unix_stream_socket ( connect create read write )))
+	(allow subj cmdline.procfile (file ( open read )))
+	(allow subj mmc.stordev (blk_file ( getattr read open write ioctl )))
+	(call .dev.stor.readwrite.subj_type (subj))
+	(allow subj class.sysfile (dir ( open read search )))
+	(allow subj class.sysfile (file ( open read )))
+	(allow subj class.sysfile (lnk_file ( read )))
+	(allow subj mtd.procfile (file ( open read )))
+	(allow subj mtd.stordev (chr_file ( getattr ioctl open read write )))
+	(allow subj mtd.stordev (blk_file ( getattr read write open )))
+	(allow subj ubiutil.execfile (file ( execute_no_trans execute map open read write)))
+	(allow subj devices.sysfile (dir ( open read search )))
+	(allow subj devices.sysfile (file ( open read )))
+)

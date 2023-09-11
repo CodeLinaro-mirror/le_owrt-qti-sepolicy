@@ -15,4 +15,7 @@
   (allow subj .qcmap_ref.subj (fd (use)))
   (allow subj .qcmap_ref.subj readwriteinherited_fifo_file)
   (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
+  ;; Need for adding iptable-save
+  (allow subj .locale.miscfile (file (read open getattr map)))
+  (allow subj .fw3.subj (fifo_file (read write ioctl)))
 )

@@ -35,13 +35,9 @@
 
     (call .loc_launcher.use_fds (subj))
 
-    (allow subj loc_launcher.subj (unix_stream_socket (read write)))
-    (allow subj loc_launcher.subj (unix_dgram_socket (read write)))
-
     ;; Needed to for diagrebootapp to connect to diag-router
     (call .diag-router.unix_stream_connect(subj))
 
-    (allow subj self (unix_dgram_socket (sendto)))
     ;; communicate with location daemons via unix dgram sockets
     (call .loc_launcher.sendto_unix_dgram_sockets (subj))
     (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))

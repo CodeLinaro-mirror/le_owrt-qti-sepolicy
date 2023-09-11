@@ -44,9 +44,6 @@
     ;; Need qipcrtr socket creations
     (allow subj  self  create_qipcrtr_socket)
 
-    (allow subj loc_launcher.subj (unix_dgram_socket (read write)))
-    (allow subj loc_launcher.subj (unix_stream_socket (read write)))
-
     ;; read resolv.conf
     (call .resolv.read.subj_type (subj))
 

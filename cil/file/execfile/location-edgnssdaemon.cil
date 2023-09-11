@@ -33,10 +33,19 @@
 
     ;; communicate with location daemons via unix dgram sockets
     (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
+    (call .loc_launcher.sendto_unix_dgram_sockets (subj))
 
     (call .loc_launcher.use_fds (subj))
 
-    (allow subj loc_launcher.subj (unix_stream_socket (read write)))
+    ;; Need qipcrtr socket creations
+    (allow subj self create_qipcrtr_socket)
+
+    ;; create tcp sockets
+    (allow subj self create_tcp_socket)
+
+    (allow subj .unreserved.netport (tcp_socket (name_bind name_connect)))
+    (call .net.egress_netifs (subj))
+    (call .net.recvfromsendto_netnodes (subj))
 
     ;; needed to read  /dev/socket/leprop-service
     (allow subj  leprop.miscfile  (sock_file  (read write)))

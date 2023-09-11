@@ -7,7 +7,9 @@
     (call .qcmap_cli.subj_type_transition (subj)))
 
 (in .file
-    (call .qcmap_cli.obj_type_transition_execfile (unconfined.subj_typeattr)))
+    (call .qcmap_cli.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .qcmap_cli.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr sock_file charon.vici))
+    (call .qcmap_cli.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr sock_file charon.ctl)))
 
 (block qcmap_cli
     ;;
@@ -24,6 +26,21 @@
     file
     execfile_file_context)
 
+    (filecon
+    "/tmp/run/charon.vici"
+    file
+    runtimetmpfile_file_context)
+
+    (filecon
+    "/tmp/run/charon.ctl"
+    file
+    runtimetmpfile_file_context)
+
+    (filecon
+    "/tmp/ipsec/strongswan.conf"
+    file
+    tmpfile_file_context)
+
     (macro obj_type_transition_execfile ((type ARG1))
           (call .file.execfile_obj_type_transition
                     (ARG1 execfile file "QCMAP_CLI")))
@@ -31,14 +48,23 @@
     (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
            (call .tmp.fs_obj_type_transition
                        (ARG1 tmpfile ARG2 ARG3)))
+    (macro obj_type_transition_runtimetmpfile ((type ARG1)(class ARG2)(name ARG3))
+           (call .tmpfile.runtimetmpfile_obj_type_transition
+                     (ARG1 runtimetmpfile ARG2 ARG3)))
 
     ;; Policy
     (blockinherit .agent.base_template)
     (blockinherit .tmpfile.obj_template)
     (blockinherit .dev.tty.obj_template)
+    (blockinherit .tmpfile.runtime.obj_template)
 
     (call obj_type_transition_tmpfile (subj file "*"))
+    (call qcmap_cli.obj_type_transition_runtimetmpfile (subj sock_file "charon.vici"))
+    (call qcmap_cli.obj_type_transition_runtimetmpfile (subj sock_file "charon.ctl"))
+    (call qcmap_cli.obj_type_transition_tmpfile (subj file "strongswan.conf"))
 
+    ;; Need obj_type_transition for /etc/firewall.user.*
+    (call .firewall.obj_type_transition_conffile_ext (subj))
     ;; Need for netlink_route_socket
     (allow subj self create_netlink_route_socket)
     (allow subj self create_rawip_socket)
@@ -106,6 +132,7 @@
     (allow subj .sys.subj (process(signal)))
     (allow subj .sys.subj (file (open read write)))
     (allow subj .sys.subj (dir (search)))
+    (allow subj .sys.subj (lnk_file (read)))
     (call .uci.search_conffile_dirs (subj))
     ;; Need permissions on /tmp/data/
     (call .qcmap_cm.manage_tmpfile_dirs (subj))
@@ -255,6 +282,7 @@
     (call .kmodloader.subj_type_transition (subj))
     (allow subj .kmodloader.execfile (file (getattr)))
     (allow subj .wifi.datafile (file (lock unlink)))
+    (allow subj .wifi.datafile (sock_file (getattr)))
     (call .qcmap_cm.create_datafile_dirs (subj))
     (allow subj .file.datafile (file(append)))
     (call .locale.map_miscfile_files (subj))
@@ -326,6 +354,11 @@
 
     (allow subj .wpad.subj (fd (use)))
     (allow subj .wpad.subj (unix_dgram_socket (read write)))
+    (allow subj .file.conffile (file (create write setattr rename unlink)))
+
+    ;;Need rules for /sys/kernel/boot_kpi/kpi_values
+    (call .kpi_values.append_sysfile_files (subj))
+    (allow subj .kpi_values.sysfile (file (read)))
 
     ;; Need to access /dev/socket/data/qcmap_sta_uds_file
     (call .qcmap_cm.write_tmpfile_sock_files(subj))
@@ -345,6 +378,15 @@
     (allow subj .net.netif (netif (egress)))
     (allow subj .net.netnode (node (sendto)))
 
+    ;; Need permission for backhaul status indicate feature
+    (allow subj .qcmap_cli.subj (capability (kill)))
+    (allow subj .qcmap_cm.subj (process (signal)))
+
+    ;; Need permission for proc/pidof QCMAP_ConnectionManager from backhaulCommonConfig.sh
+    (allow subj .qcmap_cm.subj (dir (search)))
+    (allow subj .qcmap_cm.subj (file (open read)))
+    (allow subj .qcmap_cm.subj (lnk_file (read)))
+
     ;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
     ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
     (call capabilities.getattr_conffile_files (subj))
@@ -356,4 +398,33 @@
     (allow subj .netifd.subj (fd (use)))
     (allow subj .netifd.subj readwrite_netlink_route_socket)
     (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+
+    ;;Need for /etc/swanctl
+    (call .file.read_conffile_files (subj))
+    (allow subj .file.conffile (file (create map)))
+
+    ;;Need for /var/swanctl/swanctl.conf
+    (allow subj .ssl.certfile (dir (search read open getattr)))
+    (allow subj .ssl.certfile (file (read open)))
+    (allow subj .ssl.conftmpfile (dir (search)))
+    (allow subj .ssl.conftmpfile (file (read getattr open)))
+    (allow subj .qcmap_cli.subj (alg_socket (create)))
+
+    ;;Need for charon.vici
+    (allow subj qcmap_cli.runtimetmpfile (sock_file (write)))
+
+    ;;Need for swanctl module
+    (allow subj .sys.subj (system (module_request)))
+    (allow subj .sys.subj (unix_stream_socket (connectto)))
+
+    ;;Need for /tmp/ipsec/strongswan.conf
+    (allow subj .tmp.fs (file (getattr read open)))
+
+    ;;Need transition for ipsec
+    (call .file.execute_libfile_files (subj))
+
+    ;; Need to open read file for ubusd
+    (allow subj ubusd.subj (dir (search)))
+    (allow subj ubusd.subj (file (open read)))
+    (call .file.read_datafile_files (subj))
 )

@@ -7,4 +7,5 @@
 
      ;; Need creat for packet_socket
      (allow subj self create_packet_socket)
+     (allow subj .odhcpd.subj (rawip_socket (read write)))
 )

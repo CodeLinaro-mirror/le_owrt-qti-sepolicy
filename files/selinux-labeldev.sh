@@ -30,5 +30,3 @@ ${CHCON} -t `${MATCHPATHCON} -n /dev/console | cut -d: -f3` /dev/console
 ${RESTORECON} -RF /dev
 ${RESTORECON} -RF /var
 ${RESTORECON} -RF /tmp
-
-exit 0

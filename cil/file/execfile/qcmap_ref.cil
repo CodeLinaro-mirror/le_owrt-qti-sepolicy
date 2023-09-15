@@ -340,6 +340,9 @@
     (allow ifstatus.subj qcmap_cli.subj (unix_stream_socket (read write)))
     (allow ifstatus.subj qcmap_cli.subj readwriteinherited_fifo_file)
     (allow ifstatus.subj qcmap_cli.subj (fd (use)))
+    (allow ifstatus.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow ifstatus.subj qcmap_ref.subj (fifo_file (read write)))
+    (allow ifstatus.subj qcmap_ref.subj (fd (use)))
     (call .tmpfile.search_hoststmpfile_dirs (subj))
     (call .tmpfile.search_conftmpfile_dirs (subj))
     ;; Need for /etc/init.d/network reload

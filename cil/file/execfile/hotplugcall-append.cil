@@ -51,7 +51,8 @@
       (allow  .sys.subj  qcfirmware.miscfile (filesystem ( relabelto relabelfrom mount unmount getattr)))
       (allow  .qcfirmware.miscfile  qcfirmware.miscfile (filesystem (associate)))
 
-
+;; Need for default route /tmp/default.route.*
+      (allow  subj .netifd.tmpfile (file (read open)))
 
 ;; Need permissions on xtables-legacy-multi
       (call .xtables.manage_runtimetmpfile_files(subj))

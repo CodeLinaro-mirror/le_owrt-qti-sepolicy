@@ -104,7 +104,7 @@
     (call .netifd.search_miscfile_dirs (subj))
     (call .netifd.execute_miscfile_files (subj))
     (call .netifd.manage_miscfile_files (subj))
-    (allow subj netifd.tmpfile (file (getattr read open)))
+    (allow subj netifd.tmpfile (file (getattr read open append create)))
     (call .uci.subj_type_transition (subj))
     (call .ifup.subj_type_transition (subj))
     (call .ubus.subj_type_transition (subj))
@@ -291,6 +291,7 @@
     (call .mwan3.manage_runtimetmpfile_dirs (subj))
     (call .mwan3.manage_runtimetmpfile_files(subj))
     (call .mwan3.read_conffile_files (subj))
+    (allow subj mwan3.tmpfile (fifo_file (write open)))
     (allow subj .xtables.execfile ( file (getattr)))
     ;; Need write on kmsg
     (call .kmsg.readwrite_nodedev_chr_files (subj))

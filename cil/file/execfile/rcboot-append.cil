@@ -16,6 +16,7 @@
      (call .openssl.execute_execfile_files(subj))
      (call .ssl.search_certfile_dirs(subj))
 
+    (allow subj .nameservice.miscfile (file (append)))
 )
 
 

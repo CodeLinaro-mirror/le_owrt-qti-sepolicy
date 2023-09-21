@@ -122,5 +122,7 @@
 ;; Need execute and getattr permission for mwan3 and /etc/hotplug.d/iface/
       (call .file.execute_datafile_files (subj))
       (allow subj file.datafile (file(getattr)))
+      (allow .hotplugcall.subj .tmp.fs (file(getattr)))
+
 
 )

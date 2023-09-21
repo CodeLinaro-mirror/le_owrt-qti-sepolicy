@@ -42,6 +42,7 @@
 (call .fw3.subj_type_transition (subj))
 (call .fw3.mapexecute_execfile_files(subj))
 (call .fw3.read_execfile_files (subj))
+(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )
 
 

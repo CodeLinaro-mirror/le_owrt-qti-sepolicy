@@ -430,4 +430,14 @@
     (call .file.read_datafile_files (subj))
     ;;Need create permission for hostapd-daemon
     (call .tmpfile.create_locktmpfile_files (subj))
+
+    ;;Need for macsec
+    (call .mka_supplicant.subj_type_transition (subj))
+    (call .mka_supplicant.execute_initscriptfile_files (subj))
+    (allow subj .mka_supplicant.initscriptfile (file (getattr execute read open)))
+    (call .mka_authenticator.subj_type_transition (subj))
+    (call .mka_authenticator.execute_initscriptfile_files (subj))
+    (allow subj .mka_authenticator.initscriptfile (file (getattr execute read open)))
+    (allow subj tmpfile.locktmpfile (file(create)))
+    (allow subj tmpfile.runtimetmpfile (dir(create)))
 )

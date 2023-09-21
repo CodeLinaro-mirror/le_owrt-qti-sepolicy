@@ -125,4 +125,6 @@
       (allow .hotplugcall.subj .tmp.fs (file(getattr)))
 
 
+;; Ref daemon netlink thread
+      (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )

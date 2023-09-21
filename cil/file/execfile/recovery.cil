@@ -86,7 +86,7 @@
 
 	(allow cache.miscfile self (filesystem (associate)))
 	(allow subj cache.miscfile (dir ( create getattr open read remove_name rmdir add_name search write )))
-	(allow subj cache.miscfile (file ( ioctl read setattr unlink create open write rename )))
+	(allow subj cache.miscfile (file ( ioctl read setattr unlink create open write rename append)))
 	(allow subj cache.miscfile (filesystem ( getattr )))
 	(allow subj file.conffile(lnk_file (read)))
 	(allow subj file.conffile (file ( open read )))

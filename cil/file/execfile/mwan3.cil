@@ -9,7 +9,9 @@
 (in .file
     (call .mwan3.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr))
     (call .mwan3.obj_type_transition_statetmpfile (unconfined.subj_typeattr))
-    (call .mwan3.obj_type_transition_conffile (unconfined.subj_typeattr)))
+    (call .mwan3.obj_type_transition_conffile (unconfined.subj_typeattr))
+    (call .mwan3.obj_type_transition_tmpfile_ext (unconfined.subj_typeattr))
+)
 
 (block mwan3
 
@@ -23,6 +25,7 @@
        (filecon  "/tmp/run/mwan3track/*"  dir  runtimetmpfile_file_context)
        (filecon  "/tmp/state/mwan3"  file  statetmpfile_file_context)
        (filecon  "/etc/mwan3\.user"  file  conffile_file_context)
+       (filecon  "/tmp/default\.route/.*"  any  tmpfile_file_context)
 
        ;;
        ;; Macros
@@ -42,9 +45,18 @@
               (call .file.conffile_obj_type_transition
                     (ARG1 conffile file "mwan3.user")))
 
+       (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+            (call .tmp.fs_obj_type_transition
+                (ARG1 tmpfile ARG2 ARG3)))
+
+       (macro obj_type_transition_tmpfile_ext ((type ARG1))
+            (call obj_type_transition_tmpfile (ARG1 fifo_file "default.route.v4.pipe"))
+            (call obj_type_transition_tmpfile (ARG1 fifo_file "default.route.v6.pipe"))
+       )
 
        ;; Policy
        (blockinherit .agent.base_template)
+       (blockinherit .tmpfile.obj_template)
        (blockinherit .tmpfile.runtime.obj_template)
        (blockinherit .file.conf.obj_template)
        (blockinherit .tmpfile.state.obj_template)

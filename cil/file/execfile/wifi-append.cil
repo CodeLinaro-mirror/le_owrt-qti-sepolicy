@@ -455,4 +455,6 @@
     (allow subj .netifd.subj (fifo_file (read write ioctl)))
     (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
 
+    (call .sys.readwrite_rootfile_dirs (subj))
+
 )

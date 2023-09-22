@@ -40,4 +40,5 @@
   (allow subj .qcmap_cm.tmpfile (file (read)))
   ;; rule for iptables
   (allow subj .qcmap_cm.runtimetmpfile (file (create read write append open ioctl)))
+  (allow subj self create_netlink_generic_socket)
 )

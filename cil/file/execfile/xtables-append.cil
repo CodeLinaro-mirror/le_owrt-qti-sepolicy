@@ -19,4 +19,7 @@
   (allow subj .locale.miscfile (file (read open getattr map)))
   ;; Add rule for fw3 sub
   (allow subj .fw3.subj (fifo_file (read write ioctl)))
+  (allow subj .qcmap_ref.subj (netlink_route_socket (read write)))
+  (allow subj .fw3.subj (fifo_file (write)))
+  (allow subj .fw3.subj (fifo_file (ioctl)))
 )

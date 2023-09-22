@@ -39,6 +39,10 @@
 ;; IPQ sigma_dut
 (allow subj .wifi.logtmpfile readwrite_file)
 (allow subj .wifi.subj readwrite_tcp_socket)
+
+;; Ref daemon netlink thread
+(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+(allow subj qcmap_ref.subj (udp_socket (read write)))
 )
 
 

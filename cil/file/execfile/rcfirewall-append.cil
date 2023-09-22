@@ -24,4 +24,5 @@
        (allow .rcfirewall.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
        (call .mnt.search_miscfile_dirs (subj))
        (allow subj .kernel.sysfile (dir (search)))
+       (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )

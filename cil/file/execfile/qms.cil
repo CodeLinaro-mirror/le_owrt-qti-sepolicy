@@ -1,0 +1,65 @@
+;; Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+(in .sys
+    (call .qms.subj_type_transition (subj)))
+
+(in .file
+    (call .qms.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block qms
+    (filecon
+    "/usr/bin/qms"
+    file
+    execfile_file_context)
+
+    (filecon
+    "/dev/socket/qms"
+    socket
+    tmpfile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+    (macro obj_type_transition_execfile ((type ARG1))
+        (call .file.execfile_obj_type_transition
+        (ARG1 execfile file "qms")))
+
+    (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+    (call .tmp.fs_obj_type_transition
+    (ARG1 tmpfile ARG2 ARG3)))
+
+    ;;
+    ;; Policy
+    ;;
+    (blockinherit .agent.base_template)
+    (blockinherit .file.conf.obj_template)
+    (blockinherit .tmpfile.obj_template)
+
+    (call obj_type_transition_tmpfile (subj sock_file "qms"))
+
+    (allow qms.subj file.conffile (dir (search)))
+    (allow subj self (capability (net_admin)))
+    (allow subj self create_netlink_socket)
+    (allow subj self create_qipcrtr_socket)
+    (allow subj self create_netlink_generic_socket)
+    (allow subj self create_netlink_route_socket)
+    (allow subj self create_udp_socket)
+    (allow subj self (unix_dgram_socket (create connect write sendto ioctl)))
+    (allow subj self (unix_stream_socket (create connect read write listen bind sendto)))
+    (allow subj diag-router.subj (unix_stream_socket (connectto)))
+    (allow subj logd.miscfile (sock_file (write)))
+    (allow subj logd.subj (unix_dgram_socket (sendto)))
+    (allow subj qms.tmpfile (sock_file (create setattr unlink)))
+    (allow subj leprop.miscfile (sock_file (read write)))
+    (allow subj leprop.subj (unix_stream_socket ( connectto )))
+    (allow subj .file.conffile (lnk_file (read)))
+
+    (allow subj self (netlink_socket (read write)))
+    (allow subj self (netlink_route_socket (read write)))
+
+    (allow subj self (netlink_route_socket (nlmsg_write nlmsg_read)))
+
+)

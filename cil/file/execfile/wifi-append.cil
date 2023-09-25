@@ -46,6 +46,8 @@
     (filecon "/var/run/cnss_user_client" socket runtimetmpfile_file_context)
     (filecon "/tmp/acfg-app" file tmpfile_file_context)
     (filecon "/etc/acfg_common.conf" file conffile_file_context)
+    (filecon "/tmp/qcn9224" dir tmpfile_file_context)
+    (filecon "/lib/read_caldata_to_fs\.sh" file libfile_file_context)
     ;; IPQ sigma-dut
     (filecon "/var/log/sigma" file logtmpfile_file_context)
     (filecon "/tmp/wpa_ctrl_[0-9]+\-[0-9]+" socket tmpfile_file_context)
@@ -61,10 +63,15 @@
         (dontaudit ARG1 ARG2 (lnk_file (read)))
     )
 
-
+    (macro read_sysfile_dirs ((type ARG1))
+        (allow ARG1 .block.sysfile (dir (search read open)))
+    )
 
     (macro obj_type_transition_tmpfile ((type ARG1) (class ARG2) (name ARG3))
         (call .tmp.fs_obj_type_transition (ARG1 tmpfile ARG2 ARG3)))
+
+    (macro obj_type_transition_libfile ((type ARG1) (class ARG2) (name ARG3))
+        (call .file.libfile_obj_type_transition (ARG1 libfile ARG2 ARG3)))
 
     (macro obj_type_transition_runtimetmpfile ((type ARG1) (class ARG2) (name ARG3))
         (call .tmpfile.runtimetmpfile_obj_type_transition (ARG1 runtimetmpfile ARG2 ARG3)))
@@ -116,8 +123,8 @@
     (blockinherit .tmpfile.log.obj_template)
     (blockinherit .file.conf.obj_template)
     (blockinherit .file.data.obj_template)
+    (blockinherit .file.lib.obj_template)
     (blockinherit .dev.node.obj_template)
-
 
     (call obj_type_transition_runtimetmpfile_all (subj))
     (call obj_type_transition_execfile_ext (subj))
@@ -127,6 +134,8 @@
     (call obj_type_transition_tmpfile (subj file "first_boot_done"))
     (call obj_type_transition_tmpfile (subj file "no_qca_da"))
     (call obj_type_transition_tmpfile (subj sock_file "acfg-app"))
+    (call obj_type_transition_libfile (subj file "read_caldata_to_fs.sh"))
+    (call obj_type_transition_tmpfile (subj dir "qcn9224"))
     (call obj_type_transition_conffile (subj))
     (call obj_type_transition_datafile (subj))
     ;; Transitions for /tmp/wpa_ctrl_$pid-$cnt client sockets (IPQ sigma-dut)
@@ -324,6 +333,15 @@
     (call .wifi.create_miscfile_files (subj))
 
     (allow subj .meminfo.procfile (file (read open)))
+
+    ;; To support ftm art partition
+    (call .mtd.read_procfile_files (subj))
+    (call read_sysfile_dirs (subj))
+    (call .block.read_sysfile_lnk_files (subj))
+    (call .wifi.create_tmpfile_dirs (subj))
+    (call .tmp.read_fs_blk_files (subj))
+    (call .wifi.readwrite_tmpfile_dirs (subj))
+    (call .mmc.read_stordev_blk_files (subj))
 
     ;; Read /proc/interrupts and /proc/cpuinfo
     (allow subj .interrupts.procfile (file (read open)))

@@ -51,7 +51,8 @@
       (allow  .sys.subj  qcfirmware.miscfile (filesystem ( relabelto relabelfrom mount unmount getattr)))
       (allow  .qcfirmware.miscfile  qcfirmware.miscfile (filesystem (associate)))
 
-
+;; Need for default route /tmp/default.route.*
+      (allow  subj .netifd.tmpfile (file (read open)))
 
 ;; Need permissions on xtables-legacy-multi
       (call .xtables.manage_runtimetmpfile_files(subj))
@@ -117,4 +118,13 @@
       (call .file.execute_execfile_files (subj))
       (allow .hotplugcall.subj .logd.subj (unix_dgram_socket(sendto)))
       (call .tmpfile.search_conftmpfile_dirs (subj))
+
+;; Need execute and getattr permission for mwan3 and /etc/hotplug.d/iface/
+      (call .file.execute_datafile_files (subj))
+      (allow subj file.datafile (file(getattr)))
+      (allow .hotplugcall.subj .tmp.fs (file(getattr)))
+
+
+;; Ref daemon netlink thread
+      (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )

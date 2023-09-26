@@ -143,6 +143,11 @@
                 (allow ARG1 self (unix_stream_socket (accept listen)))
                 (allow ARG1 self create_unix_dgram_socket)
 
+                (allow ARG1 self (unix_dgram_socket (sendto)))
+
+                (allow ARG1 loc_launcher.subj (unix_stream_socket (read write)))
+                (allow ARG1 loc_launcher.subj (unix_dgram_socket (read write)))
+
                 (call .sys.search_fs_dirs (ARG1))
                 (call .tmpfile.search_runtimetmpfile_dirs (ARG1))
 

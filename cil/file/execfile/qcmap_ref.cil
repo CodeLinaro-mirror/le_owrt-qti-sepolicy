@@ -24,6 +24,16 @@
     file
     tmpfile_file_context)
 
+    (filecon
+    "/dev/socket/data/nl_qcmap_client_uds_file"
+    socket
+    tmpfile_file_context)
+
+    (filecon
+    "/dev/socket/data/qcmap_client_nl_uds_file"
+    socket
+    tmpfile_file_context)
+
     (macro obj_type_transition_execfile ((type ARG1))
           (call .file.execfile_obj_type_transition
                     (ARG1 execfile file "QCMAP_Ref_Daemon")))
@@ -40,7 +50,8 @@
     (call obj_type_transition_tmpfile (subj file "*"))
     ;; Need obj_type_transition on mwan3
     (call .mwan3.obj_type_transition_runtimetmpfile (subj))
-
+    ;; Need obj_type_transition for /etc/firewall.user.*
+    (call .firewall.obj_type_transition_conffile_ext (subj))
     ;; Need create for qipcrtr_socket, unix_stream_socket
     (allow subj self create_qipcrtr_socket)
 
@@ -196,6 +207,7 @@
     (call .class.read_sysfile_lnk_files (subj))
     ;; Need read search /sys/devices/virtual/br-lan
     (call .devices.search_sysfile_dirs(subj))
+    (call .devices.create_sysfile_files  (subj))
     (call .devices.readwrite_sysfile_files (subj))
 
     (allow subj .devices.sysfile (dir (read open)))
@@ -338,6 +350,9 @@
     (allow ifstatus.subj qcmap_cli.subj (unix_stream_socket (read write)))
     (allow ifstatus.subj qcmap_cli.subj readwriteinherited_fifo_file)
     (allow ifstatus.subj qcmap_cli.subj (fd (use)))
+    (allow ifstatus.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow ifstatus.subj qcmap_ref.subj (fifo_file (read write)))
+    (allow ifstatus.subj qcmap_ref.subj (fd (use)))
     (call .tmpfile.search_hoststmpfile_dirs (subj))
     (call .tmpfile.search_conftmpfile_dirs (subj))
     ;; Need for /etc/init.d/network reload
@@ -352,10 +367,42 @@
 
     ;; IPQ WLAN boot-up config
     (call .wifi.subj_type_transition (subj))
-    (allow subj file.conffile (file (create)))
     (call .devices.addname_sysfile_dirs (subj))
     (call .tmpfile.search_logtmpfile_dirs (subj))
     (allow subj .ubusd.subj (lnk_file (read)))
     (allow subj .ubusd.subj (file (read open)))
     (allow subj .ubusd.subj (dir (search)))
+
+    (allow subj .sys.subj (system (module_request)))
+
+    ;;Need to write to /sys/kernel/boot_kpi/kpi_values
+    (call .kpi_values.readwrite_sysfile_files (subj))
+    (call .uci.write_conffile_dirs (subj))
+    (call .uci.create_conffile_files (subj))
+    (allow subj uci.conffile (file (setattr unlink)))
+    (call .uci.rename_conffile_files (subj))
+    (allow subj .ipacli.execfile (file (getattr)))
+
+    (allow subj sys.subj (file (open)))
+    (allow subj ubusd.subj (dir (search)))
+    (allow subj ubusd.subj (file (read)))
+    (allow subj sys.subj (lnk_file (read)))
+    (allow subj sys.subj (system (module_request)))
+    (call obj_type_transition_tmpfile (subj sock_file "nl_qcmap_client_uds_file"))
+    (call obj_type_transition_tmpfile (subj sock_file "qcmap_client_nl_uds_file"))
+    (call .qcmap_ref.create_tmpfile_sock_files (subj))
+    (call .qcmap_ref.write_tmpfile_sock_files (subj))
+    (allow subj devices.sysfile (file (create)))
+    (call .mka_supplicant.subj_type_transition (subj))
+    (call .mka_supplicant.execute_initscriptfile_files (subj))
+    (allow subj .mka_supplicant.initscriptfile (file (getattr execute read open)))
+    (call .mka_authenticator.subj_type_transition (subj))
+    (call .mka_authenticator.execute_initscriptfile_files (subj))
+    (allow subj .mka_authenticator.initscriptfile (file (getattr execute read open)))
+    (allow subj ipv6.sysctlfile ( dir ( search ) ) )
+    (allow subj ipv6.sysctlfile ( file ( write ) ) )
+    (allow subj ipv6.sysctlfile ( file ( open ) ) )
+    ;; Need sento on unix_dgram_socket
+    (allow subj self (unix_dgram_socket (sendto)))
+    (call .logd.sendto_unix_dgram_sockets (subj))
 )

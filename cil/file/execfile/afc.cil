@@ -1,0 +1,154 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Sepolicy rules for AFC app - afc.cil file contains rules for all afc
+;; packages including encrypt, pairing and provisioning, and locationing.
+
+(in .sys
+    (call .afc.subj_type_transition (subj))
+)
+
+(block afc
+    ;;
+    ;; Contexts
+    ;;
+    (filecon "/etc/afc" dir conffile_file_context)
+    (filecon "/etc/afc/.*" any conffile_file_context)
+    (filecon "/etc/pairing" dir conffile_file_context)
+    (filecon "/etc/pairing/.*" any conffile_file_context)
+    (filecon "/etc/wifi_location" dir conffile_file_context)
+    (filecon "/etc/wifi_location/.*" any conffile_file_context)
+
+    (filecon "/usr/bin/afc" file execfile_file_context)
+    (filecon "/usr/bin/encrypt_client_app" file execfile_file_context)
+    (filecon "/usr/bin/pairing_client_app" file execfile_file_context)
+    (filecon "/usr/bin/provisioning_test_app" file execfile_file_context)
+    (filecon "/usr/bin/qtiwifilocation" file execfile_file_context)
+
+    (filecon "/tmp/afc_request\.txt" file tmpfile_file_context)
+    (filecon "/tmp/afc_response\.txt" file tmpfile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+    (macro obj_type_transition_conffile_all ((type ARG1))
+        (call .file.conffile_obj_type_transition (ARG1 conffile dir "afc"))
+        (call .file.conffile_obj_type_transition (ARG1 conffile dir "pairing"))
+        (call .file.conffile_obj_type_transition (ARG1 conffile dir "wifi_location"))
+    )
+
+    (macro obj_type_transition_execfile_all ((type ARG1))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "afc"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "encrypt_client_app"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "pairing_client_app"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "provisioning_test_app"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "qtiwifilocation"))
+    )
+
+    (macro obj_type_transition_tmpfile_all ((type ARG1))
+        (call .tmp.fs_obj_type_transition (ARG1 tmpfile file "afc_request.txt"))
+        (call .tmp.fs_obj_type_transition (ARG1 tmpfile file "afc_response.txt"))
+    )
+
+    ;;
+    ;; Policy
+    ;;
+    (blockinherit .agent.base_template)
+    (blockinherit .file.conf.obj_template)
+    (blockinherit .tmpfile.obj_template)
+
+    (call obj_type_transition_conffile_all (subj))
+    (call obj_type_transition_execfile_all (subj))
+    (call obj_type_transition_tmpfile_all (subj))
+
+    ;; Use /usr/local/lib/libqca_nl80211_wrapper.so
+    (call .wifi.read_datafile_files (subj))
+    (call .wifi.mapexecute_datafile_files (subj))
+
+    ;; Run 'afc' processes
+    (call .afc.execute_execfile_files (subj))
+    (allow subj self (process (getsched)))
+    (allow subj self (capability (net_admin)))
+
+    ;; Manage /etc/afc and /etc/pairing
+    (call .afc.search_conffile_dirs (subj))
+    (call .afc.manage_conffile_files (subj))
+
+    ;; Use busybox utilities {cp,rm,cat} -> busybox
+    (call .sys.search_fs_dirs (subj))
+    (call .shell.execute_execfile_files (subj))
+
+    ;; Create sockets
+    (allow subj self create_unix_dgram_socket)
+    (allow subj self create_udp_socket)
+    (allow subj self (udp_socket (name_bind node_bind)))
+    (allow subj self create_netlink_generic_socket)
+    (allow subj .unreserved.netport (udp_socket (name_bind)))
+    (allow subj .unreserved.netport (tcp_socket (name_connect)))
+    (allow subj .net.netnode (udp_socket (node_bind)))
+    ;; Talk to backbone (local server)
+    (allow subj self create_tcp_socket)
+    (allow subj self create_unix_stream_socket)
+    (allow subj .net.netif (netif (egress)))
+    (allow subj .net.netnode (node (sendto)))
+    ;; Write to /dev/log
+    (allow subj .logd.subj (unix_dgram_socket (sendto)))
+    (call .logd.write_miscfile_sock_files (subj))
+
+    ;; Read /sys/class/net/<iface>/<file> for wifi ifaces
+    (call .class.search_sysfile_dirs (subj))
+    (allow subj .class.sysfile (dir (read open)))
+    (call .class.read_sysfile_lnk_files (subj))
+    (call .devices.search_sysfile_dirs (subj))
+    (allow subj .devices.sysfile (dir (read open)))
+    (call .devices.read_sysfile_lnk_files (subj))
+    (call .devices.read_sysfile_files (subj))
+    (call .kernel.search_sysfile_dirs (subj))
+
+    (call .random.read_nodedev_chr_files (subj))
+
+    ;; Read pipe
+    (allow subj .sys.subj (fifo_file (write)))
+
+    ;; Use 'sync' command
+    (call .fs.search_sysfile_dirs (subj))
+    (call .filesystems.read_procfile_files (subj))
+
+    (allow subj selinux.conffile (dir (search)))
+    (allow subj selinux.fs (filesystem (getattr)))
+
+    ;; Read /tmp/sysinfo/board_name
+    (call .preinit.search_tmpfile_dirs (subj))
+    (call .preinit.read_tmpfile_files (subj))
+
+    ;; Use openssl to encrypt files
+    (call .tmpfile.search_conftmpfile_dirs (subj))
+    (call .ssl.search_conftmpfile_dirs (subj))
+    (call .ssl.search_certfile_dirs (subj))
+    (allow subj .ssl.certfile (dir (read open)))
+    (call .ssl.read_conftmpfile_files (subj))
+    (call .ssl.read_certfile_files (subj))
+    (call .openssl.execute_execfile_files (subj))
+    (allow subj .openssl.execfile (file (map)))
+
+    ;; Write new encrypted files in /etc/{afc,pairing,wifi_location}
+    (call .afc.write_conffile_dirs (subj))
+
+    ;; Log to /tmp/{afc_request,afc_response}.txt
+    (call .afc.manage_tmpfile_files (subj))
+
+    ;; Read localtime
+    (call .file.read_conffile_lnk_files (subj))
+
+    ;; Access /etc/resolv.conf to resolve IP for AFC URLs
+    (call .unknown.search_miscfile_dirs (subj))
+    (call .resolv.search_tmpfile_dirs (subj))
+    (call .resolv.read_tmpfile_files (subj))
+    ;; Read /etc/hosts
+    (call .nameservice.read_miscfile_files (subj))
+
+    ;; HTTP request/response
+    (allow subj .http.netport (tcp_socket (name_connect)))
+)

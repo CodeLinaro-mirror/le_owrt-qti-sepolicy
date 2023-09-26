@@ -35,4 +35,8 @@
          (call .qcmap_ref.use_fds (subj))
          (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
          (allow subj .qcmap_ref.subj (fifo_file (read write)))
+         (allow subj .filesystems.procfile (file (read)))
+         (call .sys.getattr_filesystems(subj))
+         (allow .rcdnsmasq.subj .sys.fs (filesystem (getattr)))
+         (call .filesystems.read_procfile_files (subj))
 )

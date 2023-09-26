@@ -63,6 +63,8 @@
     (call qcmap_cli.obj_type_transition_runtimetmpfile (subj sock_file "charon.ctl"))
     (call qcmap_cli.obj_type_transition_tmpfile (subj file "strongswan.conf"))
 
+    ;; Need obj_type_transition for /etc/firewall.user.*
+    (call .firewall.obj_type_transition_conffile_ext (subj))
     ;; Need for netlink_route_socket
     (allow subj self create_netlink_route_socket)
     (allow subj self create_rawip_socket)
@@ -102,7 +104,7 @@
     (call .netifd.search_miscfile_dirs (subj))
     (call .netifd.execute_miscfile_files (subj))
     (call .netifd.manage_miscfile_files (subj))
-    (allow subj netifd.tmpfile (file (getattr read open)))
+    (allow subj netifd.tmpfile (file (getattr read open append create)))
     (call .uci.subj_type_transition (subj))
     (call .ifup.subj_type_transition (subj))
     (call .ubus.subj_type_transition (subj))
@@ -289,6 +291,7 @@
     (call .mwan3.manage_runtimetmpfile_dirs (subj))
     (call .mwan3.manage_runtimetmpfile_files(subj))
     (call .mwan3.read_conffile_files (subj))
+    (allow subj mwan3.tmpfile (fifo_file (write open)))
     (allow subj .xtables.execfile ( file (getattr)))
     ;; Need write on kmsg
     (call .kmsg.readwrite_nodedev_chr_files (subj))
@@ -352,6 +355,11 @@
 
     (allow subj .wpad.subj (fd (use)))
     (allow subj .wpad.subj (unix_dgram_socket (read write)))
+    (allow subj .file.conffile (file (create write setattr rename unlink)))
+
+    ;;Need rules for /sys/kernel/boot_kpi/kpi_values
+    (call .kpi_values.append_sysfile_files (subj))
+    (allow subj .kpi_values.sysfile (file (read)))
 
     ;; Need to access /dev/socket/data/qcmap_sta_uds_file
     (call .qcmap_cm.write_tmpfile_sock_files(subj))
@@ -370,6 +378,15 @@
     ;; Need rule for dhcp_release
     (allow subj .net.netif (netif (egress)))
     (allow subj .net.netnode (node (sendto)))
+
+    ;; Need permission for backhaul status indicate feature
+    (allow subj .qcmap_cli.subj (capability (kill)))
+    (allow subj .qcmap_cm.subj (process (signal)))
+
+    ;; Need permission for proc/pidof QCMAP_ConnectionManager from backhaulCommonConfig.sh
+    (allow subj .qcmap_cm.subj (dir (search)))
+    (allow subj .qcmap_cm.subj (file (open read)))
+    (allow subj .qcmap_cm.subj (lnk_file (read)))
 
     ;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
     ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
@@ -410,4 +427,17 @@
     ;; Need to open read file for ubusd
     (allow subj ubusd.subj (dir (search)))
     (allow subj ubusd.subj (file (open read)))
+    (call .file.read_datafile_files (subj))
+    ;;Need create permission for hostapd-daemon
+    (call .tmpfile.create_locktmpfile_files (subj))
+
+    ;;Need for macsec
+    (call .mka_supplicant.subj_type_transition (subj))
+    (call .mka_supplicant.execute_initscriptfile_files (subj))
+    (allow subj .mka_supplicant.initscriptfile (file (getattr execute read open)))
+    (call .mka_authenticator.subj_type_transition (subj))
+    (call .mka_authenticator.execute_initscriptfile_files (subj))
+    (allow subj .mka_authenticator.initscriptfile (file (getattr execute read open)))
+    (allow subj tmpfile.locktmpfile (file(create)))
+    (allow subj tmpfile.runtimetmpfile (dir(create)))
 )

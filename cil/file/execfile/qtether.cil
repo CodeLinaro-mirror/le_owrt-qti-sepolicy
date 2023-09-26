@@ -140,4 +140,5 @@
        (call .dataadpl.readwrite_conffile_dirs (subj))
        (allow subj dataadpl.conffile (dir (watch)))
        (allow subj .logd.miscfile (sock_file (write)))
+       (call .dataadpl.create_conffile_files (subj))
 )

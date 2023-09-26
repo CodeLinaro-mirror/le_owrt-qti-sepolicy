@@ -66,6 +66,7 @@
 
     (call obj_type_transition_runtimetmpfile (subj dir "wpad"))
 
+    (dontaudit subj self (capability (dac_read_search)))
     (allow subj .qcmap_cli.subj (fd (use)))
     (allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
     (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))

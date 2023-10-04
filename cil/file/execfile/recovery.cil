@@ -140,4 +140,7 @@
 	(allow subj ubiutil.execfile (file ( execute_no_trans execute map open read write)))
 	(allow subj devices.sysfile (dir ( open read search )))
 	(allow subj devices.sysfile (file ( open read )))
+	(allow subj mnt.miscfile (dir (search )))
+	(allow subj mnt.miscfile (file ( getattr map open read )))
+	(dontaudit subj tmp.fs (dir ( remove_name )))
 )

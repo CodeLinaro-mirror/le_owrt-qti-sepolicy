@@ -18,6 +18,11 @@
        file
        tmpfile_file_context)
 
+       (filecon
+       "/tmp/usb_bind_in_progress"
+       file
+       tmpfile_file_context)
+
        (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
             (call .tmp.fs_obj_type_transition
                 (ARG1 tmpfile ARG2 ARG3)))
@@ -30,6 +35,7 @@
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.lan"))
             (call obj_type_transition_tmpfile (ARG1 file "default.route.v4.list"))
             (call obj_type_transition_tmpfile (ARG1 file "default.route.v6.list"))
+            (call obj_type_transition_tmpfile (ARG1 file "usb_bind_in_progress"))
        )
 
          (blockinherit .tmpfile.obj_template)
@@ -176,6 +182,7 @@
 
 	  ;; Need for /tmp/ipsec/strongswan.conf
 	  (allow subj .tmp.fs (file (create read open getattr)))
+	  (allow subj .netifd.tmpfile (file (write unlink)))
 	  (allow subj .tmpfile.conftmpfile (dir (search)))
 	  (allow subj .netifd.subj (alg_socket (create)))
 

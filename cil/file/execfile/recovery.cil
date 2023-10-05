@@ -20,6 +20,10 @@
 		"/usr/bin/recovery"
 		file
 		execfile_file_context)
+        (filecon
+                "/usr/bin/mirror_copy"
+                file
+                execfile_file_context)
 	(filecon
 		"/data/full_update_ext4_ab.zip"
 		file
@@ -70,7 +74,9 @@
 
 	(macro obj_type_transition_execfile ((type ARG1))
 		(call .file.execfile_obj_type_transition
-			(ARG1 execfile file "recovery")))
+			(ARG1 execfile file "recovery"))
+                (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "mirror_copy")))
 	(macro obj_type_transition_datafile ((type ARG1))
 		(call .file.datafile_obj_type_transition
 			(ARG1 datafile file "full_update_ext4_ab.zip"))
@@ -122,6 +128,7 @@
 	(allow subj sys.subj(system (syslog_read)))
 	(allow subj kmsg.nodedev (chr_file ( open write )))
 	(allow subj recovery.runtimetmpfile (file ( execute_no_trans create unlink execute map open read write getattr )))
+        (allow subj recovery.execfile (file ( execute_no_trans )))
 	(allow subj recovery.tmpfile (file ( append create ioctl open write read )))
 	(allow subj shell.execfile (file ( execute_no_trans execute map open read write )))
 	(allow subj recovery.datafile (file ( open read getattr map)))

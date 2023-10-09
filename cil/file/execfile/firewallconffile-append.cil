@@ -7,9 +7,15 @@
 (in .firewall
 
     (filecon
-    "/etc/firewall\.user/.*"
+    "/etc/firewall\.user\.nat"
     file
     conffile_file_context)
+
+    (filecon
+    "/etc/firewall\.user\.porttrigger"
+    file
+    conffile_file_context)
+
 
     (macro obj_type_transition_conffile_ext ((type ARG1))
            (call .file.conffile_obj_type_transition(ARG1 conffile file "firewall.user.nat"))

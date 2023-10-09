@@ -5,10 +5,12 @@
 
 
 (in .rcumount
-
-
-        (allow .rcumount.subj .debug.fs (dir(search)))
-        (allow .rcumount.subj .mtd.stordev  (chr_file(read)))
+	(booleanif user_debug
+		(true
+			(allow subj debug.fs (dir (search)))
+		)
+	)
+	(allow subj mtd.stordev (chr_file (open read ioctl)))
+	(allow subj cache.miscfile (filesystem (unmount)))
+	(allow subj qcfirmware.miscfile (filesystem (unmount)))
 )
-
-

@@ -95,6 +95,8 @@
 
 
         (call .xattr.associate_filesystems (miscfile))
+        (allow  .sys.subj  .persist.miscfile (filesystem ( relabelto relabelfrom mount getattr)))
+        (allow  .persist.miscfile  .persist.miscfile (filesystem ( associate)))
         (blockinherit file.misc.obj_template)
 )
 (block sdcard

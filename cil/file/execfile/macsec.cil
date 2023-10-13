@@ -28,6 +28,8 @@
 	(filecon "/usr/bin/mka_supplicant" file execfile_file_context)
 	(filecon "/etc/mka_supplicant-eth0\.conf" file conffile_file_context)
 	(filecon "/etc/mka_supplicant-eth1\.conf" file conffile_file_context)
+	(filecon "/etc/data/mka_supplicant-eth0\.conf" file conffile_file_context)
+	(filecon "/etc/data/mka_supplicant-eth1\.conf" file conffile_file_context)
 	(filecon "/etc/init\.d/mka-supplicant\.init" file initscriptfile_file_context)
 	(filecon "/var/run/mka_supplicant" dir runtimetmpfile_file_context)
 	(filecon "/var/run/mka_supplicant/.*" any runtimetmpfile_file_context)
@@ -158,6 +160,9 @@
 	;; Need search, read, write on ubus.runtimetmpfile sock_file
 	(allow subj .ubusd.runtimetmpfile (dir (search)))
 	(allow subj .ubusd.runtimetmpfile (sock_file (read write)))
+
+	;; Need search on /etc/data (qcmap_cm.conffile context)
+	(allow subj qcmap_cm.conffile (dir (search)))
 )
 
 (block mka_authenticator
@@ -167,6 +172,8 @@
 	(filecon "/usr/bin/mka_authenticator" file execfile_file_context)
 	(filecon "/etc/mka_authenticator-eth0\.conf" file conffile_file_context)
 	(filecon "/etc/mka_authenticator-eth1\.conf" file conffile_file_context)
+	(filecon "/etc/data/mka_authenticator-eth0\.conf" file conffile_file_context)
+	(filecon "/etc/data/mka_authenticator-eth1\.conf" file conffile_file_context)
 	(filecon "/etc/init\.d/mka-authenticator\.init" file initscriptfile_file_context)
 	(filecon "/var/run/mka_authenticator" dir runtimetmpfile_file_context)
 	(filecon "/var/run/mka_authenticator/.*" any runtimetmpfile_file_context)
@@ -303,4 +310,7 @@
 
 	;; Need sendto on logd.subj unix_dgram_socket
 	(allow subj logd.subj (unix_dgram_socket (sendto)))
+
+	;; Need search on /etc/data (qcmap_cm.conffile context)
+	(allow subj qcmap_cm.conffile (dir (search)))
 )

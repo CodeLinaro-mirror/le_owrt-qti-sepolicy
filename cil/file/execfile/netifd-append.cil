@@ -28,10 +28,13 @@
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanbt"))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.waneth"))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.lan"))
+            (call obj_type_transition_tmpfile (ARG1 file "default.route.v4.list"))
+            (call obj_type_transition_tmpfile (ARG1 file "default.route.v6.list"))
        )
 
          (blockinherit .tmpfile.obj_template)
          (call obj_type_transition_tmpfile_ext (subj))
+         (allow subj mwan3.tmpfile (fifo_file (write open)))
          (allow subj netifd.tmpfile (file (create write open append read getattr unlink)))
          (allow subj .tmp.fs (dir (remove_name)))
          (allow subj odhcp6c.tmpfile (file (open read getattr)))
@@ -66,7 +69,9 @@
           (call .rccommon.read_conffile_files (subj))
           ;; Need search, read on /tmp/lock/procd_odhcpd.lock
           (call .tmpfile.search_locktmpfile_dirs (subj))
+          (call .tmpfile.readwrite_locktmpfile_dirs (subj))
           (call .tmpfile.read_locktmpfile_files (subj))
+          (call .tmpfile.create_locktmpfile_files (subj))
           ;; Need execute/read on ipa
           (call .ipacli.execute_execfile_files (subj))
           (call .ipacli.read_execfile_files (subj))
@@ -184,4 +189,7 @@
           ;; Need enable mwan3 for wanwlan 
 	  (allow subj hotplug.conffile (file (open read)))
 	  (allow subj hotplug.conffile (dir (search)))
+
+          ;; Needed for rmnet.script
+          (dontaudit subj .tmpfile.locktmpfile (dir (write)))
 )

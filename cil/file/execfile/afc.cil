@@ -141,4 +141,14 @@
 
     ;; Read localtime
     (call .file.read_conffile_lnk_files (subj))
+
+    ;; Access /etc/resolv.conf to resolve IP for AFC URLs
+    (call .unknown.search_miscfile_dirs (subj))
+    (call .resolv.search_tmpfile_dirs (subj))
+    (call .resolv.read_tmpfile_files (subj))
+    ;; Read /etc/hosts
+    (call .nameservice.read_miscfile_files (subj))
+
+    ;; HTTP request/response
+    (allow subj .http.netport (tcp_socket (name_connect)))
 )

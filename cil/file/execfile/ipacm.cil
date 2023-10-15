@@ -211,5 +211,11 @@
 
 	(call .sys.requestmodule (subj))
 
+	(allow subj devices.sysfile (dir (search getattr read open)))
+	(allow subj devices.sysfile (file (getattr)))
+	(allow subj devices.sysfile (lnk_file (getattr)))
+	(allow subj tmp.fs (file (create write ioctl unlink read open)))
+
+
 	;;
 )

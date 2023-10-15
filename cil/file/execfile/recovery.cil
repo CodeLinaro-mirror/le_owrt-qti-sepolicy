@@ -28,7 +28,22 @@
 		"/data/full_update_ubi_ab.zip"
 		file
 		datafile_file_context)
-
+	(filecon
+		"/data/update.zip"
+		file
+		datafile_file_context)
+	(filecon
+		"/data/update_ubi.zip"
+		file
+		datafile_file_context)
+	(filecon
+		"/data/update_ext4.zip"
+		file
+		datafile_file_context)
+	(filecon
+		"/data/update_incr_ext4.zip"
+		file
+		datafile_file_context)
 	(filecon
 		"/tmp/update_binary"
 		file
@@ -60,7 +75,15 @@
 		(call .file.datafile_obj_type_transition
 			(ARG1 datafile file "full_update_ext4_ab.zip"))
 		(call .file.datafile_obj_type_transition
-			(ARG1 datafile file "full_update_ubi_ab.zip")))
+			(ARG1 datafile file "full_update_ubi_ab.zip"))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile file "update.zip"))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile file "update_ubi.zip"))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile file "update_ext4.zip"))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile file "update_incr_ext4.zip")))
 	(macro obj_type_transition_runtimetmpfile ((type ARG1))
 		(call .tmp.fs_obj_type_transition (ARG1 runtimetmpfile file "update_binary"))
 		(call .tmp.fs_obj_type_transition (ARG1 runtimetmpfile file "system.img")))
@@ -86,7 +109,7 @@
 
 	(allow cache.miscfile self (filesystem (associate)))
 	(allow subj cache.miscfile (dir ( create getattr open read remove_name rmdir add_name search write )))
-	(allow subj cache.miscfile (file ( ioctl read setattr unlink create open write rename )))
+	(allow subj cache.miscfile (file ( ioctl read setattr unlink create open write rename append)))
 	(allow subj cache.miscfile (filesystem ( getattr )))
 	(allow subj file.conffile(lnk_file (read)))
 	(allow subj file.conffile (file ( open read )))

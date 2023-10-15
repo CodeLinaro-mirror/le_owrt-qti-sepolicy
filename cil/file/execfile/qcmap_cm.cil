@@ -333,4 +333,19 @@
       (allow subj .net.netif (netif (egress)))
       (allow subj .net.netnode (node (sendto)))
       (call .tmpfile.search_statetmpfile_dirs (subj))
+
+      ;; SpeedTest related permissions
+      (allow subj loc_etc.conffile (file (read open)))
+      (allow subj leprop.miscfile (sock_file (write)))
+      (allow subj leprop.subj (unix_stream_socket (connectto)))
+      (allow subj loc_socket.nodedev (dir (search write add_name)))
+      (allow subj loc_socket.nodedev (sock_file (create setattr write)))
+      (allow subj loc_data.datafile (dir (search)))
+      (allow subj loc_hal_daemon.subj (unix_dgram_socket (sendto)))
+
+      ;; Permissions to run ubus from qcmap_cm
+      (call .ubusd.search_runtimetmpfile_dirs (subj))
+      (call .ubusd.write_runtimetmpfile_sock_files (subj))
+      (allow subj ubusd.subj (unix_stream_socket (connectto)))
+
 )

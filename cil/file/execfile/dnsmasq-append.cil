@@ -70,6 +70,7 @@
 (allow subj ip.execfile (file(read open getattr)))
 (call .kmsg.readwrite_nodedev_chr_files (subj))
 (allow subj dnsmasq.subj (socket (create)))
+(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )
 
 

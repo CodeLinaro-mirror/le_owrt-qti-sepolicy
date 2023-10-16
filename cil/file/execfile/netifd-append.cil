@@ -24,6 +24,16 @@
        file
        tmpfile_file_context)
 
+       (filecon
+       "/tmp/default\.route\.v4\.list"
+       file
+       tmpfile_file_context)
+
+       (filecon
+       "/tmp/default\.route\.v6\.list"
+       file
+       tmpfile_file_context)
+
        (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
             (call .tmp.fs_obj_type_transition
                 (ARG1 tmpfile ARG2 ARG3)))

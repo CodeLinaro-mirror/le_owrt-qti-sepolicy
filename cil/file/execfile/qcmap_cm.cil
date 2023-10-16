@@ -348,4 +348,12 @@
       (call .ubusd.write_runtimetmpfile_sock_files (subj))
       (allow subj ubusd.subj (unix_stream_socket (connectto)))
 
+      ;; Permissions for backhaulCommonC
+      (allow subj functions.miscfile (file (read open getattr)))
+      (allow subj functions.miscfile (dir (search)))
+      (allow subj netifd.miscfile (dir (search)))
+      (allow subj netifd.miscfile (file (read open)))
+      (allow subj libubox.datafile (dir (search)))
+      (allow subj libubox.datafile (file (read open)))
+
 )

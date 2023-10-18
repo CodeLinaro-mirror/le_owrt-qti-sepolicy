@@ -53,6 +53,7 @@
     (filecon "/tmp/wpa_ctrl_[0-9]+\-[0-9]+" socket tmpfile_file_context)
     (filecon "/var/run/cnss" dir runtimetmpfile_file_context)
     (filecon "/var/run/cnss/.*" any runtimetmpfile_file_context)
+    (filecon "/tmp/macaddr" file tmpfile_file_context)
 
     ;;
     ;; Macros
@@ -140,6 +141,7 @@
     (call obj_type_transition_datafile (subj))
     ;; Transitions for /tmp/wpa_ctrl_$pid-$cnt client sockets (IPQ sigma-dut)
     (call obj_type_transition_tmpfile (subj sock_file "*"))
+    (call obj_type_transition_tmpfile(subj file "macaddr"))
 
     (allow subj .sys.subj (fifo_file (read write ioctl)))
     (allow subj .sys.subj (unix_stream_socket (read write)))

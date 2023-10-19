@@ -461,4 +461,7 @@
 
     ;; Need permission for wifi
     (allow subj sys.rootfile (dir (read)))
+
+    ;; Read mmc blocks
+    (call .dev.stor.read.subj_type (subj))
 )

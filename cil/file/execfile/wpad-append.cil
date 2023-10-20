@@ -163,4 +163,6 @@
     (allow subj .unreserved.netport (tcp_socket (name_connect name_bind)))
     (allow subj .net.netnode (tcp_socket (node_bind)))
     (allow subj self create_tcp_stream_socket)
+    ;; Need permission for hostapd-cli command
+    (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )

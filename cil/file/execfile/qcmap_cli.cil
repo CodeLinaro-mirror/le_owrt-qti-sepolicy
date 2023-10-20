@@ -528,6 +528,9 @@
     (allow subj .netifd.runtimetmpfile (sock_file (create setattr unlink write)))
     (allow subj .qcmap_cli.tmpfile (dir (search write add_name getattr)))
     (allow subj .tmpfile.locktmpfile (file (create)))
+    ;; Need permission for wifitool command
+    (allow subj wifi.datafile (file (map execute)))
+    (call .devices.read_sysfile_lnk_files (subj))
 
     (allow subj .urngd.subj (file (read open)))
     (allow subj .urngd.subj (lnk_file (read)))

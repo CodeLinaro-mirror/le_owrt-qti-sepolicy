@@ -470,4 +470,7 @@
 
     ;; Read mmc blocks
     (call .dev.stor.read.subj_type (subj))
+
+    ;; Need permission for cfg80211tool command
+    (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )

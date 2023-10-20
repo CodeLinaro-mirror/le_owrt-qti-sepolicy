@@ -30,3 +30,12 @@ ${CHCON} -t `${MATCHPATHCON} -n /dev/console | cut -d: -f3` /dev/console
 ${RESTORECON} -RF /dev
 ${RESTORECON} -RF /var
 ${RESTORECON} -RF /tmp
+
+[ -d /proc/device-tree ] || return
+mkdir -p /tmp/sysinfo
+[ -e /tmp/sysinfo/board_name ] || \
+	echo "$(strings /proc/device-tree/compatible | head -1)" > /tmp/sysinfo/board_name
+[ ! -e /tmp/sysinfo/model -a -e /proc/device-tree/model ] && \
+	echo "$(cat /proc/device-tree/model)" > /tmp/sysinfo/model
+
+exit 0

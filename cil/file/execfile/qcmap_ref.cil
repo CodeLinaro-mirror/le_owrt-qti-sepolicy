@@ -261,6 +261,7 @@
     (allow iw.subj qcmap_ref.subj (fd (use)))
     (allow iw.subj qcmap_ref.subj (fifo_file (read write)))
     (allow iw.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow iw.subj qcmap_ref.subj (netlink_route_socket( read write )))
     (allow subj self create_netlink_generic_socket)
     (allow subj .wifi.datafile (file (read write append open create getattr lock unlink)))
     (allow subj .wifi.datafile (dir (search remove_name write add_name)))

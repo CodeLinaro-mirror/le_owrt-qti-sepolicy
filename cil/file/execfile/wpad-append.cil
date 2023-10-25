@@ -70,11 +70,13 @@
     (allow subj .qcmap_cli.subj (fd (use)))
     (allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
     (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow subj .qcmap_cli.subj (netlink_route_socket( read write )))
     (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
     (allow subj .sys.subj (fifo_file (write)))
     (allow subj .tmp.fs (dir (remove_name)))
     (allow subj .qcmap_ref.subj (fifo_file (read write ioctl)))
     (allow subj .qcmap_ref.subj (fd (use)))
+    (allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
 
     (allow subj .qcmap_cm.subj (fd (use)))
     (allow subj .qcmap_cm.subj readwriteinherited_fifo_file)

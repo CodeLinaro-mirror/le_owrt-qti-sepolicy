@@ -304,6 +304,7 @@
     (allow iw.subj qcmap_cli.subj (fd (use)))
     (allow iw.subj qcmap_cli.subj (unix_stream_socket (read write)))
     (allow iw.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow iw.subj qcmap_cli.subj (netlink_route_socket( read write )))
     (allow subj .locale.miscfile (file (map)))
 
     ;; Need rules for xtables

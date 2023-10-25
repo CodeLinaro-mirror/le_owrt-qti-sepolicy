@@ -17,9 +17,11 @@
   (allow subj .qcmap_cli.subj (fd (use)))
   (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
   (allow subj .qcmap_cli.subj readwriteinherited_fifo_file)
+  (allow subj .qcmap_cli.subj (netlink_route_socket( read write )))
   (allow subj .qcmap_ref.subj (fd (use)))
   (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
   (allow subj .qcmap_ref.subj readwriteinherited_fifo_file)
+  (allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
 
   ;; IPQ sigma_dut
   (allow subj .wifi.subj (tcp_socket (read write)))

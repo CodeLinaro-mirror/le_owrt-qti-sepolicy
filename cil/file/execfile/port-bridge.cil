@@ -70,4 +70,5 @@
         (allow subj .qcmap_cm.conffile (dir (search)))
         (allow subj .qcmap_cm.conffile (file (read open write)))
         (allow subj port-bridge.tmpfile (chr_file (open read write ioctl)))
+        (allow subj .qti.nodedev (chr_file (getattr read )))
 )

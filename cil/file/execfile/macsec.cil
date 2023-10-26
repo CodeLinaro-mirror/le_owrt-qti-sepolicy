@@ -26,8 +26,6 @@
 	;; Contexts
 	;; --------
 	(filecon "/usr/bin/mka_supplicant" file execfile_file_context)
-	(filecon "/etc/mka_supplicant-eth0\.conf" file conffile_file_context)
-	(filecon "/etc/mka_supplicant-eth1\.conf" file conffile_file_context)
 	(filecon "/etc/data/mka_supplicant-eth0\.conf" file conffile_file_context)
 	(filecon "/etc/data/mka_supplicant-eth1\.conf" file conffile_file_context)
 	(filecon "/etc/init\.d/mka-supplicant\.init" file initscriptfile_file_context)
@@ -170,8 +168,6 @@
 	;; Contexts
 	;; --------
 	(filecon "/usr/bin/mka_authenticator" file execfile_file_context)
-	(filecon "/etc/mka_authenticator-eth0\.conf" file conffile_file_context)
-	(filecon "/etc/mka_authenticator-eth1\.conf" file conffile_file_context)
 	(filecon "/etc/data/mka_authenticator-eth0\.conf" file conffile_file_context)
 	(filecon "/etc/data/mka_authenticator-eth1\.conf" file conffile_file_context)
 	(filecon "/etc/init\.d/mka-authenticator\.init" file initscriptfile_file_context)

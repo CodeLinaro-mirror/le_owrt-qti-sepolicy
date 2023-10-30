@@ -421,4 +421,5 @@
     (allow subj .diagrebootapp.subj (dir (search)))
     (allow subj .netifd.subj (dir (search)))
     (allow subj .hotplugcall.subj (dir (search)))
+
 )

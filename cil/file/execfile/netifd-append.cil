@@ -3,6 +3,7 @@
 
 (in .file
     (call .netifd.obj_type_transition_tmpfile_ext (unconfined.subj_typeattr))
+    (call .netifd.obj_type_transition_runtimetmpfile_1 (unconfined.subj_typeattr))
 )
 
 (in .netifd
@@ -38,8 +39,25 @@
             (call obj_type_transition_tmpfile (ARG1 file "usb_bind_in_progress"))
        )
 
+       (macro obj_type_transition_runtimetmpfile_1 ((type ARG1))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "charon.vici"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "charon.ctl"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "charon.dck"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "charon.wlst"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "charon.xml"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile file "starter.charon.pid"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile file "charon.pid")))
+
          (blockinherit .tmpfile.obj_template)
          (call obj_type_transition_tmpfile_ext (subj))
+         (call obj_type_transition_runtimetmpfile_1 (subj))
          (allow subj mwan3.tmpfile (fifo_file (write open)))
          (allow subj netifd.tmpfile (file (create write open append read getattr unlink)))
          (allow subj .tmp.fs (dir (remove_name)))
@@ -199,4 +217,38 @@
 
           ;; Needed for rmnet.script
           (dontaudit subj .tmpfile.locktmpfile (dir (write)))
+
+          ;;Need for /tmp/ipsec/strongswan.conf and /tmp/swanctl/swanctl.conf
+	  (allow subj .qcmap_cli.tmpfile (dir (search write add_name getattr)))
+	  (allow subj .qcmap_cli.tmpfile (file (write)))
+
+	  ;;Need for /tmp/run/charon files
+	  (allow subj .qcmap_cli.runtimetmpfile (file (getattr read open)))
+	  (allow subj .qcmap_cli.runtimetmpfile (sock_file (write unlink)))
+	  
+          ;;Need for accessing strongswan module
+	  (allow subj .qcmap_cli.subj (unix_stream_socket (connectto)))
+	  (allow subj .qcmap_cli.subj (process (signull signal)))
+	  (allow subj .sys.subj (process (signull signal)))
+
+	  ;;Need for execute_no_trans denials for ipsec
+	  (call .file.execute_libfile_files (subj))
+	  (call .xtables.execute_execfile_files (subj))
+	  (call .file.execute_execfile_files (subj))
+	  
+          ;;Need for ipsec iptable rule
+          (allow subj .file.conffile (lnk_file (read)))
+	  (allow subj .locale.miscfile (file (map)))
+
+          ;;Need for charon socket access(charon.vici,charon.xml,etc)
+	  (allow subj .core.sysctlfile (dir (search)))
+	  (allow subj .core.sysctlfile (file (write open ioctl)))
+	  (allow subj .netifd.subj (unix_stream_socket (connectto accept)))
+	  (allow subj .reserved.netport (udp_socket (name_bind node_bind)))
+
+          ;;Need for datacall connected event from rmnet_script for ipsec 
+	  (allow subj .netifd.runtimetmpfile (sock_file (create setattr unlink write)))
+	  (allow subj .netifd.subj (netlink_xfrm_socket (read create bind setopt write ioctl nlmsg_read nlmsg_write)))
+	  (allow subj .netifd.subj (unix_stream_socket (listen)))
+	  (allow subj .ssl.conftmpfile (file (open)))
 )

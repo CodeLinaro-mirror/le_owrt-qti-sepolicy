@@ -192,7 +192,7 @@
 
 	(call .ipacm.search_conffile_dirs (subj))
 	(allow subj conffile (file (open getattr)))
-	(call .ipacm.read_conffile_files (subj))
+	(call .ipacm.readwrite_conffile_files (subj))
 	(call .file.search_conffile_dirs (subj))
 	(allow subj ipacm.conffile (dir (watch)))
 	(call .ipacm.readwrite_conffile_dirs(subj))

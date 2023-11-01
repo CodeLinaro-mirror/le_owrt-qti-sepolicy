@@ -216,6 +216,10 @@
 	(call .ipacm.create_runtimetmpfile_files (subj))
 	(allow subj ip.execfile (file(read open execute getattr execute_no_trans map)))
 
+	(allow subj self (netlink_generic_socket (create read write setopt bind getattr)))
+	(allow subj .wifi.execfile (file(read open execute getattr)))
+	(allow subj .wifi.miscfile (file (read open getattr map)))
+	(allow subj .wifi.miscfile (dir (search)))
 	(call .sys.search_fs_dirs (subj))
 	(call .sys.search_sysctlfile_dirs (subj))
 	(call .fs.search_sysfile_dirs (subj))

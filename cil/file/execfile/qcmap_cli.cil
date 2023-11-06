@@ -386,6 +386,7 @@
     (allow ifstatus.subj qcmap_cli.subj (fd (use)))
     (call .tmpfile.search_hoststmpfile_dirs (subj))
     (call .tmpfile.search_conftmpfile_dirs (subj))
+    (allow subj .tmpfile.conftmpfile (file (read open)))
 
     ;; Need read write for wifilock
     (call .tmpfile.readwrite_runtimetmpfile_files (subj))

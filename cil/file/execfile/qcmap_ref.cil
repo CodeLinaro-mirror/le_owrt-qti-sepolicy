@@ -188,6 +188,7 @@
     (allow jsonfilter.subj qcmap_ref.subj (fd (use)))
     (allow jsonfilter.subj qcmap_ref.subj readwriteinherited_fifo_file)
     (allow jsonfilter.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow jsonfilter.subj qcmap_ref.subj (netlink_route_socket (read write)))
     ;; Need permissions on mwan3
     (call .mwan3.search_runtimetmpfile_dirs (subj))
     (call .mwan3.create_runtimetmpfile_dirs (subj))
@@ -201,6 +202,7 @@
     (allow ipcalc.subj qcmap_ref.subj (unix_stream_socket (read write)))
     (allow ipcalc.subj qcmap_ref.subj readwriteinherited_fifo_file)
     (allow ipcalc.subj qcmap_ref.subj (fd (use)))
+    (allow ipcalc.subj qcmap_ref.subj (netlink_route_socket (read write)))
     ;; Need permission for jshn
     (allow jshn.subj qcmap_ref.subj (unix_stream_socket (read write)))
     (allow jshn.subj qcmap_ref.subj readwriteinherited_fifo_file)

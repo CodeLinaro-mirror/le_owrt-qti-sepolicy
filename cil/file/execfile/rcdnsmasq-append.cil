@@ -39,4 +39,5 @@
          (call .sys.getattr_filesystems(subj))
          (allow .rcdnsmasq.subj .sys.fs (filesystem (getattr)))
          (call .filesystems.read_procfile_files (subj))
+         (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )

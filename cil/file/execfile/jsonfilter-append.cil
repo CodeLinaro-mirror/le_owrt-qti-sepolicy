@@ -7,4 +7,5 @@
      (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
      (allow subj .qcmap_cli.subj (fifo_file (read write)))
      (call .fw3.write_runtimetmpfile_files (subj))
+     (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )

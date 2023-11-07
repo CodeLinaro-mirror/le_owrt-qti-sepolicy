@@ -41,5 +41,6 @@
           (allow kmodloader.subj data_path_opt.subj (fd(use)))
           (allow kmodloader.subj data_path_opt.subj (fifo_file (read)))
           (allow kmodloader.subj data_path_opt.subj (fifo_file(write ioctl)))
+          (dontaudit subj shell.execfile (file(execute_no_trans)))
 
 )

@@ -69,6 +69,7 @@
 (call .ip.subj_type_transition (subj))
 (allow subj ip.execfile (file(read open getattr)))
 (call .kmsg.readwrite_nodedev_chr_files (subj))
+(allow subj dnsmasq.subj (socket (create)))
 )
 
 

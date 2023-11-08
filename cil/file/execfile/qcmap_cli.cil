@@ -478,6 +478,9 @@
     ;;Need transition for ipsec
     (call .file.execute_libfile_files (subj))
 
+    ;;Need for execute QCMAP_Sta_Interface
+    (call .qcmap_cli.execute_execfile_files (subj))
+
     ;; Need to open read file for ubusd
     (allow subj ubusd.subj (dir (search)))
     (allow subj ubusd.subj (file (open read)))

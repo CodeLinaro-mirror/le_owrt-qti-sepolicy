@@ -59,6 +59,9 @@
     (call .shell.manage_execfile_files (subj))
     (allow subj .shell.execfile (file (execute_no_trans)))
 
+    ;;Need for execute QCMAP_Sta_Interface
+    (call .qcmap_cli.execute_execfile_files (subj))
+
     ;; Need gettarr on selinux filesystem
     (call .selinux.getattr_filesystems (subj))
 

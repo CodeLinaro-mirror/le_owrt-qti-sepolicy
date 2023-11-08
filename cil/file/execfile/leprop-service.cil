@@ -202,4 +202,6 @@
 ;;  New socket needs to be managed 
        (call manage_miscfile_sock_files (subj))
        (call tmp_obj_type_transition_miscfile (subj))
+
+       (allow subj unknown.miscfile (file (read open)))
 )

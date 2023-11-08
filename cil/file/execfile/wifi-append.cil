@@ -164,6 +164,7 @@
 
     ;; To add MLD with bridge
     (allow subj self create_tcp_socket)
+    (allow subj self (unix_stream_socket (create read write ioctl)))
 
     ;; Need read on /lib/network/config.sh
     (allow subj .network.miscfile (dir (read search open)))

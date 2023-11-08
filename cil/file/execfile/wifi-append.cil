@@ -322,6 +322,9 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcril.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .msdc.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .perf-hal-service.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .dlsc.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .tlpd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .mlid.subj))
 
     ;; Look for files in /tmp
     (allow subj .tmp.fs (file (read getattr open)))

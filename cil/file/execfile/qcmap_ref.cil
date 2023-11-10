@@ -214,6 +214,10 @@
     ;; Need subj_type_transition for ethtool utility
     (call .file.execute_execfile_files (subj))
     (call .file.read_execfile_files (subj))
+
+    ;; Need read open permission on /etc/ethertypes for ebtables
+    (call .file.read_conffile_files (subj))
+
     (allow subj self create_udp_socket)
     (call .config.create_fs_files (subj))
     (call .config.readwrite_fs_files (subj))

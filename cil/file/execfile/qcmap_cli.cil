@@ -200,7 +200,7 @@
     (allow ipacli.subj qcmap_cli.subj (fd (use)))
     (allow ipacli.subj file.conffile (dir (search)))
     ;; Need read open on /etc/misc/wifi/5g_wireless
-    (allow subj .wpad.miscfile (dir (search)))
+    (allow subj .wpad.miscfile (dir (search getattr read)))
     (allow subj .wpad.miscfile (file (getattr read open)))
     ;; To execute /usr/sbin/hostapd_cli
     (call .wpad.subj_type_transition (subj))

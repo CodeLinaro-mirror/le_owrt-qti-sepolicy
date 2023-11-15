@@ -148,6 +148,9 @@
 ;; Need For Ezmesh, hyctl communication
       (call .ezmesh.subj_type_transition (subj))
       (call .kmodloader.subj_type_transition (subj))
+      (call .validatedata.subj_type_transition (subj))
+      (call .validatedata.mapexecute_execfile_files (subj))
+      (call .wifi.readwrite_runtimetmpfile_files (subj))
 
 ;; EasyMesh specific denial handling
 
@@ -166,7 +169,7 @@
 
       (allow subj class.sysfile (dir (search remove_name add_name read open getattr map ioctl)))
 
-      (allow subj qcmap_cli.tmpfile (file (unlink getattr read open map rename)))
+      (allow subj qcmap_cli.tmpfile (file (unlink getattr read open map rename write)))
 
       (allow subj hotplug.conffile (file (unlink getattr read open map rename execute execute_no_trans )))
       (allow subj console.ttydev (chr_file (open)))

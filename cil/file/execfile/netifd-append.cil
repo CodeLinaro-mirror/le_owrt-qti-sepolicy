@@ -264,4 +264,8 @@
 	  (allow subj .netifd.subj (netlink_xfrm_socket (read create bind setopt write ioctl nlmsg_read nlmsg_write)))
 	  (allow subj .netifd.subj (unix_stream_socket (listen)))
 	  (allow subj .ssl.conftmpfile (file (open)))
+
+          ;;Need for send out ipsec traffic
+          (allow subj .unreserved.netport (udp_socket (name_bind)))
+	  (allow subj .netifd.subj (lockdown (confidentiality)))
 )

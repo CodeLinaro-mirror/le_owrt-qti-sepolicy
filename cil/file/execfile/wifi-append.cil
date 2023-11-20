@@ -435,9 +435,9 @@
     (allow subj .afc.subj (file (read open)))
     (allow subj .afc.subj (lnk_file (read)))
 
-    ;; Read /lib/wifi/qcacld32-modules
+    ;; Read /lib/wifi/qcacld32-modules and mv WCNSS_qcom_cfg.ini
     (allow subj .wifi.miscfile (lnk_file (read)))
-    (allow subj .wpad.miscfile (lnk_file (read)))
+    (allow subj .wpad.miscfile (lnk_file (read unlink)))
 
     ;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
     ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}

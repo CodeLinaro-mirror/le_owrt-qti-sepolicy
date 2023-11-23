@@ -355,5 +355,6 @@
       (allow subj netifd.miscfile (file (read open)))
       (allow subj libubox.datafile (dir (search)))
       (allow subj libubox.datafile (file (read open)))
+      (call .nameservice.read_miscfile_files (subj))
 
 )

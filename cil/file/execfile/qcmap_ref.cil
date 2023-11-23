@@ -435,4 +435,6 @@
     (allow subj wifi.datafile (file (map)))
     (allow subj wifi.datafile (file (execute)))
     (call .devices.read_sysfile_lnk_files (subj))
+
+    (dontaudit subj self (capability (dac_override)))
 )

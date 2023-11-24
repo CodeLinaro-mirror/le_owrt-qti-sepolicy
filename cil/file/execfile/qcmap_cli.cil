@@ -107,6 +107,12 @@
                  (call .tmpfile.runtimetmpfile_obj_type_transition
                         (ARG1 runtimetmpfile file "charon.pid")))
 
+    (macro pidof_denials ((type ARG1) (type ARG2))
+        (allow ARG1 ARG2 (dir (read open search getattr)))
+        (allow ARG1 ARG2 (file (read open)))
+        (allow ARG1 ARG2 (lnk_file (read)))
+    )
+
     ;; Policy
     (blockinherit .agent.base_template)
     (blockinherit .tmpfile.obj_template)
@@ -642,4 +648,17 @@
     ;; Need read permission on /tmp/sysinfo/board_name
     (call .preinit.read_tmpfile_files (subj))
     (allow subj qcmap_ref.subj (fd (use)))
+    ;; Pidof denials
+    (call pidof_denials (subj qcmap_cli.subj))
+    (call pidof_denials (subj qcmap_cm.subj))
+    (call pidof_denials (subj odhcpd.subj))
+    (call pidof_denials (subj netifd.subj))
+    (call pidof_denials (subj dnsmasq.subj))
+    (call pidof_denials (subj rcdnsmasq.subj))
+    (call pidof_denials (subj dataadpl.subj))
+    (call pidof_denials (subj qtether.subj))
+    (call pidof_denials (subj ubus.subj))
+    (call pidof_denials (subj qtether.subj))
+    (call pidof_denials (subj odhcp6c.subj))
+    (call pidof_denials (subj uci.subj))
 )

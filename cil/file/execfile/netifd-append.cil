@@ -123,6 +123,10 @@
 
           (allow subj .tmpfile.runtimetmpfile (dir (create rmdir)))
 
+          ;; Need run chmod on /dev/socket/data/pd_manager
+          (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
+          (allow subj self (capability (fsetid fowner)))
+
           (allow subj miniupnpd.datafile (file (open read getattr)))
 
           ;; Need read on fw3.state file
@@ -224,7 +228,7 @@
 	  (allow subj .ssl.conftmpfile (file (getattr read)))
 	  (allow subj .sys.subj (unix_stream_socket (connectto)))
 
-          ;; Need enable mwan3 for wanwlan 
+          ;; Need enable mwan3 for wanwlan
 	  (allow subj hotplug.conffile (file (open read)))
 	  (allow subj hotplug.conffile (dir (search)))
 
@@ -238,7 +242,7 @@
 	  ;;Need for /tmp/run/charon files
 	  (allow subj .qcmap_cli.runtimetmpfile (file (getattr read open)))
 	  (allow subj .qcmap_cli.runtimetmpfile (sock_file (write unlink)))
-	  
+
           ;;Need for accessing strongswan module
 	  (allow subj .qcmap_cli.subj (unix_stream_socket (connectto)))
 	  (allow subj .qcmap_cli.subj (process (signull signal)))
@@ -248,7 +252,7 @@
 	  (call .file.execute_libfile_files (subj))
 	  (call .xtables.execute_execfile_files (subj))
 	  (call .file.execute_execfile_files (subj))
-	  
+
           ;;Need for ipsec iptable rule
           (allow subj .file.conffile (lnk_file (read)))
 	  (allow subj .locale.miscfile (file (map)))
@@ -259,7 +263,7 @@
 	  (allow subj .netifd.subj (unix_stream_socket (connectto accept)))
 	  (allow subj .reserved.netport (udp_socket (name_bind node_bind)))
 
-          ;;Need for datacall connected event from rmnet_script for ipsec 
+          ;;Need for datacall connected event from rmnet_script for ipsec
 	  (allow subj .netifd.runtimetmpfile (sock_file (create setattr unlink write)))
 	  (allow subj .netifd.subj (netlink_xfrm_socket (read create bind setopt write ioctl nlmsg_read nlmsg_write)))
 	  (allow subj .netifd.subj (unix_stream_socket (listen)))

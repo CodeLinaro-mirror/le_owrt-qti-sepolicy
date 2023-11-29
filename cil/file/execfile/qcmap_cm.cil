@@ -287,6 +287,7 @@
       (call .resolv.search_tmpfile_dirs (subj))
       (call .resolv.readwrite_tmpfile_files (subj))
       (allow subj .net.netnode (udp_socket (node_bind)))
+      (allow ip.subj qcmap_cm.subj (unix_dgram_socket (read write)))
 
       ;; Need open read on /
       (allow subj .sys.rootfile (dir(open read)))
@@ -355,6 +356,7 @@
       (allow subj netifd.miscfile (file (read open)))
       (allow subj libubox.datafile (dir (search)))
       (allow subj libubox.datafile (file (read open)))
+      (allow subj loc_socket.nodedev (dir (getattr)))
       (call .nameservice.read_miscfile_files (subj))
 
 )

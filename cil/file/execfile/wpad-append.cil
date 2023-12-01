@@ -70,11 +70,13 @@
     (allow subj .qcmap_cli.subj (fd (use)))
     (allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
     (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow subj .qcmap_cli.subj (netlink_route_socket( read write )))
     (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
     (allow subj .sys.subj (fifo_file (write)))
     (allow subj .tmp.fs (dir (remove_name)))
     (allow subj .qcmap_ref.subj (fifo_file (read write ioctl)))
     (allow subj .qcmap_ref.subj (fd (use)))
+    (allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
 
     (allow subj .qcmap_cm.subj (fd (use)))
     (allow subj .qcmap_cm.subj readwriteinherited_fifo_file)
@@ -150,4 +152,17 @@
     (allow subj .wifi.subj readwrite_tcp_socket)
     (allow subj .wifi.tmpfile readwrite_sock_file)
     (allow subj .wifi.subj (unix_dgram_socket (sendto)))
+
+    ;; Unlink PID files
+    (allow subj .wpad.runtimetmpfile (file (unlink)))
+
+    ;; Proxy ARP wifi sys entry
+    (call .devices.write_sysfile_files (subj))
+
+    ;; Socket and port administration
+    (allow subj .unreserved.netport (tcp_socket (name_connect name_bind)))
+    (allow subj .net.netnode (tcp_socket (node_bind)))
+    (allow subj self create_tcp_stream_socket)
+    ;; Need permission for hostapd-cli command
+    (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )

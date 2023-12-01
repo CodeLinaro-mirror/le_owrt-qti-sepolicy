@@ -200,7 +200,7 @@
     (allow ipacli.subj qcmap_cli.subj (fd (use)))
     (allow ipacli.subj file.conffile (dir (search)))
     ;; Need read open on /etc/misc/wifi/5g_wireless
-    (allow subj .wpad.miscfile (dir (search)))
+    (allow subj .wpad.miscfile (dir (search getattr read)))
     (allow subj .wpad.miscfile (file (getattr read open)))
     ;; To execute /usr/sbin/hostapd_cli
     (call .wpad.subj_type_transition (subj))
@@ -304,6 +304,7 @@
     (allow iw.subj qcmap_cli.subj (fd (use)))
     (allow iw.subj qcmap_cli.subj (unix_stream_socket (read write)))
     (allow iw.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow iw.subj qcmap_cli.subj (netlink_route_socket( read write )))
     (allow subj .locale.miscfile (file (map)))
 
     ;; Need rules for xtables
@@ -385,6 +386,7 @@
     (allow ifstatus.subj qcmap_cli.subj (fd (use)))
     (call .tmpfile.search_hoststmpfile_dirs (subj))
     (call .tmpfile.search_conftmpfile_dirs (subj))
+    (allow subj .tmpfile.conftmpfile (file (read open)))
 
     ;; Need read write for wifilock
     (call .tmpfile.readwrite_runtimetmpfile_files (subj))
@@ -477,6 +479,9 @@
     ;;Need transition for ipsec
     (call .file.execute_libfile_files (subj))
 
+    ;;Need for execute QCMAP_Sta_Interface
+    (call .qcmap_cli.execute_execfile_files (subj))
+
     ;; Need to open read file for ubusd
     (allow subj ubusd.subj (dir (search)))
     (allow subj ubusd.subj (file (open read)))
@@ -527,6 +532,9 @@
     (allow subj .netifd.runtimetmpfile (sock_file (create setattr unlink write)))
     (allow subj .qcmap_cli.tmpfile (dir (search write add_name getattr)))
     (allow subj .tmpfile.locktmpfile (file (create)))
+    ;; Need permission for wifitool command
+    (allow subj wifi.datafile (file (map execute)))
+    (call .devices.read_sysfile_lnk_files (subj))
 
     (allow subj .urngd.subj (file (read open)))
     (allow subj .urngd.subj (lnk_file (read)))
@@ -581,4 +589,10 @@
     (allow subj ipacmdiag.subj (file (read)))
     (allow subj netmgrd.subj (file (read)))
     (allow subj dnsmasq.subj (file (read)))
+
+    ;;Need for send out ipsec traffic
+    (allow subj .qcmap_cli.subj (capability (net_bind_service)))
+    (allow subj .unreserved.netport (udp_socket (name_bind)))
+    (allow subj .qcmap_cli.subj (packet_socket (read)))
+    (allow subj .qcmap_cli.subj (lockdown (confidentiality)))
 )

@@ -18,6 +18,7 @@
  (allow subj .wifi.logtmpfile readwrite_file)
  (allow subj .wifi.subj readwrite_tcp_socket)
  (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+ (allow subj odhcpd.subj (rawip_socket(read write)))
 )
 
 

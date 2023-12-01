@@ -112,6 +112,13 @@
       (allow subj .qcmap_cm.conffile (dir (search read getattr)))
       (allow subj .qcmap_cm.conffile (file (read open write)))
 
+;; Need search read and execute permissions for miniupnpd files
+      (call .miniupnpd.obj_type_transition_conftmpfile(subj))
+      (call .miniupnpd.obj_type_transition_runtimetmpfile (subj))
+      (allow subj .miniupnpd.conftmpfile (dir (write add_name)))
+      (call .miniupnpd.manage_conftmpfile_files (subj))
+      (call .miniupnpd.manage_runtimetmpfile_files  (subj))
+
 ;; Need search read and execute permissions for /etc/data/mbbUtils.sh
       (call .qcmap_cm.search_conffile_dirs (subj))
       (call .qcmap_cm.manage_conffile_files (subj))

@@ -1,0 +1,46 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .data_path_opt.subj_type_transition (subj)))
+
+(in .file
+    (call .data_path_opt.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block data_path_opt
+        ;;
+        ;;
+
+        (filecon
+        "/usr/bin/data_path_opt"
+        file
+        execfile_file_context)
+
+        ;;
+        ;; Macros
+        ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "data_path_opt")))
+
+        ;;
+        ;; Policy
+        ;;
+
+          (blockinherit .agent.base_template)
+          (allow subj file.conffile (dir(search)))
+          (allow subj shell.execfile (file(read open execute map getattr)))
+          (allow subj sys.fs (dir (search)))
+          (allow subj fs.sysfile (dir(search)))
+          (allow subj selinux.fs (filesystem(getattr)))
+          (allow subj selinux.conffile (dir(search)))
+          (allow subj kmodloader.execfile (file(getattr execute read open map)))
+          (allow subj sys.rootfile (dir(read open)))
+          (allow subj kmsg.nodedev (chr_file(write open)))
+          (call .kmodloader.subj_type_transition (subj))
+          (allow kmodloader.subj data_path_opt.subj (fd(use)))
+          (allow kmodloader.subj data_path_opt.subj (fifo_file (read)))
+          (allow kmodloader.subj data_path_opt.subj (fifo_file(write ioctl)))
+          (dontaudit subj shell.execfile (file(execute_no_trans)))
+
+)

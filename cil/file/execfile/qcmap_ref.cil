@@ -59,6 +59,9 @@
     (call .shell.manage_execfile_files (subj))
     (allow subj .shell.execfile (file (execute_no_trans)))
 
+    ;;Need for execute QCMAP_Sta_Interface
+    (call .qcmap_cli.execute_execfile_files (subj))
+
     ;; Need gettarr on selinux filesystem
     (call .selinux.getattr_filesystems (subj))
 
@@ -185,6 +188,7 @@
     (allow jsonfilter.subj qcmap_ref.subj (fd (use)))
     (allow jsonfilter.subj qcmap_ref.subj readwriteinherited_fifo_file)
     (allow jsonfilter.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow jsonfilter.subj qcmap_ref.subj (netlink_route_socket (read write)))
     ;; Need permissions on mwan3
     (call .mwan3.search_runtimetmpfile_dirs (subj))
     (call .mwan3.create_runtimetmpfile_dirs (subj))
@@ -198,6 +202,7 @@
     (allow ipcalc.subj qcmap_ref.subj (unix_stream_socket (read write)))
     (allow ipcalc.subj qcmap_ref.subj readwriteinherited_fifo_file)
     (allow ipcalc.subj qcmap_ref.subj (fd (use)))
+    (allow ipcalc.subj qcmap_ref.subj (netlink_route_socket (read write)))
     ;; Need permission for jshn
     (allow jshn.subj qcmap_ref.subj (unix_stream_socket (read write)))
     (allow jshn.subj qcmap_ref.subj readwriteinherited_fifo_file)
@@ -214,6 +219,10 @@
     ;; Need subj_type_transition for ethtool utility
     (call .file.execute_execfile_files (subj))
     (call .file.read_execfile_files (subj))
+
+    ;; Need read open permission on /etc/ethertypes for ebtables
+    (call .file.read_conffile_files (subj))
+
     (allow subj self create_udp_socket)
     (call .config.create_fs_files (subj))
     (call .config.readwrite_fs_files (subj))
@@ -261,6 +270,7 @@
     (allow iw.subj qcmap_ref.subj (fd (use)))
     (allow iw.subj qcmap_ref.subj (fifo_file (read write)))
     (allow iw.subj qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow iw.subj qcmap_ref.subj (netlink_route_socket( read write )))
     (allow subj self create_netlink_generic_socket)
     (allow subj .wifi.datafile (file (read write append open create getattr lock unlink)))
     (allow subj .wifi.datafile (dir (search remove_name write add_name)))
@@ -420,4 +430,11 @@
     (allow subj .diagrebootapp.subj (dir (search)))
     (allow subj .netifd.subj (dir (search)))
     (allow subj .hotplugcall.subj (dir (search)))
+
+    ;; Need permission for wifitool command
+    (allow subj wifi.datafile (file (map)))
+    (allow subj wifi.datafile (file (execute)))
+    (call .devices.read_sysfile_lnk_files (subj))
+
+    (dontaudit subj self (capability (dac_override)))
 )

@@ -149,10 +149,12 @@
     (allow subj .qcmap_cli.subj (fifo_file (read write)))
     (allow subj .qcmap_cli.subj (fifo_file (ioctl)))
     (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+    (allow subj .qcmap_cli.subj (netlink_route_socket( read write )))
     (allow subj .qcmap_ref.subj (fd (use)))
     (allow subj .qcmap_ref.subj (fifo_file (read write)))
     (allow subj .qcmap_ref.subj (fifo_file (ioctl)))
     (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
 
     ;; For ifconfig
     (allow subj self (capability (net_admin)))
@@ -162,6 +164,7 @@
 
     ;; To add MLD with bridge
     (allow subj self create_tcp_socket)
+    (allow subj self (unix_stream_socket (create read write ioctl)))
 
     ;; Need read on /lib/network/config.sh
     (allow subj .network.miscfile (dir (read search open)))
@@ -322,6 +325,9 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcril.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .msdc.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .perf-hal-service.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .dlsc.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .tlpd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .mlid.subj))
 
     ;; Look for files in /tmp
     (allow subj .tmp.fs (file (read getattr open)))
@@ -429,9 +435,9 @@
     (allow subj .afc.subj (file (read open)))
     (allow subj .afc.subj (lnk_file (read)))
 
-    ;; Read /lib/wifi/qcacld32-modules
+    ;; Read /lib/wifi/qcacld32-modules and mv WCNSS_qcom_cfg.ini
     (allow subj .wifi.miscfile (lnk_file (read)))
-    (allow subj .wpad.miscfile (lnk_file (read)))
+    (allow subj .wpad.miscfile (lnk_file (read unlink)))
 
     ;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
     ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
@@ -464,4 +470,7 @@
 
     ;; Read mmc blocks
     (call .dev.stor.read.subj_type (subj))
+
+    ;; Need permission for cfg80211tool command
+    (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 )

@@ -1,0 +1,44 @@
+;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .ethagent.subj_type_transition (subj)))
+
+(in .file
+    (call .ethagent.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block ethagent
+	;;
+	;;
+
+        (filecon
+        "/usr/bin/ethagent"
+        file
+        execfile_file_context)
+
+        ;;
+        ;; Macros
+        ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "ethagent")))
+
+        ;;
+        ;; Policy
+        ;;
+
+        (blockinherit .agent.base_template)
+        (allow subj file.conffile (dir(search)))
+        (allow subj self (qipcrtr_socket(create)))
+        (allow subj self (unix_dgram_socket(create connect write ioctl)))
+        (allow subj self (netlink_route_socket(create bind read)))
+        (allow subj self (capability(net_admin)))
+        (allow subj sys.subj (system(module_request)))
+        (allow subj logd.miscfile (sock_file(write)))
+        (allow subj logd.subj (unix_dgram_socket(sendto)))
+        (allow subj sys.fs (dir(search)))
+        (allow subj class.sysfile (dir(search)))
+        (allow subj class.sysfile (lnk_file(read)))
+        (allow subj devices.sysfile (dir(search)))
+        (allow subj devices.sysfile (file(read open)))
+)

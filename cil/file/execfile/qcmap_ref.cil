@@ -430,6 +430,7 @@
     (allow subj .diagrebootapp.subj (dir (search)))
     (allow subj .netifd.subj (dir (search)))
     (allow subj .hotplugcall.subj (dir (search)))
+    (allow subj .logd.subj (file (read)))
 
     ;; Need permission for wifitool command
     (allow subj wifi.datafile (file (map)))

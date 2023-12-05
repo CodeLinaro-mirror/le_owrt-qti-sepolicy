@@ -716,4 +716,17 @@
 
     ;;open/write pmsg_dev.nodedev
     (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+
+    ;;Need for PBR
+    (call .validatedata.subj_type_transition (subj))
+    (allow subj validatedata.execfile (file (execute read open map)))
+    (allow subj dnsmasq.tmpfile (dir (getattr)))
+    (call .dnsmasq.subj_type_transition (subj))
+    (allow subj dnsmasq.execfile (file (getattr execute read open map)))
+    (allow subj ipv4.sysctlfile (dir (search)))
+    (allow subj ipv4.sysctlfile (file (write open )))
+    (allow subj uci.conffile (file (lock)))
+    (allow subj uci.tmpfile (dir (search)))
+    (allow subj uci.tmpfile (file (getattr read open lock)))
+    (call .dnsmasq.search_tmpfile_dirs (subj))
 )

@@ -437,6 +437,8 @@
     ;; Need permission for backhaul status indicate feature
     (allow subj .qcmap_cli.subj (capability (kill)))
     (allow subj .qcmap_cm.subj (process (signal)))
+    (allow subj .qcmap_cm.runtimetmpfile (dir (search)))
+    (allow subj .qcmap_cm.runtimetmpfile (file (getattr read open)))
 
     ;; Need permission for proc/pidof QCMAP_ConnectionManager from backhaulCommonConfig.sh
     (allow subj .qcmap_cm.subj (dir (search)))

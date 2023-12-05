@@ -68,6 +68,8 @@
     (allow subj .qcmap_cm.subj (dir (search open read)))
     (allow subj .qcmap_cm.subj (file (open read)))
     (allow subj .qcmap_cm.subj (lnk_file (read)))
+    (call .qcmap_cm.search_runtimetmpfile_dirs (subj))
+    (call .qcmap_cm.read_runtimetmpfile_files (subj))
     (allow subj .netifd.tmpfile (file (write)))
     (allow subj .sys.subj (dir (search)))
     (allow subj .sys.subj (file (read open)))

@@ -391,7 +391,7 @@
     (call .uci.create_conffile_files (subj))
     (allow subj uci.conffile (file (setattr unlink)))
     (call .uci.rename_conffile_files (subj))
-    (allow subj .ipacli.execfile (file (getattr)))
+    (allow subj .ipacli.execfile (file (getattr execute)))
 
     (allow subj sys.subj (file (open)))
     (allow subj ubusd.subj (dir (search)))

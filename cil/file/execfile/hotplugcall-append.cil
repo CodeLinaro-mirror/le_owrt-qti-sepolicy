@@ -139,4 +139,5 @@
 ;; Need permission for miniupnpd
       (allow subj debug.fs (dir (search)))
       (allow subj kernel.sysfile (dir (search)))
+      (allow subj file.execfile (file (open read execute)))
 )

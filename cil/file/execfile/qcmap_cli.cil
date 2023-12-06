@@ -597,4 +597,7 @@
     (allow subj .qcmap_cli.subj (lockdown (confidentiality)))
     ;; Need permission for lan_config
     (call .uci.readwrite_conffile_dirs (subj))
+
+    ;; Need permission for awk and backhaulCommonC"
+    (allow subj resolv.tmpfile (dir (search)))
 )

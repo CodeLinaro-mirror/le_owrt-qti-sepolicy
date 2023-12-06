@@ -94,4 +94,8 @@
     (allow subj logd.subj (dir (search)))
     (allow subj rpcd.subj (dir (search)))
 
+    ;; Need permission for awk and backhaulCommonC
+    (allow subj resolv.tmpfile (dir (search)))
+
+
 )

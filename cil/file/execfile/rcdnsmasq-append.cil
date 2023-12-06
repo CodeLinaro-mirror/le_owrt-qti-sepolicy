@@ -40,4 +40,7 @@
          (allow .rcdnsmasq.subj .sys.fs (filesystem (getattr)))
          (call .filesystems.read_procfile_files (subj))
          (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+
+         ;; Need permission for dnsmasq
+         (call .uci.readwrite_conffile_dirs (subj))
 )

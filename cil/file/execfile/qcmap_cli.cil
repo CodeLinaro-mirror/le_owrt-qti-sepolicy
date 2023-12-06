@@ -595,4 +595,6 @@
     (allow subj .unreserved.netport (udp_socket (name_bind)))
     (allow subj .qcmap_cli.subj (packet_socket (read)))
     (allow subj .qcmap_cli.subj (lockdown (confidentiality)))
+    ;; Need permission for lan_config
+    (call .uci.readwrite_conffile_dirs (subj))
 )

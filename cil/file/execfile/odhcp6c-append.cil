@@ -98,4 +98,6 @@
     (allow subj resolv.tmpfile (dir (search)))
 
 
+    ;; Need permission for pidof
+    (allow subj csd_server.subj (dir (search)))
 )

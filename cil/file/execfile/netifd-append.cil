@@ -212,7 +212,7 @@
 	  (allow subj .xtables.execfile (file (getattr execute)))
 
 	  ;; Need for /tmp/ipsec/strongswan.conf
-	  (allow subj .tmp.fs (file (create read open getattr)))
+	  (allow subj .tmp.fs (file (create read open getattr write)))
 	  (allow subj .netifd.tmpfile (file (write unlink)))
 	  (allow subj .tmpfile.conftmpfile (dir (search)))
 	  (allow subj .netifd.subj (alg_socket (create)))

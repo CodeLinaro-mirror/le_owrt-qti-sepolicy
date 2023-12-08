@@ -157,7 +157,7 @@
     (call .netifd.search_miscfile_dirs (subj))
     (call .netifd.execute_miscfile_files (subj))
     (call .netifd.manage_miscfile_files (subj))
-    (allow subj netifd.tmpfile (file (getattr read open append create)))
+    (allow subj netifd.tmpfile (file (getattr read open append create write)))
     (call .uci.subj_type_transition (subj))
     (call .ifup.subj_type_transition (subj))
     (call .ubus.subj_type_transition (subj))
@@ -586,7 +586,7 @@
     (allow subj ipacm.subj (file (read open)))
     (allow subj ipacm.subj (lnk_file (read)))
     (allow subj csd_server.subj (dir (search)))
-    (allow subj ipacmdiag.subj (file (read)))
+    (allow subj ipacmdiag.subj (file (read open)))
     (allow subj netmgrd.subj (file (read)))
     (allow subj dnsmasq.subj (file (read)))
 
@@ -600,4 +600,11 @@
 
     ;; Need permission for awk and backhaulCommonC"
     (allow subj resolv.tmpfile (dir (search)))
+
+    ;; Need permission for pidof
+    (allow subj atfwd.subj (dir (search)))
+    (allow subj port-bridge.subj (dir (search)))
+    (allow subj ip.subj (file (read)))
+    (allow subj powerstate.subj (dir (search)))
+    (allow subj hotplugcall.subj (dir (search)))
 )

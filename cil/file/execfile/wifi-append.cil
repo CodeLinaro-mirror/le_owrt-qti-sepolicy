@@ -7,6 +7,9 @@
     (call .wifi.obj_type_transition_nodedev (unconfined.subj_typeattr))
     (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "wireless.tmp"))
     (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file ".wifi-config-done"))
+    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-sta.conf"))
+    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-ap.conf"))
+    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-ap_0.conf"))
     (call .wifi.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr dir "cnss"))
 )
 
@@ -18,6 +21,9 @@
     (filecon "/data/vendor/wifi" dir datafile_file_context)
     (filecon "/data/vendor/wifi/.*" any datafile_file_context)
     (filecon "/dev/wlan" char nodedev_file_context)
+    (filecon "/tmp/sigma_dut-sta\.conf" file tmpfile_file_context)
+    (filecon "/tmp/sigma_dut-ap\.conf" file tmpfile_file_context)
+    (filecon "/tmp/sigma_dut-ap_0\.conf" file tmpfile_file_context)
 
 
     (filecon "/usr/bin/cfg80211tool" file execfile_file_context)
@@ -142,6 +148,9 @@
     ;; Transitions for /tmp/wpa_ctrl_$pid-$cnt client sockets (IPQ sigma-dut)
     (call obj_type_transition_tmpfile (subj sock_file "*"))
     (call obj_type_transition_tmpfile(subj file "macaddr"))
+    (call obj_type_transition_tmpfile (subj file "sigma_dut-sta.conf"))
+    (call obj_type_transition_tmpfile (subj file "sigma_dut-ap.conf"))
+    (call obj_type_transition_tmpfile (subj file "sigma_dut-ap_0.conf"))
 
     (allow subj .sys.subj (fifo_file (read write ioctl)))
     (allow subj .sys.subj (unix_stream_socket (read write)))
@@ -394,6 +403,9 @@
     (allow subj self create_tcp_stream_socket)
     (allow subj .unreserved.netport (tcp_socket (name_bind name_connect)))
     (allow subj .net.netnode (tcp_socket (node_bind)))
+
+    ;; mcl sigma_dut
+    (call .sys.loadkernelmodule.subj_type (subj))
 
     ;; sysctl command on dev.nss nodes
     (allow subj .sys.sysctlfile (dir (search)))

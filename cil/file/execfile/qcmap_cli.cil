@@ -613,4 +613,9 @@
     (call .ipv6.search_sysctlfile_dirs (subj))
     (call .ipv6.readwrite_sysctlfile_files (subj))
 
+    ;; For QCMAP 'Activate supplicant'
+    (allow subj .netifd.subj (netlink_route_socket (read write)))
+    (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+    (allow subj .uci.subj (process (rlimitinh siginh)))
+    (allow subj .wifi.subj (process (rlimitinh siginh)))
 )

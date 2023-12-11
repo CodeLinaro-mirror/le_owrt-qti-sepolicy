@@ -618,4 +618,24 @@
     (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
     (allow subj .uci.subj (process (rlimitinh siginh)))
     (allow subj .wifi.subj (process (rlimitinh siginh)))
+    ;; Need for handling easymesh
+
+    ;; Need permission to create netlink_socket
+    (allow subj self create_netlink_socket)
+
+    ;; Need read,write,search on /etc/crontabs dirs
+    (call .cron.readwrite_miscfile_dirs (subj))
+    (call .cron.search_miscfile_dirs (subj))
+    (call .cron.manage_miscfile_files (subj))
+
+    ;; Need on /tmp/run/wsplcd.lock
+    (call .wifi.manage_runtimetmpfile_dirs (subj))
+    (call .wifi.manage_runtimetmpfile_files (subj))
+    (call .wpad.manage_runtimetmpfile_dirs (subj))
+    (call .wpad.manage_runtimetmpfile_files (subj))
+    ;; Need map, execute on /usr/local/lib/libqca_nl80211_wrapper.so
+    (call .wifi.mapexecute_datafile_files (subj))
+    ;; Need read permission on /tmp/sysinfo/board_name
+    (call .preinit.read_tmpfile_files (subj))
+    (allow subj qcmap_ref.subj (fd (use)))
 )

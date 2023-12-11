@@ -337,6 +337,8 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .dlsc.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .tlpd.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .mlid.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .uci.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ethagent.subj))
 
     ;; Look for files in /tmp
     (allow subj .tmp.fs (file (read getattr open)))
@@ -485,4 +487,13 @@
 
     ;; Need permission for cfg80211tool command
     (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+
+    ;; Search data files in /tmp/data
+    (call .qcmap_cm.search_tmpfile_dirs (subj))
+
+    ;; For iwconfig
+    (allow subj .file.execfile (file (read open execute)))
+
+    ;; For ifstatus
+    (call .ifstatus.execute_execfile_files (subj))
 )

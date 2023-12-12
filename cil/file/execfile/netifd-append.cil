@@ -268,4 +268,8 @@
           ;;Need for send out ipsec traffic
           (allow subj .unreserved.netport (udp_socket (name_bind)))
 	  (allow subj .netifd.subj (lockdown (confidentiality)))
+	  (allow subj .uci.subj (process (rlimitinh siginh)))
+	  (allow subj .hotplugcall.subj (process (rlimitinh siginh)))
+	  (allow subj .wpad.subj (process (rlimitinh siginh)))
+	  (allow subj .wifi.subj (process (rlimitinh siginh)))
 )

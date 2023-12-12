@@ -595,9 +595,8 @@
     (allow subj .unreserved.netport (udp_socket (name_bind)))
     (allow subj .qcmap_cli.subj (packet_socket (read)))
     (allow subj .qcmap_cli.subj (lockdown (confidentiality)))
-    ;; Need permission for lan_config
+    ;; Need permission for lan_confiG
     (call .uci.readwrite_conffile_dirs (subj))
-
     ;; Need permission for awk and backhaulCommonC"
     (allow subj resolv.tmpfile (dir (search)))
 
@@ -607,4 +606,11 @@
     (allow subj ip.subj (file (read)))
     (allow subj powerstate.subj (dir (search)))
     (allow subj hotplugcall.subj (dir (search)))
+    ;; Need permission for wpad runtime file
+    (allow subj .wpad.runtimetmpfile (dir (search)))
+    (allow subj .wpad.runtimetmpfile (file (getattr read open)))
+    ;;Need read write on permission on proc entry.
+    (call .ipv6.search_sysctlfile_dirs (subj))
+    (call .ipv6.readwrite_sysctlfile_files (subj))
+
 )

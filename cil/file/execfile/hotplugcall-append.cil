@@ -140,4 +140,8 @@
       (allow subj debug.fs (dir (search)))
       (allow subj kernel.sysfile (dir (search)))
       (allow subj file.execfile (file (open read execute)))
+
+;; For QCMAP 'Activate supplicant'
+      (allow subj .netifd.subj (netlink_route_socket (read write)))
+      (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
 )

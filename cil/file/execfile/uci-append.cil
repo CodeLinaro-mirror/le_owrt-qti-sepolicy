@@ -43,6 +43,10 @@
 ;; Ref daemon netlink thread
 (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 (allow subj qcmap_ref.subj (udp_socket (read write)))
+
+;; For QCMAP 'Activate supplicant'
+(allow subj .netifd.subj (netlink_route_socket (read write)))
+(allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
 )
 
 

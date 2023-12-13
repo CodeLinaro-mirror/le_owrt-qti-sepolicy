@@ -19,6 +19,10 @@
  (allow subj .wifi.subj readwrite_tcp_socket)
  (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
  (allow subj odhcpd.subj (rawip_socket(read write)))
+
+ ;; For QCMAP 'Activate supplicant'
+ (allow subj .dev.ttydev (chr_file (read write)))
+ (allow subj .netifd.subj (netlink_route_socket (read write)))
 )
 
 

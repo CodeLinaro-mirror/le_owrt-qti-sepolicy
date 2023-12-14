@@ -9,4 +9,8 @@
 
        (blockinherit .agent.base_template))
          (allow subj self (capability (dac_read_search)))
+       (allow subj .netifd.subj (netlink_route_socket (read write)))
+       (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+       (allow subj .netifd.miscfile (dir (search getattr)))
+       (allow subj .odhcp6c.subj (fd (use)))
 )

@@ -48,6 +48,10 @@
     (call .qcmap_cm.search_datafile_dirs (subj))
     (allow subj .qcmap_cm.datafile (file (append open)))
 
+    ;;Need for single route feature
+    (allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
+    (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
+
     ;; Need permission for backhaul status indicate feature
     (call .file.read_conffile_lnk_files (subj))
     (call .ip.execute_execfile_files (subj))

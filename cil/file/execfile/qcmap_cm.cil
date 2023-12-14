@@ -359,4 +359,8 @@
       (allow subj loc_socket.nodedev (dir (getattr)))
       (call .nameservice.read_miscfile_files (subj))
 
+      ;; Ubus API related permissions
+      (allow subj ubusd.runtimetmpfile (sock_file (write)))
+      (allow subj ubusd.runtimetmpfile (dir (search)))
+      (allow subj tmp.fs (file (read open)))
 )

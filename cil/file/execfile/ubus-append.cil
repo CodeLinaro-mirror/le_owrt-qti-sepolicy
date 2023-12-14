@@ -31,6 +31,7 @@
 
 ;; Ref daemon netlink thread
 (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+(allow subj odhcpd.subj (rawip_socket (read write)))
 )
 
 

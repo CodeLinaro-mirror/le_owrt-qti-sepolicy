@@ -24,6 +24,7 @@
     (filecon "/etc/batching\.conf" file conffile_file_context)
     (filecon "/etc/xtwifi\.conf" file conffile_file_context)
     (filecon "/etc/lowi\.conf" file conffile_file_context)
+    (filecon "/etc/qppe\.conf" file conffile_file_context)
     (filecon "/etc/qapi\.conf" file conffile_file_context)
     (filecon "/etc/cacert_location\.pem" file conffile_file_context)
 

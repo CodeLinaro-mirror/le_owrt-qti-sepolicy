@@ -9,6 +9,9 @@
 
         (allow .rcumount.subj .debug.fs (dir(search)))
         (allow .rcumount.subj .mtd.stordev  (chr_file(read)))
+        (allow rcumount.subj .cache.miscfile ( filesystem (unmount)))
+        (allow rcumount.subj .mtd.stordev ( chr_file(open)))
+	(dontaudit rcumount.subj .qcfirmware.miscfile ( filesystem (unmount)))
 )
 
 

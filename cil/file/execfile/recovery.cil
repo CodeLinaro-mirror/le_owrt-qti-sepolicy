@@ -149,5 +149,5 @@
 	(allow subj devices.sysfile (file ( open read )))
 	(allow subj mnt.miscfile (dir (search )))
 	(allow subj mnt.miscfile (file ( getattr map open read )))
-	(dontaudit subj tmp.fs (dir ( remove_name )))
+	(allow subj tmp.fs (dir ( remove_name )))
 )

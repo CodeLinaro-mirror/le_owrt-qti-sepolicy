@@ -8,8 +8,10 @@
 
 (in .file
     (call .qcmap_cli.obj_type_transition_execfile (unconfined.subj_typeattr))
-    (call .qcmap_cli.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr sock_file charon.vici))
-    (call .qcmap_cli.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr sock_file charon.ctl)))
+    (call .qcmap_cli.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr))
+    (call .qcmap_cli.obj_type_transition_tmpfile (unconfined.subj_typeattr dir ipsec))
+    (call .qcmap_cli.obj_type_transition_tmpfile (unconfined.subj_typeattr dir swanctl))
+)
 
 (block qcmap_cli
     ;;
@@ -27,18 +29,58 @@
     execfile_file_context)
 
     (filecon
-    "/tmp/run/charon.vici"
+    "/tmp/run/charon\.vici"
+    socket
+    runtimetmpfile_file_context)
+
+    (filecon
+    "/tmp/run/charon\.ctl"
+    socket
+    runtimetmpfile_file_context)
+
+    (filecon
+    "/tmp/run/charon\.dck"
+    socket
+    runtimetmpfile_file_context)
+
+    (filecon
+    "/tmp/run/charon\.wlst"
+    socket
+    runtimetmpfile_file_context)
+
+    (filecon
+    "/tmp/run/charon\.xml"
+    socket
+    runtimetmpfile_file_context)
+
+    (filecon
+    "/tmp/run/starter\.charon\.pid"
     file
     runtimetmpfile_file_context)
 
     (filecon
-    "/tmp/run/charon.ctl"
+    "/tmp/run/charon.pid"
     file
     runtimetmpfile_file_context)
 
     (filecon
-    "/tmp/ipsec/strongswan.conf"
-    file
+    "/tmp/ipsec"
+    dir
+    tmpfile_file_context)
+
+    (filecon
+    "/tmp/ipsec/*"
+    any
+    tmpfile_file_context)
+
+    (filecon
+    "/tmp/swanctl"
+    dir
+    tmpfile_file_context)
+
+    (filecon
+    "/tmp/swanctl/*"
+    any
     tmpfile_file_context)
 
     (macro obj_type_transition_execfile ((type ARG1))
@@ -48,9 +90,22 @@
     (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
            (call .tmp.fs_obj_type_transition
                        (ARG1 tmpfile ARG2 ARG3)))
-    (macro obj_type_transition_runtimetmpfile ((type ARG1)(class ARG2)(name ARG3))
-           (call .tmpfile.runtimetmpfile_obj_type_transition
-                     (ARG1 runtimetmpfile ARG2 ARG3)))
+
+    (macro obj_type_transition_runtimetmpfile ((type ARG1))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "charon.vici"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "charon.ctl"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "charon.dck"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "charon.wlst"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile sock_file "charon.xml"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile file "starter.charon.pid"))
+                 (call .tmpfile.runtimetmpfile_obj_type_transition
+                        (ARG1 runtimetmpfile file "charon.pid")))
 
     ;; Policy
     (blockinherit .agent.base_template)
@@ -59,9 +114,7 @@
     (blockinherit .tmpfile.runtime.obj_template)
 
     (call obj_type_transition_tmpfile (subj file "*"))
-    (call qcmap_cli.obj_type_transition_runtimetmpfile (subj sock_file "charon.vici"))
-    (call qcmap_cli.obj_type_transition_runtimetmpfile (subj sock_file "charon.ctl"))
-    (call qcmap_cli.obj_type_transition_tmpfile (subj file "strongswan.conf"))
+    (call obj_type_transition_runtimetmpfile (subj))
 
     ;; Need obj_type_transition for /etc/firewall.user.*
     (call .firewall.obj_type_transition_conffile_ext (subj))
@@ -147,7 +200,7 @@
     (allow ipacli.subj qcmap_cli.subj (fd (use)))
     (allow ipacli.subj file.conffile (dir (search)))
     ;; Need read open on /etc/misc/wifi/5g_wireless
-    (allow subj .wpad.miscfile (dir (search)))
+    (allow subj .wpad.miscfile (dir (search getattr read)))
     (allow subj .wpad.miscfile (file (getattr read open)))
     ;; To execute /usr/sbin/hostapd_cli
     (call .wpad.subj_type_transition (subj))
@@ -251,6 +304,7 @@
     (allow iw.subj qcmap_cli.subj (fd (use)))
     (allow iw.subj qcmap_cli.subj (unix_stream_socket (read write)))
     (allow iw.subj qcmap_cli.subj readwriteinherited_fifo_file)
+    (allow iw.subj qcmap_cli.subj (netlink_route_socket( read write )))
     (allow subj .locale.miscfile (file (map)))
 
     ;; Need rules for xtables
@@ -332,6 +386,7 @@
     (allow ifstatus.subj qcmap_cli.subj (fd (use)))
     (call .tmpfile.search_hoststmpfile_dirs (subj))
     (call .tmpfile.search_conftmpfile_dirs (subj))
+    (allow subj .tmpfile.conftmpfile (file (read open)))
 
     ;; Need read write for wifilock
     (call .tmpfile.readwrite_runtimetmpfile_files (subj))
@@ -424,6 +479,9 @@
     ;;Need transition for ipsec
     (call .file.execute_libfile_files (subj))
 
+    ;;Need for execute QCMAP_Sta_Interface
+    (call .qcmap_cli.execute_execfile_files (subj))
+
     ;; Need to open read file for ubusd
     (allow subj ubusd.subj (dir (search)))
     (allow subj ubusd.subj (file (open read)))
@@ -449,4 +507,97 @@
     (allow subj .qcmap_cli.subj (capability (sys_ptrace)))
     (allow subj .qcmap_ref.subj (dir (search)))
     (allow subj .ip.subj (dir (search)))
+
+    ;;Need for charon socket access
+    (allow subj .qcmap_cli.subj (packet_socket (create setopt)))
+    (allow subj .qcmap_cli.subj (netlink_xfrm_socket (read create bind setopt write nlmsg_read ioctl nlmsg_write)))
+    (allow subj .netifd.subj (packet_socket (create setopt)))
+    (allow subj .netifd.subj (netlink_xfrm_socket (read create bind setopt write nlmsg_read ioctl nlmsg_write)))
+    (allow subj .reserved.netport (udp_socket (name_bind node_bind)))
+    (allow subj .dhcp.netport (udp_socket (name_bind)))
+    (allow subj .net.netnode (udp_socket (node_bind)))
+    (allow subj .core.sysctlfile (dir (search)))
+    (allow subj .core.sysctlfile (file (write open ioctl)))
+    (allow subj .qcmap_cli.subj (unix_stream_socket (connectto)))
+    (allow subj .netifd.subj (unix_stream_socket (connectto)))
+
+    ;;Need for accessing strongswan module
+    (allow subj .sys.subj (process (signull)))
+    (allow subj .netifd.subj (process (signull)))
+
+    ;;Need for /tmp/run/charon files
+    (allow subj .qcmap_cli.runtimetmpfile (file (read open create unlink write getattr ioctl setattr)))
+    (allow subj .qcmap_cli.runtimetmpfile (sock_file (create unlink setattr)))
+    (allow subj .netifd.runtimetmpfile (file (read open create unlink write getattr ioctl setattr)))
+    (allow subj .netifd.runtimetmpfile (sock_file (create setattr unlink write)))
+    (allow subj .qcmap_cli.tmpfile (dir (search write add_name getattr)))
+    (allow subj .tmpfile.locktmpfile (file (create)))
+    ;; Need permission for wifitool command
+    (allow subj wifi.datafile (file (map execute)))
+    (call .devices.read_sysfile_lnk_files (subj))
+
+    (allow subj .urngd.subj (file (read open)))
+    (allow subj .urngd.subj (lnk_file (read)))
+    (allow subj .tftp_server.subj (file (read open)))
+    (allow subj .tftp_server.subj (lnk_file (read open)))
+    (allow subj .diag-router.subj (dir (search)))
+    (allow subj .diag-router.subj (file (read open)))
+    (allow subj .diag-router.subj (lnk_file (read open)))
+    (allow subj .qseecomd.subj (dir (search)))
+    (allow subj .dropbear.subj (dir (search)))
+    (allow subj .qseecomd.subj (file (read open)))
+    (allow subj .leprop.subj (dir (search)))
+    (allow subj .leprop.subj (file (read open)))
+    (allow subj .logd.subj (dir (search)))
+    (allow subj .logd.subj (file (read open)))
+    (allow subj .rpcd.subj (dir (search)))
+    (allow subj .rpcd.subj (file (read open)))
+    (allow subj .rpcd.subj (lnk_file (read open)))
+    (allow subj .fs-scrub-daemon.subj (dir (search)))
+    (allow subj .fs-scrub-daemon.subj (file (read open)))
+    (allow subj .fs-scrub-daemon.subj (lnk_file (read open)))
+    (allow subj .diagrebootapp.subj (dir (search)))
+    (allow subj .diagrebootapp.subj (file (read open)))
+    (allow subj .diagrebootapp.subj (lnk_file (read open)))
+    (allow subj .mbim.subj (dir (search)))
+    (allow subj .mbim.subj (file (read open)))
+    (allow subj .mbim.subj (lnk_file (read open)))
+    (allow subj .filesystems.procfile (file (read)))
+    (allow subj .sys.fs (filesystem(getattr)))
+    (allow subj .qseecomd.subj (lnk_file (read open)))
+    (allow subj .uhttpd.subj (dir (search)))
+    (allow subj .uhttpd.subj (file (read open)))
+    (allow subj .uhttpd.subj (lnk_file (read open)))
+    (allow subj .leprop.subj (lnk_file (read open)))
+    (allow subj .dropbear.subj (dir (search)))
+    (allow subj .dropbear.subj (file (read open)))
+    (allow subj .dropbear.subj (lnk_file (read open)))
+    (allow subj urngd.subj (file (open read)))
+    (allow subj qcril.subj (dir (search)))
+    (allow subj qcril.subj (file (read open)))
+    (allow subj qcril.subj (lnk_file (read)))
+    (allow subj loc_launcher.subj (dir (search)))
+    (allow subj loc_hal_daemon.subj (dir (search)))
+    (allow subj loc_hal_daemon.subj (lnk_file (read)))
+    (allow subj loc_lowi_server.subj (dir (search)))
+    (allow subj loc_lowi_server.subj (lnk_file (read)))
+    (allow subj loc_xtra_daemon.subj (dir (search)))
+    (allow subj ipacm.subj (dir (search)))
+    (allow subj ipacm.subj (file (read open)))
+    (allow subj ipacm.subj (lnk_file (read)))
+    (allow subj csd_server.subj (dir (search)))
+    (allow subj ipacmdiag.subj (file (read)))
+    (allow subj netmgrd.subj (file (read)))
+    (allow subj dnsmasq.subj (file (read)))
+
+    ;;Need for send out ipsec traffic
+    (allow subj .qcmap_cli.subj (capability (net_bind_service)))
+    (allow subj .unreserved.netport (udp_socket (name_bind)))
+    (allow subj .qcmap_cli.subj (packet_socket (read)))
+    (allow subj .qcmap_cli.subj (lockdown (confidentiality)))
+    ;; Need permission for lan_config
+    (call .uci.readwrite_conffile_dirs (subj))
+
+    ;; Need permission for awk and backhaulCommonC"
+    (allow subj resolv.tmpfile (dir (search)))
 )

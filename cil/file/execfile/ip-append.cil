@@ -25,6 +25,7 @@
   (allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
   (allow subj .tlpd.subj (netlink_socket (bind create write read)))
   (call .qcmap_cm.readwrite_unix_stream_sockets (subj))
+  (allow subj .qcmap_cm.subj (unix_dgram_socket (read write)))
   ;; Need ioctl write on /tmp/data/tmpfdbtable.txt
   (call .qcmap_cm.write_tmpfile_files (subj))
   (allow subj .qcmap_cm.tmpfile (file (ioctl)))

@@ -56,6 +56,11 @@
 	runtimetmpfile_file_context)
 
 	(filecon
+	"/tmp/data_ipa/ipa_vap.txt"
+	file
+	runtimetmpfile_file_context)
+
+	(filecon
 	"/usr/lib/libipanat\.so"
 	file
 	libfile_file_context)
@@ -66,7 +71,17 @@
 	conffile_file_context)
 
 	(filecon
+	"/etc/data/ipa/IPACM_cfg_ext.xml"
+	file
+	conffile_file_context)
+
+	(filecon
 	"/etc/data/ipa/factory_IPACM_cfg.xml"
+	file
+	conffile_file_context)
+
+	(filecon
+	"/etc/data/ipa/factory_IPACM_cfg_ext.xml"
 	file
 	conffile_file_context)
 
@@ -106,7 +121,9 @@
 		(call .tmp.fs_obj_type_transition
 			(ARG1 runtimetmpfile dir "data_ipa"))
 		(call .tmp.fs_obj_type_transition
-			(ARG1 runtimetmpfile file "ipa_fdb_table.txt")))
+			(ARG1 runtimetmpfile file "ipa_fdb_table.txt"))
+		(call .tmp.fs_obj_type_transition
+			(ARG1 runtimetmpfile file "ipa_vap.txt")))
 
 	(macro obj_type_transition_tmpfile ((type ARG1))
 		(call .tmp.fs_obj_type_transition
@@ -124,7 +141,11 @@
 		(call .qcmap_cm.conffile_obj_type_transition
 			(ARG1 conffile file "IPACM_cfg.xml"))
 		(call .qcmap_cm.conffile_obj_type_transition
+			(ARG1 conffile file "IPACM_cfg_ext.xml"))
+		(call .qcmap_cm.conffile_obj_type_transition
 			(ARG1 conffile file "factory_IPACM_cfg.xml"))
+		(call .qcmap_cm.conffile_obj_type_transition
+			(ARG1 conffile file "factory_IPACM_cfg_ext.xml"))
 		(call .qcmap_cm.conffile_obj_type_transition
 			(ARG1 conffile file "IPACM_cfg_temporary.xml"))
 		(call .qcmap_cm.conffile_obj_type_transition
@@ -171,7 +192,7 @@
 
 	(call .ipacm.search_conffile_dirs (subj))
 	(allow subj conffile (file (open getattr)))
-	(call .ipacm.read_conffile_files (subj))
+	(call .ipacm.readwrite_conffile_files (subj))
 	(call .file.search_conffile_dirs (subj))
 	(allow subj ipacm.conffile (dir (watch)))
 	(call .ipacm.readwrite_conffile_dirs(subj))
@@ -195,6 +216,10 @@
 	(call .ipacm.create_runtimetmpfile_files (subj))
 	(allow subj ip.execfile (file(read open execute getattr execute_no_trans map)))
 
+	(allow subj self (netlink_generic_socket (create read write setopt bind getattr)))
+	(allow subj .wifi.execfile (file(read open execute getattr)))
+	(allow subj .wifi.miscfile (file (read open getattr map)))
+	(allow subj .wifi.miscfile (dir (search)))
 	(call .sys.search_fs_dirs (subj))
 	(call .sys.search_sysctlfile_dirs (subj))
 	(call .fs.search_sysfile_dirs (subj))
@@ -216,6 +241,7 @@
 	(allow subj devices.sysfile (lnk_file (getattr)))
 	(allow subj tmp.fs (file (create write ioctl unlink read open)))
 
+	(call .kmsg.readwrite_nodedev_chr_files (subj))
 
 	;;
 )

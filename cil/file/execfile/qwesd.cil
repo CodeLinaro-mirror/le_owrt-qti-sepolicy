@@ -211,7 +211,7 @@
            (call .sys.sendto_unix_dgram_sockets (subj))
            (allow subj .power.sysfile (dir(search append open)))
            (allow subj .power.sysfile (file(append open)))
-           (allow subj self (capability2(block_suspend)))
+           (allow subj self (capability2(block_suspend wake_alarm)))
 
         ;; Need to read /dev/socket/powerstate/output_ds_notify
 	   (call .powerstate_socket.manage_powerstate_socket_files (subj))

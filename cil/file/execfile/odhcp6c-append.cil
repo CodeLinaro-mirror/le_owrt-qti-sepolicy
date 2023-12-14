@@ -64,4 +64,38 @@
     (allow subj .qcmap_cm.subj (dir (search open read)))
     (allow subj .qcmap_cm.subj (file (open read)))
     (allow subj .qcmap_cm.subj (lnk_file (read)))
+    (allow subj .netifd.tmpfile (file (write)))
+    (allow subj .sys.subj (dir (search)))
+    (allow subj .sys.subj (file (read open)))
+    (allow subj .sys.subj (lnk_file (read open))) 
+    (allow subj .ubusd.subj (dir (search)))
+    (allow subj .ubusd.subj (file (read open)))
+    (allow subj .ubusd.subj (lnk_file (read open)))
+    (allow subj .urngd.subj (dir (search)))
+    (allow subj .urngd.subj (file (read open)))
+    (allow subj .urngd.subj (lnk_file (read open)))
+
+    ;; Need permissions for sed and pidof
+    (allow subj tftp_server.subj (dir (search)))
+    (allow subj qwesd.subj (dir (search)))
+    (allow subj diag-router.subj (dir (search)))
+    (allow subj qseecomd.subj (dir (search)))
+    (allow subj leprop.subj (dir (search)))
+    (dontaudit subj self (capability (sys_ptrace)))
+    (call .tmp.manage_fs_files (subj))
+    ;; Need permission for /tmp/default.route.v6.listHPjeNc
+    (allow subj tftp_server.subj (file (read)))
+    (allow subj qwesd.subj (file (read)))
+    (allow subj diag-router.subj (file (read)))
+    (allow subj qseecomd.subj (file (read)))
+    (allow subj uhttpd.subj (dir (search)))
+    (allow subj leprop.subj (file (read)))
+    (allow subj netifd.subj (dir (search)))
+    (allow subj logd.subj (dir (search)))
+    (allow subj rpcd.subj (dir (search)))
+
+    ;; Need permission for awk and backhaulCommonC
+    (allow subj resolv.tmpfile (dir (search)))
+
+
 )

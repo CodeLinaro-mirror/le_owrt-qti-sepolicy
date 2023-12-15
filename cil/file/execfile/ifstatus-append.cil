@@ -12,4 +12,7 @@
   (allow subj .netifd.miscfile (dir (search getattr)))
   (allow subj .netifd.subj readwriteinherited_fifo_file)
 
+  ;; Need permission for ifstatus
+  (allow subj kernel.sysfile (dir (search)))
+
 )

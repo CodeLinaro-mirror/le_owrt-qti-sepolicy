@@ -135,4 +135,8 @@
 ;; Ref daemon netlink thread
       (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
       (allow .hotplugcall.subj .sd.stordev(blk_file(getattr)))
+
+;; Need permission for miniupnpd
+      (allow subj debug.fs (dir (search)))
+      (allow subj kernel.sysfile (dir (search)))
 )

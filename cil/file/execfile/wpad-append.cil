@@ -1,3 +1,4 @@
+;;Changes from Qualcomm Innovation Center are provided under the following license:
 ;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -184,4 +185,8 @@
     (allow subj self create_tcp_stream_socket)
     ;; Need permission for hostapd-cli command
     (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+
+    ;; IPQ ctrl_app_dut
+    (allow subj .wifi.subj readwrite_udp_socket)
+    (allow subj .wifi.tmpfile readwrite_file)
 )

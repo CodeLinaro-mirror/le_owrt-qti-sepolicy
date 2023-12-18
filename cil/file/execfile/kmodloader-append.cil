@@ -1,4 +1,4 @@
-
+;;Changes from Qualcomm Innovation Center are provided under the following license:
 ;;Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
@@ -28,6 +28,10 @@
   (allow subj .wifi.logtmpfile readwrite_file)
 
   (allow subj .sys.subj (system (module_request)))
+
+  ;; IPQ ctrl_app_dut
+  (allow subj .wifi.subj readwrite_udp_socket)
+  (allow subj .wifi.tmpfile readwrite_file)
 )
 
 

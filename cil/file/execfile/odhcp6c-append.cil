@@ -61,6 +61,10 @@
     (allow subj .netifd.tmpfile (file (getattr read open append create)))
     (allow subj .qcmap_cm.subj (process (signal)))
     (allow subj .odhcp6c.subj (capability (kill)))
+    (call .iw.subj_type_transition (subj))
+    (allow subj self (netlink_generic_socket(create)))
+    (allow iw.subj odhcp6c.subj (fd (use)))
+    (allow iw.subj odhcp6c.subj (fifo_file (read write)))
 
     ;; Need permission for proc/pidof QCMAP_ConnectionManager from backhaulCommonConfig.sh
     (allow subj .proc.fs (dir (read open)))

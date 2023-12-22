@@ -203,6 +203,12 @@
           (allow subj .qcmap_cm.subj (process(signal)))
           (allow subj sys.subj (process (signal)))
 
+          ;; Need permission for iw operation from script
+          (call .iw.subj_type_transition (subj))
+          (allow subj self (netlink_generic_socket(create)))
+          (allow iw.subj netifd.subj (fd (use)))
+          (allow iw.subj netifd.subj (fifo_file (read write)))
+
           ;; Need permissions for /etc/data/qcmap_ipsec
 	  (call .qcmap_cm.mapexecute_execfile_files (subj))
 	  (call .qcmap_cm.execute_conffile_files (subj))

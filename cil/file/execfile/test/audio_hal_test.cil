@@ -136,6 +136,10 @@
     ;;read/open/search debug fs dir
     (allow subj debug.fs (dir (read open search)))
 
+    (allow subj .invalid (dir (search)))
+    (allow subj .invalid (chr_file (ioctl read write open map)))
+    (allow subj  .sys.subj (binder (call transfer)))
+
 )
 
 (block hal_play_test

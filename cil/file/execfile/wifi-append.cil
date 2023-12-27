@@ -24,7 +24,8 @@
     (filecon "/tmp/sigma_dut-sta\.conf" file tmpfile_file_context)
     (filecon "/tmp/sigma_dut-ap\.conf" file tmpfile_file_context)
     (filecon "/tmp/sigma_dut-ap_0\.conf" file tmpfile_file_context)
-
+    (filecon "/tmp/sigma_dut-ping\.sh" file tmpfile_file_context)
+    (filecon "/tmp/sigma_dut-ping\.[0-9]+" file tmpfile_file_context)
 
     (filecon "/usr/bin/cfg80211tool" file execfile_file_context)
     (filecon "/usr/bin/cfg80211tool.1" file execfile_file_context)
@@ -151,6 +152,9 @@
     (call obj_type_transition_tmpfile (subj file "sigma_dut-sta.conf"))
     (call obj_type_transition_tmpfile (subj file "sigma_dut-ap.conf"))
     (call obj_type_transition_tmpfile (subj file "sigma_dut-ap_0.conf"))
+    (call obj_type_transition_tmpfile (subj file "sigma_dut-ping.sh"))
+    ;; Transition for /tmp/sigma_dut-ping.$cnt
+    (call obj_type_transition_tmpfile (subj file "*"))
 
     (allow subj .sys.subj (fifo_file (read write ioctl)))
     (allow subj .sys.subj (unix_stream_socket (read write)))
@@ -408,6 +412,18 @@
 
     ;; mcl sigma_dut
     (call .sys.loadkernelmodule.subj_type (subj))
+    ;; mcl sigma_dut ping
+    (allow subj self create_rawip_socket)
+    (allow subj self (capability (net_admin net_raw)))
+    ;; mcl sigma_dut access to /tmp/resolv.conf.d/resolv.conf.auto
+    (allow subj .resolv.tmpfile (dir (search)))
+    (allow subj .resolv.tmpfile (file (read open)))
+    ;; mcl sigma_dut exec /tmp/sigma_dut-ping.sh
+    (allow subj .wifi.tmpfile (file (execute execute_no_trans)))
+    ;; mcl sigma_dut ctrl socket permission
+    (allow subj self create_udp_socket)
+    (allow subj .unreserved.netport (udp_socket (name_bind)))
+    (allow subj .net.netnode (udp_socket (node_bind)))
 
     ;; sysctl command on dev.nss nodes
     (allow subj .sys.sysctlfile (dir (search)))

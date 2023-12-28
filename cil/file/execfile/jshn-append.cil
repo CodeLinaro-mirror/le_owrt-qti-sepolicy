@@ -1,4 +1,4 @@
-
+;;Changes from Qualcomm Innovation Center are provided under the following license:
 ;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
@@ -18,11 +18,16 @@
  (allow subj .wifi.logtmpfile readwrite_file)
  (allow subj .wifi.subj readwrite_tcp_socket)
  (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+
  (allow subj odhcpd.subj (rawip_socket(read write)))
 
  ;; For QCMAP 'Activate supplicant'
  (allow subj .dev.ttydev (chr_file (read write)))
  (allow subj .netifd.subj (netlink_route_socket (read write)))
+
+ ;; IPQ ctrl_app_dut
+ (allow subj .wifi.subj readwrite_udp_socket)
+ (allow subj .wifi.tmpfile readwrite_file)
 )
 
 

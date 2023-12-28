@@ -26,12 +26,15 @@
     (filecon "/tmp/sigma_dut-ap_0\.conf" file tmpfile_file_context)
     (filecon "/tmp/sigma_dut-ping\.sh" file tmpfile_file_context)
     (filecon "/tmp/sigma_dut-ping\.[0-9]+" file tmpfile_file_context)
+    (filecon "/data/wsc_settings_STAUT" file datafile_file_context)
+    (filecon "/data/wsc_settings_APUT" file datafile_file_context)
 
     (filecon "/usr/bin/cfg80211tool" file execfile_file_context)
     (filecon "/usr/bin/cfg80211tool.1" file execfile_file_context)
     (filecon "/usr/bin/wlanconfig" file execfile_file_context)
     (filecon "/usr/bin/acfg_tool" file execfile_file_context)
     (filecon "/usr/bin/sigma_dut" file execfile_file_context)
+    (filecon "/usr/bin/ctrl_app_dut" file execfile_file_context)
     (filecon "/usr/local/lib/libqca_nl80211_wrapper.so" file datafile_file_context)
     (filecon "/tmp/sysinfo/board_name" file tmpfile_file_context)
     (filecon "/tmp/no_qca_da" file tmpfile_file_context)
@@ -105,6 +108,7 @@
         (call .file.execfile_obj_type_transition (ARG1 execfile file "wlanconfig"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "acfg_tool"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "sigma_dut"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "ctrl_app_dut"))
     )
 
     (macro obj_type_transition_datafile ((type ARG1))
@@ -114,6 +118,8 @@
             (ARG1 datafile dir "ipq"))
         (call .file.datafile_obj_type_transition
             (ARG1 datafile file "libqca_nl80211_wrapper.so"))
+        (call .file.datafile_obj_type_transition (ARG1 datafile file "wsc_settings_APUT"))
+        (call .file.datafile_obj_type_transition (ARG1 datafile file "wsc_settings_STAUT"))
     )
 
 
@@ -420,10 +426,13 @@
     (allow subj .resolv.tmpfile (file (read open)))
     ;; mcl sigma_dut exec /tmp/sigma_dut-ping.sh
     (allow subj .wifi.tmpfile (file (execute execute_no_trans)))
-    ;; mcl sigma_dut ctrl socket permission
+    ;; mcl [sigma_dut|quicktrack] ctrl socket permission
     (allow subj self create_udp_socket)
     (allow subj .unreserved.netport (udp_socket (name_bind)))
     (allow subj .net.netnode (udp_socket (node_bind)))
+
+    ;; mcl quicktrack
+    (allow subj .httpproxy.netport (tcp_socket (name_connect)))
 
     ;; sysctl command on dev.nss nodes
     (allow subj .sys.sysctlfile (dir (search)))

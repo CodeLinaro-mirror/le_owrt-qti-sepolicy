@@ -141,6 +141,13 @@
     (call .wifi.read_runtimetmpfile_files (subj))
     (call .wifi.read_tmpfile_files (subj))
 
+    ;; mcl quicktrack: hostapd write to /tmp/wpa_ctrl_x-x
+    (allow subj .wifi.subj readwrite_udp_socket)
+
+    ;; mcl quicktrack: hostapd needs read /etc/misc/wifi/hostapd_*\.conf
+    (call .wpad.search_miscfile_dirs (subj))
+    (call .wpad.read_miscfile_files (subj))
+
     ;; Call wpad binaries from wifi scripts
     (allow subj .wifi.subj (fd (use)))
 

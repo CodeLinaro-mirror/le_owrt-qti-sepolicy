@@ -133,6 +133,10 @@
        (allow subj self create_udp_socket)
        (call connectto_unix_stream_sockets (subj))
 
+       (call .tmp.readwrite_fs_sock_files (subj))
+       (call .sys.connectto_unix_stream_sockets (subj))
+       (call .sys.readwrite_unix_stream_sockets (subj))
+
        ;; Read only /etc/bluetooth(/.*)?
        (call .file.search_conffile_dirs (subj))
        (call .file.read_conffile_lnk_files (subj))

@@ -206,4 +206,6 @@
 
 ;;EasyMesh dependent libqca_nl80211_wrapper.so
       (allow subj wifi.datafile (file (unlink getattr read open map rename)))
+;;open/write pmsg_dev.nodedev
+      (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )

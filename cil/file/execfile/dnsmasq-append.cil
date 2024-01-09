@@ -71,6 +71,8 @@
 (call .kmsg.readwrite_nodedev_chr_files (subj))
 (allow subj dnsmasq.subj (socket (create)))
 (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+;;open/write pmsg_dev.nodedev
+(allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )
 
 

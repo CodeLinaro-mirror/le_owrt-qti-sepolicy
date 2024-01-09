@@ -12,4 +12,6 @@
      (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
      ;; Need permission for ipcalc.sh
      (allow subj uci.conffile (dir (getattr)))
+     ;;open/write pmsg_dev.nodedev
+     (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )

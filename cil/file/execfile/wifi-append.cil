@@ -1,3 +1,4 @@
+;;Changes from Qualcomm Innovation Center are provided under the following license:
 ;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -7,6 +8,9 @@
     (call .wifi.obj_type_transition_nodedev (unconfined.subj_typeattr))
     (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "wireless.tmp"))
     (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file ".wifi-config-done"))
+    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-sta.conf"))
+    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-ap.conf"))
+    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-ap_0.conf"))
     (call .wifi.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr dir "cnss"))
 )
 
@@ -18,13 +22,21 @@
     (filecon "/data/vendor/wifi" dir datafile_file_context)
     (filecon "/data/vendor/wifi/.*" any datafile_file_context)
     (filecon "/dev/wlan" char nodedev_file_context)
-
+    (filecon "/tmp/sigma_dut-sta\.conf" file tmpfile_file_context)
+    (filecon "/tmp/sigma_dut-ap\.conf" file tmpfile_file_context)
+    (filecon "/tmp/sigma_dut-ap_0\.conf" file tmpfile_file_context)
+    (filecon "/tmp/sigma_dut-ping\.sh" file tmpfile_file_context)
+    (filecon "/tmp/sigma_dut-ping\.[0-9]+" file tmpfile_file_context)
+    (filecon "/data/wsc_settings_STAUT" file datafile_file_context)
+    (filecon "/data/wsc_settings_APUT" file datafile_file_context)
 
     (filecon "/usr/bin/cfg80211tool" file execfile_file_context)
     (filecon "/usr/bin/cfg80211tool.1" file execfile_file_context)
     (filecon "/usr/bin/wlanconfig" file execfile_file_context)
     (filecon "/usr/bin/acfg_tool" file execfile_file_context)
     (filecon "/usr/bin/sigma_dut" file execfile_file_context)
+    (filecon "/usr/bin/ctrl_app_dut" file execfile_file_context)
+    (filecon "/usr/bin/app" file execfile_file_context)
     (filecon "/usr/local/lib/libqca_nl80211_wrapper.so" file datafile_file_context)
     (filecon "/tmp/sysinfo/board_name" file tmpfile_file_context)
     (filecon "/tmp/no_qca_da" file tmpfile_file_context)
@@ -54,6 +66,8 @@
     (filecon "/var/run/cnss" dir runtimetmpfile_file_context)
     (filecon "/var/run/cnss/.*" any runtimetmpfile_file_context)
     (filecon "/tmp/macaddr" file tmpfile_file_context)
+    ;; IPQ ctrl_app_dut
+    (filecon "/tmp/applogs" file tmpfile_file_context)
 
     ;;
     ;; Macros
@@ -98,6 +112,8 @@
         (call .file.execfile_obj_type_transition (ARG1 execfile file "wlanconfig"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "acfg_tool"))
         (call .file.execfile_obj_type_transition (ARG1 execfile file "sigma_dut"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "ctrl_app_dut"))
+        (call .file.execfile_obj_type_transition (ARG1 execfile file "app"))
     )
 
     (macro obj_type_transition_datafile ((type ARG1))
@@ -107,6 +123,8 @@
             (ARG1 datafile dir "ipq"))
         (call .file.datafile_obj_type_transition
             (ARG1 datafile file "libqca_nl80211_wrapper.so"))
+        (call .file.datafile_obj_type_transition (ARG1 datafile file "wsc_settings_APUT"))
+        (call .file.datafile_obj_type_transition (ARG1 datafile file "wsc_settings_STAUT"))
     )
 
 
@@ -142,6 +160,14 @@
     ;; Transitions for /tmp/wpa_ctrl_$pid-$cnt client sockets (IPQ sigma-dut)
     (call obj_type_transition_tmpfile (subj sock_file "*"))
     (call obj_type_transition_tmpfile(subj file "macaddr"))
+    (call obj_type_transition_tmpfile (subj file "sigma_dut-sta.conf"))
+    (call obj_type_transition_tmpfile (subj file "sigma_dut-ap.conf"))
+    (call obj_type_transition_tmpfile (subj file "sigma_dut-ap_0.conf"))
+    (call obj_type_transition_tmpfile (subj file "sigma_dut-ping.sh"))
+    ;; Transition for /tmp/sigma_dut-ping.$cnt
+    (call obj_type_transition_tmpfile (subj file "*"))
+    ;; IPQ ctrl_app_dut
+    (call obj_type_transition_tmpfile (subj file "applogs"))
 
     (allow subj .sys.subj (fifo_file (read write ioctl)))
     (allow subj .sys.subj (unix_stream_socket (read write)))
@@ -328,6 +354,8 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .dlsc.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .tlpd.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .mlid.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .uci.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ethagent.subj))
 
     ;; Look for files in /tmp
     (allow subj .tmp.fs (file (read getattr open)))
@@ -394,6 +422,24 @@
     (allow subj self create_tcp_stream_socket)
     (allow subj .unreserved.netport (tcp_socket (name_bind name_connect)))
     (allow subj .net.netnode (tcp_socket (node_bind)))
+
+    ;; mcl sigma_dut
+    (call .sys.loadkernelmodule.subj_type (subj))
+    ;; mcl sigma_dut ping
+    (allow subj self create_rawip_socket)
+    (allow subj self (capability (net_admin net_raw)))
+    ;; mcl sigma_dut access to /tmp/resolv.conf.d/resolv.conf.auto
+    (allow subj .resolv.tmpfile (dir (search)))
+    (allow subj .resolv.tmpfile (file (read open)))
+    ;; mcl sigma_dut exec /tmp/sigma_dut-ping.sh
+    (allow subj .wifi.tmpfile (file (execute execute_no_trans)))
+    ;; mcl [sigma_dut|quicktrack] ctrl socket permission
+    (allow subj self create_udp_socket)
+    (allow subj .unreserved.netport (udp_socket (name_bind)))
+    (allow subj .net.netnode (udp_socket (node_bind)))
+
+    ;; mcl quicktrack
+    (allow subj .httpproxy.netport (tcp_socket (name_connect)))
 
     ;; sysctl command on dev.nss nodes
     (allow subj .sys.sysctlfile (dir (search)))
@@ -473,4 +519,18 @@
 
     ;; Need permission for cfg80211tool command
     (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+
+    ;; Search data files in /tmp/data
+    (call .qcmap_cm.search_tmpfile_dirs (subj))
+
+    ;; For iwconfig
+    (allow subj .file.execfile (file (read open execute)))
+
+    ;; For ifstatus
+    (call .ifstatus.execute_execfile_files (subj))
+
+    ;; IPQ ctrl_app_dut
+    (allow subj self readwrite_udp_socket)
+    ;; Overwrite oom_score_adj
+    (allow subj .wpad.subj (file (write)))
 )

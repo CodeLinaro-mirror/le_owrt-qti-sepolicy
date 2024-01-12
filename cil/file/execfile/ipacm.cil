@@ -241,6 +241,7 @@
 	(allow subj devices.sysfile (lnk_file (getattr)))
 	(allow subj tmp.fs (file (create write ioctl unlink read open)))
 
+	(call .kmsg.readwrite_nodedev_chr_files (subj))
 
 	;;
 )

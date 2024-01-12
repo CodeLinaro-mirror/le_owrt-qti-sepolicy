@@ -48,6 +48,10 @@
     (call .qcmap_cm.search_datafile_dirs (subj))
     (allow subj .qcmap_cm.datafile (file (append open)))
 
+    ;;Need for single route feature
+    (allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
+    (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
+
     ;; Need permission for backhaul status indicate feature
     (call .file.read_conffile_lnk_files (subj))
     (call .ip.execute_execfile_files (subj))
@@ -57,6 +61,10 @@
     (allow subj .netifd.tmpfile (file (getattr read open append create)))
     (allow subj .qcmap_cm.subj (process (signal)))
     (allow subj .odhcp6c.subj (capability (kill)))
+    (call .iw.subj_type_transition (subj))
+    (allow subj self (netlink_generic_socket(create)))
+    (allow iw.subj odhcp6c.subj (fd (use)))
+    (allow iw.subj odhcp6c.subj (fifo_file (read write)))
 
     ;; Need permission for proc/pidof QCMAP_ConnectionManager from backhaulCommonConfig.sh
     (allow subj .proc.fs (dir (read open)))
@@ -64,6 +72,8 @@
     (allow subj .qcmap_cm.subj (dir (search open read)))
     (allow subj .qcmap_cm.subj (file (open read)))
     (allow subj .qcmap_cm.subj (lnk_file (read)))
+    (call .qcmap_cm.search_runtimetmpfile_dirs (subj))
+    (call .qcmap_cm.read_runtimetmpfile_files (subj))
     (allow subj .netifd.tmpfile (file (write)))
     (allow subj .sys.subj (dir (search)))
     (allow subj .sys.subj (file (read open)))
@@ -74,4 +84,30 @@
     (allow subj .urngd.subj (dir (search)))
     (allow subj .urngd.subj (file (read open)))
     (allow subj .urngd.subj (lnk_file (read open)))
+
+    ;; Need permissions for sed and pidof
+    (allow subj tftp_server.subj (dir (search)))
+    (allow subj qwesd.subj (dir (search)))
+    (allow subj diag-router.subj (dir (search)))
+    (allow subj qseecomd.subj (dir (search)))
+    (allow subj leprop.subj (dir (search)))
+    (dontaudit subj self (capability (sys_ptrace)))
+    (call .tmp.manage_fs_files (subj))
+    ;; Need permission for /tmp/default.route.v6.listHPjeNc
+    (allow subj tftp_server.subj (file (read)))
+    (allow subj qwesd.subj (file (read)))
+    (allow subj diag-router.subj (file (read)))
+    (allow subj qseecomd.subj (file (read)))
+    (allow subj uhttpd.subj (dir (search)))
+    (allow subj leprop.subj (file (read)))
+    (allow subj netifd.subj (dir (search)))
+    (allow subj logd.subj (dir (search)))
+    (allow subj rpcd.subj (dir (search)))
+
+    ;; Need permission for awk and backhaulCommonC
+    (allow subj resolv.tmpfile (dir (search)))
+
+
+    ;; Need permission for pidof
+    (allow subj csd_server.subj (dir (search)))
 )

@@ -287,6 +287,7 @@
       (call .resolv.search_tmpfile_dirs (subj))
       (call .resolv.readwrite_tmpfile_files (subj))
       (allow subj .net.netnode (udp_socket (node_bind)))
+      (allow ip.subj qcmap_cm.subj (unix_dgram_socket (read write)))
 
       ;; Need open read on /
       (allow subj .sys.rootfile (dir(open read)))
@@ -355,6 +356,21 @@
       (allow subj netifd.miscfile (file (read open)))
       (allow subj libubox.datafile (dir (search)))
       (allow subj libubox.datafile (file (read open)))
+      (allow subj loc_socket.nodedev (dir (getattr)))
       (call .nameservice.read_miscfile_files (subj))
 
+      ;; Ubus API related permissions
+      (allow subj ubusd.runtimetmpfile (sock_file (write)))
+      (allow subj ubusd.runtimetmpfile (dir (search)))
+      (allow subj tmp.fs (file (read open)))
+      ;; Need transition to kmodloader need this for lsmod(datapath optimization)
+      (call .kmodloader.subj_type_transition (subj))
+      (call .kmodloader.read_execfile_files (subj))
+      (call .kmodloader.mapexecute_execfile_files(subj))
+      (allow kmodloader.subj qcmap_cm.subj (fd (use)))
+      (allow kmodloader.subj qcmap_cm.subj (unix_stream_socket (read write)))
+      (allow kmodloader.subj qcmap_cm.subj (fifo_file (read write ioctl)))
+      (allow kmodloader.subj qcmap_cm.subj (netlink_route_socket (read write ioctl)))
+      (allow kmodloader.subj qcmap_cm.subj (packet_socket (read write ioctl)))
+      (allow kmodloader.subj qcmap_cm.subj (netlink_socket (read write ioctl)))
 )

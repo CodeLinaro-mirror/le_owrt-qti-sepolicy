@@ -18,4 +18,6 @@
   (allow .ifup.subj .qcmap_cli.subj (netlink_route_socket (read write)))
   (allow .ifup.subj .qcmap_cli.subj (netlink_kobject_uevent_socket (read write)))
   (allow .ifup.subj .qcmap_ref.subj (netlink_route_socket (read write)))
+  ;;open/write pmsg_dev.nodedev
+  (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )

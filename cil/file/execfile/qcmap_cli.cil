@@ -661,4 +661,6 @@
     (call pidof_denials (subj qtether.subj))
     (call pidof_denials (subj odhcp6c.subj))
     (call pidof_denials (subj uci.subj))
+    ;;open/write pmsg_dev.nodedev
+    (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )

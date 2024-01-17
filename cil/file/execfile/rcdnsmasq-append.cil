@@ -43,4 +43,6 @@
 
          ;; Need permission for dnsmasq
          (call .uci.readwrite_conffile_dirs (subj))
+         ;;open/write pmsg_dev.nodedev
+         (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )

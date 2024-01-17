@@ -397,7 +397,7 @@
     (call .uci.create_conffile_files (subj))
     (allow subj uci.conffile (file (setattr unlink)))
     (call .uci.rename_conffile_files (subj))
-    (allow subj .ipacli.execfile (file (getattr execute)))
+    (allow subj .ipacli.execfile (file (getattr execute read open)))
 
     ;;Need for single route feature
     (call .rcodhcpd.subj_type_transition (subj))
@@ -488,4 +488,7 @@
     (call .devices.read_sysfile_lnk_files (subj))
 
     (dontaudit subj self (capability (dac_override)))
+    ;;open/write pmsg_dev.nodedev
+    (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+    (call .ipacli.subj_type_transition (subj))
 )

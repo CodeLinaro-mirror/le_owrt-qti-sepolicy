@@ -22,4 +22,6 @@
   (allow subj .qcmap_ref.subj (netlink_route_socket (read write)))
   (allow subj .fw3.subj (fifo_file (write)))
   (allow subj .fw3.subj (fifo_file (ioctl)))
+  ;;open/write pmsg_dev.nodedev
+  (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )

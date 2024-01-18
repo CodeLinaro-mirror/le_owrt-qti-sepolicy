@@ -318,7 +318,6 @@
            (allow subj qcmap_cm.conffile (file (unlink)))
 
         ;; Need read, open, execute on /usr/sbin/xtables-legacy-multi tcontext xtables.execfile
-           (call .xtables.execute_execfile_files (subj))
            (call .xtables.read_execfile_files (subj))
            (call .xtables.manage_execfile_files (subj))
            (call .xtables.mapexecute_execfile_files (subj))
@@ -534,9 +533,6 @@
     (call .rcdnsmasq.subj_type_transition (subj))
     ;; Need permission to reboot on first vlan creation
     (allow subj .sys.subj (process(signal)))
-    (allow subj .sys.subj (file (open read write)))
-    (allow subj .sys.subj (dir (search)))
-    (allow subj .sys.subj (lnk_file (read)))
     (call .uci.search_conffile_dirs (subj))
     ;; Need permissions on /tmp/data/
     (call .qcmap_cm.manage_tmpfile_dirs (subj))
@@ -609,7 +605,6 @@
     (call .netfilter.readwrite_sysctlfile_files (subj))
     (allow subj .devices.sysfile (dir (read open)))
     ;; Need subj_type_transition for ethtool utility
-    (call .file.execute_execfile_files (subj))
     (call .file.read_execfile_files (subj))
     (allow subj self create_udp_socket)
     (call .config.create_fs_files (subj))
@@ -664,7 +659,6 @@
     (allow xtables.subj qcmap_cm.subj (fd (use)))
 
     (allow subj .file.execfile (dir (read open getattr)))
-    (call .wifi.execute_execfile_files (subj))
     (allow subj .wifi.execfile (file (read open execute)))
     (allow subj .wifi.miscfile (dir (read open search)))
     (allow subj .wifi.miscfile (file (read open getattr)))
@@ -705,7 +699,6 @@
     (call .file.read_initscriptfile_files (subj))
     (call .locale.manage_miscfile_files (subj))
     ;; Need execute read ip.execfile
-    (call .ip.execute_execfile_files (subj))
     (call .ip.readwrite_execfile_files (subj))
     ;; Need to create netlink_netfilter_socket
     (allow subj self create_netlink_netfilter_socket)
@@ -730,7 +723,6 @@
     (call .tmpfile.deletename_runtimetmpfile_dirs (subj))
     (call .logd.write_miscfile_sock_files (subj))
     (call .logd.sendto_unix_dgram_sockets(subj))
-    (call .jsonfilter.execute_execfile_files (subj))
     (call .random.read_nodedev_chr_files (subj))
     (allow ifstatus.subj qcmap_cm.subj (unix_stream_socket (read write)))
     (allow ifstatus.subj qcmap_cm.subj readwriteinherited_fifo_file)
@@ -761,7 +753,6 @@
 
     (allow subj .wpad.subj (fd (use)))
     (allow subj .wpad.subj (unix_dgram_socket (read write)))
-    (allow subj .file.conffile (file (create write setattr rename unlink append)))
 
     ;;Need rules for /sys/kernel/boot_kpi/kpi_values
     (call .kpi_values.append_sysfile_files (subj))
@@ -832,9 +823,6 @@
     ;;Need transition for ipsec
     (call .file.execute_libfile_files (subj))
 
-    ;;Need for execute QCMAP_Sta_Interface
-    (call .qcmap_cm.execute_execfile_files (subj))
-
     ;; Need to open read file for ubusd
     (allow subj ubusd.subj (dir (search)))
     (allow subj ubusd.subj (file (open read)))
@@ -859,7 +847,6 @@
     (allow subj .tftp_server.subj (dir (search)))
     (allow subj .qcmap_cm.subj (capability (sys_ptrace)))
     (allow subj .qcmap_cm.subj (dir (search)))
-    (allow subj .ip.subj (dir (search)))
 
     ;;Need for charon socket access
     (allow subj .qcmap_cm.subj (packet_socket (create setopt)))
@@ -889,59 +876,49 @@
     (allow subj wifi.datafile (file (map execute)))
     (call .devices.read_sysfile_lnk_files (subj))
 
-    (allow subj .urngd.subj (file (read open)))
-    (allow subj .urngd.subj (lnk_file (read)))
-    (allow subj .tftp_server.subj (file (read open)))
-    (allow subj .tftp_server.subj (lnk_file (read open)))
-    (allow subj .diag-router.subj (dir (search)))
-    (allow subj .diag-router.subj (file (read open)))
-    (allow subj .diag-router.subj (lnk_file (read open)))
-    (allow subj .qseecomd.subj (dir (search)))
-    (allow subj .dropbear.subj (dir (search)))
-    (allow subj .qseecomd.subj (file (read open)))
-    (allow subj .leprop.subj (dir (search)))
-    (allow subj .leprop.subj (file (read open)))
-    (allow subj .logd.subj (dir (search)))
-    (allow subj .logd.subj (file (read open)))
-    (allow subj .rpcd.subj (dir (search)))
-    (allow subj .rpcd.subj (file (read open)))
-    (allow subj .rpcd.subj (lnk_file (read open)))
-    (allow subj .fs-scrub-daemon.subj (dir (search)))
-    (allow subj .fs-scrub-daemon.subj (file (read open)))
-    (allow subj .fs-scrub-daemon.subj (lnk_file (read open)))
-    (allow subj .diagrebootapp.subj (dir (search)))
-    (allow subj .diagrebootapp.subj (file (read open)))
-    (allow subj .diagrebootapp.subj (lnk_file (read open)))
-    (allow subj .mbim.subj (dir (search)))
-    (allow subj .mbim.subj (file (read open)))
-    (allow subj .mbim.subj (lnk_file (read open)))
+    ;; Pidof denials
+    (call pidof_denials (subj urngd.subj))
+    (call pidof_denials (subj tftp_server.subj))
+    (call pidof_denials (subj diag-router.subj))
+    (call pidof_denials (subj qseecomd.subj))
+    (call pidof_denials (subj dropbear.subj))
+    (call pidof_denials (subj leprop.subj))
+    (call pidof_denials (subj logd.subj))
+    (call pidof_denials (subj rpcd.subj))
+    (call pidof_denials (subj fs-scrub-daemon.subj))
+    (call pidof_denials (subj diagrebootapp.subj))
+    (call pidof_denials (subj mbim.subj))
+    (call pidof_denials (subj uhttpd.subj))
+    (call pidof_denials (subj qcril.subj))
+    (call pidof_denials (subj loc_launcher.subj))
+    (call pidof_denials (subj loc_hal_daemon.subj))
+    (call pidof_denials (subj loc_lowi_server.subj))
+    (call pidof_denials (subj loc_xtra_daemon.subj))
+    (call pidof_denials (subj ipacm.subj))
+    (call pidof_denials (subj csd_server.subj))
+    (call pidof_denials (subj ipacmdiag.subj))
+    (call pidof_denials (subj netmgrd.subj))
+    (call pidof_denials (subj dnsmasq.subj))
+    (call pidof_denials (subj port-bridge.subj))
+    (call pidof_denials (subj atfwd.subj))
+    (call pidof_denials (subj ip.subj))
+    (call pidof_denials (subj sys.subj))
+    (call pidof_denials (subj powerstate.subj))
+    (call pidof_denials (subj hotplugcall.subj))
+    (call pidof_denials (subj qcmap_cm.subj))
+    (call pidof_denials (subj odhcpd.subj))
+    (call pidof_denials (subj netifd.subj))
+    (call pidof_denials (subj rcdnsmasq.subj))
+    (call pidof_denials (subj dataadpl.subj))
+    (call pidof_denials (subj qtether.subj))
+    (call pidof_denials (subj ubus.subj))
+    (call pidof_denials (subj qtether.subj))
+    (call pidof_denials (subj odhcp6c.subj))
+    (call pidof_denials (subj uci.subj))
+
     (allow subj .filesystems.procfile (file (read)))
     (allow subj .sys.fs (filesystem(getattr)))
     (allow subj .qseecomd.subj (lnk_file (read open)))
-    (allow subj .uhttpd.subj (dir (search)))
-    (allow subj .uhttpd.subj (file (read open)))
-    (allow subj .uhttpd.subj (lnk_file (read open)))
-    (allow subj .leprop.subj (lnk_file (read open)))
-    (allow subj .dropbear.subj (dir (search)))
-    (allow subj .dropbear.subj (file (read open)))
-    (allow subj .dropbear.subj (lnk_file (read open)))
-    (allow subj urngd.subj (file (open read)))
-    (allow subj qcril.subj (dir (search)))
-    (allow subj qcril.subj (file (read open)))
-    (allow subj qcril.subj (lnk_file (read)))
-    (allow subj loc_launcher.subj (dir (search)))
-    (allow subj loc_hal_daemon.subj (dir (search)))
-    (allow subj loc_hal_daemon.subj (lnk_file (read)))
-    (allow subj loc_lowi_server.subj (dir (search)))
-    (allow subj loc_lowi_server.subj (lnk_file (read)))
-    (allow subj loc_xtra_daemon.subj (dir (search)))
-    (allow subj ipacm.subj (dir (search)))
-    (allow subj ipacm.subj (file (read open)))
-    (allow subj ipacm.subj (lnk_file (read)))
-    (allow subj csd_server.subj (dir (search)))
-    (allow subj ipacmdiag.subj (file (read open)))
-    (allow subj netmgrd.subj (file (read)))
-    (allow subj dnsmasq.subj (file (read)))
 
     ;; Need run chmod on /dev/socket/data/pd_manager
     (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
@@ -959,12 +936,6 @@
     (allow subj resolv.tmpfile (file (getattr create read write open ioctl setattr append rename unlink)))
     (allow subj odhcp6c.tmpfile (file (write unlink)))
 
-    ;; Need permission for pidof
-    (allow subj atfwd.subj (dir (search)))
-    (allow subj port-bridge.subj (dir (search)))
-    (allow subj ip.subj (file (read)))
-    (allow subj powerstate.subj (dir (search)))
-    (allow subj hotplugcall.subj (dir (search)))
     ;; Need permission for wpad runtime file
     (allow subj .wpad.runtimetmpfile (dir (search)))
     (allow subj .wpad.runtimetmpfile (file (getattr read open)))
@@ -997,22 +968,9 @@
     ;; Need read permission on /tmp/sysinfo/board_name
     (call .preinit.read_tmpfile_files (subj))
     (allow subj qcmap_cm.subj (fd (use)))
-    ;; Pidof denials
-    (call pidof_denials (subj qcmap_cm.subj))
-    (call pidof_denials (subj qcmap_cm.subj))
-    (call pidof_denials (subj odhcpd.subj))
-    (call pidof_denials (subj netifd.subj))
-    (call pidof_denials (subj dnsmasq.subj))
-    (call pidof_denials (subj rcdnsmasq.subj))
-    (call pidof_denials (subj dataadpl.subj))
-    (call pidof_denials (subj qtether.subj))
-    (call pidof_denials (subj ubus.subj))
-    (call pidof_denials (subj qtether.subj))
-    (call pidof_denials (subj odhcp6c.subj))
-    (call pidof_denials (subj uci.subj))
+
     ;;open/write pmsg_dev.nodedev
     (allow subj .pmsg_dev.nodedev (chr_file (write open)))
-
 
     ;; COPY FROM QCMAP_REF
 
@@ -1027,9 +985,6 @@
     (call .shell.mapexecute_execfile_files (subj))
     (call .shell.manage_execfile_files (subj))
     (allow subj .shell.execfile (file (execute_no_trans)))
-
-    ;;Need for execute QCMAP_Sta_Interface
-    (call .qcmap_cli.execute_execfile_files (subj))
 
     ;; Need gettarr on selinux filesystem
     (call .selinux.getattr_filesystems (subj))
@@ -1131,11 +1086,6 @@
     (allow subj self create_unix_dgram_socket)
     (call .nameservice.read_miscfile_files (subj))
 
-    ;; Need permission to reboot on first vlan creation
-    (allow subj .sys.subj (process(signal)))
-    (allow subj .sys.subj (file (read write open)))
-    (allow subj .sys.subj (dir (search)))
-
     ;; Need transition to run dnsmasq restart
     (call .rcdnsmasq.subj_type_transition (subj))
 
@@ -1153,7 +1103,7 @@
     (call .resolv.manage_tmpfile_files (subj))
     ;; Need execute o jsonfilter.execfile
     (call .jsonfilter.read_execfile_files (subj))
-    (call .jsonfilter.execute_execfile_files (subj))
+    (call .jsonfilter.subj_type_transition (subj))
     (allow jsonfilter.subj qcmap_cm.subj (fd (use)))
     (allow jsonfilter.subj qcmap_cm.subj readwriteinherited_fifo_file)
     (allow jsonfilter.subj qcmap_cm.subj (unix_stream_socket (read write)))
@@ -1185,9 +1135,6 @@
     (call .devices.readwrite_sysfile_files (subj))
 
     (allow subj .devices.sysfile (dir (read open)))
-    ;; Need subj_type_transition for ethtool utility
-    (call .file.execute_execfile_files (subj))
-    (call .file.read_execfile_files (subj))
 
     ;; Need read open permission on /etc/ethertypes for ebtables
     (call .file.read_conffile_files (subj))
@@ -1206,8 +1153,6 @@
     (allow subj .wpad.execfile (file (getattr execute read open)))
 
     (call .tmpfile.readwrite_runtimetmpfile_dirs (subj))
-
-    (call .file.write_conffile_dirs (subj))
 
     ;; Need to create create_netlink_netfilter_socket
     (allow subj self create_netlink_netfilter_socket)
@@ -1228,7 +1173,6 @@
     (allow subj .wifi.execfile (file (getattr execute read open)))
 
     (allow subj .file.execfile (dir (read open getattr)))
-    (call .wifi.execute_execfile_files (subj))
     (allow subj .wifi.miscfile (dir (read open search)))
     (allow subj .wifi.miscfile (file (read open getattr)))
     (allow subj .net.procfile (lnk_file (read)))
@@ -1305,11 +1249,6 @@
     (call .hotplugcall.manage_execfile_files (subj))
     (allow subj .hotplugcall.execfile (file (execute)))
     (call .hotplugcall.subj_type_transition (subj))
-    ;; Need read execute on xtables
-    (call .xtables.execute_execfile_files (subj))
-    (call .xtables.readwrite_runtimetmpfile_files (subj))
-    (call .ip.execute_execfile_files (subj))
-    (call .ip.readwrite_execfile_files (subj))
     (allow subj .jshn.execfile (file(getattr)))
     (call .net.read_procfile_files (subj))
     (call .net.read_procfile_lnk_files (subj))
@@ -1352,8 +1291,6 @@
     (allow subj .ubusd.subj (file (read open)))
     (allow subj .ubusd.subj (dir (search)))
 
-    (allow subj .sys.subj (system (module_request)))
-
     ;;Need to write to /sys/kernel/boot_kpi/kpi_values
     (call .kpi_values.readwrite_sysfile_files (subj))
     (call .uci.write_conffile_dirs (subj))
@@ -1372,11 +1309,8 @@
     (allow subj resolv.tmpfile (file (getattr create read write open ioctl setattr append rename unlink)))
     (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
 
-    (allow subj sys.subj (file (open)))
     (allow subj ubusd.subj (dir (search)))
     (allow subj ubusd.subj (file (read)))
-    (allow subj sys.subj (lnk_file (read)))
-    (allow subj sys.subj (system (module_request)))
     (call obj_type_transition_tmpfile (subj sock_file "nl_qcmap_client_uds_file"))
     (call obj_type_transition_tmpfile (subj sock_file "qcmap_client_nl_uds_file"))
     (call .qcmap_cm.create_tmpfile_sock_files (subj))
@@ -1395,43 +1329,9 @@
     (allow subj self (unix_dgram_socket (sendto)))
     (call .logd.sendto_unix_dgram_sockets (subj))
     ;; this is invoked by "pidof" utility
-    (allow subj .sys.subj (lnk_file (read)))
-    (allow subj .urngd.subj (dir (search)))
-    (allow subj .urngd.subj (file (read open)))
-    (allow subj .urngd.subj (lnk_file (read)))
-    (allow subj .tftp_server.subj (dir (search)))
-    (allow subj .tftp_server.subj (file (read open)))
-    (allow subj .tftp_server.subj (lnk_file (read open)))
-    (allow subj .diag-router.subj (dir (search)))
-    (allow subj .diag-router.subj (file (read open)))
-    (allow subj .diag-router.subj (lnk_file (read open)))
-    (allow subj .qseecomd.subj (dir (search)))
-    (allow subj .qseecomd.subj (file (read open)))
-    (allow subj .qseecomd.subj (lnk_file (read open)))
-    (allow subj .leprop.subj (dir (search)))
-    (allow subj .leprop.subj (file (read open)))
-    (allow subj .leprop.subj (lnk_file (read open)))
-    (allow subj .logd.subj (dir (search)))
-    (allow subj .logd.subj (file (read open)))
-    (allow subj .logd.subj (lnk_file (read open)))
-    (allow subj .rpcd.subj (dir (search)))
-    (allow subj .fs-scrub-daemon.subj (dir (search)))
-    (allow subj .fs-scrub-daemon.subj (lnk_file (read open)))
-    (allow subj .fs-scrub-daemon.subj (file (read open)))
-    (allow subj .rpcd.subj (dir (search)))
-    (allow subj .rpcd.subj (lnk_file (read open)))
-    (allow subj .rpcd.subj (file (read open)))
-    (allow subj .diagrebootapp.subj (dir (search)))
-    (allow subj .diagrebootapp.subj (lnk_file (read open)))
-    (allow subj .diagrebootapp.subj (file (read open)))
-    (allow subj .netifd.subj (dir (search)))
-    (allow subj .hotplugcall.subj (dir (search)))
-    (allow subj .logd.subj (file (read)))
     (call pidof_denials (subj qcmap_cli.subj))
     (call pidof_denials (subj qcmap_cm.subj))
     (call pidof_denials (subj odhcpd.subj))
-    (call pidof_denials (subj netifd.subj))
-    (call pidof_denials (subj dnsmasq.subj))
     (call pidof_denials (subj rcdnsmasq.subj))
     (call pidof_denials (subj dataadpl.subj))
     (call pidof_denials (subj qtether.subj))
@@ -1458,4 +1358,11 @@
     (allow uci.subj qcmap_cm.subj (packet_socket (read write)))
     (allow uci.subj qcmap_cm.subj (netlink_route_socket (read write)))
     (allow uci.subj qcmap_cm.subj (netlink_socket (read write)))
+
+    ;;IPsec tmp file permissions
+    (call .qcmap_cli.search_tmpfile_dirs (subj))
+    (allow subj ubus.execfile (file(getattr)))
+    (call .ubus.read_execfile_files (subj))
+    (call .ubus.mapexecute_execfile_files (subj))
+    (call .ubus.subj_type_transition (subj))
 )

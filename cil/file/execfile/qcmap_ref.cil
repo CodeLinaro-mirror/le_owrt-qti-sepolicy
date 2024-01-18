@@ -19,28 +19,9 @@
     file
     execfile_file_context)
 
-    (filecon
-    "/tmp/*"
-    file
-    tmpfile_file_context)
-
-    (filecon
-    "/dev/socket/data/nl_qcmap_client_uds_file"
-    socket
-    tmpfile_file_context)
-
-    (filecon
-    "/dev/socket/data/qcmap_client_nl_uds_file"
-    socket
-    tmpfile_file_context)
-
     (macro obj_type_transition_execfile ((type ARG1))
           (call .file.execfile_obj_type_transition
                     (ARG1 execfile file "QCMAP_Ref_Daemon")))
-
-    (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
-           (call .tmp.fs_obj_type_transition
-                       (ARG1 tmpfile ARG2 ARG3)))
 
     (macro pidof_denials ((type ARG1) (type ARG2))
         (allow ARG1 ARG2 (dir (read open search getattr)))
@@ -53,7 +34,6 @@
     (blockinherit .tmpfile.obj_template)
     (blockinherit .dev.tty.obj_template)
 
-    (call obj_type_transition_tmpfile (subj file "*"))
     ;; Need obj_type_transition on mwan3
     (call .mwan3.obj_type_transition_runtimetmpfile (subj))
     ;; Need obj_type_transition for /etc/firewall.user.*
@@ -414,8 +394,7 @@
     (allow subj ubusd.subj (file (read)))
     (allow subj sys.subj (lnk_file (read)))
     (allow subj sys.subj (system (module_request)))
-    (call obj_type_transition_tmpfile (subj sock_file "nl_qcmap_client_uds_file"))
-    (call obj_type_transition_tmpfile (subj sock_file "qcmap_client_nl_uds_file"))
+
     (call .qcmap_ref.create_tmpfile_sock_files (subj))
     (call .qcmap_ref.write_tmpfile_sock_files (subj))
     (allow subj devices.sysfile (file (create)))

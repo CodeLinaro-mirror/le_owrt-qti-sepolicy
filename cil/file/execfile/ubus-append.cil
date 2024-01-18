@@ -43,6 +43,9 @@
 ;; IPQ ctrl_app_dut
 (allow subj .wifi.subj readwrite_udp_socket)
 (allow subj .wifi.tmpfile readwrite_file)
+
+;; Need manage on /tmp/ipv{4/6}config[0-9]+
+(call .qcmap_cm.manage_tmpfile_files (subj))
 )
 
 

@@ -107,6 +107,12 @@
                  (call .tmpfile.runtimetmpfile_obj_type_transition
                         (ARG1 runtimetmpfile file "charon.pid")))
 
+    (macro pidof_denials ((type ARG1) (type ARG2))
+        (allow ARG1 ARG2 (dir (read open search getattr)))
+        (allow ARG1 ARG2 (file (read open)))
+        (allow ARG1 ARG2 (lnk_file (read)))
+    )
+
     ;; Policy
     (blockinherit .agent.base_template)
     (blockinherit .tmpfile.obj_template)
@@ -437,6 +443,8 @@
     ;; Need permission for backhaul status indicate feature
     (allow subj .qcmap_cli.subj (capability (kill)))
     (allow subj .qcmap_cm.subj (process (signal)))
+    (allow subj .qcmap_cm.runtimetmpfile (dir (search)))
+    (allow subj .qcmap_cm.runtimetmpfile (file (getattr read open)))
 
     ;; Need permission for proc/pidof QCMAP_ConnectionManager from backhaulCommonConfig.sh
     (allow subj .qcmap_cm.subj (dir (search)))
@@ -590,6 +598,10 @@
     (allow subj netmgrd.subj (file (read)))
     (allow subj dnsmasq.subj (file (read)))
 
+    ;; Need run chmod on /dev/socket/data/pd_manager
+    (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
+    (allow subj self (capability (fowner fsetid)))
+
     ;;Need for send out ipsec traffic
     (allow subj .qcmap_cli.subj (capability (net_bind_service)))
     (allow subj .unreserved.netport (udp_socket (name_bind)))
@@ -615,4 +627,44 @@
     (call .ipv6.search_sysctlfile_dirs (subj))
     (call .ipv6.readwrite_sysctlfile_files (subj))
 
+    ;; For QCMAP 'Activate supplicant'
+    (allow subj .netifd.subj (netlink_route_socket (read write)))
+    (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+    (allow subj .uci.subj (process (rlimitinh siginh)))
+    (allow subj .wifi.subj (process (rlimitinh siginh)))
+    ;; Need for handling easymesh
+
+    ;; Need permission to create netlink_socket
+    (allow subj self create_netlink_socket)
+
+    ;; Need read,write,search on /etc/crontabs dirs
+    (call .cron.readwrite_miscfile_dirs (subj))
+    (call .cron.search_miscfile_dirs (subj))
+    (call .cron.manage_miscfile_files (subj))
+
+    ;; Need on /tmp/run/wsplcd.lock
+    (call .wifi.manage_runtimetmpfile_dirs (subj))
+    (call .wifi.manage_runtimetmpfile_files (subj))
+    (call .wpad.manage_runtimetmpfile_dirs (subj))
+    (call .wpad.manage_runtimetmpfile_files (subj))
+    ;; Need map, execute on /usr/local/lib/libqca_nl80211_wrapper.so
+    (call .wifi.mapexecute_datafile_files (subj))
+    ;; Need read permission on /tmp/sysinfo/board_name
+    (call .preinit.read_tmpfile_files (subj))
+    (allow subj qcmap_ref.subj (fd (use)))
+    ;; Pidof denials
+    (call pidof_denials (subj qcmap_cli.subj))
+    (call pidof_denials (subj qcmap_cm.subj))
+    (call pidof_denials (subj odhcpd.subj))
+    (call pidof_denials (subj netifd.subj))
+    (call pidof_denials (subj dnsmasq.subj))
+    (call pidof_denials (subj rcdnsmasq.subj))
+    (call pidof_denials (subj dataadpl.subj))
+    (call pidof_denials (subj qtether.subj))
+    (call pidof_denials (subj ubus.subj))
+    (call pidof_denials (subj qtether.subj))
+    (call pidof_denials (subj odhcp6c.subj))
+    (call pidof_denials (subj uci.subj))
+    ;;open/write pmsg_dev.nodedev
+    (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )

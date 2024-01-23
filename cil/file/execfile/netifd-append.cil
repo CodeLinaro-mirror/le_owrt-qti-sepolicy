@@ -124,6 +124,10 @@
 
           (allow subj .tmpfile.runtimetmpfile (dir (create rmdir)))
 
+          ;; Need run chmod on /dev/socket/data/pd_manager
+          (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
+          (allow subj self (capability (fsetid fowner)))
+
           (allow subj miniupnpd.datafile (file (open read getattr)))
 
           ;; Need read on fw3.state file
@@ -203,6 +207,12 @@
           (allow subj .qcmap_cm.subj (process(signal)))
           (allow subj sys.subj (process (signal)))
 
+          ;; Need permission for iw operation from script
+          (call .iw.subj_type_transition (subj))
+          (allow subj self (netlink_generic_socket(create)))
+          (allow iw.subj netifd.subj (fd (use)))
+          (allow iw.subj netifd.subj (fifo_file (read write)))
+
           ;; Need permissions for /etc/data/qcmap_ipsec
 	  (call .qcmap_cm.mapexecute_execfile_files (subj))
 	  (call .qcmap_cm.execute_conffile_files (subj))
@@ -213,7 +223,7 @@
 	  (allow subj .xtables.execfile (file (getattr execute)))
 
 	  ;; Need for /tmp/ipsec/strongswan.conf
-	  (allow subj .tmp.fs (file (create read open getattr)))
+	  (allow subj .tmp.fs (file (create read open getattr write)))
 	  (allow subj .netifd.tmpfile (file (write unlink)))
 	  (allow subj .tmpfile.conftmpfile (dir (search)))
 	  (allow subj .netifd.subj (alg_socket (create)))
@@ -269,4 +279,8 @@
           ;;Need for send out ipsec traffic
           (allow subj .unreserved.netport (udp_socket (name_bind)))
 	  (allow subj .netifd.subj (lockdown (confidentiality)))
+	  (allow subj .uci.subj (process (rlimitinh siginh)))
+	  (allow subj .hotplugcall.subj (process (rlimitinh siginh)))
+	  (allow subj .wpad.subj (process (rlimitinh siginh)))
+	  (allow subj .wifi.subj (process (rlimitinh siginh)))
 )

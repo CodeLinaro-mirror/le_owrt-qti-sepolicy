@@ -1,3 +1,4 @@
+;;Changes from Qualcomm Innovation Center are provided under the following license:
 ;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -141,6 +142,13 @@
     (call .wifi.read_runtimetmpfile_files (subj))
     (call .wifi.read_tmpfile_files (subj))
 
+    ;; mcl quicktrack: hostapd write to /tmp/wpa_ctrl_x-x
+    (allow subj .wifi.subj readwrite_udp_socket)
+
+    ;; mcl quicktrack: hostapd needs read /etc/misc/wifi/hostapd_*\.conf
+    (call .wpad.search_miscfile_dirs (subj))
+    (call .wpad.read_miscfile_files (subj))
+
     ;; Call wpad binaries from wifi scripts
     (allow subj .wifi.subj (fd (use)))
 
@@ -177,4 +185,8 @@
     (allow subj self create_tcp_stream_socket)
     ;; Need permission for hostapd-cli command
     (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+
+    ;; IPQ ctrl_app_dut
+    (allow subj .wifi.subj readwrite_udp_socket)
+    (allow subj .wifi.tmpfile readwrite_file)
 )

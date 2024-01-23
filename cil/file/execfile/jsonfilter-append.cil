@@ -8,4 +8,10 @@
      (allow subj .qcmap_cli.subj (fifo_file (read write)))
      (call .fw3.write_runtimetmpfile_files (subj))
      (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+
+     ;; For QCMAP 'Activate supplicant'
+     (allow subj .netifd.subj (netlink_route_socket (read write)))
+     (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+     ;;open/write pmsg_dev.nodedev
+     (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )

@@ -123,6 +123,8 @@
      ;;write leprop sock files
     (call .leprop.write_miscfile_sock_files (subj))
 
+    ;;open pmsg_dev.nodedev
+    (allow subj pmsg_dev.nodedev (chr_file (write open)))
 
      ;;read/write sys chr files
     (call .sys.readwriteinherited_ptydev_chr_files (subj))
@@ -135,6 +137,10 @@
 
     ;;read/open/search debug fs dir
     (allow subj debug.fs (dir (read open search)))
+
+    (allow subj .invalid (dir (search)))
+    (allow subj .invalid (chr_file (ioctl read write open map)))
+    (allow subj  .sys.subj (binder (call transfer)))
 
 )
 
@@ -272,6 +278,13 @@
     (call .mnt.search_miscfile_dirs(subj))
     (call .mnt.read_miscfile_files(subj))
     (allow subj mnt.miscfile (file (open)))
+
+    (allow subj .invalid (dir (search)))
+    (allow subj .invalid (chr_file (ioctl read write open map)))
+    (allow subj  .sys.subj (binder (call transfer)))
+
+    ;;open pmsg_dev.nodedev
+    (allow subj pmsg_dev.nodedev (chr_file (write open)))
 
     ;; manage sdcard miscfile
     (call .sdcard.search_miscfile_dirs(subj))

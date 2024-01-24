@@ -409,16 +409,6 @@
     (allow subj resolv.tmpfile (file (getattr create read write open ioctl setattr append rename unlink)))
     (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
 
-    ;;Need for single route feature
-    (call .rcodhcpd.subj_type_transition (subj))
-    (allow subj .file.initscriptfile (dir (search)))
-    (allow subj .rcodhcpd.initscriptfile (file (getattr execute read open)))
-    (call .tmpfile.search_locktmpfile_dirs (subj))
-    (allow subj .tmpfile.locktmpfile (file (open)))
-    (call .rccommon.read_conffile_files (subj))
-    (allow subj resolv.tmpfile (file (getattr create read write open ioctl setattr append rename unlink)))
-    (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
-
     (allow subj sys.subj (file (open)))
     (allow subj ubusd.subj (dir (search)))
     (allow subj ubusd.subj (file (read)))

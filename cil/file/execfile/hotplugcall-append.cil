@@ -145,33 +145,30 @@
       (allow subj .netifd.subj (netlink_route_socket (read write)))
       (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
 
+;; Need For Ezmesh, hyctl communication
+      (call .ezmesh.subj_type_transition (subj))
+      (call .kmodloader.subj_type_transition (subj))
+
 ;; EasyMesh specific denial handling
+
       (allow subj sys.subj (system (module_request)))
 
-      (allow subj self (udp_socket (ioctl read setopt bind getattr listen sendto)))
-      (allow subj self (netlink_socket (ioctl read setopt bind getattr listen sendto)))
+      (allow subj self (udp_socket (create ioctl read setopt bind getattr listen sendto)))
+      (allow subj self (netlink_socket (ioctl read setopt bind getattr listen sendto create write)))
       (allow subj self (netlink_generic_socket (ioctl read setopt bind getattr listen sendto)))
 
       (allow subj wifi.miscfile (file (unlink getattr read open map rename)))
       (allow subj wifi.miscfile (dir  (search getattr read open map ioctl add_name)))
 
       (allow subj cron.miscfile (file (unlink getattr read open map rename)))
-      (allow subj cron.miscfile (dir  (search getattr read open map ioctl add_name)))
+      (allow subj cron.miscfile (dir  (search getattr read open map ioctl add_name write create append remove_name)))
       (allow subj cron.miscfile (lnk_file (getattr read open map)))
-      (allow subj class.sysfile (dir (search remove_name add_name read open getattr map ioctl)))
-      (allow subj wifi.runtimetmpfile (file (unlink getattr read open map rename)))
 
+      (allow subj class.sysfile (dir (search remove_name add_name read open getattr map ioctl)))
 
       (allow subj qcmap_cli.tmpfile (file (unlink getattr read open map rename)))
-      (allow subj wifi.datafile (file (unlink getattr read open map rename)))
 
-
-      (allow subj kmodloader.execfile (file (unlink getattr read open map rename)))
-      (allow subj kmodloader.execfile (dir  (search getattr read open map ioctl add_name)))
-      (allow subj kmodloader.execfile (lnk_file (getattr read open map)))
-
-
-      (allow subj hotplug.conffile (file (unlink getattr read open map rename)))
+      (allow subj hotplug.conffile (file (unlink getattr read open map rename execute execute_no_trans )))
       (allow subj console.ttydev (chr_file (open)))
 
 
@@ -187,23 +184,18 @@
       (allow subj ezmesh.tmpfile (sock_file (ioctl read getattr unlink setattr)))
 
 
-      (allow subj ezmesh.execfile (file (read open)))
-
-
       ;;WPS Onboarding Easymesh Specific
-      (allow subj wifi.tmpfile (file (unlink getattr read open map rename)))
-      (allow subj .file.execfile (file (read open)))
 
-      (allow subj wpad.runtimetmpfile (file (unlink getattr read open map rename)))
-      (allow subj wpad.runtimetmpfile (dir (search remove_name add_name read open getattr map ioctl)))
-      (allow subj wpad.runtimetmpfile (sock_file (ioctl read getattr unlink setattr)))
-      (allow subj .wpad.execfile (file (unlink getattr read open map rename)))
-      (allow subj .wpad.subj (unix_dgram_socket (read sendto accept)))
-
-
-      (allow subj tmpfile.runtimetmpfile (file (unlink getattr read open map rename)))
+      (allow subj ezmesh.runtimetmpfile (fifo_file (write open)))
       (allow subj random.nodedev (chr_file (open read)))
+
+      ;;Hotplug call
+
+      (allow subj self (tcp_socket (create ioctl)))
+      (allow subj self (unix_stream_socket (create ioctl)))
 
 ;;EasyMesh dependent libqca_nl80211_wrapper.so
       (allow subj wifi.datafile (file (unlink getattr read open map rename)))
+;;open/write pmsg_dev.nodedev
+      (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )

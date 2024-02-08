@@ -124,6 +124,10 @@
 
           (allow subj .tmpfile.runtimetmpfile (dir (create rmdir)))
 
+          ;; Need run chmod on /dev/socket/data/pd_manager
+          (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
+          (allow subj self (capability (fsetid fowner)))
+
           (allow subj miniupnpd.datafile (file (open read getattr)))
 
           ;; Need read on fw3.state file

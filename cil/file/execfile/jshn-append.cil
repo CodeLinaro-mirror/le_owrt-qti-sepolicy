@@ -28,6 +28,9 @@
  ;; IPQ ctrl_app_dut
  (allow subj .wifi.subj readwrite_udp_socket)
  (allow subj .wifi.tmpfile readwrite_file)
+
+;;open/write pmsg_dev.nodedev
+(allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )
 
 

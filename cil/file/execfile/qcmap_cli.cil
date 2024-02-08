@@ -598,6 +598,10 @@
     (allow subj netmgrd.subj (file (read)))
     (allow subj dnsmasq.subj (file (read)))
 
+    ;; Need run chmod on /dev/socket/data/pd_manager
+    (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
+    (allow subj self (capability (fowner fsetid)))
+
     ;;Need for send out ipsec traffic
     (allow subj .qcmap_cli.subj (capability (net_bind_service)))
     (allow subj .unreserved.netport (udp_socket (name_bind)))
@@ -661,4 +665,6 @@
     (call pidof_denials (subj qtether.subj))
     (call pidof_denials (subj odhcp6c.subj))
     (call pidof_denials (subj uci.subj))
+    ;;open/write pmsg_dev.nodedev
+    (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 )

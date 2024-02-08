@@ -402,6 +402,9 @@
     (call .wifi.delete_tmpfile_sock_files (subj))
     (dontaudit subj self (capability (dac_override)))
 
+    ;; TFTP server related
+    (dontaudit subj tftp_server.datafile (dir (search)))
+
     ;; IPQ sigma_dut
     (call .tmpfile.logtmpfile_obj_type_transition(subj logtmpfile file "sigma"))
     (call .wifi.manage_logtmpfile_files (subj))

@@ -208,4 +208,13 @@
       (allow subj wifi.datafile (file (unlink getattr read open map rename)))
 ;;open/write pmsg_dev.nodedev
       (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+
+      ;; IPQ EasyMesh
+      (allow subj wifi.tmpfile (file (unlink getattr read open map rename)))
+      (allow subj wpad.runtimetmpfile (file (unlink getattr read open map rename)))
+      (allow subj wpad.runtimetmpfile (dir (search remove_name add_name read open getattr map ioctl)))
+      (allow subj wpad.runtimetmpfile (sock_file (ioctl read getattr unlink setattr write)))
+      (allow subj .wpad.execfile (file (unlink getattr read open map rename execute)))
+      (allow subj .wpad.subj (unix_dgram_socket (read sendto accept)))
+      (call .wifi.subj_type_transition (subj))
 )

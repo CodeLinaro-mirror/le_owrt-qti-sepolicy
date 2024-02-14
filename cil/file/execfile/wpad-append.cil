@@ -189,4 +189,11 @@
     ;; IPQ ctrl_app_dut
     (allow subj .wifi.subj readwrite_udp_socket)
     (allow subj .wifi.tmpfile readwrite_file)
+
+    ;; IPQ EasyMesh
+    (call .pmsg_dev.read_nodedev_chr_files (subj))
+    (allow subj .ezmesh.subj (unix_dgram_socket (sendto)))
+    (allow subj .ezmesh.runtimetmpfile (sock_file (ioctl read write create getattr unlink setattr)))
+    (allow subj .devices.sysfile (file (unlink getattr read open execute map write create lock append rename)))
+    (allow subj .hotplugcall.subj (unix_dgram_socket (sendto)))
 )

@@ -220,6 +220,7 @@
 	(allow subj .wifi.execfile (file(read open execute getattr)))
 	(allow subj .wifi.miscfile (file (read open getattr map)))
 	(allow subj .wifi.miscfile (dir (search)))
+	(call .wifi.subj_type_transition (subj))
 	(call .sys.search_fs_dirs (subj))
 	(call .sys.search_sysctlfile_dirs (subj))
 	(call .fs.search_sysfile_dirs (subj))

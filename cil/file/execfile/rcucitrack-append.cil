@@ -9,4 +9,5 @@
 
        (blockinherit .agent.base_template))
          (allow subj self (capability (dac_override dac_read_search)))
+         (allow subj nftables.execfile (file(getattr)))
 )

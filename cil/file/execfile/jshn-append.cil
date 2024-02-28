@@ -31,6 +31,9 @@
 
 ;;open/write pmsg_dev.nodedev
 (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+
+ ;; Need for PBR
+ (allow subj qcmap_cm.tmpfile (file (append)))
 )
 
 

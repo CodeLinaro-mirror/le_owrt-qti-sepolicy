@@ -47,4 +47,9 @@
   ;; For QCMAP 'Activate supplicant'
   (allow subj .netifd.subj (netlink_route_socket (read write)))
   (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+  ;; rule for pbr
+  (allow subj sys.sysctlfile (dir (search)))
+  (allow subj net.sysctlfile (dir (search)))
+  (allow subj ipv4.sysctlfile (dir (search)))
+  (call .ipv4.readwrite_sysctlfile_files (subj))
 )

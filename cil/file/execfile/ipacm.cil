@@ -236,6 +236,7 @@
 	(call .netfilter.readwrite_sysctlfile_files (subj))
 
 	(call .sys.requestmodule (subj))
+	(dontaudit subj .sys.subj (fifo_file (write)))
 
 	(allow subj devices.sysfile (dir (search getattr read open)))
 	(allow subj devices.sysfile (file (getattr)))

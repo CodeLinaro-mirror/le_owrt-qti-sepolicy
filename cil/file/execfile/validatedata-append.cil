@@ -14,6 +14,10 @@
     (allow subj netifd.subj (netlink_route_socket( read write )))
     (allow subj netifd.subj (netlink_kobject_uevent_socket( read write )))
     (allow subj netifd.subj (fd( use )))
+
+;; Ezmesh specific
+    (allow .validatedata.subj .hotplugcall.subj (fd (use)))
+    (allow .validatedata.subj .hotplugcall.subj (fifo_file(write)))
 )
 
 

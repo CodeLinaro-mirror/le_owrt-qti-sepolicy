@@ -358,7 +358,7 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .ethagent.subj))
 
     ;; Look for files in /tmp
-    (allow subj .tmp.fs (file (read getattr open)))
+    (allow subj .tmp.fs (file (read getattr open unlink)))
 
     ;; Read /proc/cmdline
     (call .cmdline.read_procfile_files (subj))
@@ -478,6 +478,8 @@
 
     ;; Remove files written to /var/run
     (allow subj .tmpfile.runtimetmpfile (dir (remove_name)))
+    (allow subj .tmpfile.runtimetmpfile (file (read open lock write)))
+    (allow subj wpad.runtimetmpfile (file (getattr read open)))
 
     ;; IPQ AFC
     (allow subj .afc.subj (dir (read open search)))
@@ -557,6 +559,7 @@
     (allow subj .ezmesh.execfile (file (unlink getattr read open execute map write create lock append rename)))
     (allow subj .hotplugcall.subj (fifo_file (unlink getattr read open execute map write create lock append rename ioctl)))
     (allow subj .wpad.subj (file (write)))
+    (allow subj .wpad.subj (process (signal)))
     (allow subj .rccron.subj (dir (search)))
     (allow subj .rccron.subj read_file)
     (allow subj .rccron.subj read_lnk_file)
@@ -572,8 +575,15 @@
     (allow subj self (capability (sys_ptrace)))
     (allow subj .ipacm.subj (fd (use)))
     (allow subj .ipacm.subj (fifo_file (read write ioctl)))
+    (allow subj .ipacm.subj (netlink_route_socket( read write )))
     (allow subj .ipacm.subj readwrite_netlink_netfilter_socket)
+    (allow subj .ipacm.subj (udp_socket (read write)))
+    (allow subj .ipacm.subj create_netlink_netfilter_socket)
+    (allow subj .ipacm.runtimetmpfile (file (read write)))
+    (allow subj self (netlink_route_socket (read write)))
+
     (call .ezmesh.subj_type_transition (subj))
     (call .random.read_nodedev_chr_files (subj))
     (call .pmsg_dev.read_nodedev_chr_files (subj))
+    (call .ipa.readwrite_nodedev_chr_files (subj))
 )

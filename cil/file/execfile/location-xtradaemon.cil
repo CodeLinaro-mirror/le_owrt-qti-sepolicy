@@ -84,6 +84,7 @@
 
     ;; needed to access /dev/socket/leprop-service
     (allow subj  leprop.miscfile  (sock_file  (read write)))
+    (allow subj  .unknown.miscfile  (file  (read open)))
     ;;connect to leprop socket
     (call .leprop.connectto_unix_stream_sockets (subj))
 )

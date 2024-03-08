@@ -17,7 +17,8 @@
     (call .ezmesh.obj_type_transition_tmpfile (unconfined.subj_typeattr file "mad.conf"))
     (call .ezmesh.obj_type_transition_tmpfile (unconfined.subj_typeattr file "bootup_completed"))
     (call .ezmesh.obj_type_transition_tmpfile (unconfined.subj_typeattr file "ezmesh.log"))
-    (call .ezmesh.obj_type_transition_tmpfile (unconfined.subj_typeattr dir "sdx-ezmesh"))
+    (call .ezmesh.obj_type_transition_tmpfile (unconfined.subj_typeattr file "wsplcd-lan.log"))
+    (call .ezmesh.obj_type_transition_tmpfile (unconfined.subj_typeattr file "mapConfig.log"))
     (call .ezmesh.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr)))
 
 (block ezmesh
@@ -65,10 +66,13 @@
     (filecon "/tmp/bootup_completed" file tmpfile_file_context)
     (filecon "/tmp/ezmesh\.log" file tmpfile_file_context)
     (filecon "/tmp/\.vap_seting_lock" file tmpfile_file_context)
+    (filecon "/tmp/\.ezmesh\.restart\.pending" file tmpfile_file_context)
     (filecon "/tmp/\.ezmesh\.restart\.pending" dir tmpfile_file_context)
-    (filecon "/tmp/sdx-ezmesh" dir tmpfile_file_context)
-    (filecon "/tmp/sdx-ezmesh/.*" any tmpfile_file_context)
     (filecon "/tmp/ezmesh-lan-tmp\.conf" any tmpfile_file_context)
+    (filecon "/tmp/ezmesh-lan\.conf" any tmpfile_file_context)
+    (filecon "/tmp/mapTempIntfList" any tmpfile_file_context)
+    (filecon "/tmp/mapTempIntfListWsplcd" any tmpfile_file_context)
+    (filecon "/tmp/map_key_info\.tmp" any tmpfile_file_context)
 
     ;; runtimetmpfile filecontexts for /tmp/run
 
@@ -76,9 +80,14 @@
 
     (filecon "/tmp/run/whc-wifi-config\.lock" dir runtimetmpfile_file_context)
     (filecon "/tmp/run/whc-wifi-config\.lock/.*" any runtimetmpfile_file_context)
+    (filecon "/tmp/run/wsplcd_ctrl_ath[0-9]+[0-9]+" dir runtimetmpfile_file_context)
+    (filecon "/tmp/run/wsplcd_ctrl_ath[0-9]+[0-9]+/.*" any runtimetmpfile_file_context)
+    (filecon "/tmp/run/wsplcd\.lock" dir runtimetmpfile_file_context)
+    (filecon "/tmp/run/wsplcd\.lock/.*" any runtimetmpfile_file_context)
     (filecon "/tmp/run/ezmesh-.*\.fifo" pipe runtimetmpfile_file_context)
     (filecon "/tmp/run/wsplcd_ctrl_ath0" file runtimetmpfile_file_context)
     (filecon "/tmp/run/mesh_server" socket runtimetmpfile_file_context)
+    (filecon "/tmp/run/ubus/ubus\.sock" socket runtimetmpfile_file_context)
     (filecon "/tmp/run/wsplc\.pipe" pipe runtimetmpfile_file_context)
 
     ;;
@@ -128,15 +137,23 @@
 (call .tmpfile.runtimetmpfile_obj_type_transition
                     (ARG1 runtimetmpfile dir "whc-wifi-config.lock"))
 (call .tmpfile.runtimetmpfile_obj_type_transition
+                    (ARG1 runtimetmpfile dir "wsplcd.lock"))
+(call .tmpfile.runtimetmpfile_obj_type_transition
                     (ARG1 runtimetmpfile fifo_file "ezmesh-ctrl-cmd.fifo"))
 (call .tmpfile.runtimetmpfile_obj_type_transition
                     (ARG1 runtimetmpfile fifo_file "ezmesh-agent-cmd.fifo"))
 (call .tmpfile.runtimetmpfile_obj_type_transition
+                    (ARG1 runtimetmpfile dir "ezmesh-agent-cmd.fifo"))
+(call .tmpfile.runtimetmpfile_obj_type_transition
                     (ARG1 runtimetmpfile sock_file "mesh_server"))
+(call .tmpfile.runtimetmpfile_obj_type_transition
+                    (ARG1 runtimetmpfile sock_file "ubus.sock"))
 (call .tmpfile.runtimetmpfile_obj_type_transition
                     (ARG1 runtimetmpfile sock_file "*"))
 (call .tmpfile.runtimetmpfile_obj_type_transition
                     (ARG1 runtimetmpfile fifo_file "wsplc.pipe"))
+(call .tmpfile.runtimetmpfile_obj_type_transition
+                    (ARG1 runtimetmpfile dir "*"))
 )
 
     (macro read_sysfile_dirs ((type ARG1))
@@ -145,12 +162,18 @@
 
     (call obj_type_transition_tmpfile (subj dir "ezmesh-lan-tmp.conf"))
     (call obj_type_transition_tmpfile (subj file "ezmesh-lan-tmp.conf"))
+    (call obj_type_transition_tmpfile (subj dir "mapTempIntfList"))
+    (call obj_type_transition_tmpfile (subj file "mapTempIntfListWsplcd"))
+    (call obj_type_transition_tmpfile (subj file "ezmesh-lan.conf"))
     (call obj_type_transition_tmpfile (subj file "wsplcd-lan.conf"))
     (call obj_type_transition_tmpfile (subj file "firstboot"))
     (call obj_type_transition_tmpfile (subj file "ezmesh.log"))
+    (call obj_type_transition_tmpfile (subj file "wsplcd-lan.log"))
+    (call obj_type_transition_tmpfile (subj file ".ezmesh.restart.pending"))
     (call obj_type_transition_tmpfile (subj dir ".ezmesh.restart.pending"))
     (call obj_type_transition_tmpfile (subj file ".vap_seting_lock"))
-    (call obj_type_transition_tmpfile (subj dir "sdx-ezmesh"))
+    (call obj_type_transition_tmpfile (subj file "map_key_info.tmp"))
+    (call obj_type_transition_tmpfile (subj file "mapConfig.log"))
     (call obj_type_transition_tmpfile (subj file "*"))
     (call obj_type_transition_runtimetmpfile (subj))
 
@@ -178,13 +201,16 @@
     (allow subj self (netlink_crypto_socket (ioctl read setopt bind getattr listen sendto create write)))
     (allow subj self (netlink_route_socket (ioctl read setopt bind getattr listen sendto write nlmsg_write create)))
     (allow subj self (unix_dgram_socket (ioctl read setopt bind getattr getopt connect listen sendto)))
+    (allow subj self (unix_stream_socket (create read write connect)))
     (allow subj self (netlink_socket (ioctl read setopt bind getattr listen sendto create write)))
     (allow subj self (sem (unix_read associate create write unix_write read )))
     (allow subj self (packet_socket (ioctl read setopt bind getattr getopt listen sendto create write)))
     (allow subj self (udp_socket (ioctl read setopt bind getattr listen sendto create )))
-    (allow subj self (tcp_socket (ioctl read setopt bind getattr name_bind node_bind listen sendto accept write create )))
-    (allow subj unreserved.netport (tcp_socket (ioctl read setopt bind getattr name_bind node_bind listen sendto)))
+    (allow subj self (tcp_socket (ioctl read setopt bind getattr name_bind node_bind listen sendto accept write create connect)))
+    (allow subj unreserved.netport (tcp_socket (ioctl read setopt bind getattr name_bind node_bind listen sendto name_connect)))
     (allow subj net.netnode (tcp_socket (ioctl read setopt bind getattr name_bind node_bind listen sendto)))
+    (allow subj net.netnode (udp_socket (node_bind)))
+    (allow subj wifi.subj (fd (use)))
     (allow subj wpad.subj (unix_dgram_socket (ioctl read setopt bind getattr listen sendto)))
 
     (allow subj .sys.subj (system (module_request)))
@@ -208,6 +234,7 @@
     (allow subj wpad.runtimetmpfile (lnk_file (getattr read open map)))
     (allow subj wpad.runtimetmpfile (fifo_file (getattr read open)))
     (allow subj wpad.runtimetmpfile (sock_file (ioctl read getattr unlink setattr)))
+    (allow subj wpad.tmpfile (file (read open)))
 
 
     (allow subj debug.fs (file (getattr read open)))
@@ -218,7 +245,7 @@
 
 
     (allow subj qcmap_cli.tmpfile (file (getattr read open)))
-    (allow subj qcmap_cli.subj (fifo_file (getattr read open map)))
+    (allow subj qcmap_cli.subj (fifo_file (getattr read open map ioctl)))
     (allow subj qcmap_cli.tmpfile (dir (search read open getattr map)))
     (allow subj qcmap_cli.tmpfile (lnk_file (getattr read open)))
     (allow subj qcmap_cli.tmpfile (fifo_file (getattr read open map rename)))
@@ -228,10 +255,15 @@
     (allow subj uci.conffile (file (getattr read open lock)))
     (allow subj uci.conffile (lnk_file (getattr read open map)))
     (allow subj uci.conffile (fifo_file (getattr read open)))
+    (allow subj file.conffile (file (create append open ioctl read)))
+    (allow subj file.conffile (dir (write add_name)))
+
+
     (allow subj uci.tmpfile (dir (search read open getattr)))
-    (allow subj uci.tmpfile (file (getattr read open)))
+    (allow subj uci.tmpfile (file (getattr read open lock)))
     (allow subj uci.tmpfile (lnk_file (getattr read open map)))
     (allow subj uci.tmpfile (fifo_file (getattr read open)))
+    (allow subj uci.statetmpfile (file (getattr read open lock)))
 
 
     (allow subj class.sysfile (file (getattr read open)))
@@ -254,7 +286,7 @@
 
 
     (allow subj uci.execfile (dir (search read open getattr)))
-    (allow subj uci.execfile (file (getattr read open)))
+    (allow subj uci.execfile (file (getattr read open execute execute_no_trans map)))
     (allow subj uci.execfile (lnk_file (getattr read open)))
     (allow subj uci.execfile (fifo_file (getattr read open)))
 
@@ -263,7 +295,17 @@
     (allow subj tmpfile.statetmpfile (file (getattr read open map)))
     (allow subj tmpfile.statetmpfile (lnk_file (getattr read open map)))
     (allow subj tmpfile.statetmpfile (fifo_file (getattr read open)))
-    (allow subj tmp.fs (file (getattr read open)))
+    (allow subj tmp.fs (file (getattr read open create write ioctl append)))
+
+    (allow subj selinux.fs(filesystem (getattr)))
+    (allow subj selinux.conffile(dir (search)))
+    (allow subj hotplugcall.subj (fd (use)))
+    (allow subj hotplugcall.subj (fifo_file ( write ioctl )))
+
+    ;; R3 DPP-Ubus Key
+    (allow subj .ubusd.subj (unix_stream_socket (connectto)))
+    (allow subj .ubusd.runtimetmpfile (dir (search)))
+    (allow subj .ubusd.runtimetmpfile (sock_file (write)))
 
     ;; To insmod/rmmod
     (call .kmodloader.subj_type_transition (subj))
@@ -276,6 +318,12 @@
     (allow subj .net.netif (netif (egress)))
     (allow subj .net.netnode (node (sendto)))
 
+    (allow subj .unreserved.netport (udp_socket (name_bind)))
+    (allow subj .qcmap_ref.subj (fd (use)))
+    (allow subj .tmpfile.runtimetmpfile (dir (remove_name )))
+    (allow subj .tmpfile.runtimetmpfile (file (read open lock)))
+    (allow subj .sys.rootfile (dir (read open)))
+    (allow subj .dev.ttydev (chr_file (lock)))
 
     (call .sys.search_fs_dirs (subj))
     (call .shell.execute_execfile_files (subj))
@@ -304,6 +352,9 @@
 
     (call .wpad.write_runtimetmpfile_sock_files (subj))
     (call .file.execute_execfile_files (subj))
+
+    ;; Need to print on serial console if 'hyctl show is given'
+    (call .dev.readwriteinherited_ttydev_chr_files (subj))
 
     ;; Execute hostapd/wpa_supplicant binaries
     (call .wpad.subj_type_transition (subj))

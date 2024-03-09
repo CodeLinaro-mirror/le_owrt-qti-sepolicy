@@ -18,6 +18,11 @@
 ;; Ezmesh specific
     (allow .validatedata.subj .hotplugcall.subj (fd (use)))
     (allow .validatedata.subj .hotplugcall.subj (fifo_file(write)))
+;; Ezmesh Sigma specific
+    (allow .validatedata.subj wifi.subj (fd (use)))
+    (allow .validatedata.subj wifi.subj (tcp_socket (read write)))
+    (allow .validatedata.subj wifi.subj (fifo_file (write ioctl)))
+    (allow .validatedata.subj wifi.logtmpfile (file (read append)))
 )
 
 

@@ -89,6 +89,8 @@
     (filecon "/tmp/run/mesh_server" socket runtimetmpfile_file_context)
     (filecon "/tmp/run/ubus/ubus\.sock" socket runtimetmpfile_file_context)
     (filecon "/tmp/run/wsplc\.pipe" pipe runtimetmpfile_file_context)
+    (filecon "/tmp/run/mapserver" socket runtimetmpfile_file_context)
+    (filecon "/tmp/run/mapclient" socket runtimetmpfile_file_context)
 
     ;;
     ;; Macros
@@ -258,6 +260,9 @@
     (allow subj file.conffile (file (create append open ioctl read)))
     (allow subj file.conffile (dir (write add_name)))
 
+    ;; R3 Service Prioritization specific
+    (allow .uci.subj ezmesh.conffile (file (read)))
+    (allow .uci.subj .tmp.fs (file (read)))
 
     (allow subj uci.tmpfile (dir (search read open getattr)))
     (allow subj uci.tmpfile (file (getattr read open lock)))
@@ -284,9 +289,12 @@
     (allow subj ezmesh.runtimetmpfile (fifo_file (getattr read open unlink create write)))
     (allow subj ezmesh.runtimetmpfile (sock_file (read getattr setattr create write unlink)))
 
+    ;; UCI subject transition
+    (call .uci.subj_type_transition (subj))
+    (allow .uci.subj .wpad.subj (fd (use)))
 
     (allow subj uci.execfile (dir (search read open getattr)))
-    (allow subj uci.execfile (file (getattr read open execute execute_no_trans map)))
+    (allow subj uci.execfile (file (getattr read open execute map)))
     (allow subj uci.execfile (lnk_file (getattr read open)))
     (allow subj uci.execfile (fifo_file (getattr read open)))
 
@@ -320,10 +328,22 @@
 
     (allow subj .unreserved.netport (udp_socket (name_bind)))
     (allow subj .qcmap_ref.subj (fd (use)))
+    (allow subj .qcmap_ref.subj (fifo_file (read)))
+    (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
+    (allow subj .qcmap_ref.subj (netlink_route_socket (read write)))
     (allow subj .tmpfile.runtimetmpfile (dir (remove_name )))
     (allow subj .tmpfile.runtimetmpfile (file (read open lock)))
     (allow subj .sys.rootfile (dir (read open)))
     (allow subj .dev.ttydev (chr_file (lock)))
+
+    ;; Sigma specific cases
+    (allow subj wifi.subj (fifo_file (write ioctl)))
+    (allow subj wifi.logtmpfile (file (read append)))
+    (allow subj wifi.subj (tcp_socket (read write)))
+    (allow subj wifi.subj (unix_dgram_socket (sendto)))
+    (allow subj .net.procfile (lnk_file (read)))
+    (allow subj .net.procfile (file (read)))
+    (allow subj .tmpfile.runtimetmpfile (sock_file (write)))
 
     (call .sys.search_fs_dirs (subj))
     (call .shell.execute_execfile_files (subj))

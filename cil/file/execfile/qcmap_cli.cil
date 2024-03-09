@@ -532,6 +532,9 @@
     (allow subj .qcmap_cli.subj (unix_stream_socket (connectto)))
     (allow subj .netifd.subj (unix_stream_socket (connectto)))
 
+    ;;  To validatedata
+    (call .validatedata.subj_type_transition (subj))
+
     ;; Ezmesh cron support /etc/init.d/cron
     (allow subj .rccron.initscriptfile (file ( execute read open execute_no_trans)))
     (allow subj .validatedata.execfile (file ( execute read open execute_no_trans map )))

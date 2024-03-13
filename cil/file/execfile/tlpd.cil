@@ -74,5 +74,6 @@
 	(allow subj tlpd.datafile (dir (search write add_name)))
 	(allow subj tlpd.datafile (file (getattr create ioctl read write append open)))
 	(allow subj tlpd.datafile (fifo_file (getattr create read write open)))
+        (dontaudit subj .dataadpl.subj (process (signal)))
 )
 

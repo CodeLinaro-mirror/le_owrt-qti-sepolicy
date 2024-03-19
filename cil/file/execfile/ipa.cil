@@ -60,6 +60,7 @@
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
 	(allow .sdcard.miscfile .xattr.fs (filesystem (associate)))
+	(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 
 	(call .selinux.search_conffile_dirs (subj))
 	(call .selinux.getattr_filesystems(subj))

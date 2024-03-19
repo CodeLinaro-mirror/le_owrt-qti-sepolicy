@@ -43,5 +43,9 @@
           (call .shell.execute_execfile_files (subj))
           (allow subj file.modulesfile(dir(search getattr read open write)))
           (allow subj sys.ptydev(chr_file(read write)))
-
+          (allow subj sys.sysctlfile(dir(search)))
+          (allow subj net.sysctlfile(dir(search)))
+          (call .net.write_sysctlfile_files(subj))
+          (call .debug.search_sysctlfile_dirs(subj))
+          (call .debug.write_sysctlfile_files(subj))
 )

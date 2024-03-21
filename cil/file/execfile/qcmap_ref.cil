@@ -426,8 +426,7 @@
     (call .mka_authenticator.execute_initscriptfile_files (subj))
     (allow subj .mka_authenticator.initscriptfile (file (getattr execute read open)))
     (allow subj ipv6.sysctlfile ( dir ( search ) ) )
-    (allow subj ipv6.sysctlfile ( file ( write ) ) )
-    (allow subj ipv6.sysctlfile ( file ( open ) ) )
+    (allow subj ipv6.sysctlfile ( file ( open read write ) ) )
     ;; Need sento on unix_dgram_socket
     (allow subj self (unix_dgram_socket (sendto)))
     (call .logd.sendto_unix_dgram_sockets (subj))

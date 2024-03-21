@@ -20,4 +20,8 @@
   (allow .ifup.subj .qcmap_ref.subj (netlink_route_socket (read write)))
   ;;open/write pmsg_dev.nodedev
   (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+  ;; Sigma specific for ezmesh
+  (allow .ifup.subj wifi.subj (fd (use)))
+  (allow .ifup.subj wifi.logtmpfile (file (read append)))
+  (allow .ifup.subj wifi.subj (tcp_socket (read write)))
 )

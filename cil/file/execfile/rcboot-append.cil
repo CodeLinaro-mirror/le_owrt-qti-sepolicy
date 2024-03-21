@@ -17,6 +17,8 @@
      (call .ssl.search_certfile_dirs(subj))
 
     (allow subj .nameservice.miscfile (file (append)))
+    (call .uci.manage_conffile_files (subj))
+    (allow subj uci.conffile (dir( remove_name )))
 )
 
 

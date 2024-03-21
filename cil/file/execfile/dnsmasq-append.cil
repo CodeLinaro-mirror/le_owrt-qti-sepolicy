@@ -73,6 +73,10 @@
 (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 ;;open/write pmsg_dev.nodedev
 (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+;;Need for PBR
+(allow subj hotplugcall.subj (fd( use )))
+(allow subj hotplugcall.subj (fifo_file( write ioctl )))
+(allow subj qcmap_cli.subj (fifo_file( ioctl )))
 )
 
 

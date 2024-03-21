@@ -161,6 +161,19 @@
 
 	;; Need search on /etc/data (qcmap_cm.conffile context)
 	(allow subj qcmap_cm.conffile (dir (search)))
+
+	;; Need search, read, open, and getattr on ssl certfile dirs
+	(allow subj .ssl.certfile (dir (search read open getattr)))
+	;; Need read, and open on ssl certfile files
+	(allow subj .ssl.certfile (file (read open)))
+
+	;; Need search, and getattr on ssl conftmpfile dirs
+	(allow subj .ssl.conftmpfile (dir (search)))
+	;; Need read, open, and getattr on ssl conftmpfile dirs
+	(allow subj .ssl.conftmpfile (file (read getattr open)))
+
+	;; don't audit dac_override denial doesn't affect functionality
+	(dontaudit subj mka_supplicant.subj (capability (dac_override)))
 )
 
 (block mka_authenticator
@@ -309,4 +322,17 @@
 
 	;; Need search on /etc/data (qcmap_cm.conffile context)
 	(allow subj qcmap_cm.conffile (dir (search)))
+
+	;; Need search, read, open, and getattr on ssl certfile dirs
+	(allow subj .ssl.certfile (dir (search read open getattr)))
+	;; Need read, and open on ssl certfile files
+	(allow subj .ssl.certfile (file (read open)))
+
+	;; Need search, and getattr on ssl conftmpfile dirs
+	(allow subj .ssl.conftmpfile (dir (search)))
+	;; Need read, open, and getattr on ssl conftmpfile dirs
+	(allow subj .ssl.conftmpfile (file (read getattr open)))
+
+	;; don't audit dac_override denial doesn't affect functionality
+	(dontaudit subj mka_supplicant.subj (capability (dac_override)))
 )

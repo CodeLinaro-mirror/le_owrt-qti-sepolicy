@@ -22,6 +22,8 @@
     (filecon "/data/wpa_supplicant\.log" file datafile_file_context)
 
     (filecon "/tmp/hostapd\.txt" file tmpfile_file_context)
+    (filecon "/tmp/map_bh_info\.tmp" file tmpfile_file_context)
+    (filecon "/tmp/map_fh_info\.tmp" file tmpfile_file_context)
     (filecon "/tmp/wpa_supplicant\.txt" file tmpfile_file_context)
     (filecon "/var/run/hostapd.*\.pid" file runtimetmpfile_file_context)
     (filecon "/var/run/hostapd-wifi[0-9]+" dir runtimetmpfile_file_context)
@@ -66,7 +68,11 @@
     (call obj_type_transition_datafile_ext (subj))
 
     (call obj_type_transition_tmpfile (subj file "hostapd.txt"))
+    (call obj_type_transition_tmpfile (subj file "map_bh_info.tmp"))
+    (call obj_type_transition_tmpfile (subj file "map_fh_info.tmp"))
     (call obj_type_transition_tmpfile (subj file "wpa_supplicant.txt"))
+    (call obj_type_transition_tmpfile (subj file "hostapd.log"))
+    (call obj_type_transition_tmpfile (subj file "supplicant.log"))
     (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi0"))
     (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi1"))
     (call obj_type_transition_runtimetmpfile (subj dir "hostapd-wifi2"))
@@ -85,6 +91,7 @@
     (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
     (allow subj .sys.subj (fifo_file (write)))
     (allow subj .tmp.fs (dir (remove_name)))
+    (allow subj .tmp.fs (file (create)))
     (allow subj .qcmap_ref.subj (fifo_file (read write ioctl)))
     (allow subj .qcmap_ref.subj (fd (use)))
     (allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
@@ -189,4 +196,28 @@
     ;; IPQ ctrl_app_dut
     (allow subj .wifi.subj readwrite_udp_socket)
     (allow subj .wifi.tmpfile readwrite_file)
+
+    ;; IPQ EasyMesh
+    (call .pmsg_dev.read_nodedev_chr_files (subj))
+    (allow subj .ezmesh.subj (unix_dgram_socket (sendto)))
+    (allow subj .ezmesh.runtimetmpfile (sock_file (ioctl read write create getattr unlink setattr)))
+    (allow subj .tmpfile.statetmpfile (file (getattr read open lock)))
+    (allow subj .tmpfile.statetmpfile (dir (search)))
+    (allow subj .devices.sysfile (file (unlink getattr read open execute map write create lock append rename)))
+    (allow subj .hotplugcall.subj (unix_dgram_socket (sendto)))
+    (allow subj .hotplugcall.execfile (file (execute read open)))
+    (allow subj .uci.execfile (file (execute read open map execute_no_trans)))
+    (allow subj .uci.execfile (dir (search)))
+    (allow subj wifi.miscfile (dir (search execute getattr )))
+    (allow subj wifi.miscfile (file (execute read open execute_no_trans)))
+    (allow subj preinit.tmpfile (file (getattr read open)))
+    (allow subj preinit.tmpfile (dir (getattr read open search)))
+    (allow subj uci.tmpfile (dir (search)))
+    (allow subj uci.conffile (dir (search)))
+    (allow subj uci.conffile (file (getattr read open lock)))
+    (allow subj functions.miscfile (file (getattr read open)))
+    (allow subj functions.miscfile (dir (search)))
+
+    ;; Sigma Setup
+    (allow subj uci.tmpfile (file (getattr read open lock)))
 )

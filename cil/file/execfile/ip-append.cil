@@ -52,4 +52,6 @@
   (allow subj net.sysctlfile (dir (search)))
   (allow subj ipv4.sysctlfile (dir (search)))
   (call .ipv4.readwrite_sysctlfile_files (subj))
+  (allow subj .sys.subj (udp_socket (read write)))
+  (allow subj .sys.subj (packet_socket (read write)))
 )

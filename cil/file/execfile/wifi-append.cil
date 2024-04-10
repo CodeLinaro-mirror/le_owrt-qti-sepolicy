@@ -68,6 +68,9 @@
     (filecon "/var/run/cnss" dir runtimetmpfile_file_context)
     (filecon "/var/run/cnss/.*" any runtimetmpfile_file_context)
     (filecon "/tmp/macaddr" file tmpfile_file_context)
+    ;; IPQ Avahi
+    (filecon "/etc/avahi/services" dir conffile_file_context)
+    (filecon "/etc/avahi/services/sigma_dut-dpp\.service" file conffile_file_context)
     ;; IPQ ctrl_app_dut
     (filecon "/tmp/applogs" file tmpfile_file_context)
 
@@ -105,6 +108,8 @@
     (macro obj_type_transition_conffile ((type ARG1))
         (call .file.conffile_obj_type_transition (ARG1 conffile dir "ipq"))
         (call .file.conffile_obj_type_transition (ARG1 conffile dir "sawf"))
+        (call .file.conffile_obj_type_transition (ARG1 conffile dir "services"))
+        (call .file.conffile_obj_type_transition (ARG1 conffile file "sigma_dut-dpp.service"))
     )
 
     (macro obj_type_transition_execfile_ext ((type ARG1))
@@ -418,6 +423,17 @@
     (allow subj .wpad.subj (unix_dgram_socket (sendto)))
     (call .wpad.write_runtimetmpfile_sock_files (subj))
     (call .file.execute_execfile_files (subj))
+    (allow subj .wifi.conffile (dir (remove_name)))
+
+    ;; Avahi tool related
+    (allow subj self (unix_stream_socket (connect getattr)))
+    ;; Avahi-browse needs socket file /tmp/run/dbus/system_bus_socket
+    (allow subj .sys.subj (unix_stream_socket (connectto)))
+    (call .wifi.manage_conffile_files (subj))
+    (allow subj .wifi.conffile (file (open ioctl getattr unlink)))
+    (dontaudit subj self (capability (sys_ptrace)))
+    (allow subj .ezmesh.runtimetmpfile (dir (search)))
+
     ;; uci-commit wireless
     (allow subj .uci.conffile (dir (remove_name)))
     (allow subj .uci.conffile (file (unlink)))

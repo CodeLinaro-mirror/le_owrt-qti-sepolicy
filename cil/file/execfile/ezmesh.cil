@@ -91,6 +91,7 @@
     (filecon "/tmp/run/wsplc\.pipe" pipe runtimetmpfile_file_context)
     (filecon "/tmp/run/mapserver" socket runtimetmpfile_file_context)
     (filecon "/tmp/run/mapclient" socket runtimetmpfile_file_context)
+    (filecon "/tmp/run/dbus/system_bus_socket" socket runtimetmpfile_file_context)
 
     ;;
     ;; Macros
@@ -150,6 +151,8 @@
                     (ARG1 runtimetmpfile sock_file "mesh_server"))
 (call .tmpfile.runtimetmpfile_obj_type_transition
                     (ARG1 runtimetmpfile sock_file "ubus.sock"))
+(call .tmpfile.runtimetmpfile_obj_type_transition
+                    (ARG1 runtimetmpfile sock_file "system_bus_socket"))
 (call .tmpfile.runtimetmpfile_obj_type_transition
                     (ARG1 runtimetmpfile sock_file "*"))
 (call .tmpfile.runtimetmpfile_obj_type_transition

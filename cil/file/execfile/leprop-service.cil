@@ -137,7 +137,6 @@
         file
         execfile_file_context)
 
-
        ;;
        ;; Macros
        ;;
@@ -148,7 +147,6 @@
        (macro obj_type_transition_execfile ((type ARG1))
               (call .file.execfile_obj_type_transition
                     (ARG1 execfile file "leprop-service")))
-
 
        (macro tmp_obj_type_transition_miscfile ((type ARG1))
               (call .tmp.fs_obj_type_transition

@@ -136,6 +136,7 @@
        (call .qms.readwrite_tmpfile_sock_files (subj))
        (call .qms.connectto_unix_stream_sockets (subj))
        (call .qms.readwrite_unix_stream_sockets (subj))
+       (allow subj qms.tmpfile (sock_file (write)))
 
        ;; Read only /etc/bluetooth(/.*)?
        (call .file.search_conffile_dirs (subj))

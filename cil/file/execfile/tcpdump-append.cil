@@ -18,4 +18,6 @@
     (allow subj self (capability (net_admin)))
     ;; sys_module capability can't be given
     (dontaudit subj self (capability (sys_module)))
+    ;; Need permission for tcpdump
+    (allow subj .sys.subj (system (module_request)))
 )

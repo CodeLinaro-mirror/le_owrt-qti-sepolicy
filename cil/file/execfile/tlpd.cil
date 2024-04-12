@@ -75,5 +75,7 @@
 	(allow subj tlpd.datafile (file (getattr create ioctl read write append open)))
 	(allow subj tlpd.datafile (fifo_file (getattr create read write open)))
         (dontaudit subj .dataadpl.subj (process (signal)))
+        ;; Need permission for tlpd_diag
+        (call .ssl.search_certfile_dirs (subj))
 )
 

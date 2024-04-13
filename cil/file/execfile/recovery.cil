@@ -73,6 +73,11 @@
 		file
 		tmpfile_file_context)
 
+        (filecon
+                "/tmp/filesmap"
+                file
+                runtimetmpfile_file_context)
+
 	;;
 	;; Macros
 	;;
@@ -98,6 +103,7 @@
 	(macro obj_type_transition_runtimetmpfile ((type ARG1))
 		(call .tmp.fs_obj_type_transition (ARG1 runtimetmpfile file "update_binary"))
 		(call .tmp.fs_obj_type_transition (ARG1 runtimetmpfile file "system.img"))
+                (call .tmp.fs_obj_type_transition (ARG1 runtimetmpfile file "filesmap"))
 		(call .tmp.fs_obj_type_transition (ARG1 runtimetmpfile file "update.sig")))
 
 	(macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))

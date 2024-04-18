@@ -23,6 +23,10 @@
   (allow subj .qcmap_ref.subj readwriteinherited_fifo_file)
   (allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
 
+  ;; SDX ezmesh specific
+  (allow subj hotplugcall.subj (fd (use)))
+  (allow subj hotplugcall.subj (fifo_file (write ioctl)))
+
   ;; IPQ sigma_dut
   (allow subj .wifi.subj (tcp_socket (read write)))
   (allow subj .wifi.logtmpfile readwrite_file)

@@ -23,6 +23,8 @@
     (filecon "/data/vendor/wifi/.*" any datafile_file_context)
     (filecon "/dev/wlan" char nodedev_file_context)
     (filecon "/tmp/sigma_dut-sta\.conf" file tmpfile_file_context)
+    (filecon "/tmp/hostapd\.log" file tmpfile_file_context)
+    (filecon "/tmp/supplicant\.log" file tmpfile_file_context)
     (filecon "/tmp/sigma_dut-ap\.conf" file tmpfile_file_context)
     (filecon "/tmp/sigma_dut-ap_0\.conf" file tmpfile_file_context)
     (filecon "/tmp/sigma_dut-ping\.sh" file tmpfile_file_context)
@@ -66,6 +68,9 @@
     (filecon "/var/run/cnss" dir runtimetmpfile_file_context)
     (filecon "/var/run/cnss/.*" any runtimetmpfile_file_context)
     (filecon "/tmp/macaddr" file tmpfile_file_context)
+    ;; IPQ Avahi
+    (filecon "/etc/avahi/services" dir conffile_file_context)
+    (filecon "/etc/avahi/services/sigma_dut-dpp\.service" file conffile_file_context)
     ;; IPQ ctrl_app_dut
     (filecon "/tmp/applogs" file tmpfile_file_context)
 
@@ -103,6 +108,8 @@
     (macro obj_type_transition_conffile ((type ARG1))
         (call .file.conffile_obj_type_transition (ARG1 conffile dir "ipq"))
         (call .file.conffile_obj_type_transition (ARG1 conffile dir "sawf"))
+        (call .file.conffile_obj_type_transition (ARG1 conffile dir "services"))
+        (call .file.conffile_obj_type_transition (ARG1 conffile file "sigma_dut-dpp.service"))
     )
 
     (macro obj_type_transition_execfile_ext ((type ARG1))
@@ -236,7 +243,7 @@
     (call .wpad.read_miscfile_files (subj))
 
     ;; Need to run command 'date' for logs in qcacld32.sh
-    (allow subj .file.conffile (lnk_file (read)))
+    (allow subj .file.conffile (lnk_file (read getattr unlink)))
     (call .locale.read_miscfile_files (subj))
     (call .locale.map_miscfile_files (subj))
 
@@ -358,7 +365,7 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .ethagent.subj))
 
     ;; Look for files in /tmp
-    (allow subj .tmp.fs (file (read getattr open)))
+    (allow subj .tmp.fs (file (create read getattr open unlink)))
 
     ;; Read /proc/cmdline
     (call .cmdline.read_procfile_files (subj))
@@ -416,6 +423,17 @@
     (allow subj .wpad.subj (unix_dgram_socket (sendto)))
     (call .wpad.write_runtimetmpfile_sock_files (subj))
     (call .file.execute_execfile_files (subj))
+    (allow subj .wifi.conffile (dir (remove_name)))
+
+    ;; Avahi tool related
+    (allow subj self (unix_stream_socket (connect getattr)))
+    ;; Avahi-browse needs socket file /tmp/run/dbus/system_bus_socket
+    (allow subj .sys.subj (unix_stream_socket (connectto)))
+    (call .wifi.manage_conffile_files (subj))
+    (allow subj .wifi.conffile (file (open ioctl getattr unlink)))
+    (dontaudit subj self (capability (sys_ptrace)))
+    (allow subj .ezmesh.runtimetmpfile (dir (search)))
+
     ;; uci-commit wireless
     (allow subj .uci.conffile (dir (remove_name)))
     (allow subj .uci.conffile (file (unlink)))
@@ -478,9 +496,11 @@
 
     ;; Remove files written to /var/run
     (allow subj .tmpfile.runtimetmpfile (dir (remove_name)))
+    (allow subj .tmpfile.runtimetmpfile (file (read open lock write)))
+    (allow subj wpad.runtimetmpfile (file (getattr read open)))
 
     ;; IPQ AFC
-    (allow subj .afc.subj (dir (read open search)))
+    (allow subj .afc.subj (dir (read open search getattr)))
     (allow subj .afc.subj (file (read open)))
     (allow subj .afc.subj (lnk_file (read)))
 
@@ -557,6 +577,7 @@
     (allow subj .ezmesh.execfile (file (unlink getattr read open execute map write create lock append rename)))
     (allow subj .hotplugcall.subj (fifo_file (unlink getattr read open execute map write create lock append rename ioctl)))
     (allow subj .wpad.subj (file (write)))
+    (allow subj .wpad.subj (process (signal)))
     (allow subj .rccron.subj (dir (search)))
     (allow subj .rccron.subj read_file)
     (allow subj .rccron.subj read_lnk_file)
@@ -572,8 +593,92 @@
     (allow subj self (capability (sys_ptrace)))
     (allow subj .ipacm.subj (fd (use)))
     (allow subj .ipacm.subj (fifo_file (read write ioctl)))
+    (allow subj .ipacm.subj (netlink_route_socket( read write )))
     (allow subj .ipacm.subj readwrite_netlink_netfilter_socket)
+    (allow subj .ipacm.subj (udp_socket (read write)))
+    (allow subj .ipacm.subj create_netlink_netfilter_socket)
+    (allow subj .ipacm.runtimetmpfile (file (read write)))
+    (allow subj self (netlink_route_socket (read write)))
+
+    ;; Sigma specific denials handled.
+    (allow subj .qcmap_cm.conffile (file (read open)))
+    (allow subj .qcmap_cm.conffile (dir (search)))
+
+    (allow subj .qcmap_cm.subj (dir (getattr)))
+    (allow subj .qcmap_ref.subj (dir (getattr)))
+    (allow subj .uhttpd.subj (dir (getattr)))
+    (allow subj .ipacmdiag.subj (dir (getattr)))
+    (allow subj .netifd.subj (dir (getattr)))
+    (allow subj .logd.subj (dir (getattr)))
+    (allow subj .rmt_storage.subj (dir (getattr)))
+    (allow subj .rpcd.subj (dir (getattr)))
+    (allow subj .wpad.subj (dir (getattr)))
+    (allow subj .dnsmasq.subj (dir (getattr)))
+
+    (allow subj ezmesh.subj (dir (search)))
+    (allow subj ezmesh.subj (file (read open)))
+    (allow subj ezmesh.subj (lnk_file (read)))
+    (allow subj ezmesh.subj (unix_dgram_socket (sendto)))
+
+    ;; Need open for /proc/sys/kernel/
+    (allow subj kernel.sysctlfile (dir ( search)))
+    (allow subj corepattern.sysctlfile (file ( getattr)))
+
+    (allow subj .file.conffile (dir (remove_name)))
+    (allow subj .file.conffile (file (getattr write unlink)))
+
+    ;; vaalidatedata subj transition
+    (call .validatedata.subj_type_transition (subj))
+    (allow subj .validatedata.execfile (file (read open execute map)))
+
+    ;; Need on /proc for process
+    (allow subj .sys.subj (dir (getattr)))
+    (allow subj .ubusd.subj (dir (getattr)))
+    (allow subj .urngd.subj (dir (getattr)))
+    (allow subj .tftp_server.subj (dir (getattr)))
+    (allow subj .qwesd.subj (dir (getattr)))
+    (allow subj .diag-router.subj (dir (getattr)))
+    (allow subj .qseecomd.subj (dir (getattr)))
+    (allow subj .leprop.subj (dir (getattr)))
+    (allow subj .fw3.subj (lnk_file (read)))
+    (allow subj .net.sysctlfile (file (write open)))
+    (allow subj .fs-scrub-daemon.subj (dir (getattr)))
+    (allow subj .diagrebootapp.subj (dir (getattr)))
+    (allow subj .mbim.subj (dir (getattr)))
+    (allow subj .qmuxbridge.subj (dir (getattr)))
+    (allow subj .dropbear.subj (dir (getattr)))
+    (allow subj .ip.subj (dir (getattr)))
+    (allow subj .odhcpd.subj (dir (getattr)))
+
+    (allow subj wpad.runtimetmpfile (sock_file (unlink)))
+    (allow subj ipv6.sysctlfile (dir (search getattr)))
+    (allow .uci.subj ezmesh.subj (fd (use)))
+    (allow .uci.subj ezmesh.subj (file (append)))
+    (allow .uci.subj ezmesh.subj (fifo_file (write ioctl)))
+    (allow .uci.subj ezmesh.subj (packet_socket (read write)))
+    (allow .uci.subj ezmesh.subj (netlink_socket (read write)))
+    (allow .uci.subj ezmesh.subj (netlink_route_socket (read write)))
+    (allow .uci.subj ezmesh.subj (unix_dgram_socket (read write)))
+    (allow .uci.subj .ezmesh.tmpfile (file (append)))
+    (allow .uci.subj ezmesh.runtimetmpfile (fifo_file (read write)))
+
+    ;; Need domain transition rcnetwork file
+    (call .rcnetwork.execute_initscriptfile_files (subj))
+    (allow subj .rcnetwork.initscriptfile (file (execute read open)))
+
+    ;; Need for /tmp/host, supplicant log
+    (allow subj .wpad.tmpfile (file (getattr append open write unlink)))
+
+    ;;iface-up subj transition
+    (call .ifup.subj_type_transition (subj))
+    (allow subj .ifup.execfile (file (getattr read open execute)))
+
+    (allow subj .ipacm.subj (dir (getattr)))
+    (allow subj ezmesh.runtimetmpfile (sock_file (write)))
+    (allow subj .tmpfile.runtimetmpfile (sock_file (create unlink)))
+
     (call .ezmesh.subj_type_transition (subj))
     (call .random.read_nodedev_chr_files (subj))
     (call .pmsg_dev.read_nodedev_chr_files (subj))
+    (call .ipa.readwrite_nodedev_chr_files (subj))
 )

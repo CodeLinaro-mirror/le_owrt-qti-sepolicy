@@ -9,6 +9,20 @@
     (call .qcmap_cli.use_fds (subj))
     (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
     (allow .validatedata.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+    (allow subj hotplugcall.subj (fd( use )))
+    (allow subj hotplugcall.subj (fifo_file( write ioctl )))
+    (allow subj netifd.subj (netlink_route_socket( read write )))
+    (allow subj netifd.subj (netlink_kobject_uevent_socket( read write )))
+    (allow subj netifd.subj (fd( use )))
+
+;; Ezmesh specific
+    (allow .validatedata.subj .hotplugcall.subj (fd (use)))
+    (allow .validatedata.subj .hotplugcall.subj (fifo_file(write)))
+;; Ezmesh Sigma specific
+    (allow .validatedata.subj wifi.subj (fd (use)))
+    (allow .validatedata.subj wifi.subj (tcp_socket (read write)))
+    (allow .validatedata.subj wifi.subj (fifo_file (write ioctl)))
+    (allow .validatedata.subj wifi.logtmpfile (file (read append)))
 )
 
 

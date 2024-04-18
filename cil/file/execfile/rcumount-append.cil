@@ -12,6 +12,7 @@
         (allow rcumount.subj .cache.miscfile ( filesystem (unmount)))
         (allow rcumount.subj .mtd.stordev ( chr_file(open)))
 	(dontaudit rcumount.subj .qcfirmware.miscfile ( filesystem (unmount)))
+	(dontaudit rcumount.subj .persist.miscfile ( filesystem (unmount)))
 )
 
 

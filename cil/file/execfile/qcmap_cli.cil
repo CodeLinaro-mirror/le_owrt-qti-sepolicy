@@ -180,7 +180,9 @@
     (call .libubox.search_datafile_dirs (subj))
     (call .libubox.manage_datafile_files (subj))
     ;; Need remove_name on /tmp/ to remove ipv{4/6}config[0-9]+ files
-    (allow subj tmp.fs (dir(remove_name)))
+    (allow subj tmp.fs (dir(remove_name create)))
+    (allow subj tmp.fs (lnk_file(create read)))
+    (allow subj tmp.fs (file(write unlink read open append rename )))
     ;; Need open write on /etc/firewall.user
     (call .firewall.manage_conffile_files (subj))
     ;; Need transition to ipa while indicating to ipa offload
@@ -235,6 +237,7 @@
 
     ;; Need search on /tmp/run/
     (allow subj .tmpfile.runtimetmpfile (dir (search)))
+    (allow subj .tmpfile.runtimetmpfile (file (create)))
 
     (allow subj self (process (setfscreate getcap setcap)))
     ;; Need read search /sys/class/net
@@ -529,6 +532,13 @@
     (allow subj .qcmap_cli.subj (unix_stream_socket (connectto)))
     (allow subj .netifd.subj (unix_stream_socket (connectto)))
 
+    ;;  To validatedata
+    (call .validatedata.subj_type_transition (subj))
+
+    ;; Ezmesh cron support /etc/init.d/cron
+    (allow subj .rccron.initscriptfile (file ( execute read open execute_no_trans)))
+    (allow subj .validatedata.execfile (file ( execute read open execute_no_trans map )))
+
     ;;Need for accessing strongswan module
     (allow subj .sys.subj (process (signull)))
     (allow subj .netifd.subj (process (signull)))
@@ -597,6 +607,9 @@
     (allow subj ipacmdiag.subj (file (read open)))
     (allow subj netmgrd.subj (file (read)))
     (allow subj dnsmasq.subj (file (read)))
+    (allow subj afc.subj (file (read open)))
+    (allow subj afc.subj (dir (getattr search)))
+    (allow subj afc.subj (lnk_file (read)))
 
     ;; Need run chmod on /dev/socket/data/pd_manager
     (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
@@ -654,6 +667,7 @@
     (allow subj wpad.subj (lnk_file( read )))
     (allow subj loc_lowi_server.subj (file( read open )))
     (allow subj loc_hal_daemon.subj (file( read open )))
+    (allow subj jsonfilter.subj (dir (search)))
 
     (call .wifi.manage_tmpfile_files (subj))
     (call .preinit.search_tmpfile_dirs (subj))
@@ -716,4 +730,17 @@
 
     ;;open/write pmsg_dev.nodedev
     (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+
+    ;;Need for PBR
+    (call .validatedata.subj_type_transition (subj))
+    (allow subj validatedata.execfile (file (execute read open map)))
+    (allow subj dnsmasq.tmpfile (dir (getattr)))
+    (call .dnsmasq.subj_type_transition (subj))
+    (allow subj dnsmasq.execfile (file (getattr execute read open map)))
+    (allow subj ipv4.sysctlfile (dir (search)))
+    (allow subj ipv4.sysctlfile (file (write open )))
+    (allow subj uci.conffile (file (lock)))
+    (allow subj uci.tmpfile (dir (search)))
+    (allow subj uci.tmpfile (file (getattr read open lock)))
+    (call .dnsmasq.search_tmpfile_dirs (subj))
 )

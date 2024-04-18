@@ -141,6 +141,10 @@
       (allow subj kernel.sysfile (dir (search)))
       (allow subj file.execfile (file (open read execute)))
 
+      (allow subj .tmp.fs (file(create read write open append getattr rename unlink)))
+      (allow subj .tmp.fs (dir(write add_name remove_name create)))
+      (allow subj .tmp.fs (lnk_file(create)))
+
 ;; For QCMAP 'Activate supplicant'
       (allow subj .netifd.subj (netlink_route_socket (read write)))
       (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
@@ -163,7 +167,7 @@
       (allow subj wifi.miscfile (file (unlink getattr read open map rename)))
       (allow subj wifi.miscfile (dir  (search getattr read open map ioctl add_name)))
 
-      (allow subj cron.miscfile (file (unlink getattr read open map rename)))
+      (allow subj cron.miscfile (file (unlink getattr read open map rename create append)))
       (allow subj cron.miscfile (dir  (search getattr read open map ioctl add_name write create append remove_name)))
       (allow subj cron.miscfile (lnk_file (getattr read open map)))
 
@@ -172,7 +176,7 @@
       (allow subj qcmap_cli.tmpfile (file (unlink getattr read open map rename write)))
 
       (allow subj hotplug.conffile (file (unlink getattr read open map rename execute execute_no_trans )))
-      (allow subj console.ttydev (chr_file (open)))
+      (allow subj console.ttydev (chr_file (open write)))
 
 
       (allow subj modules.procfile (file (unlink getattr read open map rename)))
@@ -210,4 +214,24 @@
       (allow subj .wpad.execfile (file (unlink getattr read open map rename execute)))
       (allow subj .wpad.subj (unix_dgram_socket (read sendto accept)))
       (call .wifi.subj_type_transition (subj))
+;; Need for PBR
+      (allow subj uci.statetmpfile (file (read open)))
+      (call .validatedata.subj_type_transition (subj))	
+      (allow subj validatedata.execfile (file (execute read open map)))
+      (allow subj dnsmasq.tmpfile (dir (getattr)))
+      (call .dnsmasq.subj_type_transition (subj))
+      (allow subj dnsmasq.execfile (file (getattr execute read open map)))
+      (allow subj ipv4.sysctlfile (dir (search)))
+      (allow subj ipv4.sysctlfile (file (write open)))
+      (allow subj uci.conffile (file (lock)))
+      (allow subj uci.tmpfile (dir (search)))
+      (allow subj uci.tmpfile (file (getattr read open lock)))
+      (call .sys.search_sysctlfile_dirs (subj))
+      (allow subj net.sysctlfile (file (write open)))
+      (call .net.search_sysctlfile_dirs (subj))
+      (call .iproute2.readwrite_conffile_dirs (subj))
+      (call .dnsmasq.search_tmpfile_dirs (subj))
+      (call .iproute2.manage_conffile_files (subj))
+      (call .qcmap_cm.execute_conffile_files (subj))
+      (call .qcmap_cm.subj_type_transition (subj))
 )

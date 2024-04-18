@@ -54,6 +54,10 @@
 
 ;;open/write pmsg_dev.nodedev
 (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+(allow subj .sys.subj (unix_stream_socket (read write)))
+(allow subj .sys.subj (packet_socket (read write)))
+(allow subj .sys.subj (netlink_route_socket (read write)))
+(allow subj .sys.subj (netlink_socket (read write)))
 )
 
 

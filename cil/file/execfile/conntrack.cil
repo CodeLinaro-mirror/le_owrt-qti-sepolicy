@@ -59,4 +59,9 @@
            (allow subj .sys.subj (fifo_file (write ioctl)))
            (call .dev.readwriteinherited_ttydev_chr_files (subj))
            (allow subj conntrack.datafile (file (write ioctl)))
+           ;; Need permission to run conntrack related cmds from netifd context
+           (allow subj .netifd.subj (fd (use)))
+           (allow subj .netifd.subj (fifo_file (write ioctl)))
+           (allow subj .netifd.subj (netlink_route_socket (read write)))
+           (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
        )

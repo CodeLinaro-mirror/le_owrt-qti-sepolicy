@@ -1,4 +1,4 @@
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -214,7 +214,6 @@
       (allow subj .wpad.execfile (file (unlink getattr read open map rename execute)))
       (allow subj .wpad.subj (unix_dgram_socket (read sendto accept)))
       (call .wifi.subj_type_transition (subj))
-;; Need for PBR
       (allow subj uci.statetmpfile (file (read open)))
       (call .validatedata.subj_type_transition (subj))	
       (allow subj validatedata.execfile (file (execute read open map)))
@@ -234,4 +233,8 @@
       (call .iproute2.manage_conffile_files (subj))
       (call .qcmap_cm.execute_conffile_files (subj))
       (call .qcmap_cm.subj_type_transition (subj))
+      (allow subj .nftables.execfile (file(read open execute getattr map)))
+      (call .nftables.subj_type_transition (subj))
+      (call .kmsg.readwrite_nodedev_chr_files (subj))
+
 )

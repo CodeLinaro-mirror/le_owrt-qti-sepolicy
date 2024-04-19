@@ -63,6 +63,7 @@
     (allow subj .wifi.datafile (dir (search)))
     (allow subj .wifi.datafile (sock_file (getattr)))
     (allow subj self (capability (dac_read_search)))
+    (allow subj .tmp.fs (dir (remove_name)))
 
     (allow subj self (netlink_socket (read write)))
     (allow subj self (netlink_route_socket (read write)))

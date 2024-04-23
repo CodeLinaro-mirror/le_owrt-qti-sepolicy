@@ -125,5 +125,4 @@
 
     ;; Need permission for pidof
     (allow subj csd_server.subj (dir (search)))
-    (allow subj .qcmap_cm.tmpfile (dir (search)))
 )

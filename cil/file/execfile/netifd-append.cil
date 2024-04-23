@@ -283,6 +283,4 @@
 	  (allow subj .hotplugcall.subj (process (rlimitinh siginh)))
 	  (allow subj .wpad.subj (process (rlimitinh siginh)))
 	  (allow subj .wifi.subj (process (rlimitinh siginh)))
-	  (allow subj .sys.fs (filesystem (getattr)))
-	  (allow subj .filesystems.procfile (file (read open)))
 )

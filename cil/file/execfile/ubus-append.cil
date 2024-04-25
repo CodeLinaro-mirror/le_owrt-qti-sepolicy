@@ -23,7 +23,10 @@
 ;; Need append on /tmp/resolve.conf
 (call .resolv.append_tmpfile_files (subj))
 (allow subj .kmsg.nodedev (chr_file (open write ioctl)))
-(call .fw3.write_runtimetmpfile_files (subj)) 
+(call .fw3.write_runtimetmpfile_files (subj))
+
+;; odhcp6c Need run ifstatus which use ubus
+(allow .ubus.subj .odhcp6c.subj (fifo_file (read write ioctl)))
 
 ;; IPQ sigma_dut
 (allow subj .wifi.logtmpfile readwrite_file)

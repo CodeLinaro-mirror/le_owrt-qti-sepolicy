@@ -166,8 +166,8 @@
     (allow subj .rcnetwork.subj (fd (use)))
 
     ;; Access /usr/bin/QCMAP_StaInterface
-    (call .qcmap_cli.execute_execfile_files (subj))
-    (call .qcmap_cli.subj_type_transition (subj))
+    (call .qcmap_cm.subj_type_transition (subj))
+    (allow subj .qcmap_cm.execfile (file (getattr map execute read open)))
     (allow subj .netifd.subj (fd (use)))
     (allow subj .netifd.subj (netlink_route_socket (read write)))
     (allow subj .netifd.subj (fifo_file (write ioctl)))

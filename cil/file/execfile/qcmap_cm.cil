@@ -657,6 +657,9 @@
     (allow xtables.subj qcmap_cm.subj (unix_stream_socket (read write)))
     (allow xtables.subj qcmap_cm.subj readwriteinherited_fifo_file)
     (allow xtables.subj qcmap_cm.subj (fd (use)))
+    (allow xtables.subj qcmap_cm.subj (packet_socket(read write)))
+    (allow xtables.subj qcmap_cm.subj (netlink_socket(read write)))
+    (allow xtables.subj qcmap_cm.tmpfile (file(write ioctl)))
 
     (allow subj .file.execfile (dir (read open getattr)))
     (allow subj .wifi.execfile (file (read open execute)))

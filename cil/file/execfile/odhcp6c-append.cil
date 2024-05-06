@@ -65,7 +65,9 @@
     (allow subj .devices.sysfile (dir (search read open)))
     (allow subj .devices.sysfile (file (read open)))
 
-
+    ;; Need transition to run odhcpd reload
+    (call .rcodhcpd.subj_type_transition (subj))
+    (allow subj .rcodhcpd.initscriptfile (file (getattr execute read open)))
 
     ;;Need for single route feature
     (allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))

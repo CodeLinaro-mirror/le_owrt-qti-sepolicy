@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -77,5 +77,7 @@
 	(call .kernel.search_sysfile_dirs (subj))
 
 	(dontaudit subj .qcmap_cm.tmpfile (file (read)))
+
+	(allow subj ipacli.execfile (file(execute_no_trans)))
     ;;
 )

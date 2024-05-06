@@ -54,14 +54,16 @@
     (allow ifstatus.subj odhcp6c.subj (fd (use)))
     (allow subj .ifstatus.execfile (file (read open getattr)))
     ;; Need reload firewall anc access init.d from odhcp6c
-    (allow subj .file.initscriptfile (dir (read)))
+    (allow subj .file.initscriptfile (dir (read search)))
     (call .rcfirewall.subj_type_transition (subj))
 
     ;; Need read open on /sys/devices/soc0/platform_subtype_id
     (allow subj .devices.sysfile (dir (search)))
     (allow subj .devices.sysfile (file (read open)))
 
-
+    ;; Need transition to run odhcpd reload
+    (call .rcodhcpd.subj_type_transition (subj))
+    (allow subj .rcodhcpd.initscriptfile (file (getattr execute read open)))
 
     ;;Need for single route feature
     (allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))

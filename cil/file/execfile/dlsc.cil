@@ -66,6 +66,8 @@
 	(allow subj .net.procfile (file (read open getattr)))
 	(allow subj self create_qipcrtr_socket)
 	(allow subj file.conffile (dir (search)))
+        ;; Need permission for ifconfig
+        (allow subj .sys.subj (system (module_request)))
 
 )
 

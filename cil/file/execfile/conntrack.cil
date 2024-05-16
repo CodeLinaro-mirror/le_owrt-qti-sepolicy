@@ -64,4 +64,8 @@
            (allow subj .netifd.subj (fifo_file (write ioctl)))
            (allow subj .netifd.subj (netlink_route_socket (read write)))
            (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+
+           ;; Need permission for conntrack
+           (allow subj qcmap_cm.subj (packet_socket (read write)))
+           (allow subj qcmap_cm.subj (netlink_socket (read write)))
        )

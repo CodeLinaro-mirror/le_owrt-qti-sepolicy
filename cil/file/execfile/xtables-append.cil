@@ -19,4 +19,5 @@
   (allow subj .fw3.subj (fifo_file (ioctl)))
   ;;open/write pmsg_dev.nodedev
   (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+  (allow subj .ucode.subj (fd (use)))
 )

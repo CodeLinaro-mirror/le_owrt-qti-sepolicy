@@ -1368,4 +1368,11 @@
     (call .ubus.read_execfile_files (subj))
     (call .ubus.mapexecute_execfile_files (subj))
     (call .ubus.subj_type_transition (subj))
+
+    ;;Need permission to share sockets of qcmap to wifi to run cfg commands
+    (allow wifi.subj qcmap_cm.subj (fd (use)))
+    (allow wifi.subj qcmap_cm.subj (packet_socket (read write)))
+    (allow wifi.subj qcmap_cm.subj (netlink_socket (read write)))
+    (allow wifi.subj qcmap_cm.subj (fifo_file (read write ioctl)))
+    (allow wifi.subj qcmap_cm.subj (unix_stream_socket (read write)))
 )

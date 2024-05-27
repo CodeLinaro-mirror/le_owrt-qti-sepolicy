@@ -1375,4 +1375,6 @@
     (allow wifi.subj qcmap_cm.subj (netlink_socket (read write)))
     (allow wifi.subj qcmap_cm.subj (fifo_file (read write ioctl)))
     (allow wifi.subj qcmap_cm.subj (unix_stream_socket (read write)))
+    (allow subj .preinit.tmpfile (dir (search read open getattr)))
+    (allow subj .preinit.tmpfile (file (getattr read open)))
 )

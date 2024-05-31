@@ -20,4 +20,6 @@
   ;;open/write pmsg_dev.nodedev
   (allow subj .pmsg_dev.nodedev (chr_file (write open)))
   (allow subj .ucode.subj (fd (use)))
+  ;;Need permission for fw3
+  (allow subj fw3.datafile (file (read)))
 )

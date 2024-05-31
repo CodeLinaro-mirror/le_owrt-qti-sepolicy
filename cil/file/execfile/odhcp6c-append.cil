@@ -133,4 +133,9 @@
     ;; Need permission for pidof
     (allow subj csd_server.subj (dir (search)))
     (allow subj .qcmap_cm.tmpfile (dir (search)))
+
+    ;; Need permission for ip6tables and odhcpd
+    (allow subj .rccommon.conffile (file (read)))
+    (allow subj .tmpfile.locktmpfile (dir (search)))
+    (allow subj .tmpfile.locktmpfile (file (open)))
 )

@@ -125,4 +125,5 @@
     (call .logd.write_miscfile_sock_files (subj))
     (allow subj .logd.miscfile (sock_file (write)))
     (allow subj logd.subj (unix_dgram_socket (sendto)))
+    (allow subj .tmp.fs (dir (remove_name)))
 )

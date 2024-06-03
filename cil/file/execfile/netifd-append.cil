@@ -287,4 +287,7 @@
 	  ;;Need for IPA CFG XML access in EoGRE
 	  (allow subj .ipacm.conffile (dir (search write add_name remove_name)))
 	  (allow subj .ipacm.conffile (file (read write open lock getattr create ioctl unlink)))
+
+          ;;Need for swanctl append
+          (call .tmp.readwrite_fs_files (subj))
 )

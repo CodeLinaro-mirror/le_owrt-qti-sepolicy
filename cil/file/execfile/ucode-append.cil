@@ -28,6 +28,7 @@
 (allow subj .firewall.conffile (file(read open)))
 ;; Need obj_type_transition for /etc/firewall.user.*
 (call .firewall.obj_type_transition_conffile_ext (subj))
+(allow subj .rcfirewall.subj (fd(use)))
 )
 
 

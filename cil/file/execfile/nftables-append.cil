@@ -16,6 +16,7 @@
 (allow subj .netifd.subj (fifo_file(write)))
 ;; Need permission for /dev/null
 (allow subj .hotplugcall.subj (fd (use)))
+(allow subj .rcfirewall.subj (fd (use)))
 
 )
 

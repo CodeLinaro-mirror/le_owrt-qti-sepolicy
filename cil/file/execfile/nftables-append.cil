@@ -17,6 +17,6 @@
 ;; Need permission for /dev/null
 (allow subj .hotplugcall.subj (fd (use)))
 (allow subj .rcfirewall.subj (fd (use)))
-
+(allow subj .hotplugcall.subj (fifo_file(read write)))
 )
 

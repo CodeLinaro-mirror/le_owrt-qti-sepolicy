@@ -85,7 +85,9 @@
 
     (macro obj_type_transition_execfile ((type ARG1))
           (call .file.execfile_obj_type_transition
-                    (ARG1 execfile file "QCMAP_CLI")))
+                    (ARG1 execfile file "QCMAP_CLI"))
+          (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "QCMAP_StaInterface")))
 
     (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
            (call .tmp.fs_obj_type_transition
@@ -743,4 +745,5 @@
     (allow subj uci.tmpfile (dir (search)))
     (allow subj uci.tmpfile (file (getattr read open lock)))
     (call .dnsmasq.search_tmpfile_dirs (subj))
+    (allow subj .hotplugcall.subj (dir (getattr)))
 )

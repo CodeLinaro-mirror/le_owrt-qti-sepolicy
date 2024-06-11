@@ -1,4 +1,4 @@
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
@@ -43,6 +43,11 @@
        (call .logd.write_miscfile_sock_files(subj))
        (call .logd.sendto_unix_dgram_sockets(subj))
 
+;;rpmb is raw partition on storage device, need
+;;read write access to perform rpmb ops
+;;access on /dev/mmcblk0rpmb
+       (call .dev.stor.readwrite.subj_type(subj))
+
 ;;need to access  /dev/dma_heap/....
        (call .dma_heap.readwrite_nodedev_chr_files (subj))
 
@@ -55,5 +60,14 @@
        (allow qseecomd.subj. leprop.subj (unix_stream_socket (connectto)))
        (allow  qseecomd.subj.  file.datafile ( dir (read write open add_name create remove_name rmdir)))
        (allow  qseecomd.subj.  file.datafile ( file (create read write open getattr unlink)))
+       (allow qseecomd.subj. mmc.stordev (chr_file (getattr open read write ioctl)))
+       (allow qseecomd.subj. devices.sysfile (file (getattr read write open)))
+       (allow qseecomd.subj. sys.fs (dir (search)))
+       (allow qseecomd.subj. power.sysfile (dir (search append)))
+       (allow qseecomd.subj. power.sysfile (file (open append)))
+       (allow qseecomd.subj. devices.sysfile (dir (search)))
+       (allow qseecomd.subj. devices.sysfile (lnk_file (read)))
+       (allow qseecomd.subj. block.sysfile (dir (search)))
+       (allow qseecomd.subj. block.sysfile (lnk_file (read)))
 )
 

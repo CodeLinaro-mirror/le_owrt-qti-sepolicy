@@ -220,10 +220,4 @@
 
     ;; Sigma Setup
     (allow subj uci.tmpfile (file (getattr read open lock)))
-
-    ;; Fix /usr/bin/QCMAP_StaInterface related denials with default labels
-    (allow subj .diag-router.subj (unix_stream_socket (connectto)))
-    (allow subj self (process (getcap setcap)))
-    (allow subj self (capability (setgid setpcap setuid)))
-    (allow subj .file.execfile (file (map execute_no_trans read open execute)))
 )

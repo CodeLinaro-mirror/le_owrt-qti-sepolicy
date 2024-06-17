@@ -148,6 +148,8 @@
         ;;
 
         (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "QCMAP_StaInterface"))
               (call .file.execfile_obj_type_transition (ARG1 execfile file "qcmap_cm")))
 
         (macro obj_type_transition_conffile ((type ARG1))

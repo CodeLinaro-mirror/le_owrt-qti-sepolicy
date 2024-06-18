@@ -7,19 +7,18 @@
 (in .firewall
 
     (filecon
-    "/etc/firewall\.user\.nat"
+    "/etc/firewall\.user\.qcmap"
     file
     conffile_file_context)
 
     (filecon
-    "/etc/firewall\.user\.porttrigger"
+    "/etc/firewall\.user\.qcmap\.tmp"
     file
     conffile_file_context)
 
-
     (macro obj_type_transition_conffile_ext ((type ARG1))
-           (call .file.conffile_obj_type_transition(ARG1 conffile file "firewall.user.nat"))
-           (call .file.conffile_obj_type_transition(ARG1 conffile file "firewall.user.porttrigger")))
+           (call .file.conffile_obj_type_transition(ARG1 conffile file "firewall.user.qcmap"))
+           (call .file.conffile_obj_type_transition(ARG1 conffile file "firewall.user.qcmap.tmp")))
 
 )
 

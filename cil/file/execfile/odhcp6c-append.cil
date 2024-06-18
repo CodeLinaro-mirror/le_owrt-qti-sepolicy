@@ -61,6 +61,9 @@
     (allow subj .file.initscriptfile (dir (read search)))
     (call .rcfirewall.subj_type_transition (subj))
 
+    ;; Need obj_type_transition for /etc/firewall.user.*
+    (call .firewall.obj_type_transition_conffile_ext (subj))
+
     ;; Need read open on /sys/devices/soc0/platform_subtype_id and run brctl command
     (allow subj .devices.sysfile (dir (search read open)))
     (allow subj .devices.sysfile (file (read open)))

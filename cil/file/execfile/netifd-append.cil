@@ -152,9 +152,13 @@
           ;; Need getattr, associate on nf_conntrack
           (call .proc.getattr_filesystems (subj))
           (call .proc.associate_filesystems (subj))
+
+          ;; Need obj_type_transition for /etc/firewall.user.*
+          (call .firewall.obj_type_transition_conffile_ext (subj))
           (allow subj .firewall.conffile (file (getattr create)))
           ;; Need open write on /etc/firewall.user
           (call .firewall.manage_conffile_files (subj))
+
           (call .file.read_conffile_lnk_files (subj))
           (allow subj self create_netlink_netfilter_socket)
           (allow subj self readwrite_netlink_netfilter_socket)

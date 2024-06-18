@@ -9,7 +9,7 @@
 (allow subj self (capability (dac_override dac_read_search)))
 (call .qcmap_cli.use_fds (subj))
 (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
-(allow .uci.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+(allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
 ;; Need manage on /tmp/ipv{4/6}config[0-9]+
 (call .qcmap_cli.manage_tmpfile_files (subj))
 (call .mwan3.obj_type_transition_statetmpfile (subj))
@@ -17,7 +17,7 @@
 
 (call .qcmap_ref.use_fds (subj))
 (call .qcmap_ref.readwrite_unix_stream_sockets (subj))
-(allow .uci.subj .qcmap_ref.subj (fifo_file (read write ioctl)))
+(allow subj .qcmap_ref.subj (fifo_file (read write ioctl)))
 ;; Need manage on /tmp/ipv{4/6}config[0-9]+
 (call .qcmap_ref.manage_tmpfile_files (subj))
 ;; Need append on /tmp/resolve.conf
@@ -29,7 +29,11 @@
 
 (call .odhcp6c.use_fds (subj))
 (call .odhcp6c.readwrite_unix_stream_sockets (subj))
-(allow .uci.subj .odhcp6c.subj (fifo_file (read write ioctl)))
+(allow subj .odhcp6c.subj (fifo_file (read write ioctl)))
+
+(call .ucode.use_fds (subj))
+(call .ucode.readwrite_unix_stream_sockets (subj))
+(allow subj .ucode.subj (fifo_file (read write ioctl)))
 
 (call .qcmap_cm.manage_tmpfile_files (subj))
 (allow subj .qcmap_cm.tmpfile (file (getattr read open lock)))

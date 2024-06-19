@@ -1,0 +1,107 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .stmfd.subj_type_transition (subj))
+)
+
+(in .file
+    (call .stmfd.obj_type_transition_execfile (unconfined.subj_typeattr))
+)
+
+(block stmfd
+        (filecon
+        "/usr/bin/stmfd"
+        file
+        execfile_file_context)
+
+        (filecon
+        "/var/run/data/stmf*"
+        file
+        runtimetmpfile_file_context)
+
+        ;;
+        ;; Macros
+        ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                        (ARG1 execfile file "stmfd")))
+
+        (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+               (call .tmp.fs_obj_type_transition
+                           (ARG1 tmpfile ARG2 ARG3)))
+
+        (macro pidof_denials ((type ARG1) (type ARG2))
+            (allow ARG1 ARG2 (dir (read open search getattr)))
+            (allow ARG1 ARG2 (file (read open)))
+            (allow ARG1 ARG2 (lnk_file (read)))
+        )
+
+        ;;
+        ;; Policy
+        ;;
+        (blockinherit .agent.base_template)
+        (blockinherit file.conf.obj_template)
+        (blockinherit .tmpfile.runtime.obj_template)
+        (blockinherit file.data.obj_template)
+        (blockinherit .tmpfile.obj_template)
+
+        ;; QoS operations using eBPF with cgroup access and generic netlink
+        (allow subj self (capability (net_admin net_raw sys_admin)))
+        (allow subj self (capability2 (bpf perfmon)))
+        (allow subj cgroup.fs (dir (search read open)))
+        (allow subj self (bpf (map_create map_read map_write prog_load prog_run)))
+        (allow subj self create_netlink_generic_socket)
+        (call .fs.search_sysfile_dirs (subj))
+
+        ;; Flow control operations
+        (allow subj self create_packet_socket)
+        (allow subj stmfd.subj (packet_socket (map)))
+        (allow subj .ssl.conftmpfile (dir (search)))
+        (allow subj .ssl.conftmpfile (file (read getattr open)))
+        (allow subj .ssl.certfile (dir (search read open getattr)))
+        (allow subj .ssl.certfile (file (read open)))
+        (call .openssl.execute_execfile_files (subj))
+
+        ;; Netdevice monitoring and operations using netlink and /sys netdevice files
+        (allow subj self create_netlink_socket)
+        (allow subj self create_netlink_route_socket)
+        (allow subj stmfd.subj (netlink_route_socket (nlmsg_write nlmsg_read)))
+        (allow subj self create_udp_socket)
+        (call .class.search_sysfile_dirs (subj))
+        (call .class.read_sysfile_lnk_files (subj))
+        (call .sys.search_sysctlfile_dirs (subj))
+        (call .net.search_sysctlfile_dirs (subj))
+        (call .devices.read_sysfile_files (subj))
+        (call .devices.search_sysfile_dirs (subj))
+        (allow subj devices.sysfile (dir (open read)))
+        (allow subj .devices.sysfile (file (open)))
+
+        ;; Client communication
+        (allow subj self create_tipc_socket)
+        (allow subj stmfd.subj (tipc_socket (listen accept)))
+        (allow subj self create_unix_dgram_socket)
+
+        ;; Logging in /var/run/data
+        (call .sys.search_fs_dirs (subj))
+        (allow subj .qcmap_cm.runtimetmpfile (dir (search write add_name remove_name)))
+        (allow subj .qcmap_cm.runtimetmpfile (file (open read write create getattr)))
+        (allow subj .tmpfile.runtimetmpfile (dir (search)))
+        (allow subj stmfd.runtimetmpfile (dir (write remove_name search add_name)))
+        (allow subj .tmpfile.conftmpfile (dir (search)))
+        (call .stmfd.search_tmpfile_dirs (subj))
+        (call .stmfd.readwrite_tmpfile_files (subj))
+        (call .stmfd.manage_tmpfile_files (subj))
+        (call .stmfd.create_tmpfile_files (subj))
+        (call .file.search_conffile_dirs (subj))
+        (call .selinux.search_conffile_dirs (subj))
+
+        ;; Read /etc/localtime
+        (call .file.read_conffile_lnk_files (subj))
+        (call .locale.read_miscfile_files (subj))
+
+        ;; Signal handling
+        (allow subj self (process (signal)))
+)

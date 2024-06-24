@@ -14,4 +14,6 @@
      (allow subj self create_unix_stream_stream_socket)
      (allow subj .qcmap_cm.subj (unix_stream_socket (connectto)))
      (allow subj .qcmap_cm.tmpfile (sock_file (write)))
+     (allow subj .qcmap_cm.subj (packet_socket (read write)))
+     (allow subj .qcmap_cm.subj (netlink_socket (read write)))
 )

@@ -62,6 +62,7 @@
 (allow subj .sys.subj (packet_socket (read write)))
 (allow subj .sys.subj (netlink_route_socket (read write)))
 (allow subj .sys.subj (netlink_socket (read write)))
+(allow subj fw3.datafile (file (read)))
 )
 
 

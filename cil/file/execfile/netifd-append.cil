@@ -294,4 +294,7 @@
 
           ;;Need for swanctl append
           (call .tmp.readwrite_fs_files (subj))
+
+          ;; Need for tinyproxy
+          (call .rctinyproxy.execute_initscriptfile_files (subj))
 )

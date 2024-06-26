@@ -30,6 +30,8 @@
 (call .firewall.obj_type_transition_conffile_ext (subj))
 (allow subj .rcfirewall.subj (fd(use)))
 (allow subj .sys.rootfile (dir(open read)))
+;; Need read for /etc/firewall.user
+(call .file.read_conffile_files (subj))
 )
 
 

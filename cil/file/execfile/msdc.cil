@@ -113,4 +113,16 @@
     ;; to fork msdc process msdc_app from msdc_socket on socket read event
     ;; also msdc_socket, msdc_app have same file contexts
     (call .msdc.execute_execfile_files (subj))
+
+    ;; Need search on /tmp/run dir
+    (call .tmpfile.search_runtimetmpfile_dirs (subj))
+
+    ;; Permissions to run ubus from msdc_app
+    (call .ubusd.search_runtimetmpfile_dirs (subj))
+    (call .ubusd.write_runtimetmpfile_sock_files (subj))
+    (allow subj ubusd.subj (unix_stream_socket (connectto)))
+
+    ;; Permission for uci to write to msdc data files
+    (allow uci.subj msdc.datafile (file (write ioctl)))
+
 )

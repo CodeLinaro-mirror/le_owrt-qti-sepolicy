@@ -313,6 +313,9 @@
            (call .qcmap_cm.read_runtimetmpfile_files (subj))
            (call .qcmap_cm.manage_runtimetmpfile_files (subj))
 
+        ;; Need watch on /var/run/data/backhaul dir
+           (allow subj .qcmap_cm.runtimetmpfile (dir (watch)))
+
         ;; Need connectto for diag-router unix_stream_socket
            (call .diag-router.connectto_unix_stream_sockets (subj))
 

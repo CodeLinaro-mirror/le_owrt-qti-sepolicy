@@ -96,7 +96,10 @@
           ;; Need manage on /tmp/ipv{4/6}config[0-9]+
           (call .qcmap_ref.manage_tmpfile_files (subj))
           (call .qcmap_cm.search_runtimetmpfile_dirs (subj))
+          (call .qcmap_cm.write_runtimetmpfile_dirs (subj))
+          (call .qcmap_cm.create_runtimetmpfile_files (subj))
           (call .qcmap_cm.read_runtimetmpfile_files (subj))
+          (call .qcmap_cm.write_runtimetmpfile_files (subj))
 
           (call .qcmap_cm.search_tmpfile_dirs (subj))
           ;; Need execute, read open on /etc/init.d/odhcpd

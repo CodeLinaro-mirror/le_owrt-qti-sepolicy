@@ -1385,4 +1385,12 @@
     (allow wifi.subj qcmap_cm.subj (unix_stream_socket (read write)))
     (allow subj .preinit.tmpfile (dir (search read open getattr)))
     (allow subj .preinit.tmpfile (file (getattr read open)))
+
+    ;;Need permissions for QoS
+    (allow ipacli.subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+    (allow uci.subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+    (allow ubus.subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+
+    (call .qms.readwrite_tmpfile_sock_files (subj))
+    (allow subj qms.subj (unix_stream_socket( connectto )))
 )

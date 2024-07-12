@@ -63,8 +63,7 @@
 (allow subj .sys.subj (netlink_route_socket (read write)))
 (allow subj .sys.subj (netlink_socket (read write)))
 (allow subj fw3.datafile (file (read)))
+;; Need permission to read /usr/share/firewall4/main.uc file
+(call .fw3.read_datafile_files (subj))
 )
-
-
-
 

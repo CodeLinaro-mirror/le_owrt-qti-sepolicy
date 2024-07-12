@@ -779,6 +779,9 @@
     (allow rcodhcpd.subj qcmap_cm.subj (fd (use)))
     (allow rcodhcpd.subj qcmap_cm.subj readwriteinherited_fifo_file)
     (allow rcodhcpd.subj qcmap_cm.subj (unix_stream_socket (read write)))
+    (allow rcodhcpd.subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+    (allow rcodhcpd.subj qcmap_cm.subj (packet_socket (read write)))
+    (allow rcodhcpd.subj qcmap_cm.subj (netlink_socket (read write)))
 
     ;; Need to read open getattr search for .mnt.miscfile
     (allow subj .mnt.miscfile (dir (read open getattr search)))
@@ -1090,6 +1093,7 @@
     (allow conntrack.subj qcmap_cm.subj (unix_stream_socket (read write)))
     (allow conntrack.subj qcmap_cm.subj readwriteinherited_fifo_file)
     (allow conntrack.subj qcmap_cm.subj (fd (use)))
+    (allow conntrack.subj qcmap_cm.subj (netlink_kobject_uevent_socket( read write )))
 
     (call .qcmap_cm.manage_tmpfile_files (subj))
 

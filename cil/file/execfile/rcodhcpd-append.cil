@@ -14,4 +14,6 @@
        (allow subj .netifd.miscfile (dir (search getattr)))
        (allow subj .odhcp6c.subj (fd (use)))
        (allow subj .qcmap_ref.subj (fd (use)))
+       (allow subj .qcmap_cm.subj (packet_socket (read write)))
+       (allow subj .qcmap_cm.subj (netlink_socket (read write)))
 )

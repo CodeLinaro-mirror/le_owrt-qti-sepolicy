@@ -65,5 +65,8 @@
 (allow subj fw3.datafile (file (read)))
 ;; Need permission to read /usr/share/firewall4/main.uc file
 (call .fw3.read_datafile_files (subj))
+
+;;For Speedtest
+(allow subj qcmap_cm.subj (unix_dgram_socket( read write )))
 )
 

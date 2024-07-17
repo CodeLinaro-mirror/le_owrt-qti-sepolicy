@@ -75,4 +75,7 @@
 
     (allow subj self (netlink_route_socket (nlmsg_write nlmsg_read)))
 
+    (allow qms.subj file.datafile (dir (write add_name remove_name search)))
+    (allow qms.subj file.datafile (file (read create write open ioctl unlink)))
+
 )

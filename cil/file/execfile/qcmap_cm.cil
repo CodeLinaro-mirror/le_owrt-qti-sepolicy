@@ -436,8 +436,6 @@
       (allow subj loc_data.datafile (dir (search)))
       (allow subj loc_hal_daemon.subj (unix_dgram_socket (sendto)))
       (call .qcmap_cm.read_conffile_files (subj))
-      (call .tmp.read_fs_files (subj))
-      (allow subj qcmap_cm.subj (unix_dgram_socket( read write )))
 
       ;; Permissions to run ubus from qcmap_cm
       (call .ubusd.search_runtimetmpfile_dirs (subj))

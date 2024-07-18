@@ -49,6 +49,10 @@
 
 ;; Need manage on /tmp/ipv{4/6}config[0-9]+
 (call .qcmap_cm.manage_tmpfile_files (subj))
+
+;; Speedtest related permissions
+(allow subj qcmap_cm.subj (unix_dgram_socket( read write )))
+(call .tmp.read_fs_files (subj))
 )
 
 

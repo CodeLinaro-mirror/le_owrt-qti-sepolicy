@@ -68,5 +68,7 @@
 
 ;;For Speedtest
 (allow subj qcmap_cm.subj (unix_dgram_socket( read write )))
+;;Need permission for uci
+(allow subj qcmap_cm.subj (udp_socket (read write)))
 )
 

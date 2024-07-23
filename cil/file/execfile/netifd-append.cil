@@ -96,7 +96,10 @@
           ;; Need manage on /tmp/ipv{4/6}config[0-9]+
           (call .qcmap_ref.manage_tmpfile_files (subj))
           (call .qcmap_cm.search_runtimetmpfile_dirs (subj))
+          (call .qcmap_cm.write_runtimetmpfile_dirs (subj))
+          (call .qcmap_cm.create_runtimetmpfile_files (subj))
           (call .qcmap_cm.read_runtimetmpfile_files (subj))
+          (call .qcmap_cm.write_runtimetmpfile_files (subj))
 
           (call .qcmap_cm.search_tmpfile_dirs (subj))
           ;; Need execute, read open on /etc/init.d/odhcpd
@@ -152,9 +155,13 @@
           ;; Need getattr, associate on nf_conntrack
           (call .proc.getattr_filesystems (subj))
           (call .proc.associate_filesystems (subj))
+
+          ;; Need obj_type_transition for /etc/firewall.user.*
+          (call .firewall.obj_type_transition_conffile_ext (subj))
           (allow subj .firewall.conffile (file (getattr create)))
           ;; Need open write on /etc/firewall.user
           (call .firewall.manage_conffile_files (subj))
+
           (call .file.read_conffile_lnk_files (subj))
           (allow subj self create_netlink_netfilter_socket)
           (allow subj self readwrite_netlink_netfilter_socket)
@@ -283,4 +290,14 @@
 	  (allow subj .hotplugcall.subj (process (rlimitinh siginh)))
 	  (allow subj .wpad.subj (process (rlimitinh siginh)))
 	  (allow subj .wifi.subj (process (rlimitinh siginh)))
+
+	  ;;Need for IPA CFG XML access in EoGRE
+	  (allow subj .ipacm.conffile (dir (search write add_name remove_name)))
+	  (allow subj .ipacm.conffile (file (read write open lock getattr create ioctl unlink)))
+
+          ;;Need for swanctl append
+          (call .tmp.readwrite_fs_files (subj))
+
+          ;; Need for tinyproxy
+          (call .rctinyproxy.execute_initscriptfile_files (subj))
 )

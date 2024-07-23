@@ -23,11 +23,15 @@
 (allow subj .qcmap_cli.subj (fd(use)))
 (allow subj .qcmap_cli.subj (fifo_file(read write)))
 (allow subj .ucode.subj (netlink_netfilter_socket(create bind getattr)))
-(allow subj .netifd.miscfile (dir(search getattr)))
+(allow subj .netifd.miscfile (dir(search getattr read open)))
 (allow subj .qcmap_cli.subj (unix_stream_socket(read write)))
 (allow subj .firewall.conffile (file(read open)))
 ;; Need obj_type_transition for /etc/firewall.user.*
 (call .firewall.obj_type_transition_conffile_ext (subj))
+(allow subj .rcfirewall.subj (fd(use)))
+(allow subj .sys.rootfile (dir(open read)))
+;; Need read for /etc/firewall.user
+(call .file.read_conffile_files (subj))
 )
 
 

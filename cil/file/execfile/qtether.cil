@@ -11,6 +11,11 @@
     ;; Contexts
     ;;
     (filecon
+        "/usr/bin/qti_adpl"
+        file
+        execfile_file_context)
+
+    (filecon
         "/usr/bin/qti"
         file
         execfile_file_context)
@@ -47,6 +52,7 @@
        (call .qcmap_cm.obj_type_transition_datafile (subj dir "data_qcmap"))
        (call obj_type_transition_tmpfile (subj sock_file "qti_dpm_uds_file"))
        (call obj_type_transition_tmpfile (subj sock_file "qti_uevents_uds_file"))
+       (call obj_type_transition_tmpfile (subj sock_file "adpl_cmd_uds_file"))
 
     ;; TODO:we will allow this for intial version will remove later
        (allow subj self (capability (dac_override )))
@@ -141,4 +147,5 @@
        (allow subj dataadpl.conffile (dir (watch)))
        (allow subj .logd.miscfile (sock_file (write)))
        (call .dataadpl.create_conffile_files (subj))
+       (allow subj .tmp.fs (dir (remove_name)))
 )

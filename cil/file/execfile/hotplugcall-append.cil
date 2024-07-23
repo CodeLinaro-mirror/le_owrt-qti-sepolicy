@@ -236,5 +236,10 @@
       (allow subj .nftables.execfile (file(read open execute getattr map)))
       (call .nftables.subj_type_transition (subj))
       (call .kmsg.readwrite_nodedev_chr_files (subj))
-
+      (call .conntrack.read_execfile_files (subj))
+      (call .conntrack.mapexecute_execfile_files (subj))
+      (call .conntrack.subj_type_transition (subj))
+      (allow subj hotplugcall.subj (fd( use )))
+      (call .dnsmasq.manage_tmpfile_files (subj))
+      (call .dnsmasq.readwrite_tmpfile_dirs (subj))
 )

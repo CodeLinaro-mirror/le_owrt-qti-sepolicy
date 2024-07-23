@@ -148,6 +148,8 @@
         ;;
 
         (macro obj_type_transition_execfile ((type ARG1))
+              (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "QCMAP_StaInterface"))
               (call .file.execfile_obj_type_transition (ARG1 execfile file "qcmap_cm")))
 
         (macro obj_type_transition_conffile ((type ARG1))
@@ -311,6 +313,9 @@
            (call .qcmap_cm.read_runtimetmpfile_files (subj))
            (call .qcmap_cm.manage_runtimetmpfile_files (subj))
 
+        ;; Need watch on /var/run/data/backhaul dir
+           (allow subj .qcmap_cm.runtimetmpfile (dir (watch)))
+
         ;; Need connectto for diag-router unix_stream_socket
            (call .diag-router.connectto_unix_stream_sockets (subj))
 
@@ -430,6 +435,7 @@
       (allow subj loc_socket.nodedev (sock_file (create setattr write)))
       (allow subj loc_data.datafile (dir (search)))
       (allow subj loc_hal_daemon.subj (unix_dgram_socket (sendto)))
+      (call .qcmap_cm.read_conffile_files (subj))
 
       ;; Permissions to run ubus from qcmap_cm
       (call .ubusd.search_runtimetmpfile_dirs (subj))
@@ -771,6 +777,9 @@
     (allow rcodhcpd.subj qcmap_cm.subj (fd (use)))
     (allow rcodhcpd.subj qcmap_cm.subj readwriteinherited_fifo_file)
     (allow rcodhcpd.subj qcmap_cm.subj (unix_stream_socket (read write)))
+    (allow rcodhcpd.subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+    (allow rcodhcpd.subj qcmap_cm.subj (packet_socket (read write)))
+    (allow rcodhcpd.subj qcmap_cm.subj (netlink_socket (read write)))
 
     ;; Need to read open getattr search for .mnt.miscfile
     (allow subj .mnt.miscfile (dir (read open getattr search)))
@@ -1082,6 +1091,7 @@
     (allow conntrack.subj qcmap_cm.subj (unix_stream_socket (read write)))
     (allow conntrack.subj qcmap_cm.subj readwriteinherited_fifo_file)
     (allow conntrack.subj qcmap_cm.subj (fd (use)))
+    (allow conntrack.subj qcmap_cm.subj (netlink_kobject_uevent_socket( read write )))
 
     (call .qcmap_cm.manage_tmpfile_files (subj))
 
@@ -1368,4 +1378,21 @@
     (call .ubus.read_execfile_files (subj))
     (call .ubus.mapexecute_execfile_files (subj))
     (call .ubus.subj_type_transition (subj))
+
+    ;;Need permission to share sockets of qcmap to wifi to run cfg commands
+    (allow wifi.subj qcmap_cm.subj (fd (use)))
+    (allow wifi.subj qcmap_cm.subj (packet_socket (read write)))
+    (allow wifi.subj qcmap_cm.subj (netlink_socket (read write)))
+    (allow wifi.subj qcmap_cm.subj (fifo_file (read write ioctl)))
+    (allow wifi.subj qcmap_cm.subj (unix_stream_socket (read write)))
+    (allow subj .preinit.tmpfile (dir (search read open getattr)))
+    (allow subj .preinit.tmpfile (file (getattr read open)))
+
+    ;;Need permissions for QoS
+    (allow ipacli.subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+    (allow uci.subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+    (allow ubus.subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+
+    (call .qms.readwrite_tmpfile_sock_files (subj))
+    (allow subj qms.subj (unix_stream_socket( connectto )))
 )

@@ -14,6 +14,9 @@
 (allow subj .qcmap_ref.subj (netlink_route_socket(read write)))
 (allow subj .qcmap_ref.subj (fifo_file(read write)))
 (allow subj .netifd.subj (fifo_file(write)))
-
+;; Need permission for /dev/null
+(allow subj .hotplugcall.subj (fd (use)))
+(allow subj .rcfirewall.subj (fd (use)))
+(allow subj .hotplugcall.subj (fifo_file(read write)))
 )
 

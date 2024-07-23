@@ -61,11 +61,16 @@
     (allow subj .file.initscriptfile (dir (read search)))
     (call .rcfirewall.subj_type_transition (subj))
 
+    ;; Need obj_type_transition for /etc/firewall.user.*
+    (call .firewall.obj_type_transition_conffile_ext (subj))
+
     ;; Need read open on /sys/devices/soc0/platform_subtype_id and run brctl command
     (allow subj .devices.sysfile (dir (search read open)))
     (allow subj .devices.sysfile (file (read open)))
 
-
+    ;; Need transition to run odhcpd reload
+    (call .rcodhcpd.subj_type_transition (subj))
+    (allow subj .rcodhcpd.initscriptfile (file (getattr execute read open)))
 
     ;;Need for single route feature
     (allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
@@ -92,7 +97,10 @@
     (allow subj .qcmap_cm.subj (file (open read)))
     (allow subj .qcmap_cm.subj (lnk_file (read)))
     (call .qcmap_cm.search_runtimetmpfile_dirs (subj))
+    (call .qcmap_cm.write_runtimetmpfile_dirs (subj))
+    (call .qcmap_cm.create_runtimetmpfile_files (subj))
     (call .qcmap_cm.read_runtimetmpfile_files (subj))
+    (call .qcmap_cm.write_runtimetmpfile_files (subj))
     (allow subj .netifd.tmpfile (file (write)))
     (allow subj .sys.subj (dir (search)))
     (allow subj .sys.subj (file (read open)))
@@ -131,4 +139,9 @@
     ;; Need permission for pidof
     (allow subj csd_server.subj (dir (search)))
     (allow subj .qcmap_cm.tmpfile (dir (search)))
+
+    ;; Need permission for ip6tables and odhcpd
+    (allow subj .rccommon.conffile (file (read)))
+    (allow subj .tmpfile.locktmpfile (dir (search)))
+    (allow subj .tmpfile.locktmpfile (file (open)))
 )

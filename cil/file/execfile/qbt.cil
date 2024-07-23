@@ -181,6 +181,10 @@
        ;; Readwrite /dev/net/tun
        (call .tmp.readwrite_fs_chr_files (subj))
 
+       ;; Save coredump into /tmp by default
+       (call .tmp.readwrite_fs_dirs (subj))
+       (call .tmp.manage_fs_files (subj))
+
        (call .locale.read_miscfile_files (subj))
        (call .locale.map_miscfile_files (subj))
 

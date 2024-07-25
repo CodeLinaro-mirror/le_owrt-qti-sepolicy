@@ -20,9 +20,16 @@
     file
     execfile_file_context)
 
+    (filecon
+    "/usr/bin/QCMAP_CLI_OPTIONS"
+    file
+    execfile_file_context)
+
     (macro obj_type_transition_execfile ((type ARG1))
           (call .file.execfile_obj_type_transition
-                    (ARG1 execfile file "QCMAP_CLI")))
+                    (ARG1 execfile file "QCMAP_CLI"))
+          (call .file.execfile_obj_type_transition
+                    (ARG1 execfile file "QCMAP_CLI_OPTIONS")))
 
     (macro pidof_denials ((type ARG1) (type ARG2))
         (allow ARG1 ARG2 (dir (read open search getattr)))
@@ -527,6 +534,7 @@
 
     ;; Need run chmod on /dev/socket/data/pd_manager
     (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
+    (allow subj .qcmap_cm.tmpfile (fifo_file (create append open read write ioctl)))
     (allow subj self (capability (fowner fsetid)))
 
     ;;Need for send out ipsec traffic

@@ -1,0 +1,50 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+  (call .emergencyalert.subj_type_transition (subj)))
+
+(in .file
+    (call .emergencyalert.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .emergencyalert.obj_type_transition_datafile (unconfined.subj_typeattr)))
+
+(block emergencyalert
+
+    ;; Contexts
+
+    (filecon "/usr/bin/emergencyalert_daemon" file execfile_file_context)
+
+    (filecon "/data/emergencyalert_daemon_config.json" file datafile_file_context)
+
+    (macro obj_type_transition_execfile ((type ARG1))
+        (call .file.execfile_obj_type_transition
+           (ARG1 execfile file "emergencyalert_daemon")))
+
+    (macro obj_type_transition_datafile ((type ARG1))
+        (call .file.datafile_obj_type_transition
+            (ARG1 datafile file "emergencyalert_daemon_config.json")))
+
+    (blockinherit .agent.base_template)
+    (blockinherit file.data.obj_template)
+
+    (allow subj .sys.subj (fifo_file (write)))
+    (allow subj .file.conffile (dir(search)))
+
+    (allow subj self create_qipcrtr_socket)
+    (allow subj self create_tcp_stream_socket)
+    (allow subj self create_udp_socket)
+
+    (call .net.egress_netifs (subj))
+    (call .net.node.sendto_all_netnodes (subj))
+
+    (call .emergencyalert.manage_datafile_files (subj))
+
+    (allow subj .net.netnode (udp_socket (node_bind)))
+    (allow subj .net.netnode (tcp_socket (node_bind)))
+    (allow subj .unreserved.netport (udp_socket (name_bind)))
+    (allow subj .unreserved.netport (tcp_socket (name_bind)))
+
+    (dontaudit subj .sys.subj (fifo_file (ioctl)))
+)

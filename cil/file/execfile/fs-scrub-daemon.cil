@@ -80,7 +80,7 @@
 	(allow subj fs-scrub-daemon.datafile (file ( read create write open rename
 	unlink getattr )))
 	(allow subj tmp.fs (chr_file ( getattr)))
-	(allow subj mtd.stordev (chr_file ( open ioctl)))
+	(allow subj mtd.stordev (chr_file ( open ioctl getattr )))
 	(dontaudit subj mtd.stordev (chr_file ( read )))
 
 )

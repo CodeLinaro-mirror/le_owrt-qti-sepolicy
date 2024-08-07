@@ -98,6 +98,9 @@
     ;; KPI node access
     (call .kpi_values.manage_sysfile_files (subj))
 
+    ;; read urandom
+    (call .random.read_nodedev_chr_files (subj))
+
     ;; Need open read perm on /
     (call .sys.list_rootfile_dirs (subj))
 

@@ -667,4 +667,7 @@
     (call .random.read_nodedev_chr_files (subj))
     (call .pmsg_dev.read_nodedev_chr_files (subj))
     (call .ipa.readwrite_nodedev_chr_files (subj))
+
+    ;; Permission redirect wlanconfig <athX> list chan output to a file in /tmp/run/data
+    (allow subj qcmap_cm.runtimetmpfile (file (write ioctl)))
 )

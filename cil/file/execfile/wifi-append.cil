@@ -601,7 +601,7 @@
     (allow subj .wpad.subj (dir (getattr)))
     (allow subj .dnsmasq.subj (dir (getattr)))
 
-    (allow subj ezmesh.subj (dir (search)))
+    (allow subj ezmesh.subj (dir (search getattr)))
     (allow subj ezmesh.subj (file (read open)))
     (allow subj ezmesh.subj (lnk_file (read)))
     (allow subj ezmesh.subj (unix_dgram_socket (sendto)))
@@ -654,6 +654,47 @@
 
     ;; Need for /tmp/host, supplicant log
     (allow subj .wpad.tmpfile (file (getattr append open write unlink)))
+
+    ;; Need for ezmesh R5 service
+    (allow subj .csd_server.subj (file (open read)))
+    (allow subj .csd_server.subj (dir (getattr search)))
+
+    (allow subj .dlsc.subj (dir (getattr)))
+
+    (allow subj .ethagent.subj (dir (getattr)))
+
+    (allow subj .netmgrd.subj (dir (getattr)))
+
+    (allow subj .qms.subj (dir (search getattr)))
+    (allow subj .qms.subj (file (open read)))
+
+    (allow subj .tlpd.subj (dir (getattr)))
+
+    (allow subj .qcril.subj (dir (getattr)))
+
+    (allow subj .qtether.subj (dir (getattr)))
+
+    (allow subj .msdc.subj (dir (getattr)))
+
+    (allow subj .atfwd.subj (dir (getattr)))
+
+    (allow subj .perf-hal-service.subj (dir (getattr)))
+
+    (allow subj .qcmap_cli.subj (dir (getattr)))
+
+    (allow subj .port-bridge.subj (dir (getattr)))
+
+    (allow subj .qbt.subj (dir (search getattr)))
+    (allow subj .qbt.subj (file (open read)))
+
+    (allow subj .loc_launcher.subj (dir (getattr)))
+    (allow subj .loc_hal_daemon.subj (dir (getattr)))
+    (allow subj .loc_lowi_server.subj (dir (getattr)))
+    (allow subj .loc_xtra_daemon.subj (dir (getattr)))
+
+    (allow subj .mlid.subj (dir (getattr)))
+
+    (allow subj self (capability (chown fowner)))
 
     ;;iface-up subj transition
     (call .ifup.subj_type_transition (subj))

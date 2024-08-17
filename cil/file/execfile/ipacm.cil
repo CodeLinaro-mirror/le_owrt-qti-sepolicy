@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -244,6 +244,17 @@
 	(allow subj tmp.fs (file (create write ioctl unlink read open)))
 
 	(call .kmsg.readwrite_nodedev_chr_files (subj))
+
+	;; Ezmesh R5 enablement
+	(allow subj .functions.miscfile (dir (search)))
+	(allow subj .functions.miscfile (file (read open getattr)))
+
+	(allow subj .libubox.datafile (dir (search)))
+	(allow subj .libubox.datafile (file (read open)))
+
+	(allow subj .uci.conffile (dir (search)))
+	(allow subj .uci.conffile (file (getattr read open)))
+	(allow subj .uci.execfile (file (execute read open execute_no_trans map)))
 
 	;;
 )

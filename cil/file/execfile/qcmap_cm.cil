@@ -946,7 +946,7 @@
     ;; Need permission for awk and backhaulCommonConfig single route
     (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
     (allow subj resolv.tmpfile (file (getattr create read write open ioctl setattr append rename unlink)))
-    (allow subj odhcp6c.tmpfile (file (write unlink)))
+    (allow subj odhcp6c.tmpfile (file (getattr write unlink)))
 
     ;; Need permission for wpad runtime file
     (allow subj .wpad.runtimetmpfile (dir (search)))

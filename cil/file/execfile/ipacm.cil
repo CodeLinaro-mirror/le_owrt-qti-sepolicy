@@ -197,6 +197,7 @@
 	(allow subj ipacm.conffile (dir (watch)))
 	(call .ipacm.readwrite_conffile_dirs(subj))
 	(allow subj qcmap_cm.conffile (dir (watch)))
+	(allow subj net.procfile(file (read open)))
 
 	(call .ipacm.write_datafile (subj))
 

@@ -346,7 +346,7 @@
           (call .qcmap_cm.manage_tmpfile_files (subj))
       ;; Need remove_name on /tmp/ to remove ipv{4/6}config[0-9]+ files
       ;; TODO : Remove below rule after changing location of ipv{4/6}config file
-          (allow subj tmp.fs (dir(remove_name)))
+          (allow subj tmp.fs (dir(remove_name create)))
           (call .modules.read_procfile_files (subj))
       ;; Need subj_type_transition on /usr/libexec/ip-tiny
           (call .ip.subj_type_transition (subj))

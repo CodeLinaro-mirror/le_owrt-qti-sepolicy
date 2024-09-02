@@ -295,7 +295,7 @@
     (allow subj .kernel.sysfile (dir (search)))
 
     ;; Read debug.fs directories
-    (allow subj .debug.fs (dir (search read open)))
+    (allow subj .debug.fs (dir (search read open getattr)))
 
     ;; cnssdaemon and cnsscli support
     (allow subj self create_netlink_socket)
@@ -667,4 +667,7 @@
     (call .random.read_nodedev_chr_files (subj))
     (call .pmsg_dev.read_nodedev_chr_files (subj))
     (call .ipa.readwrite_nodedev_chr_files (subj))
+
+    ;; Permission redirect wlanconfig <athX> list chan output to a file in /tmp/run/data
+    (allow subj qcmap_cm.runtimetmpfile (file (write ioctl)))
 )

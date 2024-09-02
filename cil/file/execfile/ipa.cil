@@ -48,6 +48,7 @@
 
 	(call .ipacm.readwrite_conffile_files (subj))
 	(call .ipacm.create_conffile_files(subj))
+	(allow subj .ipacm.conffile (file (setattr)))
 	(call .ipacm.addname_conffile_dirs (subj))
 	(call .ipacm.readwrite_conffile_dirs (subj))
 	(call .ipacm.search_conffile_dirs (subj))
@@ -57,10 +58,12 @@
 	(call .qcmap_cm.search_conffile_dirs (subj))
 	(allow subj ipacm.conffile (file (unlink)))
 	(call .logd.write_miscfile_sock_files (subj))
+	(call .nameservice.read_miscfile_files (subj))
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
 	(allow .sdcard.miscfile .xattr.fs (filesystem (associate)))
 	(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+	(allow subj self (capability (chown fsetid)))
 
 	(call .selinux.search_conffile_dirs (subj))
 	(call .selinux.getattr_filesystems(subj))

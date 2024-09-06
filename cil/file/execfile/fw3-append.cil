@@ -47,6 +47,8 @@
 (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 (allow subj .qcmap_cli.subj (fifo_file(getattr)))
 (allow subj .qcmap_ref.subj (fifo_file(getattr)))
+(allow subj .sys.fs (filesystem (getattr)))
+(allow subj .filesystems.procfile (file (read)))
 )
 
 

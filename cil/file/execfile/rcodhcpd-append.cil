@@ -16,4 +16,5 @@
        (allow subj .qcmap_ref.subj (fd (use)))
        (allow subj .qcmap_cm.subj (packet_socket (read write)))
        (allow subj .qcmap_cm.subj (netlink_socket (read write)))
+       (allow subj .netifd.subj (fd (use)))
 )

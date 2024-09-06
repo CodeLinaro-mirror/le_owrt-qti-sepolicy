@@ -33,5 +33,6 @@
        (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
        ;;open/write pmsg_dev.nodedev
        (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+       (allow subj netifd.miscfile (dir (search)))
 
 )

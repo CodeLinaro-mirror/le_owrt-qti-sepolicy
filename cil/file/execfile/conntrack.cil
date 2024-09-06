@@ -68,6 +68,7 @@
            ;; Need permission for conntrack
            (allow subj qcmap_cm.subj (packet_socket (read write)))
            (allow subj qcmap_cm.subj (netlink_socket (read write)))
+           (allow subj qcmap_cm.subj (unix_dgram_socket( read write )))
            ;; Need permission for conntrack cmds in hotplug context
            (allow subj hotplugcall.subj (fd (use)))
            (allow subj hotplugcall.subj (fifo_file(write ioctl)))

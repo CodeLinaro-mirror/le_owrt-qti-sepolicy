@@ -88,7 +88,7 @@
     (call .iw.subj_type_transition (subj))
     (allow subj self (netlink_generic_socket(create)))
     (allow iw.subj odhcp6c.subj (fd (use)))
-    (allow iw.subj odhcp6c.subj (fifo_file (read write)))
+    (allow iw.subj odhcp6c.subj (fifo_file (read write ioctl)))
 
     ;; Need permission for proc/pidof QCMAP_ConnectionManager from backhaulCommonConfig.sh
     (allow subj .proc.fs (dir (read open)))
@@ -111,6 +111,8 @@
     (allow subj .urngd.subj (dir (search)))
     (allow subj .urngd.subj (file (read open)))
     (allow subj .urngd.subj (lnk_file (read open)))
+    ;; Need to create netlink_netfilter_socket
+    (allow subj self create_netlink_netfilter_socket)
 
     ;; Need permissions for sed and pidof
     (allow subj tftp_server.subj (dir (search)))

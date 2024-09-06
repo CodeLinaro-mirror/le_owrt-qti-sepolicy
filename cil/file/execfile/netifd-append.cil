@@ -285,4 +285,6 @@
 	  (allow subj .wifi.subj (process (rlimitinh siginh)))
 	  (allow subj .sys.fs (filesystem (getattr)))
 	  (allow subj .filesystems.procfile (file (read open)))
+	  (allow subj .netifd.subj (tcp_socket (create ioctl)))
+
 )

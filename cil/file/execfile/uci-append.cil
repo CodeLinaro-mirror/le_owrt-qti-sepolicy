@@ -75,5 +75,7 @@
 (allow subj ezmesh.subj (udp_socket (read write)))
 (allow subj ezmesh.subj (netlink_crypto_socket (read write)))
 
+;;Need permission for uci
+(allow subj qcmap_cm.subj (udp_socket (read write)))
 )
 

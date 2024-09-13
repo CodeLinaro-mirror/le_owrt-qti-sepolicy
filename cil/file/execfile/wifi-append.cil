@@ -1,5 +1,5 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
@@ -670,4 +670,7 @@
 
     ;; Permission redirect wlanconfig <athX> list chan output to a file in /tmp/run/data
     (allow subj qcmap_cm.runtimetmpfile (file (write ioctl)))
+
+    ;; Need permission for "/sys/kernel/debug/cnss/mlo_config"
+    (allow subj .debug.fs (file (getattr)))
 )

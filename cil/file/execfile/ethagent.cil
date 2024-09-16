@@ -1,4 +1,4 @@
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -39,8 +39,8 @@
         (allow subj sys.fs (dir(search)))
         (allow subj class.sysfile (dir(search)))
         (allow subj class.sysfile (lnk_file(read)))
-        (allow subj devices.sysfile (dir(search)))
-        (allow subj devices.sysfile (file(read open)))
+        (allow subj devices.sysfile (dir(getattr read open search)))
+        (allow subj devices.sysfile (file(getattr read open)))
         (allow subj self(unix_stream_socket(create connect read write)))
         (allow subj tmpfile.runtimetmpfile (dir(search)))
         (allow subj qcmap_cm.conffile (file(read open)))
@@ -57,9 +57,9 @@
         (allow subj self(netlink_route_socket(setopt getattr write nlmsg_read)))
         (allow subj debug.fs(dir(getattr read open search)))
         (allow subj shell.execfile(file(read open execute map getattr)))
-        (dontaudit subj shell.execfile (file(execute_no_trans)))
-        (dontaudit subj selinux.conffile(dir(search)))
-        (dontaudit subj selinux.fs(filesystem(getattr)))
+        (allow subj shell.execfile (file(execute_no_trans)))
+        (allow subj selinux.conffile(dir(search)))
+        (allow subj selinux.fs(filesystem(getattr)))
         (allow subj fs.sysfile(dir(search)))
 	(call .ssl.search_certfile_dirs (subj))
 	(call .pmsg_dev.readwrite_nodedev_chr_files (subj))

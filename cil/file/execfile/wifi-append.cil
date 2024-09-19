@@ -694,7 +694,7 @@
 
     (allow subj .mlid.subj (dir (getattr)))
 
-    (allow subj self (capability (chown fowner)))
+    (allow subj self (capability (chown fowner fsetid)))
 
     ;;iface-up subj transition
     (call .ifup.subj_type_transition (subj))

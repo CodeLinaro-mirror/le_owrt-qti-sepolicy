@@ -1,4 +1,4 @@
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .odhcp6c
@@ -146,4 +146,13 @@
     (allow subj .rccommon.conffile (file (read)))
     (allow subj .tmpfile.locktmpfile (dir (search)))
     (allow subj .tmpfile.locktmpfile (file (open)))
+
+    ;; Need for tinyproxy
+    (call .rctinyproxy.execute_initscriptfile_files (subj))
+    (call .rctinyproxy.subj_type_transition (subj))
+    (allow subj .tinyproxy.subj (dir (search read open getattr)))
+    (allow subj .tinyproxy.subj (file (read open)))
+    (allow subj .tinyproxy.subj (lnk_file (read open)))
+    (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
+    (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
 )

@@ -190,8 +190,7 @@
 	(allow subj self create_netlink_netfilter_socket)
 	(allow subj self readwrite_netlink_netfilter_socket)
 	(allow subj self create_netlink_route_socket)
-	(allow subj self (netlink_route_socket (nlmsg_read)))
-	(allow subj self (netlink_route_socket (write)))
+	(allow subj self (netlink_route_socket (nlmsg_read nlmsg_write write)))
 	(allow subj self (capability (net_admin)))
 	(allow subj ipacmdiag.subj (unix_dgram_socket (sendto)))
 

@@ -296,7 +296,7 @@
     (allow subj wifi.miscfile (dir (search)))
     (allow subj wifi.miscfile (file (open read getattr)))
 
-    (allow subj tmp.fs (sock_file (create unlink)))
+    (allow subj tmp.fs (sock_file (create unlink setattr)))
     (allow subj tmp.fs (dir (remove_name)))
 
     (allow subj selinux.fs (dir (search)))

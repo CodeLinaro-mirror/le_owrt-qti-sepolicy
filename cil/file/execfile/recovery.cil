@@ -130,7 +130,7 @@
 	(allow subj cache.miscfile (file ( ioctl read getattr setattr unlink create open write rename append)))
 	(allow subj cache.miscfile (filesystem ( getattr )))
 	(allow subj file.conffile(lnk_file (read)))
-	(allow subj file.conffile (file ( open read )))
+	(allow subj file.conffile (file ( open read getattr)))
 	(allow subj fs.sysfile(dir (search)))
 	(allow subj selinux.conffile(dir (search)))
 	(allow subj self(capability ( chown dac_override dac_read_search fowner fsetid sys_resource)))

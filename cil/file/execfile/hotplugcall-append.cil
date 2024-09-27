@@ -242,4 +242,6 @@
       (allow subj hotplugcall.subj (fd( use )))
       (call .dnsmasq.manage_tmpfile_files (subj))
       (call .dnsmasq.readwrite_tmpfile_dirs (subj))
+      ;; Need read and open permission for osrelease file
+      (allow subj .osrelease.miscfile (file (read open)))
 )

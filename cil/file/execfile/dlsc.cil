@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -54,6 +54,7 @@
 	(allow subj self (capability (net_admin)))
 	(allow subj .locale.miscfile (file(read getattr open map)))
 	(allow subj file.conffile (dir (search)))
+	(allow subj ssl.certfile (dir (search)))
         (allow subj file.conffile (lnk_file (read write)))
 	(allow subj self create_netlink_route_socket)
 	(allow subj self create_udp_socket)

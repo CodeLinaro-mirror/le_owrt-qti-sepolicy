@@ -138,11 +138,11 @@
 
     ;; Need permission for awk and backhaulCommonC
     (allow subj resolv.tmpfile (dir (search)))
-    (allow subj .qcmap_cm.tmpfile (file (read open getattr)))
+    (allow subj .qcmap_cm.tmpfile (file (read open getattr create write append)))
 
     ;; Need permission for pidof
     (allow subj csd_server.subj (dir (search)))
-    (allow subj .qcmap_cm.tmpfile (dir (search)))
+    (allow subj .qcmap_cm.tmpfile (dir (search write add_name)))
 
     ;; Need permission for ip6tables and odhcpd
     (allow subj .rccommon.conffile (file (read)))

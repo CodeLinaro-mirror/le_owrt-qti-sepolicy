@@ -111,9 +111,9 @@
           (call .tmpfile.readwrite_locktmpfile_dirs (subj))
           (call .tmpfile.read_locktmpfile_files (subj))
           (call .tmpfile.create_locktmpfile_files (subj))
-          ;; Need execute/read on ipa
-          (call .ipacli.execute_execfile_files (subj))
-          (call .ipacli.read_execfile_files (subj))
+          ;; Need subj transition for ipa
+          (call .ipacli.subj_type_transition (subj))
+
           (call .rcfirewall.execute_initscriptfile_files (subj))
           (call .tmpfile.search_statetmpfile_dirs (subj))
           (call .uci.read_statetmpfile_files (subj))
@@ -294,9 +294,6 @@
 	  (allow subj .wpad.subj (process (rlimitinh siginh)))
 	  (allow subj .wifi.subj (process (rlimitinh siginh)))
 
-	  ;;Need for IPA CFG XML access in EoGRE
-	  (allow subj .ipacm.conffile (dir (search write add_name remove_name)))
-	  (allow subj .ipacm.conffile (file (read write open lock getattr create ioctl unlink)))
 
 	  ;;Need for swanctl append
 	  (call .tmp.readwrite_fs_files (subj))

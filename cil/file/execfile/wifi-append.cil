@@ -230,6 +230,12 @@
     ;; Need permissions on /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
     (call .file.search_initscriptfile_dirs (subj))
     (call .file.execute_initscriptfile_files (subj))
+    ;; ujail permission on /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
+    (tunableif procd_available
+        (true
+            (allow subj .procd.execfile (file (getattr)))
+        )
+    )
     ;; Need permissions on
     ;; /tmp/lock/{procd_hostapd-daemon.init.lock procd_wpa-supplicant_qcacld.init.lock}
     (call .tmpfile.readwrite_locktmpfile_dirs (subj))

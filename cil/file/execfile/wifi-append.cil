@@ -366,7 +366,7 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .logread.subj))
 
     ;; Look for files in /tmp
-    (allow subj .tmp.fs (file (create read getattr open unlink)))
+    (allow subj .tmp.fs (file (create read write getattr open unlink)))
 
     ;; Read /proc/cmdline
     (call .cmdline.read_procfile_files (subj))

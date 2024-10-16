@@ -700,6 +700,8 @@
 
     (allow subj self (capability (chown fowner fsetid)))
 
+    (allow subj .netifd.miscfile (dir (read search open)))
+
     ;;iface-up subj transition
     (call .ifup.subj_type_transition (subj))
     (allow subj .ifup.execfile (file (getattr read open execute)))

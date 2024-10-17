@@ -426,7 +426,7 @@
     (call .file.execute_execfile_files (subj))
     ;; uci-commit wireless
     (allow subj .uci.conffile (dir (remove_name)))
-    (allow subj .uci.conffile (file (unlink)))
+    (allow subj .uci.conffile (file (setattr unlink)))
     ;; Talk to sigma backbone
     (allow subj .net.netif (netif (egress)))
     (allow subj .net.netnode (node (sendto)))

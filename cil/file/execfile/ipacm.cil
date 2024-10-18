@@ -46,6 +46,11 @@
 	tmpfile_file_context)
 
 	(filecon
+	"/dev/socket/data/ipa/IPACM_SOCKETS"
+	file
+	tmpfile_file_context)
+
+	(filecon
 	"/tmp/data_ipa"
 	dir
 	runtimetmpfile_file_context)
@@ -105,6 +110,10 @@
 	file
 	datafile_file_context)
 
+	(filecon
+	"/tmp/data_ipa/*"
+	file
+	runtimetmpfile_file_context)
 	;;
 
 	;; Macros
@@ -129,7 +138,11 @@
 		(call .tmp.fs_obj_type_transition
 			(ARG1 tmpfile dir "ipa"))
 		(call .tmp.fs_obj_type_transition
-			(ARG1 tmpfile dir "ipacm_log_file")))
+			(ARG1 tmpfile dir "ipacm_log_file"))
+		(call .tmp.fs_obj_type_transition
+			(ARG1 runtimetmpfile file "*"))
+		(call .tmp.fs_obj_type_transition
+			(ARG1 runtimetmpfile sock_file "IPACM_SOCKETS")))
 
 	(macro obj_type_transition_libfile ((type ARG1))
 		(call .sys.rootfile_obj_type_transition
@@ -154,8 +167,6 @@
 	(macro obj_type_transition_datafile ((type ARG1))
 		(call .file.datafile_obj_type_transition
 			(ARG1 datafile file "ipacm_log.txt")))
-
-
 	;;
 
 	;; Policy
@@ -173,16 +184,16 @@
 	(blockinherit .file.data.obj_template)
 
 	(allow subj self create_udp_socket)
-	(allow subj self (unix_dgram_socket (create)))
-	(allow subj self write_unix_dgram_socket)
-	(allow subj self (unix_dgram_socket (create ioctl sendto)))
+	(allow subj self (unix_dgram_socket (create ioctl sendto read write)))
+	(allow subj self (unix_stream_socket (create write)))
+	(call .sys.connectto_unix_stream_sockets (subj))
 	(allow subj self create_netlink_netfilter_socket)
 	(allow subj self readwrite_netlink_netfilter_socket)
 	(allow subj self create_netlink_route_socket)
 	(allow subj self (netlink_route_socket (nlmsg_read)))
 	(allow subj self (netlink_route_socket (write)))
 	(allow subj self (capability (net_admin)))
-        (allow subj ipacmdiag.subj (unix_dgram_socket (sendto)))
+	(allow subj ipacmdiag.subj (unix_dgram_socket (sendto)))
 
 	(call .ipa.readwrite_nodedev_chr_files (subj))
 	(call .ipa.mapexecute_nodedev_chr_files (subj))
@@ -201,11 +212,15 @@
 	(call .ipacm.write_datafile (subj))
 
 	(call .ipacm.search_tmpfile_dirs (subj))
-	(call .ipacm.search_tmpfile_dirs (subj))
 	(call .ipacm.write_tmpfile_sock_files (subj))
+	(call .ipacm.readwrite_tmpfile_dirs (subj))
+	(allow subj ipacm.tmpfile (dir (search add_name)))
+	(call .ipacm.create_tmpfile_sock_files (subj))
+	(allow subj ipacm.tmpfile (sock_file (setattr)))
 
 	(call .tmpfile.search_runtimetmpfile_dirs (subj))
 	(call .ipacm.readwrite_runtimetmpfile_dirs (subj))
+	(call .ipacm.create_runtimetmpfile_sock_files (subj))
 	(call .ipacm.search_runtimetmpfile_dirs (subj))
 	(call .ipacm.manage_runtimetmpfile_dirs (subj))
 	(call .ipacm.addname_runtimetmpfile_dirs (subj))
@@ -214,6 +229,7 @@
 	(call .ipacm.readwrite_runtimetmpfile_files (subj))
 	(call .ipacm.manage_runtimetmpfile_files (subj))
 	(call .ipacm.create_runtimetmpfile_files (subj))
+
 	(allow subj ip.execfile (file(read open execute getattr execute_no_trans map)))
 
 	(allow subj self (netlink_generic_socket (create read write setopt bind getattr)))
@@ -242,7 +258,6 @@
 	(allow subj devices.sysfile (file (getattr)))
 	(allow subj devices.sysfile (lnk_file (getattr)))
 	(allow subj tmp.fs (file (create write ioctl unlink read open)))
-
 	(call .kmsg.readwrite_nodedev_chr_files (subj))
 
 	;; Ezmesh R5 enablement

@@ -157,4 +157,7 @@
     (allow subj .tinyproxy.subj (lnk_file (read open)))
     (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
     (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
+
+    ;; Need subj transition for ipa
+    (call .ipacli.subj_type_transition (subj))
 )

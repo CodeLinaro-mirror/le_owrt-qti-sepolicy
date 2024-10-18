@@ -225,4 +225,7 @@
     (allow subj rfkill.nodedev (chr_file (read getattr open)))
     (allow subj file.datafile (dir (remove_name)))
     (allow subj tmp.fs (sock_file (write)))
+
+    ;; WiFi7 specific
+    (allow subj file.conffile (file (read write open ioctl)))
 )

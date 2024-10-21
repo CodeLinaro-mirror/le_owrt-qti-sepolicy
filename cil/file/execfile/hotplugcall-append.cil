@@ -171,6 +171,8 @@
       (allow subj cron.miscfile (dir  (search getattr read open map ioctl add_name write create append remove_name)))
       (allow subj cron.miscfile (lnk_file (getattr read open map)))
 
+      (allow subj devices.sysfile (lnk_file (getattr)))
+
       (allow subj class.sysfile (dir (search remove_name add_name read open getattr map ioctl)))
 
       (allow subj qcmap_cli.tmpfile (file (unlink getattr read open map rename write)))

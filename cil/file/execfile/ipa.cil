@@ -83,6 +83,8 @@
 	(call .netifd.search_miscfile_dirs (subj))
 	(allow subj .netifd.subj (dir (getattr)))
 
+	(call .odhcp6c.use_fds (subj))
+
 	(call .kernel.search_sysfile_dirs (subj))
 
 	(dontaudit subj .qcmap_cm.tmpfile (file (read)))

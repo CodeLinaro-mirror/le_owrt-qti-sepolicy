@@ -392,7 +392,7 @@
     (allow subj .cpuinfo.procfile (file (read open)))
 
     ;; Write to /proc/irq/$irq/smp_affinity
-    (allow subj .irq.procfile (dir (search write add_name)))
+    (allow subj .irq.procfile (dir (search write add_name read open)))
     (allow subj .irq.procfile (file (create write open)))
 
     ;; Access to /lib/wifi/qcacommands_*.xml
@@ -453,7 +453,7 @@
     (allow subj .httpproxy.netport (tcp_socket (name_connect)))
 
     ;; sysctl command on dev.nss nodes
-    (allow subj .sys.sysctlfile (dir (search)))
+    (allow subj .sys.sysctlfile (dir (read open search)))
     (allow subj .dev.sysctlfile (dir (search)))
 
     ;; Execute hostapd/wpa_supplicant binaries
@@ -661,7 +661,8 @@
 
     ;; Need for ezmesh R5 service
     (allow subj .csd_server.subj (file (open read)))
-    (allow subj .csd_server.subj (dir (getattr search)))
+    (allow subj .csd_server.subj (dir (read open getattr search)))
+    (allow subj .csd_server.subj (lnk_file (read)))
 
     (allow subj .dlsc.subj (dir (getattr)))
 
@@ -688,8 +689,9 @@
 
     (allow subj .port-bridge.subj (dir (getattr)))
 
-    (allow subj .qbt.subj (dir (search getattr)))
+    (allow subj .qbt.subj (dir (search getattr read open)))
     (allow subj .qbt.subj (file (open read)))
+    (allow subj .qbt.subj (lnk_file (read)))
 
     (allow subj .loc_launcher.subj (dir (getattr)))
     (allow subj .loc_hal_daemon.subj (dir (getattr)))
@@ -701,6 +703,26 @@
     (allow subj self (capability (chown fowner fsetid)))
 
     (allow subj .netifd.miscfile (dir (read search open)))
+
+    ;; Need for WiFi7 AP bring up
+    (allow subj .stat.procfile (file (read open)))
+
+    (allow subj .fs.procfile (dir (read open search)))
+
+    (allow subj .bus.procfile (dir (read open search)))
+
+    (allow subj .tty.procfile (dir (read open search)))
+
+    (allow subj .driver.procfile (dir (read open search)))
+
+    (allow subj .sysvipc.procfile (dir (read open search)))
+
+    (allow subj .dynamicdebug.procfile (dir (read open search)))
+
+    (allow subj .proc.fs (dir (read open)))
+
+    (allow subj .wpad.subj (dir (read search open)))
+    (allow subj .wpad.subj (file (read open)))
 
     ;;iface-up subj transition
     (call .ifup.subj_type_transition (subj))

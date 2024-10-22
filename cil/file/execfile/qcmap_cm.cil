@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -559,6 +559,61 @@
     (call .wpad.subj_type_transition (subj))
     (allow subj .wpad.execfile (file (getattr execute read open)))
 
+    ;; ezmesh R5 service specific
+    (allow subj .qwesd.subj (dir (search)))
+    (allow subj .qwesd.subj (file (open read)))
+    (allow subj .qwesd.subj (lnk_file (open read)))
+
+    (allow subj .wpad.subj (lnk_file (read open)))
+
+    (allow subj .afc.subj (dir (search)))
+    (allow subj .afc.subj (file (open read)))
+    (allow subj .afc.subj (lnk_file (open read)))
+
+    (allow subj .qmuxbridge.subj (dir (search)))
+    (allow subj .qmuxbridge.subj (file (open read)))
+    (allow subj .qmuxbridge.subj (lnk_file (open read)))
+
+    (allow subj .ethagent.subj (dir (search)))
+    (allow subj .ethagent.subj (file (open read)))
+    (allow subj .ethagent.subj (lnk_file (open read)))
+
+    (allow subj .qms.subj (dir (search)))
+    (allow subj .qms.subj (file (open read)))
+    (allow subj .qms.subj (lnk_file (open read)))
+
+    (allow subj .tlpd.subj (dir (search)))
+    (allow subj .tlpd.subj (file (open read)))
+    (allow subj .tlpd.subj (lnk_file (open read)))
+
+    (allow subj .mlid.subj (dir (search)))
+    (allow subj .mlid.subj (file (open read)))
+    (allow subj .mlid.subj (lnk_file (open read)))
+
+    (allow subj .qbt.subj (dir (search)))
+    (allow subj .qbt.subj (file (open read)))
+    (allow subj .qbt.subj (lnk_file (open read)))
+
+    (allow subj .msdc.subj (dir (search)))
+    (allow subj .msdc.subj (file (open read)))
+    (allow subj .msdc.subj (lnk_file (open read)))
+
+    (allow subj .perf-hal-service.subj (dir (search)))
+    (allow subj .perf-hal-service.subj (file (open read)))
+    (allow subj .perf-hal-service.subj (lnk_file (open read)))
+
+    (allow subj .ezmesh.subj (dir (search)))
+    (allow subj .ezmesh.subj (file (open read)))
+    (allow subj .ezmesh.subj (lnk_file (read)))
+
+    (allow subj .wifi.subj (dir (search)))
+    (allow subj .wifi.subj (file (open read)))
+    (allow subj .wifi.subj (lnk_file (read)))
+
+    (allow subj .dlsc.subj (dir (search)))
+    (allow subj .dlsc.subj (file (read open)))
+    (allow subj .dlsc.subj (file (read)))
+
     ;; Need write add_name remove_name on /etc/config
     (allow subj .uci.conffile (dir (write add_name remove_name)))
     ;; Need create write open getattr read setattr rename unlink ioctl on /etc/config/5g_wireless
@@ -946,7 +1001,7 @@
     ;; Need permission for awk and backhaulCommonConfig single route
     (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
     (allow subj resolv.tmpfile (file (getattr create read write open ioctl setattr append rename unlink)))
-    (allow subj odhcp6c.tmpfile (file (write unlink)))
+    (allow subj odhcp6c.tmpfile (file (read getattr write unlink)))
 
     ;; Need permission for wpad runtime file
     (allow subj .wpad.runtimetmpfile (dir (search)))
@@ -1395,4 +1450,5 @@
 
     (call .qms.readwrite_tmpfile_sock_files (subj))
     (allow subj qms.subj (unix_stream_socket( connectto )))
+
 )

@@ -1,5 +1,5 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
@@ -360,9 +360,13 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .mlid.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .uci.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .ethagent.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .stmfd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qms.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .emergencyalert.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .logread.subj))
 
     ;; Look for files in /tmp
-    (allow subj .tmp.fs (file (create read getattr open unlink)))
+    (allow subj .tmp.fs (file (create read write getattr open unlink)))
 
     ;; Read /proc/cmdline
     (call .cmdline.read_procfile_files (subj))
@@ -601,7 +605,7 @@
     (allow subj .wpad.subj (dir (getattr)))
     (allow subj .dnsmasq.subj (dir (getattr)))
 
-    (allow subj ezmesh.subj (dir (search)))
+    (allow subj ezmesh.subj (dir (search getattr)))
     (allow subj ezmesh.subj (file (read open)))
     (allow subj ezmesh.subj (lnk_file (read)))
     (allow subj ezmesh.subj (unix_dgram_socket (sendto)))
@@ -655,6 +659,49 @@
     ;; Need for /tmp/host, supplicant log
     (allow subj .wpad.tmpfile (file (getattr append open write unlink)))
 
+    ;; Need for ezmesh R5 service
+    (allow subj .csd_server.subj (file (open read)))
+    (allow subj .csd_server.subj (dir (getattr search)))
+
+    (allow subj .dlsc.subj (dir (getattr)))
+
+    (allow subj .ethagent.subj (dir (getattr)))
+
+    (allow subj .netmgrd.subj (dir (getattr)))
+
+    (allow subj .qms.subj (dir (search getattr)))
+    (allow subj .qms.subj (file (open read)))
+
+    (allow subj .tlpd.subj (dir (getattr)))
+
+    (allow subj .qcril.subj (dir (getattr)))
+
+    (allow subj .qtether.subj (dir (getattr)))
+
+    (allow subj .msdc.subj (dir (getattr)))
+
+    (allow subj .atfwd.subj (dir (getattr)))
+
+    (allow subj .perf-hal-service.subj (dir (getattr)))
+
+    (allow subj .qcmap_cli.subj (dir (getattr)))
+
+    (allow subj .port-bridge.subj (dir (getattr)))
+
+    (allow subj .qbt.subj (dir (search getattr)))
+    (allow subj .qbt.subj (file (open read)))
+
+    (allow subj .loc_launcher.subj (dir (getattr)))
+    (allow subj .loc_hal_daemon.subj (dir (getattr)))
+    (allow subj .loc_lowi_server.subj (dir (getattr)))
+    (allow subj .loc_xtra_daemon.subj (dir (getattr)))
+
+    (allow subj .mlid.subj (dir (getattr)))
+
+    (allow subj self (capability (chown fowner fsetid)))
+
+    (allow subj .netifd.miscfile (dir (read search open)))
+
     ;;iface-up subj transition
     (call .ifup.subj_type_transition (subj))
     (allow subj .ifup.execfile (file (getattr read open execute)))
@@ -670,4 +717,7 @@
 
     ;; Permission redirect wlanconfig <athX> list chan output to a file in /tmp/run/data
     (allow subj qcmap_cm.runtimetmpfile (file (write ioctl)))
+
+    ;; Need permission for "/sys/kernel/debug/cnss/mlo_config"
+    (allow subj .debug.fs (file (getattr)))
 )

@@ -1,4 +1,4 @@
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .file
@@ -111,9 +111,9 @@
           (call .tmpfile.readwrite_locktmpfile_dirs (subj))
           (call .tmpfile.read_locktmpfile_files (subj))
           (call .tmpfile.create_locktmpfile_files (subj))
-          ;; Need execute/read on ipa
-          (call .ipacli.execute_execfile_files (subj))
-          (call .ipacli.read_execfile_files (subj))
+          ;; Need subj transition for ipa
+          (call .ipacli.subj_type_transition (subj))
+
           (call .rcfirewall.execute_initscriptfile_files (subj))
           (call .tmpfile.search_statetmpfile_dirs (subj))
           (call .uci.read_statetmpfile_files (subj))
@@ -126,6 +126,9 @@
           (call .fw3.manage_datafile_files (subj))
 
           (allow subj .tmpfile.runtimetmpfile (dir (create rmdir)))
+
+          (allow subj .sys.fs (filesystem (getattr)))
+          (allow subj .filesystems.procfile (file (read)))
 
           ;; Need run chmod on /dev/socket/data/pd_manager
           (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
@@ -230,7 +233,7 @@
 	  (allow subj .xtables.execfile (file (getattr execute)))
 
 	  ;; Need for /tmp/ipsec/strongswan.conf
-	  (allow subj .tmp.fs (file (create read open getattr write)))
+	  (allow subj .tmp.fs (file (create read open getattr write unlink)))
 	  (allow subj .netifd.tmpfile (file (write unlink)))
 	  (allow subj .tmpfile.conftmpfile (dir (search)))
 	  (allow subj .netifd.subj (alg_socket (create)))
@@ -291,13 +294,16 @@
 	  (allow subj .wpad.subj (process (rlimitinh siginh)))
 	  (allow subj .wifi.subj (process (rlimitinh siginh)))
 
-	  ;;Need for IPA CFG XML access in EoGRE
-	  (allow subj .ipacm.conffile (dir (search write add_name remove_name)))
-	  (allow subj .ipacm.conffile (file (read write open lock getattr create ioctl unlink)))
 
-          ;;Need for swanctl append
-          (call .tmp.readwrite_fs_files (subj))
+	  ;;Need for swanctl append
+	  (call .tmp.readwrite_fs_files (subj))
 
-          ;; Need for tinyproxy
-          (call .rctinyproxy.execute_initscriptfile_files (subj))
+	  ;; Need for tinyproxy
+	  (call .rctinyproxy.execute_initscriptfile_files (subj))
+	  (call .rctinyproxy.subj_type_transition (subj))
+	  (allow subj .tinyproxy.subj (dir (search read open getattr)))
+	  (allow subj .tinyproxy.subj (file (read open)))
+	  (allow subj .tinyproxy.subj (lnk_file (read open)))
+	  (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
+	  (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
 )

@@ -1,4 +1,4 @@
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .odhcp6c
@@ -72,6 +72,9 @@
     (call .rcodhcpd.subj_type_transition (subj))
     (allow subj .rcodhcpd.initscriptfile (file (getattr execute read open)))
 
+    ;; Need transition to run dnsmasq reload
+    (call .rcdnsmasq.subj_type_transition (subj))
+
     ;;Need for single route feature
     (allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
     (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
@@ -88,7 +91,7 @@
     (call .iw.subj_type_transition (subj))
     (allow subj self (netlink_generic_socket(create)))
     (allow iw.subj odhcp6c.subj (fd (use)))
-    (allow iw.subj odhcp6c.subj (fifo_file (read write)))
+    (allow iw.subj odhcp6c.subj (fifo_file (read write ioctl)))
 
     ;; Need permission for proc/pidof QCMAP_ConnectionManager from backhaulCommonConfig.sh
     (allow subj .proc.fs (dir (read open)))
@@ -111,6 +114,8 @@
     (allow subj .urngd.subj (dir (search)))
     (allow subj .urngd.subj (file (read open)))
     (allow subj .urngd.subj (lnk_file (read open)))
+    ;; Need to create netlink_netfilter_socket
+    (allow subj self create_netlink_netfilter_socket)
 
     ;; Need permissions for sed and pidof
     (allow subj tftp_server.subj (dir (search)))
@@ -133,15 +138,23 @@
 
     ;; Need permission for awk and backhaulCommonC
     (allow subj resolv.tmpfile (dir (search)))
-    (allow subj .qcmap_cm.tmpfile (file (read open getattr)))
-
+    (allow subj .qcmap_cm.tmpfile (file (read open getattr create write append)))
 
     ;; Need permission for pidof
     (allow subj csd_server.subj (dir (search)))
-    (allow subj .qcmap_cm.tmpfile (dir (search)))
+    (allow subj .qcmap_cm.tmpfile (dir (search write add_name)))
 
     ;; Need permission for ip6tables and odhcpd
     (allow subj .rccommon.conffile (file (read)))
     (allow subj .tmpfile.locktmpfile (dir (search)))
     (allow subj .tmpfile.locktmpfile (file (open)))
+
+    ;; Need for tinyproxy
+    (call .rctinyproxy.execute_initscriptfile_files (subj))
+    (call .rctinyproxy.subj_type_transition (subj))
+    (allow subj .tinyproxy.subj (dir (search read open getattr)))
+    (allow subj .tinyproxy.subj (file (read open)))
+    (allow subj .tinyproxy.subj (lnk_file (read open)))
+    (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
+    (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
 )

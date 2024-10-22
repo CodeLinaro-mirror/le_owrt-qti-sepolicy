@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -60,6 +60,7 @@
         (allow subj .qcmap_cm.conffile (file (read open)))
         (allow subj .tlpd.execfile (file (execute_no_trans)))
         (allow subj file.conffile (dir (search)))
+        (allow subj ssl.certfile (dir (search)))
 	(allow subj file.conffile (lnk_file (read write)))
 	(allow subj logd.miscfile (sock_file (write)))
 	(allow subj .locale.miscfile (file(read getattr open map)))
@@ -75,5 +76,6 @@
 	(allow subj tlpd.datafile (file (getattr create ioctl read write append open)))
 	(allow subj tlpd.datafile (fifo_file (getattr create read write open)))
         (dontaudit subj .dataadpl.subj (process (signal)))
+	(dontaudit subj port-bridge.subj (process (signal)))
 )
 

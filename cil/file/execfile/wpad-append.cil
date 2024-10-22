@@ -1,5 +1,5 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
@@ -220,4 +220,9 @@
 
     ;; Sigma Setup
     (allow subj uci.tmpfile (file (getattr read open lock)))
+
+    ;; Ezmesh R5 service specific
+    (allow subj rfkill.nodedev (chr_file (read getattr open)))
+    (allow subj file.datafile (dir (remove_name)))
+    (allow subj tmp.fs (sock_file (write)))
 )

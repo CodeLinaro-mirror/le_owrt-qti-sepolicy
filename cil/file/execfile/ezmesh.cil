@@ -1,4 +1,4 @@
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -288,6 +288,37 @@
     (allow subj ezmesh.runtimetmpfile (lnk_file (getattr read open)))
     (allow subj ezmesh.runtimetmpfile (fifo_file (getattr read open unlink create write)))
     (allow subj ezmesh.runtimetmpfile (sock_file (read getattr setattr create write unlink)))
+
+    ;; R5 service specific
+    (allow subj functions.miscfile (file (open read getattr)))
+    (allow subj functions.miscfile (dir (search)))
+
+    (allow subj wifi.miscfile (dir (search)))
+    (allow subj wifi.miscfile (file (open read getattr)))
+
+    (allow subj tmp.fs (sock_file (create unlink setattr)))
+    (allow subj tmp.fs (dir (remove_name)))
+
+    (allow subj selinux.fs (dir (search)))
+    (allow subj selinux.fs (file (read open)))
+
+    (allow subj wifi.datafile (dir (add_name remove_name write)))
+    (allow subj wifi.datafile (sock_file (create setattr getattr read write unlink)))
+
+    (allow subj file.datafile (file (open read)))
+    (allow subj file.modulesfile (dir (search)))
+
+    (allow subj bus.sysfile (dir (search read open)))
+    (allow subj bus.sysfile (lnk_file (read)))
+    (allow subj bus.procfile (dir (search read)))
+
+    (allow subj firmware.sysfile (dir (search)))
+
+    (allow subj nameservice.miscfile (file (open read)))
+
+    (allow subj module.sysfile (dir (search)))
+
+    (allow subj self (capability (dac_read_search dac_override)))
 
     ;; UCI subject transition
     (call .uci.subj_type_transition (subj))

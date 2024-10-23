@@ -62,6 +62,7 @@
     (filecon "/etc/acfg_common.conf" file conffile_file_context)
     (filecon "/tmp/qcn9224" dir tmpfile_file_context)
     (filecon "/lib/read_caldata_to_fs\.sh" file libfile_file_context)
+    (filecon "/lib/create_cfg_caldata\.sh" file libfile_file_context)
     ;; IPQ sigma-dut
     (filecon "/var/log/sigma" file logtmpfile_file_context)
     (filecon "/tmp/wpa_ctrl_[0-9]+\-[0-9]+" socket tmpfile_file_context)
@@ -156,6 +157,7 @@
     (call obj_type_transition_tmpfile (subj file "no_qca_da"))
     (call obj_type_transition_tmpfile (subj sock_file "acfg-app"))
     (call obj_type_transition_libfile (subj file "read_caldata_to_fs.sh"))
+    (call obj_type_transition_libfile (subj file "create_cfg_caldata.sh"))
     (call obj_type_transition_tmpfile (subj dir "qcn9224"))
     (call obj_type_transition_conffile (subj))
     (call obj_type_transition_datafile (subj))
@@ -267,7 +269,7 @@
 
     ;; Read firmware from /lib/firmware (softlink to /firmware)
     (allow subj .firmware.miscfile (dir (read open getattr search)))
-    (allow subj .firmware.miscfile (file (getattr)))
+    (allow subj .firmware.miscfile (file (read open getattr)))
     (allow subj .firmware.miscfile (lnk_file (getattr read)))
 
     ;; Read devicetree from /sys/firmware

@@ -69,7 +69,7 @@
     (call obj_type_transition_tmpfile (subj sock_file "qms"))
 
     (allow qms.subj file.conffile (dir (search)))
-    (allow subj shell.execfile (file (execute execute_no_trans getattr map open read search)))
+    (allow subj shell.execfile (file (execute execute_no_trans getattr map open read)))
     (allow subj .sys.fs (filesystem(getattr)))
     (allow subj self (capability (net_admin)))
     (allow subj self create_netlink_socket)

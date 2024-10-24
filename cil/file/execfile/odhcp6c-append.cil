@@ -167,4 +167,13 @@
 
     ;; Need subj transition for ipa
     (call .ipacli.subj_type_transition (subj))
+
+    ;; Need subj transition for xtables
+    (call xtables.subj_type_transition (subj))
+
+    ;; Need permissions on firewall.conffile
+    (allow subj firewall.conffile (file (create write open append getattr rename unlink)))
+
+    ;; Need permission on file.confile
+    (allow subj file.conffile(dir (remove_name)))
 )

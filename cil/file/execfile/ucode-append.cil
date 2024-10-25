@@ -33,7 +33,7 @@
 ;; Need read for /etc/firewall.user
 (call .file.read_conffile_files (subj))
 (allow subj .sys.fs (filesystem (getattr)))
-(allow subj .filesystems.procfile (file (read)))
+(allow subj .filesystems.procfile (file (read open)))
 )
 
 

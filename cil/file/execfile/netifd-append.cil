@@ -128,7 +128,7 @@
           (allow subj .tmpfile.runtimetmpfile (dir (create rmdir)))
 
           (allow subj .sys.fs (filesystem (getattr)))
-          (allow subj .filesystems.procfile (file (read)))
+          (allow subj .filesystems.procfile (file (read open)))
 
           ;; Need run chmod on /dev/socket/data/pd_manager
           (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))

@@ -1,4 +1,4 @@
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .rcdnsmasq
@@ -14,6 +14,7 @@
          (call .random.read_nodedev_chr_files (subj))
          (allow subj self (capability (dac_read_search)))
          (call .netifd.use_fds (subj))
+	 (call .odhcp6c.use_fds (subj))
          (allow subj self (capability (dac_override)))
          (allow subj .netifd.subj (fifo_file (read write)))
          (allow subj .netifd.subj (netlink_route_socket (read write)))

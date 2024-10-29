@@ -75,6 +75,13 @@
     ;; Need transition to run dnsmasq reload
     (call .rcdnsmasq.subj_type_transition (subj))
 
+    ;; Need read open and execute_no_trans permission on /usr/sbin/ebtables
+    (call .file.manage_conffile_files (subj))
+    (call .file.execute_execfile_files (subj))
+    ;; Need read open permission on /etc/ethertypes for ebtables
+    (call .file.read_conffile_files (subj))
+
+
     ;;Need for single route feature
     (allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
     (allow subj resolv.tmpfile (dir (search write add_name remove_name)))

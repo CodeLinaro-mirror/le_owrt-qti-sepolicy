@@ -1,4 +1,4 @@
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .ipcalc
@@ -14,4 +14,5 @@
      (allow subj uci.conffile (dir (getattr)))
      ;;open/write pmsg_dev.nodedev
      (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+     (allow subj hotplugcall.subj (fd( use )))
 )

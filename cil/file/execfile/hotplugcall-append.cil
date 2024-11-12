@@ -160,7 +160,7 @@
 
       (allow subj sys.subj (system (module_request)))
 
-      (allow subj self (udp_socket (create ioctl read setopt bind getattr listen sendto)))
+      (allow subj self (udp_socket (create ioctl read setopt bind getattr listen sendto connect write)))
       (allow subj self (netlink_socket (ioctl read setopt bind getattr listen sendto create write)))
       (allow subj self (netlink_generic_socket (ioctl read setopt bind getattr listen sendto)))
 
@@ -249,4 +249,9 @@
 
       ;;Need create permission for pbr.lock
       (allow subj tmpfile.runtimetmpfile (file (create)))
+      (allow subj tmpfile.runtimetmpfile (dir( remove_name )))
+      (call .tmpfile.manage_runtimetmpfile_files (subj))
+      (allow subj net.netnode (udp_socket( node_bind )))
+      (allow subj net.netif (netif( egress )))
+      (allow subj net.netnode (node( sendto )))
 )

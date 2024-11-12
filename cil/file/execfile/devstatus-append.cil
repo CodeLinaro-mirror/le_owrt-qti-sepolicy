@@ -1,4 +1,4 @@
-;;copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .devstatus
@@ -15,4 +15,5 @@
     (allow subj .qcmap_cli.subj (fifo_file (read write)))
 
     (allow subj qcmap_ref.subj (fd (use)))
+    (allow subj hotplugcall.subj (fd( use )))
 )

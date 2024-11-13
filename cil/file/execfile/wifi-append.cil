@@ -63,6 +63,7 @@
     (filecon "/tmp/qcn9224" dir tmpfile_file_context)
     (filecon "/lib/read_caldata_to_fs\.sh" file libfile_file_context)
     (filecon "/lib/create_cfg_caldata\.sh" file libfile_file_context)
+    (filecon "/tmp/ftm.conf" file tmpfile_file_context)
     ;; IPQ sigma-dut
     (filecon "/var/log/sigma" file logtmpfile_file_context)
     (filecon "/tmp/wpa_ctrl_[0-9]+\-[0-9]+" socket tmpfile_file_context)
@@ -168,6 +169,7 @@
     (call obj_type_transition_tmpfile (subj file "sigma_dut-ap.conf"))
     (call obj_type_transition_tmpfile (subj file "sigma_dut-ap_0.conf"))
     (call obj_type_transition_tmpfile (subj file "sigma_dut-ping.sh"))
+    (call obj_type_transition_tmpfile(subj lnk_file "ftm.conf"))
     ;; Transition for /tmp/sigma_dut-ping.$cnt
     (call obj_type_transition_tmpfile (subj file "*"))
     ;; IPQ ctrl_app_dut
@@ -308,6 +310,7 @@
     (allow subj .sys.subj (system (module_request)))
     (call .wifi.manage_runtimetmpfile_sock_files (subj))
     (call .wifi.manage_runtimetmpfile_dirs (subj))
+    (call .wifi.create_tmpfile_lnk_files (subj))
 
     ;; Do not audit dac_read_search for boot_kpi dir since kpi_values file has
     ;; permissions

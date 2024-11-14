@@ -246,4 +246,7 @@
       (call .dnsmasq.readwrite_tmpfile_dirs (subj))
       ;; Need read and open permission for osrelease file
       (allow subj .osrelease.miscfile (file (read open)))
+
+      ;;Need create permission for pbr.lock
+      (allow subj tmpfile.runtimetmpfile (file (create)))
 )

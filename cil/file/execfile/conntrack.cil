@@ -72,4 +72,7 @@
            ;; Need permission for conntrack cmds in hotplug context
            (allow subj hotplugcall.subj (fd (use)))
            (allow subj hotplugcall.subj (fifo_file(write ioctl)))
+
+           ;;Need permission for conntrack
+           (allow subj net.procfile (lnk_file (read)))
        )

@@ -258,5 +258,7 @@
 	(allow subj .uci.conffile (file (getattr read open)))
 	(allow subj .uci.execfile (file (execute read open execute_no_trans map)))
 
+	(allow .ipacm.runtimetmpfile .xattr.fs (filesystem (associate)))
+
 	;;
 )

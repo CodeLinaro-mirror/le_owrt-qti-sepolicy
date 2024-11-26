@@ -45,7 +45,6 @@
 	(allow subj self (unix_dgram_socket (create connect)))
 	(allow subj self write_unix_dgram_socket)
 	(call .logd.sendto_unix_dgram_sockets (subj))
-	(call .ipacm.sendto_unix_dgram_sockets (subj))
 
 	(call .ipacm.readwrite_conffile_files (subj))
 	(call .ipacm.create_conffile_files(subj))
@@ -89,8 +88,6 @@
 	(call .kernel.search_sysfile_dirs (subj))
 
 	(dontaudit subj .qcmap_cm.tmpfile (file (read)))
-	(allow subj ipacm.tmpfile (dir (search)))
-	(call .ipacm.write_tmpfile_sock_files (subj))
 
 	(allow subj ipacli.execfile (file(execute_no_trans)))
     ;;

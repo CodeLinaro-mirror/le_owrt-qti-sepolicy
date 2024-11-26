@@ -209,6 +209,7 @@
       (allow subj .pmsg_dev.nodedev (chr_file (write open)))
 
       ;; IPQ EasyMesh
+      (allow subj .ipacm.runtimetmpfile (file (getattr write unlink)))
       (allow subj wifi.tmpfile (file (unlink getattr read open map rename)))
       (allow subj wpad.runtimetmpfile (file (unlink getattr read open map rename)))
       (allow subj wpad.runtimetmpfile (dir (search remove_name add_name read open getattr map ioctl)))

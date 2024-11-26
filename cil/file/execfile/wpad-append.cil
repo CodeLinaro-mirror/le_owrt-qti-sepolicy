@@ -234,4 +234,7 @@
     (allow subj qms.subj (fifo_file (read write)))
     (allow subj qms.subj (unix_stream_socket (read write)))
     (allow subj qms.subj (netlink_route_socket (read write)))
+
+    ;; kmsg
+    (allow subj .kmsg.nodedev (chr_file (write ioctl)))
 )

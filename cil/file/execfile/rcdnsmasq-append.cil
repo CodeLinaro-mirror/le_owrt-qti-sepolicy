@@ -42,6 +42,8 @@
          (call .filesystems.read_procfile_files (subj))
          (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 
+         (call .dnsmasq.obj_type_transition_tmpfile (subj dir "*"))
+
          ;; Need permission for dnsmasq
          (call .uci.readwrite_conffile_dirs (subj))
          ;;open/write pmsg_dev.nodedev

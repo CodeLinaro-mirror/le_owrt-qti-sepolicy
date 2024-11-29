@@ -252,6 +252,7 @@
     (allow subj qcmap_cli.tmpfile (lnk_file (getattr read open)))
     (allow subj qcmap_cli.tmpfile (fifo_file (getattr read open map rename)))
 
+    (allow subj .ipacm.runtimetmpfile (file (read open)))
 
     (allow subj uci.conffile (dir (search read open getattr)))
     (allow subj uci.conffile (file (getattr read open lock)))

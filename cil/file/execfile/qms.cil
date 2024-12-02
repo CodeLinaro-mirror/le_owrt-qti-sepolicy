@@ -105,6 +105,8 @@
 
     (allow subj self (netlink_route_socket (nlmsg_write nlmsg_read)))
 
+    (allow subj .locale.miscfile (file (getattr map open read)))
+
     ;; Manage files in /data/vendor/
     (call .qms.manage_datafile_dirs (subj))
     (call .qms.manage_datafile_files (subj))

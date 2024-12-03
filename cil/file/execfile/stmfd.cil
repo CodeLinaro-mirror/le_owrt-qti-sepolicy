@@ -101,7 +101,11 @@
         ;; Read /etc/localtime
         (call .file.read_conffile_lnk_files (subj))
         (call .locale.read_miscfile_files (subj))
+        (call .locale.map_miscfile_files (subj))
 
         ;; Signal handling
         (allow subj self (process (signal)))
+
+        ;; Module request for kmod="net-pf-30"
+        (call .sys.requestmodule (subj))
 )

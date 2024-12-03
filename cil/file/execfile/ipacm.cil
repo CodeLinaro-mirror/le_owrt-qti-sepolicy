@@ -179,8 +179,7 @@
 	(allow subj self create_netlink_netfilter_socket)
 	(allow subj self readwrite_netlink_netfilter_socket)
 	(allow subj self create_netlink_route_socket)
-	(allow subj self (netlink_route_socket (nlmsg_read)))
-	(allow subj self (netlink_route_socket (write)))
+	(allow subj self (netlink_route_socket (nlmsg_read nlmsg_write write)))
 	(allow subj self (capability (net_admin)))
         (allow subj ipacmdiag.subj (unix_dgram_socket (sendto)))
 
@@ -211,6 +210,7 @@
 	(call .ipacm.addname_runtimetmpfile_dirs (subj))
 	(call .ipacm.readwrite_runtimetmpfile_dirs (subj))
 	(call .ipacm.create_runtimetmpfile_dirs (subj))
+	(allow subj tmp.fs (file (create write ioctl unlink read open)))
 	(call .ipacm.readwrite_runtimetmpfile_files (subj))
 	(call .ipacm.manage_runtimetmpfile_files (subj))
 	(call .ipacm.create_runtimetmpfile_files (subj))
@@ -239,9 +239,11 @@
 	(dontaudit subj .sys.subj (fifo_file (write)))
 
 	(allow subj devices.sysfile (dir (search getattr read open)))
-	(allow subj devices.sysfile (file (getattr)))
+	(allow subj .class.sysfile (dir (search read open)))
+	(allow subj devices.sysfile (file (open read getattr)))
 	(allow subj devices.sysfile (lnk_file (getattr)))
-	(allow subj tmp.fs (file (create write ioctl unlink read open)))
+	(call .class.read_sysfile_lnk_files (subj))
+	(call .devices.read_sysfile_lnk_files (subj))
 
 	(call .kmsg.readwrite_nodedev_chr_files (subj))
 
@@ -255,6 +257,8 @@
 	(allow subj .uci.conffile (dir (search)))
 	(allow subj .uci.conffile (file (getattr read open)))
 	(allow subj .uci.execfile (file (execute read open execute_no_trans map)))
+
+	(allow .ipacm.runtimetmpfile .xattr.fs (filesystem (associate)))
 
 	;;
 )

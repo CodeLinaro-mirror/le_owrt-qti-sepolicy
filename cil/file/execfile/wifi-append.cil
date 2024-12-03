@@ -62,6 +62,8 @@
     (filecon "/etc/acfg_common.conf" file conffile_file_context)
     (filecon "/tmp/qcn9224" dir tmpfile_file_context)
     (filecon "/lib/read_caldata_to_fs\.sh" file libfile_file_context)
+    (filecon "/lib/create_cfg_caldata\.sh" file libfile_file_context)
+    (filecon "/tmp/ftm.conf" file tmpfile_file_context)
     ;; IPQ sigma-dut
     (filecon "/var/log/sigma" file logtmpfile_file_context)
     (filecon "/tmp/wpa_ctrl_[0-9]+\-[0-9]+" socket tmpfile_file_context)
@@ -156,6 +158,7 @@
     (call obj_type_transition_tmpfile (subj file "no_qca_da"))
     (call obj_type_transition_tmpfile (subj sock_file "acfg-app"))
     (call obj_type_transition_libfile (subj file "read_caldata_to_fs.sh"))
+    (call obj_type_transition_libfile (subj file "create_cfg_caldata.sh"))
     (call obj_type_transition_tmpfile (subj dir "qcn9224"))
     (call obj_type_transition_conffile (subj))
     (call obj_type_transition_datafile (subj))
@@ -166,6 +169,7 @@
     (call obj_type_transition_tmpfile (subj file "sigma_dut-ap.conf"))
     (call obj_type_transition_tmpfile (subj file "sigma_dut-ap_0.conf"))
     (call obj_type_transition_tmpfile (subj file "sigma_dut-ping.sh"))
+    (call obj_type_transition_tmpfile(subj lnk_file "ftm.conf"))
     ;; Transition for /tmp/sigma_dut-ping.$cnt
     (call obj_type_transition_tmpfile (subj file "*"))
     ;; IPQ ctrl_app_dut
@@ -267,7 +271,7 @@
 
     ;; Read firmware from /lib/firmware (softlink to /firmware)
     (allow subj .firmware.miscfile (dir (read open getattr search)))
-    (allow subj .firmware.miscfile (file (getattr)))
+    (allow subj .firmware.miscfile (file (read open getattr)))
     (allow subj .firmware.miscfile (lnk_file (getattr read)))
 
     ;; Read devicetree from /sys/firmware
@@ -306,6 +310,7 @@
     (allow subj .sys.subj (system (module_request)))
     (call .wifi.manage_runtimetmpfile_sock_files (subj))
     (call .wifi.manage_runtimetmpfile_dirs (subj))
+    (call .wifi.create_tmpfile_lnk_files (subj))
 
     ;; Do not audit dac_read_search for boot_kpi dir since kpi_values file has
     ;; permissions
@@ -392,7 +397,7 @@
     (allow subj .cpuinfo.procfile (file (read open)))
 
     ;; Write to /proc/irq/$irq/smp_affinity
-    (allow subj .irq.procfile (dir (search write add_name)))
+    (allow subj .irq.procfile (dir (search write add_name read open)))
     (allow subj .irq.procfile (file (create write open)))
 
     ;; Access to /lib/wifi/qcacommands_*.xml
@@ -426,7 +431,7 @@
     (call .file.execute_execfile_files (subj))
     ;; uci-commit wireless
     (allow subj .uci.conffile (dir (remove_name)))
-    (allow subj .uci.conffile (file (unlink)))
+    (allow subj .uci.conffile (file (setattr unlink)))
     ;; Talk to sigma backbone
     (allow subj .net.netif (netif (egress)))
     (allow subj .net.netnode (node (sendto)))
@@ -453,7 +458,7 @@
     (allow subj .httpproxy.netport (tcp_socket (name_connect)))
 
     ;; sysctl command on dev.nss nodes
-    (allow subj .sys.sysctlfile (dir (search)))
+    (allow subj .sys.sysctlfile (dir (read open search)))
     (allow subj .dev.sysctlfile (dir (search)))
 
     ;; Execute hostapd/wpa_supplicant binaries
@@ -661,7 +666,8 @@
 
     ;; Need for ezmesh R5 service
     (allow subj .csd_server.subj (file (open read)))
-    (allow subj .csd_server.subj (dir (getattr search)))
+    (allow subj .csd_server.subj (dir (read open getattr search)))
+    (allow subj .csd_server.subj (lnk_file (read)))
 
     (allow subj .dlsc.subj (dir (getattr)))
 
@@ -688,8 +694,9 @@
 
     (allow subj .port-bridge.subj (dir (getattr)))
 
-    (allow subj .qbt.subj (dir (search getattr)))
+    (allow subj .qbt.subj (dir (search getattr read open)))
     (allow subj .qbt.subj (file (open read)))
+    (allow subj .qbt.subj (lnk_file (read)))
 
     (allow subj .loc_launcher.subj (dir (getattr)))
     (allow subj .loc_hal_daemon.subj (dir (getattr)))
@@ -701,6 +708,26 @@
     (allow subj self (capability (chown fowner fsetid)))
 
     (allow subj .netifd.miscfile (dir (read search open)))
+
+    ;; Need for WiFi7 AP bring up
+    (allow subj .stat.procfile (file (read open)))
+
+    (allow subj .fs.procfile (dir (read open search)))
+
+    (allow subj .bus.procfile (dir (read open search)))
+
+    (allow subj .tty.procfile (dir (read open search)))
+
+    (allow subj .driver.procfile (dir (read open search)))
+
+    (allow subj .sysvipc.procfile (dir (read open search)))
+
+    (allow subj .dynamicdebug.procfile (dir (read open search)))
+
+    (allow subj .proc.fs (dir (read open)))
+
+    (allow subj .wpad.subj (dir (read search open)))
+    (allow subj .wpad.subj (file (read open)))
 
     ;;iface-up subj transition
     (call .ifup.subj_type_transition (subj))

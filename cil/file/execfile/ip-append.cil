@@ -1,4 +1,4 @@
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .ip
@@ -54,4 +54,7 @@
   (call .ipv4.readwrite_sysctlfile_files (subj))
   (allow subj .sys.subj (udp_socket (read write)))
   (allow subj .sys.subj (packet_socket (read write)))
+  ;; rule for ipv6
+  (allow subj ipv6.sysctlfile (file (read)))
+
 )

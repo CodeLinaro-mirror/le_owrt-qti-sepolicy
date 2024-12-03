@@ -69,6 +69,8 @@
     (call obj_type_transition_tmpfile (subj sock_file "qms"))
 
     (allow qms.subj file.conffile (dir (search)))
+    (allow subj shell.execfile (file (execute execute_no_trans getattr map open read)))
+    (allow subj .sys.fs (filesystem(getattr)))
     (allow subj self (capability (net_admin)))
     (allow subj self create_netlink_socket)
     (allow subj self create_qipcrtr_socket)
@@ -106,4 +108,17 @@
     ;; Manage files in /data/vendor/
     (call .qms.manage_datafile_dirs (subj))
     (call .qms.manage_datafile_files (subj))
+
+    ;; To execute /usr/sbin/wpa_cli
+    (call .wpad.subj_type_transition (subj))
+    (allow subj .wpad.execfile (file (getattr execute read open)))
+
+    ;; Need search on selinux dir
+    (call .selinux.search_conffile_dirs(subj))
+    ;; Need gettarr on selinux filesystem
+    (call .selinux.getattr_filesystems (subj))
+    ;; Need search for fs dir with tcontext=u:r:fs.sysfile
+    (call .fs.search_sysfile_dirs (subj))
+    ;; Need search for tcontext=u:r:sys.fs tclass=dir
+    (call .sys.search_fs_dirs (subj))
 )

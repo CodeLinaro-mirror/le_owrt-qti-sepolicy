@@ -128,7 +128,7 @@
           (allow subj .tmpfile.runtimetmpfile (dir (create rmdir)))
 
           (allow subj .sys.fs (filesystem (getattr)))
-          (allow subj .filesystems.procfile (file (read)))
+          (allow subj .filesystems.procfile (file (read open)))
 
           ;; Need run chmod on /dev/socket/data/pd_manager
           (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
@@ -304,6 +304,9 @@
 	  (allow subj .tinyproxy.subj (dir (search read open getattr)))
 	  (allow subj .tinyproxy.subj (file (read open)))
 	  (allow subj .tinyproxy.subj (lnk_file (read open)))
+	  (allow .rctinyproxy.subj netifd.subj (fd (use)))
+	  (allow .rctinyproxy.subj netifd.subj (fifo_file (write)))
+	  (allow .rctinyproxy.subj netifd.miscfile (dir (search getattr)))
 	  (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
 	  (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
 )

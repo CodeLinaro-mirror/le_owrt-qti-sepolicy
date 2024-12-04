@@ -81,5 +81,8 @@
 ;; For ezmesh R5 service
 (allow subj functions.miscfile (file (read)))
 (allow subj ezmesh.tmpfile readwrite_file)
+
+(dontaudit subj self (capability (sys_admin)))
+
 )
 

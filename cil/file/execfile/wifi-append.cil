@@ -189,6 +189,8 @@
     (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
     (allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
 
+    (allow subj self (capability (fowner chown)))
+
     ;; For ifconfig
     (allow subj self (capability (net_admin)))
     (allow subj .net.procfile (file (read open)))

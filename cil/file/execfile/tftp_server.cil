@@ -1,4 +1,4 @@
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
@@ -69,19 +69,14 @@
         ;;(blockinherit .file.exec.obj_template)
 
 	;;Latest denials
-	(allow subj file.datafile (dir (setattr write)))
-	(allow subj file.datafile (dir (read add_name)))
-	(allow subj file.datafile (dir (open create remove_name)))
+	(allow subj file.datafile (dir (setattr write read add_name open create remove_name)))
 	(allow subj power.sysfile (dir (search)))
 	(allow subj devices.sysfile (dir (search)))
 	(allow subj qcfirmware.miscfile (dir (search)))
 	(allow subj qcfirmware.miscfile (file (read open)))
 	(allow subj logd.miscfile (sock_file (write)))
-	(allow subj file.datafile (file (setattr create ioctl)))
-	(allow subj file.datafile (file (read unlink write open)))
-	(allow subj self (capability (dac_override dac_read_search)))
-	(allow subj self (capability (chown setuid)))
-	(allow subj self (capability (setpcap setgid)))
+	(allow subj file.datafile (file (setattr create ioctl read unlink write open append)))
+	(allow subj self (capability (dac_override dac_read_search chown setuid setpcap setgid)))
 	(allow subj self (capability2 (block_suspend)))
 	(allow subj self (process (setcap)))
 	(allow subj unknown.miscfile (dir (search)))

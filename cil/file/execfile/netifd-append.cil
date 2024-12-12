@@ -233,7 +233,7 @@
 	  (allow subj .xtables.execfile (file (getattr execute)))
 
 	  ;; Need for /tmp/ipsec/strongswan.conf
-	  (allow subj .tmp.fs (file (create read open getattr write unlink)))
+	  (allow subj .tmp.fs (file (create read open getattr write unlink map)))
 	  (allow subj .netifd.tmpfile (file (write unlink)))
 	  (allow subj .tmpfile.conftmpfile (dir (search)))
 	  (allow subj .netifd.subj (alg_socket (create)))
@@ -309,4 +309,7 @@
 	  (allow .rctinyproxy.subj netifd.miscfile (dir (search getattr)))
 	  (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
 	  (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
+
+
+          (dontaudit subj self (capability (sys_admin)))
 )

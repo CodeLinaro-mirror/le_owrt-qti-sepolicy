@@ -82,6 +82,8 @@
 (allow subj functions.miscfile (file (read)))
 (allow subj ezmesh.tmpfile readwrite_file)
 
+(allow subj file.conffile (dir (remove_name)))
+
 (dontaudit subj self (capability (sys_admin)))
 
 )

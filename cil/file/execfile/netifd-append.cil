@@ -310,6 +310,9 @@
 	  (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
 	  (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
 
+	  ;; Need permission for iproute2
+	  (allow subj iproute2.conffile (dir (create read open write rename add_name reparent)))
+	  (allow subj iproute2.conffile (file (link)))
 
           (dontaudit subj self (capability (sys_admin)))
 )

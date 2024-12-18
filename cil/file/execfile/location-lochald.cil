@@ -1,5 +1,5 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; Sepolicy rules for location daemon - location_hal_daemon
@@ -156,4 +156,6 @@
     ;; SpeedTest related permissions
     (allow subj qcmap_cm.subj (unix_dgram_socket (sendto)))
 
+    ;; read urandom
+    (call .random.read_nodedev_chr_files (subj))
 )

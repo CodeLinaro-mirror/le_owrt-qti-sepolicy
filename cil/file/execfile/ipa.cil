@@ -90,5 +90,7 @@
 	(dontaudit subj .qcmap_cm.tmpfile (file (read)))
 
 	(allow subj ipacli.execfile (file(execute_no_trans)))
+
+	(dontaudit subj self (capability (sys_admin)))
     ;;
 )

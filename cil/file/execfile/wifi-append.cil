@@ -1,5 +1,5 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
@@ -188,6 +188,8 @@
     (allow subj .qcmap_ref.subj (fifo_file (ioctl)))
     (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
     (allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
+
+    (allow subj self (capability (fowner chown)))
 
     ;; For ifconfig
     (allow subj self (capability (net_admin)))
@@ -397,7 +399,7 @@
     (allow subj .cpuinfo.procfile (file (read open)))
 
     ;; Write to /proc/irq/$irq/smp_affinity
-    (allow subj .irq.procfile (dir (search write add_name)))
+    (allow subj .irq.procfile (dir (search write add_name read open)))
     (allow subj .irq.procfile (file (create write open)))
 
     ;; Access to /lib/wifi/qcacommands_*.xml
@@ -469,7 +471,7 @@
     (allow subj .httpproxy.netport (tcp_socket (name_connect)))
 
     ;; sysctl command on dev.nss nodes
-    (allow subj .sys.sysctlfile (dir (search)))
+    (allow subj .sys.sysctlfile (dir (read open search)))
     (allow subj .dev.sysctlfile (dir (search)))
 
     ;; Execute hostapd/wpa_supplicant binaries
@@ -638,7 +640,8 @@
     (allow subj .validatedata.execfile (file (read open execute map)))
 
     ;; Need on /proc for process
-    (allow subj .sys.subj (dir (getattr)))
+    (allow subj .sys.subj (dir (read open search getattr)))
+    (allow subj .sys.subj (file (read open)))
     (allow subj .ubusd.subj (dir (getattr)))
     (allow subj .urngd.subj (dir (getattr)))
     (allow subj .tftp_server.subj (dir (getattr)))
@@ -674,6 +677,41 @@
 
     ;; Need for /tmp/host, supplicant log
     (allow subj .wpad.tmpfile (file (getattr append open write unlink)))
+
+    ;; Need for ezmesh R5 service
+    (allow subj .csd_server.subj (file (open read)))
+    (allow subj .csd_server.subj (dir (read open getattr search)))
+    (allow subj .csd_server.subj (lnk_file (read)))
+
+    (allow subj .qbt.subj (dir (search getattr read open)))
+    (allow subj .qbt.subj (file (open read)))
+    (allow subj .qbt.subj (lnk_file (read)))
+
+    ;; Need for WiFi7 AP bring up
+    (allow subj .stat.procfile (file (read open)))
+
+    (allow subj .fs.procfile (dir (read open search)))
+
+    (allow subj .bus.procfile (dir (read open search)))
+
+    (allow subj .tty.procfile (dir (read open search)))
+
+    (allow subj .driver.procfile (dir (read open search)))
+
+    (allow subj .sysvipc.procfile (dir (read open search)))
+
+    (allow subj .dynamicdebug.procfile (dir (read open search)))
+
+    (allow subj .proc.fs (dir (read open)))
+
+    (allow subj .wpad.subj (dir (read search open)))
+    (allow subj .wpad.subj (file (create read open)))
+
+    (allow subj .cpu.procfile (dir (read open search)))
+
+    (allow subj .powerstate.subj (dir (read open search)))
+    (allow subj .powerstate.subj (file (open read)))
+    (allow subj .powerstate.subj (lnk_file (open read)))
 
     ;;iface-up subj transition
     (call .ifup.subj_type_transition (subj))

@@ -69,6 +69,7 @@
 	(allow subj .sys.subj (packet_socket (read write)))
 	(allow subj .sys.subj (netlink_route_socket (read write)))
 	(allow subj .sys.subj (netlink_socket (read write)))
+	(allow subj .sys.subj (netlink_kobject_uevent_socket (read write)))
 
 	;;read/write for ezmesh
 	(allow subj ezmesh.subj (tcp_socket (read write)))
@@ -88,6 +89,9 @@
 
 	;Need permission for uci
 	(allow subj tmpfile.runtimetmpfile (dir (search)))
+
+	;; Need permission for pppd
+	(allow subj .pppd.subj (fd (use)))
 
 	(dontaudit subj self (capability (sys_admin)))
 

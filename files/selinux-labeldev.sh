@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+# Copyright (c) 2022, 2025 Qualcomm Innovation Center, Inc. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
@@ -22,7 +22,6 @@ done
 # Because /dev/console is not relabeled by kernel, many commands
 # would can not use it, including restorecon.
 ${CHCON} -t `${MATCHPATHCON} -n /dev/null | cut -d: -f3` /dev/null
-${CHCON} -t `${MATCHPATHCON} -n /dev/console | cut -d: -f3` /dev/console
 
 # Now, we should relabel /dev for most services
 # only thing in tmpfs are to be done here other should move

@@ -1,4 +1,4 @@
-;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .file
@@ -309,7 +309,11 @@
 	  (allow .rctinyproxy.subj netifd.miscfile (dir (search getattr)))
 	  (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
 	  (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
+          (allow subj .nftables.execfile (file(read open execute getattr map)))
 
+	  ;; Need permission for iproute2
+	  (allow subj iproute2.conffile (dir (create read open write rename add_name reparent)))
+	  (allow subj iproute2.conffile (file (link)))
 
           (dontaudit subj self (capability (sys_admin)))
 )

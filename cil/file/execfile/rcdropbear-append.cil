@@ -1,4 +1,4 @@
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .rcdropbear
@@ -13,4 +13,5 @@
        (call .uci.read_conffile_files (subj))
        (call .uci.search_tmpfile_dirs (subj))
        (allow subj self (capability (chown dac_override fowner dac_read_search fsetid )))
+       (allow subj locale.miscfile (file (open read getattr map)))
 )

@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023, 2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -106,9 +106,8 @@
     ;; for http requests over http standard port
     (allow subj .http.netport (tcp_socket (name_connect)))
 
-    ;; don't show denial when we try to check for sdcard
-    ;; this will just silence denials without providing permission
-    (dontaudit subj .mnt.miscfile manage_dir)
+    (allow subj .mnt.miscfile (dir (search getattr read open)))
+    (allow subj .mnt.miscfile (file (open read getattr)))
 
     ;; to fork msdc process msdc_app from msdc_socket on socket read event
     ;; also msdc_socket, msdc_app have same file contexts
@@ -124,5 +123,9 @@
 
     ;; Permission for uci to write to msdc data files
     (allow uci.subj msdc.datafile (file (write ioctl)))
+
+    ;; don't show denial when we try to check for sdcard
+    ;; this will just silence denials without providing permission
+    (dontaudit subj .sdcard.miscfile manage_dir)
 
 )

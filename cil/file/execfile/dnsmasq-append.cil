@@ -2,6 +2,10 @@
 ;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
+(in .file
+  (call .dnsmasq.obj_type_transition_tmpfile
+           (unconfined.subj_typeattr dir "dnsmasq.*.d")))
+
 (in .dnsmasq
 
   ;; Need this to label dnsmasq.conf.* file.
@@ -12,6 +16,15 @@
      "/tmp/etc/*"
      file
      conftmpfile_file_context)
+
+  (filecon
+         "/tmp/dnsmasq\..*\.d"
+         dir
+         tmpfile_file_context)
+  (filecon
+         "/tmp/dnsmasq\..*\.d/.*"
+         any
+         tmpfile_file_context)
 
   (macro obj_type_transition_conftmpfile_2 ((type ARG1)(class ARG2)(name ARG3))
       (call .tmp.fs_obj_type_transition
@@ -65,6 +78,8 @@
 (call .jshn.execute_execfile_files (subj))
 (call .ip.mapexecute_execfile_files (subj))
 (call .kpi_values.append_sysfile_files(subj))
+
+(call obj_type_transition_tmpfile (subj dir "dnsmasq.*.d"))
 
 ;;
 (call .ip.subj_type_transition (subj))

@@ -1,5 +1,5 @@
 
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .sys
@@ -75,4 +75,11 @@
 
            ;;Need permission for conntrack
            (allow subj net.procfile (lnk_file (read)))
+
+           (allow subj proc.fs (dir (read open)))
+           (allow subj sys.subj (dir (read open search)))
+           (allow subj net.procfile (file (read open)))
+           (allow subj ubusd.subj (dir (read open search)))
+           (allow subj tftp_server.subj (lnk_file (read)))
+           (allow subj diag-router.subj (dir (read open search)))
        )

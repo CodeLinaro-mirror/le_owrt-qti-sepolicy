@@ -1,4 +1,4 @@
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .xtables
@@ -22,4 +22,8 @@
   (allow subj .ucode.subj (fd (use)))
   ;;Need permission for fw3
   (allow subj fw3.datafile (file (read)))
+  ;;Need permission for odhcp6c
+  (allow subj odhcp6c.subj (fd (use)))
+  ;;Need permission for ip6tables
+  (allow subj .iproute2.conffile (dir (search)))
 )

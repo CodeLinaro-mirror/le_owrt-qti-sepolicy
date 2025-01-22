@@ -15,4 +15,7 @@
      ;;open/write pmsg_dev.nodedev
      (allow subj .pmsg_dev.nodedev (chr_file (write open)))
      (allow subj hotplugcall.subj (fd( use )))
+     ;; Need permission to access/source /lib/functions/ipv4.sh
+     (allow subj functions.miscfile (file (getattr read open)))
+     (allow subj functions.miscfile (dir (search)))
 )

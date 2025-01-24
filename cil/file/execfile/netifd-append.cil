@@ -310,6 +310,8 @@
 	  (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
 	  (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
           (allow subj .nftables.execfile (file(read open execute getattr map)))
+          ;;domain name transition for nftables.execfile for execute_no_trans permission
+          (call .nftables.subj_type_transition (subj))
 
 	  ;; Need permission for iproute2
 	  (allow subj iproute2.conffile (dir (create read open write rename add_name reparent)))

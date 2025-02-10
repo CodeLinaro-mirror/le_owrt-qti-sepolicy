@@ -249,6 +249,8 @@
 	(call .net.read_procfile_lnk_files (subj))
 	(call .netfilter.search_sysctlfile_dirs (subj))
 	(call .netfilter.readwrite_sysctlfile_files (subj))
+	;; To read /proc/net/pppoe node to get session id and MAC address
+	(call .net.read_procfile_files (subj))
 
 	(call .sys.requestmodule (subj))
 	(dontaudit subj .sys.subj (fifo_file (write)))

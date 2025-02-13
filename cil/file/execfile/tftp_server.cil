@@ -1,22 +1,22 @@
-;; Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
  ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
 (in .sys
-    (call .tftp_server.subj_type_transition (subj)))
+	(call .tftp_server.subj_type_transition (subj)))
 
 ;(in .file
- ;   (call .tftp_server.obj_type_transition_execfile (unconfined.subj_typeattr)))
+;	(call .tftp_server.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
 (in .file
-(call .tftp_server.obj_type_transition_datafile (unconfined.subj_typeattr dir shared)))
+	(call .tftp_server.obj_type_transition_datafile (unconfined.subj_typeattr dir shared)))
 
 (block tftp_server
-       ;;
-       ;; Contexts
-       ;;
+	;;
+	;; Contexts
+	;;
 	(filecon
 	"/usr/bin/tftp_server"
 	file
@@ -28,9 +28,9 @@
 	any
 	datafile_file_context)
 
-       ;;
-       ;; Macros
-       ;;
+	;;
+	;; Macros
+	;;
 	(macro obj_type_transition_execfile ((type ARG1))
 		(call .file.execfile_obj_type_transition
 			(ARG1 execfile file "tftp_server")))
@@ -38,48 +38,60 @@
 	(macro obj_type_transition_datafile ((type ARG1)(class ARG2)(name ARG3))
 		(call .file.datafile_obj_type_transition
 			(ARG1 datafile ARG2 ARG3)))
-       ;;
-       ;; Policy
-       ;;
-       (blockinherit .agent.base_template)
-       (blockinherit file.data.obj_template)
-       (call obj_type_transition_datafile (subj dir "shared"))
-       ;; search in config files is needed
-       ;;which is done on start /Stop  of services
-       (call .file.search_conffile_dirs (subj))
 
-       ;; Need qipcrtr socket creations
-       (allow subj  self  create_qipcrtr_socket)
+	;;
+	;; Policy
+	;;
+	(blockinherit .agent.base_template)
+	(blockinherit file.data.obj_template)
+	;;(blockinherit .file.exec.obj_template)
 
-       ;; Needed for  unix_dgram socket creation
-       (allow subj self create_unix_dgram_socket)
+	(allow subj self (capability (dac_override dac_read_search chown setuid setpcap setgid)))
+	(allow subj self (capability2 (block_suspend)))
+	(allow subj self (process (setcap)))
 
-        ;; needed for writing to dev/kmsg
+	(call obj_type_transition_datafile (subj dir "shared"))
+
+	;; search in config files is needed
+	;;which is done on start /Stop  of services
+	(call .file.search_conffile_dirs (subj))
+
+	;; Need qipcrtr socket creations
+	(allow subj self create_qipcrtr_socket)
+
+	;; Needed for  unix_dgram socket creation
+	(allow subj self create_unix_dgram_socket)
+
+	;; needed for writing to dev/kmsg
 	(call .kmsg.readwrite_nodedev_chr_files (subj))
 
 	;; Needed for searching sysfs
 	(call .sys.search_fs_dirs (subj))
 
-	(call .logd.sendto_unix_dgram_sockets (subj))
-	(call .power.append_sysfile_files(subj))
-	(allow subj class.sysfile ( dir ( read open)))
-	(allow subj devices.sysfile ( file ( read open)))
-
         (call .class.read_sysfile_lnk_files (subj))
-        ;;(blockinherit .file.exec.obj_template)
+	(allow subj class.sysfile ( dir ( read open)))
 
-	;;Latest denials
 	(allow subj file.datafile (dir (setattr write read add_name open create remove_name)))
+	(allow subj file.datafile (file (setattr create ioctl read unlink write open append)))
+
+	(call .power.append_sysfile_files(subj))
 	(allow subj power.sysfile (dir (search)))
+
 	(allow subj devices.sysfile (dir (search)))
+	(allow subj devices.sysfile ( file (read open)))
+
 	(allow subj qcfirmware.miscfile (dir (search)))
 	(allow subj qcfirmware.miscfile (file (read open)))
+
+	(call .logd.sendto_unix_dgram_sockets (subj))
 	(allow subj logd.miscfile (sock_file (write)))
-	(allow subj file.datafile (file (setattr create ioctl read unlink write open append)))
-	(allow subj self (capability (dac_override dac_read_search chown setuid setpcap setgid)))
-	(allow subj self (capability2 (block_suspend)))
-	(allow subj self (process (setcap)))
+
 	(allow subj unknown.miscfile (dir (search)))
-	(allow subj tftp_server.datafile (file (open setattr read create write ioctl)))
+
 	(allow subj tftp_server.datafile (dir (open setattr read search write add_name)))
+	(allow subj tftp_server.datafile (file (open setattr read create write ioctl)))
+
+	;; Needed for accessing oempd mbns.
+	(allow subj dos.fs (dir (search)))
+	(allow subj dos.fs (file (open read)))
 )

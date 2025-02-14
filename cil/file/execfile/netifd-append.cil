@@ -321,6 +321,10 @@
 	  (allow subj nftables.subj (process (rlimitinh siginh)))
 	  ;; Need for pppoe on /tmp/ipv4config.waneth*
 	  (allow subj pppd.tmpfile (file (getattr read open)))
+          ;Need permission for nft
+          (call .file.execute_execfile_files (subj))
+          (call .nftables.read_execfile_files (subj))
+          (call .nftables.mapexecute_execfile_files (subj))
 
           (allow subj dnsmasq.conffile (file(read open)))
 

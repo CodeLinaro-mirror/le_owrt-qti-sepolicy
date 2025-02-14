@@ -1,5 +1,5 @@
 
-;;Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .ucode
@@ -34,6 +34,11 @@
 (call .file.read_conffile_files (subj))
 (allow subj .sys.fs (filesystem (getattr)))
 (allow subj .filesystems.procfile (file (read open)))
+(allow subj file.datafile (dir(read open)))
+(allow subj bus.sysfile (dir(search read open)))
+(allow subj class.sysfile (dir(read open)))
+(allow subj proc.fs (dir(read open)))
+(allow subj fs.procfile (dir(search)))
 )
 
 

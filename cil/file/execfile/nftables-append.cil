@@ -20,5 +20,8 @@
 (allow subj .hotplugcall.subj (fifo_file(read write ioctl)))
 ;; Need permission for pppd
 (allow subj .pppd.subj (fd (use)))
+(call .file.read_datafile_files (subj))
+(call .tmpfile.read_runtimetmpfile_files (subj))
+(call .tmpfile.search_runtimetmpfile_dirs (subj))
 )
 

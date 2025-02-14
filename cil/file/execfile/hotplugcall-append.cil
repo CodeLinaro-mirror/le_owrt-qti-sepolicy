@@ -260,4 +260,8 @@
 ;; Need for USB to bind with configfs after exiting host mode
       (allow subj .config.fs (file (create open read write)))
       (allow subj .config.fs (dir (search add_name write)))
+
+      ;; Need for pbr nftables files
+      (call .file.readwrite_conffile_files (subj))
+      (call .dnsmasq.obj_type_transition_tmpfile (subj dir "dnsmasq.d"))
 )

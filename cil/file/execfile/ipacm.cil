@@ -173,7 +173,7 @@
 		(call .file.datafile_obj_type_transition
 			(ARG1 datafile dir "data_ipa"))
 		(call .file.datafile_obj_type_transition
-			(ARG1 datafile file "/data/data_ipa/*)))
+			(ARG1 datafile file "/data/data_ipa/*")))
 
 	;;
 

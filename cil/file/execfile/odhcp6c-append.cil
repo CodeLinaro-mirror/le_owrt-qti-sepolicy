@@ -1,4 +1,4 @@
-;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .odhcp6c
@@ -176,4 +176,7 @@
 
     ;; Need permission on file.confile
     (allow subj file.conffile(dir (remove_name)))
+
+    ;;Need permission for /tmp/TZ to get timezone info
+    (allow subj .locale.miscfile (file (read open getattr map)))
 )

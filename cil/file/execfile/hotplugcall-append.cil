@@ -1,4 +1,4 @@
-;; Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -255,4 +255,8 @@
       (allow subj net.netnode (udp_socket( node_bind )))
       (allow subj net.netif (netif( egress )))
       (allow subj net.netnode (node( sendto )))
+
+;; Need for USB to bind with configfs after exiting host mode
+      (allow subj .config.fs (file (create open read write)))
+      (allow subj .config.fs (dir (search add_name write)))
 )

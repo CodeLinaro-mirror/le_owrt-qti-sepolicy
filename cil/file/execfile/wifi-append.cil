@@ -1,5 +1,5 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
@@ -493,6 +493,7 @@
     (allow subj .tmpfile.runtimetmpfile (dir (remove_name)))
     (allow subj .tmpfile.runtimetmpfile (file (read open lock write)))
     (allow subj wpad.runtimetmpfile (file (getattr read open)))
+    (allow subj .tmpfile.runtimetmpfile (lnk_file (create read getattr unlink)))
 
     ;; IPQ AFC
     (allow subj .afc.subj (dir (read open search getattr)))
@@ -614,6 +615,7 @@
     (allow subj ezmesh.subj (file (read open)))
     (allow subj ezmesh.subj (lnk_file (read)))
     (allow subj ezmesh.subj (unix_dgram_socket (sendto)))
+    (allow subj .ezmesh.runtimetmpfile (dir (write)))
 
     ;; Need open for /proc/sys/kernel/
     (allow subj kernel.sysctlfile (dir ( search)))

@@ -1,5 +1,5 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .kmodloader
@@ -42,6 +42,9 @@
 
   ;;Need use permission on rcnetwork.subj
   (allow subj rcnetwork.subj (fd (use)))
+
+  ;;Need read, write permission on qcmap_cm.subj
+  (allow subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
 )
 
 

@@ -369,6 +369,9 @@
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .qms.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .emergencyalert.subj))
     (call dontaudit_pgrep_killall_cmd_search_perms (subj .logread.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .nftables.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .pppd.subj))
+    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ucode.subj))
 
     ;; Look for files in /tmp
     (allow subj .tmp.fs (file (create read write getattr open unlink)))

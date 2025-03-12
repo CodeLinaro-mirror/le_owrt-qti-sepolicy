@@ -317,5 +317,8 @@
 	  (allow subj iproute2.conffile (dir (create read open write rename add_name reparent)))
 	  (allow subj iproute2.conffile (file (link)))
 
+	  ;; Need permission to grep/access nftables list
+	  (allow subj nftables.subj (process (rlimitinh siginh)))
+
           (dontaudit subj self (capability (sys_admin)))
 )

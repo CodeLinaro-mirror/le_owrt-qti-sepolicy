@@ -1,0 +1,158 @@
+;;Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .pppd
+
+	(filecon
+	"/tmp/ipv4config\.waneth.*"
+	any
+	tmpfile_file_context)
+
+	;;
+	;; Macros
+	;;
+
+	(macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+        	(call .tmp.fs_obj_type_transition (ARG1 tmpfile ARG2 ARG3)))
+
+	(blockinherit .tmpfile.obj_template)
+
+	;; Need execute on /tmp/ipv4config.waneth*
+	(call obj_type_transition_tmpfile (subj file "*"))
+	(allow subj .tmp.fs (dir (remove_name)))
+	(allow subj .tmp.fs (file (getattr create write read open append unlink)))
+	(allow subj pppd.tmpfile (file (create read write open append getattr unlink)))
+
+	;; Need permission for sysfs
+	(allow subj .class.sysfile (dir (read open search)))
+	(allow subj .class.sysfile (lnk_file (read)))
+
+	;; Need execute on lanUtils.sh
+	(allow subj sys.rootfile (dir (read open)))
+
+	;; Need execute script under /etc/ppp/ip-up.d and /etc/ppp/ip-down.d
+	(call .pppd.readwrite_conffile_dirs (subj))
+	(call .pppd.readwrite_conffile_files (subj))
+	(call .pppd.execute_conffile_files (subj))
+	(call .pppd.manage_conffile_files (subj))
+	(allow subj .pppd.conffile (dir (create search add_name remove_name open)))
+
+	;; Need execute on /sbin/uci
+	(call .uci.execute_execfile_files (subj))
+	(allow subj .uci.execfile (file (getattr read open map)))
+	(call .uci.search_conffile_dirs (subj))
+	(call .uci.readwrite_conffile_files (subj))
+	(call .uci.manage_conffile_files (subj))
+	(allow subj uci.tmpfile (dir (search read write open getattr add_name)))
+	(allow subj uci.tmpfile (file (getattr read write open lock ioctl create)))
+	(allow subj uci.tmpfile (lnk_file (getattr read open map)))
+	(allow subj uci.tmpfile (fifo_file (getattr read open)))
+	(allow subj uci.statetmpfile (file (getattr write read open lock ioctl)))
+	(allow subj .uci.conffile (dir (read write open add_name remove_name)))
+	(allow subj .uci.conffile (file (create write open getattr read setattr rename unlink ioctl append lock)))
+
+	;; Need read open and execute_no_trans permission on /usr/sbin/ebtables
+	(call .file.manage_conffile_files (subj))
+	(call .file.execute_execfile_files (subj))
+	;; Need read open permission on /etc/ethertypes for ebtables
+	(call .file.read_conffile_files (subj))
+	(allow subj file.conffile(dir (remove_name)))
+
+	;; Need permission for backhaul status indicate feature
+	(call .file.read_conffile_lnk_files (subj))
+	(call .ip.execute_execfile_files (subj))
+	(call .iproute2.search_conffile_dirs (subj))
+	(call .iproute2.readwrite_conffile_files (subj))
+
+	;; Need permissoins to run ifstatus
+	(allow subj .ifstatus.execfile (file (execute read open getattr)))
+	(call .ifstatus.subj_type_transition (subj))
+
+	(call .rcfirewall.subj_type_transition (subj))
+
+	;; Need obj_type_transition for /etc/firewall.user.*
+	(call .firewall.obj_type_transition_conffile_ext (subj))
+	(call .firewall.manage_conffile_files (subj))
+
+	(call .rcodhcpd.subj_type_transition (subj))
+	(allow subj .rcodhcpd.initscriptfile (file (getattr execute read open)))
+
+	;; Need transition to run dnsmasq reload
+	(call .rcdnsmasq.subj_type_transition (subj))
+
+	(call .iw.subj_type_transition (subj))
+	(allow iw.subj hotplugcall.subj (fd (use)))
+	(allow iw.subj hotplugcall.subj (fifo_file (read write ioctl)))
+
+	;; Need permission for backhaulCommonConfig.sh
+	(call .qcmap_cm.search_runtimetmpfile_dirs (subj))
+	(call .qcmap_cm.write_runtimetmpfile_dirs (subj))
+	(call .qcmap_cm.create_runtimetmpfile_files (subj))
+	(call .qcmap_cm.read_runtimetmpfile_files (subj))
+	(call .qcmap_cm.write_runtimetmpfile_files (subj))
+	(allow subj .qcmap_cm.subj (dir (search open read)))
+	(allow subj .qcmap_cm.subj (file (open read)))
+	(allow subj .qcmap_cm.subj (lnk_file (read)))
+
+	(call .qcmap_cm.search_tmpfile_dirs (subj))
+	(call .qcmap_cm.write_tmpfile_dirs (subj))
+	(call .qcmap_cm.manage_tmpfile_dirs (subj))
+	(call .qcmap_cm.manage_tmpfile_files (subj))
+	(allow subj .qcmap_cm.tmpfile (dir (read open add_name remove_name)))
+	(allow subj .qcmap_cm.tmpfile (file (create read write open append getattr unlink)))
+
+	(call .qcmap_cm.manage_conffile_files (subj))
+	(call .qcmap_cm.execute_conffile_files (subj))
+	(allow subj .qcmap_cm.conffile (dir (search)))
+	(allow subj .qcmap_cm.conffile (file (read open write getattr)))
+
+	;; Permissions for backhaulCommonC
+	(allow subj functions.miscfile (dir (search)))
+	(allow subj functions.miscfile (file (read open getattr)))
+
+	;; Need subj transition for xtables
+	(call xtables.subj_type_transition (subj))
+
+	;; Need permission for netlink message
+	(allow subj self create_netlink_netfilter_socket)
+	(allow subj self (netlink_route_socket (nlmsg_write nlmsg_read)))
+	(allow subj self (netlink_generic_socket (create)))
+
+	;; Need permission for awk and backhaulCommonC
+	(allow subj resolv.tmpfile (dir (search)))
+	(allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
+	(allow subj self create_rawip_socket)
+
+	;; Need permission for ip6tables and odhcpd and search on /tmp/state/
+	(call .tmpfile.search_statetmpfile_dirs (subj))
+	(allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
+	(allow subj .tmpfile.locktmpfile (dir (search)))
+	(allow subj .tmpfile.locktmpfile (file (open)))
+	(allow subj .rccommon.conffile (file (read)))
+	(allow subj odhcp6c.tmpfile (file (read write getattr open unlink)))
+
+	;; Need for tinyproxy
+	(call .rctinyproxy.execute_initscriptfile_files (subj))
+	(call .rctinyproxy.subj_type_transition (subj))
+	(allow subj .tinyproxy.subj (dir (search read open getattr)))
+	(allow subj .tinyproxy.subj (file (read open)))
+	(allow subj .tinyproxy.subj (lnk_file (read open)))
+	(allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
+
+	;; Need read open on /sys/devices/soc0/platform_subtype_id and run brctl command
+	(allow subj .devices.sysfile (dir (search read open)))
+	(allow subj .devices.sysfile (file (getattr read open)))
+
+	;; Need permission to run init.d script
+	(call .file.search_initscriptfile_dirs (subj))
+	(allow subj .file.initscriptfile (dir (search)))
+	(allow subj .file.initscriptfile (file (execute read open)))
+
+	;; Need subj transition for ipa
+	(call .ipacli.subj_type_transition (subj))
+
+	;; Need execute on jsonfilter.execfile
+	(call .jsonfilter.subj_type_transition (subj))
+	(call .jsonfilter.read_execfile_files (subj))
+	(allow subj .jsonfilter.execfile (file (getattr execute map)))
+)

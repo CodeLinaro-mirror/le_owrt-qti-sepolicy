@@ -1,4 +1,4 @@
-;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .odhcp6c
@@ -145,11 +145,11 @@
 
     ;; Need permission for awk and backhaulCommonC
     (allow subj resolv.tmpfile (dir (search)))
-    (allow subj .qcmap_cm.tmpfile (file (read open getattr create write append)))
+    (allow subj .qcmap_cm.tmpfile (file (read open getattr create write append unlink)))
 
     ;; Need permission for pidof
     (allow subj csd_server.subj (dir (search)))
-    (allow subj .qcmap_cm.tmpfile (dir (search write add_name)))
+    (allow subj .qcmap_cm.tmpfile (dir (search write add_name remove_name)))
 
     ;; Need permission for ip6tables and odhcpd
     (allow subj .rccommon.conffile (file (read)))
@@ -176,4 +176,10 @@
 
     ;; Need permission on file.confile
     (allow subj file.conffile(dir (remove_name)))
+
+    ;;Need permission for /tmp/TZ to get timezone info
+    (allow subj .locale.miscfile (file (read open getattr map)))
+
+    ;; Need permission for pppd
+    (allow subj pppd.tmpfile (file (getattr read open)))
 )

@@ -1,4 +1,4 @@
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023,2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .rctinyproxy
@@ -14,5 +14,9 @@
     (allow subj tmp.fs (dir (setattr)))
     (allow subj tmp.fs (file (write read)))
     (call .qcmap_cm.search_conffile_dirs (subj))
+
+    (allow subj self (capability (dac_read_search dac_override)))
+    (allow subj file.conffile (dir (create setattr rename reparent)))
+    (allow subj file.conffile (chr_file (create link rename unlink)))
 
 )

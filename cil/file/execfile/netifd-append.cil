@@ -310,10 +310,17 @@
 	  (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
 	  (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
           (allow subj .nftables.execfile (file(read open execute getattr map)))
+          ;;domain name transition for nftables.execfile for execute_no_trans permission
+          (call .nftables.subj_type_transition (subj))
 
 	  ;; Need permission for iproute2
 	  (allow subj iproute2.conffile (dir (create read open write rename add_name reparent)))
 	  (allow subj iproute2.conffile (file (link)))
+
+	  ;; Need permission to grep/access nftables list
+	  (allow subj nftables.subj (process (rlimitinh siginh)))
+	  ;; Need for pppoe on /tmp/ipv4config.waneth*
+	  (allow subj pppd.tmpfile (file (getattr read open)))
 
           (dontaudit subj self (capability (sys_admin)))
 )

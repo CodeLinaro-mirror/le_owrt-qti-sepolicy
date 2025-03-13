@@ -56,7 +56,12 @@
            ;; Here we are grepping on conntrack.
            ;; grep process runs with sys.subj context.
            ;; For grep process to run we need to provide write and ioctl permissions
-           (allow subj .sys.subj (fifo_file (write ioctl)))
+           (allow subj .sys.subj (fifo_file (read write ioctl)))
+           ;; Need permission to socket related need
+           (allow subj .sys.subj (unix_stream_socket (read write)))
+           (allow subj .sys.subj (packet_socket (read write)))
+           (allow subj .sys.subj (netlink_kobject_uevent_socket (read write)))
+           (allow subj .sys.subj (netlink_socket (read write)))
            (call .dev.readwriteinherited_ttydev_chr_files (subj))
            (allow subj conntrack.datafile (file (write ioctl)))
            ;; Need permission to run conntrack related cmds from netifd context

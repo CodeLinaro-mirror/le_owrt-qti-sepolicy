@@ -1,5 +1,5 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
@@ -90,6 +90,7 @@
     (allow subj .qcmap_cli.subj (netlink_route_socket( read write )))
     (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
     (allow subj .sys.subj (fifo_file (write)))
+    (allow subj .sys.subj (unix_dgram_socket (sendto)))
     (allow subj .tmp.fs (dir (remove_name)))
     (allow subj .tmp.fs (file (create)))
     (allow subj .qcmap_ref.subj (fifo_file (read write ioctl)))
@@ -200,6 +201,7 @@
     ;; IPQ EasyMesh
     (call .pmsg_dev.read_nodedev_chr_files (subj))
     (allow subj .ezmesh.subj (unix_dgram_socket (sendto)))
+    (allow subj .ezmesh.runtimetmpfile (dir (search)))
     (allow subj .ezmesh.runtimetmpfile (sock_file (ioctl read write create getattr unlink setattr)))
     (allow subj .tmpfile.statetmpfile (file (getattr read open lock)))
     (allow subj .tmpfile.statetmpfile (dir (search)))

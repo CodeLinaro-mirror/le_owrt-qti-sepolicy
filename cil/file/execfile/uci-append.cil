@@ -1,90 +1,99 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .uci
 
-;; policy
+	;; policy
 
-(allow subj self (capability (dac_override dac_read_search)))
-(call .qcmap_cli.use_fds (subj))
-(call .qcmap_cli.readwrite_unix_stream_sockets (subj))
-(allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
-;; Need manage on /tmp/ipv{4/6}config[0-9]+
-(call .qcmap_cli.manage_tmpfile_files (subj))
-(call .mwan3.obj_type_transition_statetmpfile (subj))
-(call .mwan3.manage_statetmpfile_files (subj))
+	(allow subj self (capability (dac_override dac_read_search)))
 
-(call .qcmap_ref.use_fds (subj))
-(call .qcmap_ref.readwrite_unix_stream_sockets (subj))
-(allow subj .qcmap_ref.subj (fifo_file (read write ioctl)))
-;; Need manage on /tmp/ipv{4/6}config[0-9]+
-(call .qcmap_ref.manage_tmpfile_files (subj))
-;; Need append on /tmp/resolve.conf
-(call .resolv.append_tmpfile_files (subj))
+	(call .qcmap_cli.use_fds (subj))
+	(call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+	;; Need manage on /tmp/ipv{4/6}config[0-9]+
+	(call .qcmap_cli.manage_tmpfile_files (subj))
+	(allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
 
-;; Need read/write/create for miniupnpd
-(call .miniupnpd.readwrite_conftmpfile_files (subj))
-(call .miniupnpd.create_conftmpfile_files (subj))
+	(call .mwan3.obj_type_transition_statetmpfile (subj))
+	(call .mwan3.manage_statetmpfile_files (subj))
 
-(call .odhcp6c.use_fds (subj))
-(call .odhcp6c.readwrite_unix_stream_sockets (subj))
-(allow subj .odhcp6c.subj (fifo_file (read write ioctl)))
+	(call .qcmap_ref.use_fds (subj))
+	(call .qcmap_ref.readwrite_unix_stream_sockets (subj))
+	;; Need manage on /tmp/ipv{4/6}config[0-9]+
+	(call .qcmap_ref.manage_tmpfile_files (subj))
+	(allow subj .qcmap_ref.subj (fifo_file (read write ioctl)))
+	;; Ref daemon netlink thread
+	(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+	(allow subj qcmap_ref.subj (udp_socket (read write)))
 
-(call .ucode.use_fds (subj))
-(call .ucode.readwrite_unix_stream_sockets (subj))
-(allow subj .ucode.subj (fifo_file (read write ioctl)))
+	;; Need append on /tmp/resolve.conf
+	(call .resolv.append_tmpfile_files (subj))
 
-(call .qcmap_cm.manage_tmpfile_files (subj))
-(allow subj .qcmap_cm.tmpfile (file (getattr read open lock)))
-(allow subj .kmsg.nodedev (chr_file (open write)))
-(call .fw3.write_runtimetmpfile_files (subj))
-(call .qcmap_cm.read_runtimetmpfile_files (subj))
+	;; Need read/write/create for miniupnpd
+	(call .miniupnpd.readwrite_conftmpfile_files (subj))
+	(call .miniupnpd.create_conftmpfile_files (subj))
 
-;; IPQ sigma_dut
-(allow subj .wifi.logtmpfile readwrite_file)
-(allow subj .wifi.subj readwrite_tcp_socket)
+	(call .odhcp6c.use_fds (subj))
+	(call .odhcp6c.readwrite_unix_stream_sockets (subj))
+	(allow subj .odhcp6c.subj (fifo_file (read write ioctl)))
 
-;; Ref daemon netlink thread
-(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
-(allow subj qcmap_ref.subj (udp_socket (read write)))
+	(call .ucode.use_fds (subj))
+	(call .ucode.readwrite_unix_stream_sockets (subj))
+	(allow subj .ucode.subj (fifo_file (read write ioctl)))
 
-;; For QCMAP 'Activate supplicant'
-(allow subj .netifd.subj (netlink_route_socket (read write)))
-(allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+	(call .qcmap_cm.manage_tmpfile_files (subj))
+	(call .qcmap_cm.read_runtimetmpfile_files (subj))
+	(allow subj .qcmap_cm.tmpfile (file (getattr read open lock)))
+	;;For Speedtest
+	(allow subj qcmap_cm.subj (unix_dgram_socket( read write )))
+	;;Need permission for uci
+	(allow subj qcmap_cm.subj (udp_socket (read write)))
 
-;; IPQ ctrl_app_dut
-(allow subj .wifi.subj readwrite_udp_socket)
-(allow subj .wifi.tmpfile readwrite_file)
+	(call .fw3.write_runtimetmpfile_files (subj))
+	;; Need permission to read /usr/share/firewall4/main.uc file
+	(call .fw3.read_datafile_files (subj))
+	(allow subj fw3.datafile (file (read)))
 
-;;open/write pmsg_dev.nodedev
-(allow subj .pmsg_dev.nodedev (chr_file (write open)))
-(allow subj .sys.subj (unix_stream_socket (read write)))
-(allow subj .sys.subj (packet_socket (read write)))
-(allow subj .sys.subj (netlink_route_socket (read write)))
-(allow subj .sys.subj (netlink_socket (read write)))
-(allow subj fw3.datafile (file (read)))
-;; Need permission to read /usr/share/firewall4/main.uc file
-(call .fw3.read_datafile_files (subj))
+	;; IPQ sigma_dut
+	(allow subj .wifi.logtmpfile readwrite_file)
+	(allow subj .wifi.subj readwrite_tcp_socket)
+	;; IPQ ctrl_app_dut
+	(allow subj .wifi.subj readwrite_udp_socket)
+	(allow subj .wifi.tmpfile readwrite_file)
 
-;;For Speedtest
-(allow subj qcmap_cm.subj (unix_dgram_socket( read write )))
+	;; For QCMAP 'Activate supplicant'
+	(allow subj .netifd.subj (netlink_route_socket (read write)))
+	(allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
 
-;;read/write for ezmesh
-(allow subj ezmesh.subj (tcp_socket (read write)))
-(allow subj ezmesh.subj (udp_socket (read write)))
-(allow subj ezmesh.subj (netlink_crypto_socket (read write)))
+	(allow subj .sys.subj (unix_stream_socket (read write)))
+	(allow subj .sys.subj (packet_socket (read write)))
+	(allow subj .sys.subj (netlink_route_socket (read write)))
+	(allow subj .sys.subj (netlink_socket (read write)))
+	(allow subj .sys.subj (netlink_kobject_uevent_socket (read write)))
 
-;;Need permission for uci
-(allow subj qcmap_cm.subj (udp_socket (read write)))
+	;;read/write for ezmesh
+	(allow subj ezmesh.subj (tcp_socket (read write)))
+	(allow subj ezmesh.subj (udp_socket (read write)))
+	(allow subj ezmesh.subj (netlink_crypto_socket (read write)))
+	;; For ezmesh R5 service
+	(allow subj ezmesh.tmpfile readwrite_file)
 
-;; For ezmesh R5 service
-(allow subj functions.miscfile (file (read)))
-(allow subj ezmesh.tmpfile readwrite_file)
+	;;open/write pmsg_dev.nodedev
+	(allow subj .pmsg_dev.nodedev (chr_file (write open)))
 
-(allow subj file.conffile (dir (remove_name)))
+	(allow subj .kmsg.nodedev (chr_file (open write)))
 
-(dontaudit subj self (capability (sys_admin)))
+	(allow subj functions.miscfile (file (read)))
+
+	(allow subj file.conffile (dir (remove_name)))
+
+	;Need permission for uci
+	(allow subj tmpfile.runtimetmpfile (dir (search)))
+
+	;; Need permission for pppd
+	(allow subj .pppd.subj (fd (use)))
+
+	(dontaudit subj self (capability (sys_admin)))
 
 )
 

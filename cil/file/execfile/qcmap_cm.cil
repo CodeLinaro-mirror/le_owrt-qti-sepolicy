@@ -1454,4 +1454,7 @@
     ;;Need permission for pppd
     (allow subj pppd.tmpfile (file (getattr)))
 
+    ;;Need for Health monitor XML access/update for factory reset
+    (allow subj .health_monitor.conffile (dir (search write add_name remove_name)))
+    (allow subj .health_monitor.conffile (file (read write open lock getattr create ioctl unlink)))
 )

@@ -97,8 +97,6 @@
 	(allow subj leprop.miscfile (sock_file (read write)))
 	(allow subj leprop.subj (unix_stream_socket ( connectto )))
 
-	(allow subj .file.conffile (lnk_file (read)))
-
 	(allow subj .ssl.conftmpfile (dir (search)))
 	(allow subj .ssl.conftmpfile (file (read getattr open)))
 
@@ -115,8 +113,9 @@
 	(call .qms.manage_datafile_dirs (subj))
 	(call .qms.manage_datafile_files (subj))
 
-	(allow qms.subj kernel.sysfile (dir (search)))
-	(allow qms.subj file.conffile (dir (search)))
+	(allow subj kernel.sysfile (dir (search)))
+	(allow subj file.conffile (dir (search)))
+	(allow subj file.conffile (lnk_file (read getattr)))
 
 	;; To execute /usr/sbin/wpa_cli
 	(call .wpad.subj_type_transition (subj))
@@ -128,10 +127,9 @@
 
 	(call .fs.search_sysfile_dirs (subj))
 	(call .sys.search_fs_dirs (subj))
+	(allow subj .sys.fs (filesystem (getattr)))
 
 	(allow subj shell.execfile (file (execute execute_no_trans getattr map open read)))
-
-	(allow subj .sys.fs (filesystem (getattr)))
 
 	(call .kpi_values.append_sysfile_files (subj))
 	(allow subj .kpi_values.sysfile (file (read)))

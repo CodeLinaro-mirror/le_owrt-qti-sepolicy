@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023, 2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -50,7 +50,6 @@
         (call .net.search_sysctlfile_dirs (subj))
         (call .ipv4.search_sysctlfile_dirs (subj))
         (call .ipv4.readwrite_sysctlfile_files (subj))
-        (call .ipv4.search_sysctlfile_dirs (subj))
         (call .ipv6.search_sysctlfile_dirs (subj))
         (call .ipv6.readwrite_sysctlfile_files (subj))
         (call .shell.execute_execfile_files (subj))
@@ -68,15 +67,15 @@
         (call .class.search_sysfile_dirs (subj))
         (call .class.read_sysfile_lnk_files (subj))
 
-        (allow netmgrd.subj .xtables.subj (process2 (nnp_transition)))
-        (allow netmgrd.subj .sys.subj (system (module_request)))
-        (allow netmgrd.subj .xtables.execfile (file (read open execute map)))
+        (allow subj .xtables.subj (process2 (nnp_transition)))
+        (allow subj .sys.subj (system (module_request)))
+        (allow subj .xtables.execfile (file (read open execute map)))
         (allow subj .devices.sysfile (file (open)))
-        (allow netmgrd.subj .ipv6.sysctlfile (file (open ioctl)))
+        (allow subj .ipv6.sysctlfile (file (open ioctl)))
         (allow subj self (process (getcap)))
         (allow subj .qcmap_cm.conffile (dir (search)))
         (allow subj .qcmap_cm.conffile (file (read open write)))
-        (allow netmgrd.subj .ipv4.sysctlfile (file (open ioctl)))
+        (allow subj .ipv4.sysctlfile (file (open ioctl)))
         (allow subj netmgrd.tmpfile (sock_file (create setattr unlink)))
         (allow subj self (capability (net_admin net_raw)))
         (dontaudit subj .net.procfile (file (read open)))
@@ -97,7 +96,6 @@
         (allow subj self create_udp_socket)
         (allow subj self create_tcp_socket)
         (allow subj self create_netlink_socket)
-        (allow subj self create_qipcrtr_socket)
         (allow subj self create_unix_dgram_socket)
         (allow subj self create_unix_stream_stream_socket)
         (allow subj self create_netlink_kobject_uevent_socket)
@@ -113,7 +111,7 @@
         (allow xtables.subj netmgrd.subj (netlink_socket (read write)))
         (allow xtables.subj netmgrd.subj (unix_stream_socket (read write)))
         (allow xtables.subj netmgrd.subj readwriteinherited_fifo_file)
-        (allow netmgrd.subj .ip.subj (process2 (nnp_transition)))
+        (allow subj .ip.subj (process2 (nnp_transition)))
         (allow subj logd.miscfile (sock_file (write)))
 
         ;; Allow ubus calls

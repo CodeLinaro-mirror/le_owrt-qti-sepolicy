@@ -504,8 +504,9 @@
 	(allow subj .afc.subj (lnk_file (read)))
 
 	;; Read /lib/wifi/qcacld32-modules and mv WCNSS_qcom_cfg.ini
-	(allow subj .wifi.miscfile (lnk_file (read)))
+	(allow subj .wpad.miscfile (dir (read create setattr rename reparent)))
 	(allow subj .wpad.miscfile (lnk_file (read unlink)))
+	(allow subj .wifi.miscfile (lnk_file (read)))
 
 	;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
 	;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
@@ -628,8 +629,9 @@
 	(allow subj kernel.sysctlfile (dir ( search)))
 	(allow subj corepattern.sysctlfile (file ( getattr)))
 
-	(allow subj .file.conffile (dir (remove_name)))
-	(allow subj .file.conffile (file (getattr write unlink)))
+	(allow subj .file.conffile (dir (remove_name create setattr rename reparent)))
+	(allow subj .file.conffile (file (getattr write unlink create open ioctl rename read)))
+	(allow subj .file.conffile (chr_file (link rename unlink)))
 
 	;; vaalidatedata subj transition
 	(call .validatedata.subj_type_transition (subj))
@@ -756,4 +758,17 @@
 
 	;; Need permission for "/sys/kernel/debug/cnss/mlo_config"
 	(allow subj .debug.fs (file (getattr)))
+
+	(allow subj .ucode.execfile (file (getattr execute read open map)))
+	;; Domain name transition for ucode.execfile for execute_no_trans permission
+	(call .ucode.subj_type_transition (subj))
+
+	(allow subj .file.datafile (file (read open)))
+
+	(allow subj .uci.tmpfile (dir (read open search)))
+	(allow subj .uci.tmpfile (file (getattr read open lock)))
+
+	(allow subj .rcboot.subj (fd (use)))
+
+	(dontaudit subj self (capability (sys_admin)))
 )

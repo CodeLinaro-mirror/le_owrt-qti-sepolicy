@@ -1,4 +1,4 @@
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023, 2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -234,4 +234,8 @@
       (call .iproute2.manage_conffile_files (subj))
       (call .qcmap_cm.execute_conffile_files (subj))
       (call .qcmap_cm.subj_type_transition (subj))
+
+;; Need for USB to bind with configfs after exiting host mode
+      (allow subj .config.fs (file (create open read write)))
+      (allow subj .config.fs (dir (search add_name write)))
 )

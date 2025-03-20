@@ -219,7 +219,7 @@
 	(allow subj .osrelease.miscfile (file (read open)))
 
 	;; Need open write on /dev/kmsg
-	(allow subj .kmsg.nodedev (chr_file (open write)))
+	(allow subj .kmsg.nodedev (chr_file (open write append ioctl)))
 
 	;; Need manage on /data/vendor/wifi
 	(call .wifi.manage_datafile_dirs (subj))
@@ -551,6 +551,9 @@
 	;; For ifstatus
 	(call .ifstatus.execute_execfile_files (subj))
 
+	;; For RCU
+	(allow subj rcucitrack.subj (dir (search)))
+
 	;; IPQ ctrl_app_dut
 	(allow subj self readwrite_udp_socket)
 	;; Overwrite oom_score_adj
@@ -619,7 +622,7 @@
 	(allow subj ezmesh.subj (file (read open)))
 	(allow subj ezmesh.subj (lnk_file (read)))
 	(allow subj ezmesh.subj (unix_dgram_socket (sendto)))
-	(allow subj .ezmesh.runtimetmpfile (dir (write)))
+	(allow subj .ezmesh.runtimetmpfile (dir (write search)))
 
 	;; Need open for /proc/sys/kernel/
 	(allow subj kernel.sysctlfile (dir ( search)))

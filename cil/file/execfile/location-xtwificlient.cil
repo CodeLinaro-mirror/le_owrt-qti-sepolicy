@@ -49,6 +49,7 @@
     (call .loc_xtwifi_inet.sendto_unix_dgram_sockets (subj))
     (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
     (call .loc_launcher.sendto_unix_dgram_sockets (subj))
+    (call .loc_blp_svc.sendto_unix_dgram_sockets (subj))
 
     ;; needed to access /dev/socket/leprop-service
     (allow subj  leprop.miscfile  (sock_file  (read write)))
@@ -58,4 +59,12 @@
     ;; TDP file download in hlos_rfs shared folder
     (allow subj tftp_server.datafile (dir (getattr open read search)))
     (allow subj tftp_server.datafile (file (open read write ioctl)))
+
+    ;; read ssl certificates
+    (call .ssl.list_certfile_dirs (subj))
+    (call .ssl.read_certfile_files (subj))
+    (call .ssl.list_conftmpfile_dirs (subj))
+    (call .ssl.read_conftmpfile_files (subj))
+    (call .tmpfile.list_conftmpfile_dirs (subj))
+
 )

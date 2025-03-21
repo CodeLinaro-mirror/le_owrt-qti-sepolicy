@@ -322,5 +322,7 @@
 	  ;; Need for pppoe on /tmp/ipv4config.waneth*
 	  (allow subj pppd.tmpfile (file (getattr read open)))
 
+          (allow subj dnsmasq.conffile (file(read open)))
+
           (dontaudit subj self (capability (sys_admin)))
 )

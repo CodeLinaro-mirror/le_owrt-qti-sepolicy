@@ -95,5 +95,7 @@
 
 	(dontaudit subj self (capability (sys_admin)))
 
+        (allow subj .tmpfile.runtimetmpfile (dir (search)))
+
 )
 

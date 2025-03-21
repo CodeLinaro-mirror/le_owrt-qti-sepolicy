@@ -737,6 +737,12 @@
 
 	(allow subj .proc.fs (dir (read open)))
 
+	;; For nftable
+	(allow subj .nftables.subj (dir (search)))
+
+	;; For rcodhcpd
+	(allow subj .rcodhcpd.subj (dir (search)))
+
 	(allow subj .wpad.subj (dir (read search open)))
 	(allow subj .wpad.subj (file (read open)))
 

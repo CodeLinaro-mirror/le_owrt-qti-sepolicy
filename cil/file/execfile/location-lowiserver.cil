@@ -52,6 +52,7 @@
     ;; communicate with location daemons via unix dgram sockets
     (call .loc_launcher.sendto_unix_dgram_sockets (subj))
     (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
+    (call .loc_xtwifi_client.sendto_unix_dgram_sockets (subj))
 
     (allow subj mlid.subj (unix_stream_socket (read write)))
     ;;connect to mlid socket

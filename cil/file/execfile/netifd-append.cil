@@ -319,6 +319,8 @@
 
 	  ;; Need permission to grep/access nftables list
 	  (allow subj nftables.subj (process (rlimitinh siginh)))
+	  ;; Need for pppoe on /tmp/ipv4config.waneth*
+	  (allow subj pppd.tmpfile (file (getattr read open)))
 
           (dontaudit subj self (capability (sys_admin)))
 )

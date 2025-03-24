@@ -1,750 +1,756 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
-    (call .wifi.obj_type_transition_execfile_ext (unconfined.subj_typeattr))
-    (call .wifi.obj_type_transition_datafile (unconfined.subj_typeattr))
-    (call .wifi.obj_type_transition_nodedev (unconfined.subj_typeattr))
-    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "wireless.tmp"))
-    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file ".wifi-config-done"))
-    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-sta.conf"))
-    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-ap.conf"))
-    (call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-ap_0.conf"))
-    (call .wifi.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr dir "cnss"))
+	(call .wifi.obj_type_transition_execfile_ext (unconfined.subj_typeattr))
+	(call .wifi.obj_type_transition_datafile (unconfined.subj_typeattr))
+	(call .wifi.obj_type_transition_nodedev (unconfined.subj_typeattr))
+	(call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "wireless.tmp"))
+	(call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file ".wifi-config-done"))
+	(call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-sta.conf"))
+	(call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-ap.conf"))
+	(call .wifi.obj_type_transition_tmpfile (unconfined.subj_typeattr file "sigma_dut-ap_0.conf"))
+	(call .wifi.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr dir "cnss"))
 )
 
 (in .wifi
-    ;;
-    ;; Contexts
-    ;;
-    (filecon "/usr/sbin/wlan_services" file execfile_file_context)
-    (filecon "/data/vendor/wifi" dir datafile_file_context)
-    (filecon "/data/vendor/wifi/.*" any datafile_file_context)
-    (filecon "/dev/wlan" char nodedev_file_context)
-    (filecon "/tmp/sigma_dut-sta\.conf" file tmpfile_file_context)
-    (filecon "/tmp/hostapd\.log" file tmpfile_file_context)
-    (filecon "/tmp/supplicant\.log" file tmpfile_file_context)
-    (filecon "/tmp/sigma_dut-ap\.conf" file tmpfile_file_context)
-    (filecon "/tmp/sigma_dut-ap_0\.conf" file tmpfile_file_context)
-    (filecon "/tmp/sigma_dut-ping\.sh" file tmpfile_file_context)
-    (filecon "/tmp/sigma_dut-ping\.[0-9]+" file tmpfile_file_context)
-    (filecon "/data/wsc_settings_STAUT" file datafile_file_context)
-    (filecon "/data/wsc_settings_APUT" file datafile_file_context)
-
-    (filecon "/usr/bin/cfg80211tool" file execfile_file_context)
-    (filecon "/usr/bin/cfg80211tool.1" file execfile_file_context)
-    (filecon "/usr/bin/wlanconfig" file execfile_file_context)
-    (filecon "/usr/bin/acfg_tool" file execfile_file_context)
-    (filecon "/usr/bin/sigma_dut" file execfile_file_context)
-    (filecon "/usr/bin/ctrl_app_dut" file execfile_file_context)
-    (filecon "/usr/bin/app" file execfile_file_context)
-    (filecon "/usr/local/lib/libqca_nl80211_wrapper.so" file datafile_file_context)
-    (filecon "/tmp/sysinfo/board_name" file tmpfile_file_context)
-    (filecon "/tmp/no_qca_da" file tmpfile_file_context)
-    (filecon "/tmp/first_boot_done" file tmpfile_file_context)
-    (filecon "/var/run/load_module_lock" file runtimetmpfile_file_context)
-    (filecon "/etc/misc/ipq" dir conffile_file_context)
-    (filecon "/etc/misc/ipq/.*" any conffile_file_context)
-    (filecon "/data/vendor/ipq" dir datafile_file_context)
-    (filecon "/data/vendor/ipq/.*" any datafile_file_context)
-    (filecon "/etc/sawf" dir conffile_file_context)
-    (filecon "/etc/sawf/.*" any conffile_file_context)
-    (filecon "/var/run/hostapd-.*\.conf" file runtimetmpfile_file_context)
-    (filecon "/var/run/hostapd-.*\.lock" file runtimetmpfile_file_context)
-    (filecon "/var/run/wpa_supplicant-.*\.conf" file runtimetmpfile_file_context)
-    (filecon "/var/run/wpa_supplicant-.*\.lock" file runtimetmpfile_file_context)
-    (filecon "/usr/bin/cnssdaemon" file execfile_file_context)
-    (filecon "/usr/bin/cnsscli" file execfile_file_context)
-    (filecon "/var/run/cnss_user_server" socket runtimetmpfile_file_context)
-    (filecon "/var/run/cnss_user_client" socket runtimetmpfile_file_context)
-    (filecon "/tmp/acfg-app" file tmpfile_file_context)
-    (filecon "/etc/acfg_common.conf" file conffile_file_context)
-    (filecon "/tmp/qcn9224" dir tmpfile_file_context)
-    (filecon "/lib/read_caldata_to_fs\.sh" file libfile_file_context)
-    (filecon "/lib/create_cfg_caldata\.sh" file libfile_file_context)
-    (filecon "/tmp/ftm.conf" file tmpfile_file_context)
-    ;; IPQ sigma-dut
-    (filecon "/var/log/sigma" file logtmpfile_file_context)
-    (filecon "/tmp/wpa_ctrl_[0-9]+\-[0-9]+" socket tmpfile_file_context)
-    (filecon "/var/run/cnss" dir runtimetmpfile_file_context)
-    (filecon "/var/run/cnss/.*" any runtimetmpfile_file_context)
-    (filecon "/tmp/macaddr" file tmpfile_file_context)
-    ;; IPQ ctrl_app_dut
-    (filecon "/tmp/applogs" file tmpfile_file_context)
-
-    ;;
-    ;; Macros
-    ;;
-    (macro dontaudit_pgrep_killall_cmd_search_perms ((type ARG1) (type ARG2))
-        (dontaudit ARG1 ARG2 (dir (read open search)))
-        (dontaudit ARG1 ARG2 (file (read open)))
-        (dontaudit ARG1 ARG2 (lnk_file (read)))
-    )
-
-    (macro read_sysfile_dirs ((type ARG1))
-        (allow ARG1 .block.sysfile (dir (search read open)))
-    )
-
-    (macro obj_type_transition_tmpfile ((type ARG1) (class ARG2) (name ARG3))
-        (call .tmp.fs_obj_type_transition (ARG1 tmpfile ARG2 ARG3)))
-
-    (macro obj_type_transition_libfile ((type ARG1) (class ARG2) (name ARG3))
-        (call .file.libfile_obj_type_transition (ARG1 libfile ARG2 ARG3)))
-
-    (macro obj_type_transition_runtimetmpfile ((type ARG1) (class ARG2) (name ARG3))
-        (call .tmpfile.runtimetmpfile_obj_type_transition (ARG1 runtimetmpfile ARG2 ARG3)))
-
-    (macro obj_type_transition_runtimetmpfile_all ((type ARG1))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wifilock"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "load_module_lock"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "*"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 sock_file "cnss_user_server"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 sock_file "cnss_user_client"))
-        (call .wifi.obj_type_transition_runtimetmpfile (ARG1 dir "cnss"))
-    )
-
-    (macro obj_type_transition_conffile ((type ARG1))
-        (call .file.conffile_obj_type_transition (ARG1 conffile dir "ipq"))
-        (call .file.conffile_obj_type_transition (ARG1 conffile dir "sawf"))
-    )
-
-    (macro obj_type_transition_execfile_ext ((type ARG1))
-        (call .file.execfile_obj_type_transition (ARG1 execfile file "wlan_services"))
-        (call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool"))
-        (call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool.1"))
-        (call .file.execfile_obj_type_transition (ARG1 execfile file "wlanconfig"))
-        (call .file.execfile_obj_type_transition (ARG1 execfile file "acfg_tool"))
-        (call .file.execfile_obj_type_transition (ARG1 execfile file "sigma_dut"))
-        (call .file.execfile_obj_type_transition (ARG1 execfile file "ctrl_app_dut"))
-        (call .file.execfile_obj_type_transition (ARG1 execfile file "app"))
-    )
-
-    (macro obj_type_transition_datafile ((type ARG1))
-        (call .file.datafile_obj_type_transition
-            (ARG1 datafile dir "wifi"))
-        (call .file.datafile_obj_type_transition
-            (ARG1 datafile dir "ipq"))
-        (call .file.datafile_obj_type_transition
-            (ARG1 datafile file "libqca_nl80211_wrapper.so"))
-        (call .file.datafile_obj_type_transition (ARG1 datafile file "wsc_settings_APUT"))
-        (call .file.datafile_obj_type_transition (ARG1 datafile file "wsc_settings_STAUT"))
-    )
-
-
-
-    (macro obj_type_transition_nodedev ((type ARG1))
-        (call .tmp.fs_obj_type_transition (ARG1 nodedev chr_file "wlan")))
-
-    ;;
-    ;; Policy
-    ;;
-    (blockinherit .tmpfile.obj_template)
-    (blockinherit .tmpfile.runtime.obj_template)
-    (blockinherit .tmpfile.lock.obj_template)
-    (blockinherit .tmpfile.conf.obj_template)
-    (blockinherit .tmpfile.log.obj_template)
-    (blockinherit .file.conf.obj_template)
-    (blockinherit .file.data.obj_template)
-    (blockinherit .file.lib.obj_template)
-    (blockinherit .dev.node.obj_template)
-
-    (call obj_type_transition_runtimetmpfile_all (subj))
-    (call obj_type_transition_execfile_ext (subj))
-    (call obj_type_transition_nodedev (subj))
-    (call obj_type_transition_tmpfile (subj file "wireless.tmp"))
-    (call obj_type_transition_tmpfile (subj file ".wifi-config-done"))
-    (call obj_type_transition_tmpfile (subj file "first_boot_done"))
-    (call obj_type_transition_tmpfile (subj file "no_qca_da"))
-    (call obj_type_transition_tmpfile (subj sock_file "acfg-app"))
-    (call obj_type_transition_libfile (subj file "read_caldata_to_fs.sh"))
-    (call obj_type_transition_libfile (subj file "create_cfg_caldata.sh"))
-    (call obj_type_transition_tmpfile (subj dir "qcn9224"))
-    (call obj_type_transition_conffile (subj))
-    (call obj_type_transition_datafile (subj))
-    ;; Transitions for /tmp/wpa_ctrl_$pid-$cnt client sockets (IPQ sigma-dut)
-    (call obj_type_transition_tmpfile (subj sock_file "*"))
-    (call obj_type_transition_tmpfile(subj file "macaddr"))
-    (call obj_type_transition_tmpfile (subj file "sigma_dut-sta.conf"))
-    (call obj_type_transition_tmpfile (subj file "sigma_dut-ap.conf"))
-    (call obj_type_transition_tmpfile (subj file "sigma_dut-ap_0.conf"))
-    (call obj_type_transition_tmpfile (subj file "sigma_dut-ping.sh"))
-    (call obj_type_transition_tmpfile(subj lnk_file "ftm.conf"))
-    ;; Transition for /tmp/sigma_dut-ping.$cnt
-    (call obj_type_transition_tmpfile (subj file "*"))
-    ;; IPQ ctrl_app_dut
-    (call obj_type_transition_tmpfile (subj file "applogs"))
-
-    (allow subj .sys.subj (fifo_file (read write ioctl)))
-    (allow subj .sys.subj (unix_stream_socket (read write)))
-    (allow subj .qcmap_cli.subj (fd (use)))
-    (allow subj .qcmap_cli.subj (fifo_file (read write)))
-    (allow subj .qcmap_cli.subj (fifo_file (ioctl)))
-    (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
-    (allow subj .qcmap_cli.subj (netlink_route_socket( read write )))
-    (allow subj .qcmap_ref.subj (fd (use)))
-    (allow subj .qcmap_ref.subj (fifo_file (read write)))
-    (allow subj .qcmap_ref.subj (fifo_file (ioctl)))
-    (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
-    (allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
-
-    ;; For ifconfig
-    (allow subj self (capability (net_admin)))
-    (allow subj .net.procfile (file (read open)))
-    (allow subj .net.procfile (lnk_file (read)))
-    (allow subj self (udp_socket (create ioctl)))
-
-    ;; To add MLD with bridge
-    (allow subj self create_tcp_socket)
-    (allow subj self (unix_stream_socket (create read write ioctl)))
-
-    ;; Need read on /lib/network/config.sh
-    (allow subj .network.miscfile (dir (read search open)))
-    (allow subj .network.miscfile (file (getattr read open)))
-
-    ;; Need to print on /dev/console
-    (allow subj .console.ttydev (chr_file (open write)))
-
-    ;; Need search getattr on /sys/module/{wlan_firmware_service cnss_plat_ipc_qmi_svc}
-    (allow subj .module.sysfile (dir (search getattr)))
-
-    ;; To insmod/rmmod
-    (call .kmodloader.subj_type_transition (subj))
-
-    ;; Need read on /lib/modules/*
-    (allow subj .file.modulesfile (dir (getattr read open search)))
-    (allow subj .file.modulesfile (file (getattr)))
-
-    ;; Need read open on /etc/openwrt_release
-    (allow subj .osrelease.miscfile (file (read open)))
-
-    ;; Need open write on /dev/kmsg
-    (allow subj .kmsg.nodedev (chr_file (open write)))
-
-    ;; Need manage on /data/vendor/wifi
-    (call .wifi.manage_datafile_dirs (subj))
-    (call .wifi.manage_datafile_files (subj))
-    (call .wifi.manage_datafile_sock_files (subj))
-
-    ;; Need permissions on /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
-    (call .file.search_initscriptfile_dirs (subj))
-    (call .file.execute_initscriptfile_files (subj))
-    ;; ujail permission on /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
-    (allow subj .procd.execfile (file (getattr)))
-    ;; Need permissions on
-    ;; /tmp/lock/{procd_hostapd-daemon.init.lock procd_wpa-supplicant_qcacld.init.lock}
-    (call .tmpfile.readwrite_locktmpfile_dirs (subj))
-    (call .tmpfile.create_locktmpfile_files (subj))
-    (call .tmpfile.read_locktmpfile_files (subj))
-
-
-
-    ;; Need to read template files under /etc/misc/wifi
-    (call .wpad.search_miscfile_dirs (subj))
-    (call .wpad.read_miscfile_files (subj))
-
-    ;; Need to run command 'date' for logs in qcacld32.sh
-    (allow subj .file.conffile (lnk_file (read getattr unlink)))
-    (call .locale.read_miscfile_files (subj))
-    (call .locale.map_miscfile_files (subj))
-
-    ;; Need to print on adb shell if 'ENABLE_WLAN_SCRIPT_LOG=1'
-    (call .sys.readwriteinherited_ptydev_chr_files (subj))
-    ;; Need to print on serial console if 'ENABLE_WLAN_SCRIPT_LOG=1'
-    (call .dev.readwriteinherited_ttydev_chr_files (subj))
-
-    ;; wlan_services needs to call uci/jshn/ubus when tyring
-    ;; to stop/start WLAN
-    (call .uci.subj_type_transition (subj))
-    (call .jshn.subj_type_transition (subj))
-    (call .ubus.subj_type_transition (subj))
-
-    ;; Need write on /dev/wlan
-    (call .wifi.write_nodedev_chr_files (subj))
-
-    (allow subj .sys.subj (fifo_file (write)))
-    (allow subj .ubusd.subj (lnk_file (read)))
-
-    ;; For /tmp/sysinfo/board_name
-    (allow subj .preinit.tmpfile (dir (search getattr)))
-    (allow subj .preinit.tmpfile (file (getattr read open write)))
-
-    ;; Read firmware from /lib/firmware (softlink to /firmware)
-    (allow subj .firmware.miscfile (dir (read open getattr search)))
-    (allow subj .firmware.miscfile (file (read open getattr)))
-    (allow subj .firmware.miscfile (lnk_file (getattr read)))
-
-    ;; Read devicetree from /sys/firmware
-    (allow subj .firmware.sysfile (dir (search getattr read open)))
-    (allow subj .firmware.sysfile (file (getattr)))
-
-    ;; Access to /firmware/image/qcn9224
-    (allow subj .dos.fs (dir (search getattr)))
-    (allow subj .dos.fs (file (getattr read open)))
-    (allow subj .qcfirmware.miscfile (dir (search getattr)))
-    (allow subj .qcfirmware.miscfile (file (getattr read open)))
-
-    ;; Write /sys/module/firmware_class/parameters/path
-    (allow subj .module.sysfile (file (open write)))
-
-    ;; Read/write ini files (/etc/misc/ipq/.*)
-    (allow subj .wifi.conffile (dir (search getattr read open write add_name remove_name )))
-    (allow subj .wifi.conffile (file (getattr read open append write unlink create ioctl setattr rename)))
-
-    ;; cfg/default in /data/vendor/ipq/.*
-    (allow subj .wifi.datafile (dir (create search write add_name getattr setattr)))
-    (allow subj .wifi.datafile (file (create write open getattr read)))
-
-    ;; sys entries for wireless interfaces
-    (allow subj .kernel.sysfile (dir (search)))
-
-    ;; Read debug.fs directories
-    (allow subj .debug.fs (dir (search read open getattr)))
-
-    ;; cnssdaemon and cnsscli support
-    (allow subj self create_netlink_socket)
-    (allow subj self create_qipcrtr_socket)
-    (allow subj .logd.miscfile (sock_file (write)))
-    (allow subj .logd.subj (unix_dgram_socket (sendto)))
-    (allow subj self (unix_dgram_socket (sendto)))
-    (allow subj .sys.subj (system (module_request)))
-    (call .wifi.manage_runtimetmpfile_sock_files (subj))
-    (call .wifi.manage_runtimetmpfile_dirs (subj))
-    (call .wifi.create_tmpfile_lnk_files (subj))
-
-    ;; Do not audit dac_read_search for boot_kpi dir since kpi_values file has
-    ;; permissions
-    (dontaudit subj self (capability (dac_read_search)))
-
-    ;; 'pgrep' and 'killall' commands permissions
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .proc.fs))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .sys.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ubusd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .urngd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qwesd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .diag-router.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qseecomd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .uhttpd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .leprop.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .dropbear.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ip.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .netifd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .logd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .rmt_storage.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .rpcd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .diagrebootapp.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .dnsmasq.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .hotplugcall.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .rcdnsmasq.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .wpad.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .odhcpd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ipacm.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ipacmdiag.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .netmgrd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_cm.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_ref.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_launcher.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_lowi_server.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .tftp_server.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .fs-scrub-daemon.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .mbim.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_xtra_daemon.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_hal_daemon.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .dataadpl.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qtether.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .atfwd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .port-bridge.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_cli.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .odhcp6c.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qmuxbridge.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qcril.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .msdc.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .perf-hal-service.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .dlsc.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .tlpd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .mlid.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .uci.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .ethagent.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .stmfd.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .qms.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .emergencyalert.subj))
-    (call dontaudit_pgrep_killall_cmd_search_perms (subj .logread.subj))
-
-    ;; Look for files in /tmp
-    (allow subj .tmp.fs (file (create read write getattr open unlink)))
-
-    ;; Read /proc/cmdline
-    (call .cmdline.read_procfile_files (subj))
-
-    ;; Write fast_boot_vap_mode files
-    (call .wifi.write_miscfile_dirs (subj))
-    (call .wifi.write_miscfile_files (subj))
-    (call .wifi.create_miscfile_files (subj))
-
-    (allow subj .meminfo.procfile (file (read open)))
-
-    ;; To support ftm art partition
-    (call .mtd.read_procfile_files (subj))
-    (call read_sysfile_dirs (subj))
-    (call .block.read_sysfile_lnk_files (subj))
-    (call .wifi.create_tmpfile_dirs (subj))
-    (call .tmp.read_fs_blk_files (subj))
-    (call .wifi.readwrite_tmpfile_dirs (subj))
-    (call .mmc.read_stordev_blk_files (subj))
-
-    ;; Read /proc/interrupts and /proc/cpuinfo
-    (allow subj .interrupts.procfile (file (read open)))
-    (allow subj .cpuinfo.procfile (file (read open)))
-
-    ;; Write to /proc/irq/$irq/smp_affinity
-    (allow subj .irq.procfile (dir (search write add_name read open)))
-    (allow subj .irq.procfile (file (create write open)))
-
-    ;; Access to /lib/wifi/qcacommands_*.xml
-    (allow subj .wifi.miscfile (file (map)))
-
-    ;; Sockets used by user-space tools
-    (allow subj self create_netlink_generic_socket)
-    (allow subj self create_unix_dgram_socket)
-
-    ;; acfg_tool
-    (allow subj self create_netlink_scsitransport_socket)
-    (allow subj self create_netlink_route_socket)
-    (allow subj .tmp.fs (dir (remove_name)))
-    (call .wifi.create_tmpfile_sock_files (subj))
-    (call .wifi.delete_tmpfile_sock_files (subj))
-    (dontaudit subj self (capability (dac_override)))
-
-    ;; TFTP server related
-    (dontaudit subj tftp_server.datafile (dir (search)))
-
-    ;; IPQ sigma_dut
-    (call .tmpfile.logtmpfile_obj_type_transition(subj logtmpfile file "sigma"))
-    (call .wifi.manage_logtmpfile_files (subj))
-    (call .wifi.readwrite_logtmpfile_files (.iw.subj))
-    (allow subj .ip.execfile execute_file)
-    (allow subj .ip.execfile (file (map)))
-    (allow subj self (netlink_route_socket (nlmsg_read nlmsg_write)))
-    (allow .iw.subj .wifi.subj readwrite_tcp_socket)
-    (allow subj .wpad.subj (unix_dgram_socket (sendto)))
-    (call .wpad.write_runtimetmpfile_sock_files (subj))
-    (call .file.execute_execfile_files (subj))
-    ;; uci-commit wireless
-    (allow subj .uci.conffile (dir (remove_name)))
-    (allow subj .uci.conffile (file (setattr unlink)))
-    ;; Talk to sigma backbone
-    (allow subj .net.netif (netif (egress)))
-    (allow subj .net.netnode (node (sendto)))
-    (allow subj self create_tcp_stream_socket)
-    (allow subj .unreserved.netport (tcp_socket (name_bind name_connect)))
-    (allow subj .net.netnode (tcp_socket (node_bind)))
-
-    ;; mcl sigma_dut
-    (call .sys.loadkernelmodule.subj_type (subj))
-    ;; mcl sigma_dut ping
-    (allow subj self create_rawip_socket)
-    (allow subj self (capability (net_admin net_raw)))
-    ;; mcl sigma_dut access to /tmp/resolv.conf.d/resolv.conf.auto
-    (allow subj .resolv.tmpfile (dir (search)))
-    (allow subj .resolv.tmpfile (file (read open)))
-    ;; mcl sigma_dut exec /tmp/sigma_dut-ping.sh
-    (allow subj .wifi.tmpfile (file (execute execute_no_trans)))
-    ;; mcl [sigma_dut|quicktrack] ctrl socket permission
-    (allow subj self create_udp_socket)
-    (allow subj .unreserved.netport (udp_socket (name_bind)))
-    (allow subj .net.netnode (udp_socket (node_bind)))
-
-    ;; mcl quicktrack
-    (allow subj .httpproxy.netport (tcp_socket (name_connect)))
-
-    ;; sysctl command on dev.nss nodes
-    (allow subj .sys.sysctlfile (dir (read open search)))
-    (allow subj .dev.sysctlfile (dir (search)))
-
-    ;; Execute hostapd/wpa_supplicant binaries
-    ;;(call .wpad.mapexecute_execfile_files (subj))
-    (call .wpad.subj_type_transition (subj))
-
-    ;; Access to /var/run/{hostapd,wpa_supplicant} ctrl ifaces
-    (call .wpad.search_runtimetmpfile_dirs (subj))
-    (call .wpad.read_runtimetmpfile_sock_files (subj))
-
-    ;; Access module parameters
-    (call .module.read_sysfile_files (subj))
-
-    ;; Source include /etc/rc.common
-    (allow subj .rccommon.conffile (file (read open)))
-
-    ;; Use /usr/local/lib/libqca_nl80211_wrapper.so
-    (call .wifi.mapexecute_datafile_files (subj))
-
-    ;; Use /usr/sbin/cfg80211tool
-    (call .wifi.execute_execfile_files (subj))
-
-    ;; Execute /usr/bin/jsonfilter
-    (call .jsonfilter.mapexecute_execfile_files (subj))
-    (call .jsonfilter.read_execfile_files (subj))
-
-    ;; Manage /tmp and /var/run files owned by wifi
-    (call .wifi.manage_tmpfile_files (subj))
-    (call .wifi.manage_runtimetmpfile_files (subj))
-
-    ;; Remove files written to /var/run
-    (allow subj .tmpfile.runtimetmpfile (dir (remove_name)))
-    (allow subj .tmpfile.runtimetmpfile (file (read open lock write)))
-    (allow subj wpad.runtimetmpfile (file (getattr read open)))
-
-    ;; IPQ AFC
-    (allow subj .afc.subj (dir (read open search getattr)))
-    (allow subj .afc.subj (file (read open)))
-    (allow subj .afc.subj (lnk_file (read)))
-
-    ;; Read /lib/wifi/qcacld32-modules and mv WCNSS_qcom_cfg.ini
-    (allow subj .wifi.miscfile (lnk_file (read)))
-    (allow subj .wpad.miscfile (lnk_file (read unlink)))
-
-    ;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
-    ;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
-    (call capabilities.getattr_conffile_files (subj))
-    (call capabilities.search_conffile_dirs (subj))
-
-    ;; Allow to create tmp file when update WCNSS_qcom_cfg.ini
-    (call .wpad.manage_miscfile_files (subj))
-    (call .wpad.write_miscfile_dirs (subj))
-
-    ;; Allow mv operation about backup WCNSS_qcom_cfg.ini
-    (allow subj .wifi.subj (process (setfscreate)))
-    (allow subj .wifi.datafile (file (relabelfrom relabelto)))
-
-    ;; To access /sys/kernel/boot_kpi/kpi_values
-    (call .kpi_values.readwrite_sysfile_files (subj))
-
-    ;; Allow to check folder's group
-    (allow subj .nameservice.miscfile (file (open read)))
-    ;; Need permission to netifd for link toggle from rment.script
-    (allow subj .netifd.subj (fd (use)))
-    (allow subj .netifd.subj readwrite_netlink_route_socket)
-    (allow subj .netifd.subj (fifo_file (read write ioctl)))
-    (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
-
-    (call .sys.readwrite_rootfile_dirs (subj))
-
-    ;; Need permission for wifi
-    (allow subj sys.rootfile (dir (read)))
-
-    ;; Read mmc blocks
-    (call .dev.stor.read.subj_type (subj))
-
-    ;; Need permission for cfg80211tool command
-    (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
-
-    ;; Search data files in /tmp/data
-    (call .qcmap_cm.search_tmpfile_dirs (subj))
-
-    ;; For iwconfig
-    (allow subj .file.execfile (file (read open execute)))
-
-    ;; For ifstatus
-    (call .ifstatus.execute_execfile_files (subj))
-
-    ;; IPQ ctrl_app_dut
-    (allow subj self readwrite_udp_socket)
-    ;; Overwrite oom_score_adj
-    (allow subj .wpad.subj (file (write)))
-
-    ;; IPQ EasyMesh
-    (allow subj self (capability (sys_resource)))
-    (allow subj .rcnetwork.subj (dir (search)))
-    (allow subj .rcnetwork.subj read_file)
-    (allow subj .rcnetwork.subj read_lnk_file)
-    (allow subj .ezmesh.initscriptfile (file (unlink getattr read open execute execute_no_trans map write create lock append rename)))
-    (allow subj .ezmesh.tmpfile (file (unlink getattr read open execute map write create lock append rename)))
-    (allow subj .ifstatus.subj (dir (search)))
-    (allow subj .ifstatus.subj read_lnk_file)
-    (allow subj .ifstatus.subj read_file)
-    (allow subj .fw3.subj read_file)
-    (allow subj .fw3.subj (dir (search)))
-    (allow subj .ubus.subj read_file)
-    (allow subj .ubus.subj (dir (search)))
-    (allow subj .ubus.subj read_lnk_file)
-    (allow subj .devices.sysfile (file (unlink getattr read open execute map write create lock append rename)))
-    (allow subj .devices.sysfile (dir (add_name write)))
-    (allow subj .ezmesh.execfile (file (unlink getattr read open execute map write create lock append rename)))
-    (allow subj .hotplugcall.subj (fifo_file (unlink getattr read open execute map write create lock append rename ioctl)))
-    (allow subj .wpad.subj (file (write)))
-    (allow subj .wpad.subj (process (signal)))
-    (allow subj .rccron.subj (dir (search)))
-    (allow subj .rccron.subj read_file)
-    (allow subj .rccron.subj read_lnk_file)
-    (allow subj .kmodloader.subj read_file)
-    (allow subj .kmodloader.subj (dir (search)))
-    (allow subj .jsonfilter.subj read_file)
-    (allow subj .jsonfilter.subj read_lnk_file)
-    (allow subj .jsonfilter.subj (dir (search)))
-    (allow subj .rcsysntpd.subj read_file)
-    (allow subj .rcsysntpd.subj read_lnk_file)
-    (allow subj .rcsysntpd.subj (dir (search)))
-    (allow subj .net.sysctlfile (dir (search)))
-    (allow subj self (capability (sys_ptrace)))
-    (allow subj .ipacm.subj (fd (use)))
-    (allow subj .ipacm.subj (fifo_file (read write ioctl)))
-    (allow subj .ipacm.subj (netlink_route_socket( read write )))
-    (allow subj .ipacm.subj readwrite_netlink_netfilter_socket)
-    (allow subj .ipacm.subj (udp_socket (read write)))
-    (allow subj .ipacm.subj create_netlink_netfilter_socket)
-    (allow subj .ipacm.runtimetmpfile (file (read write)))
-    (allow subj self (netlink_route_socket (read write)))
-
-    ;; Sigma specific denials handled.
-    (allow subj .qcmap_cm.conffile (file (read open)))
-    (allow subj .qcmap_cm.conffile (dir (search)))
-
-    (allow subj .qcmap_cm.subj (dir (getattr)))
-    (allow subj .qcmap_ref.subj (dir (getattr)))
-    (allow subj .uhttpd.subj (dir (getattr)))
-    (allow subj .ipacmdiag.subj (dir (getattr)))
-    (allow subj .netifd.subj (dir (getattr)))
-    (allow subj .logd.subj (dir (getattr)))
-    (allow subj .rmt_storage.subj (dir (getattr)))
-    (allow subj .rpcd.subj (dir (getattr)))
-    (allow subj .wpad.subj (dir (getattr)))
-    (allow subj .dnsmasq.subj (dir (getattr)))
-
-    (allow subj ezmesh.subj (dir (search getattr)))
-    (allow subj ezmesh.subj (file (read open)))
-    (allow subj ezmesh.subj (lnk_file (read)))
-    (allow subj ezmesh.subj (unix_dgram_socket (sendto)))
-
-    ;; Need open for /proc/sys/kernel/
-    (allow subj kernel.sysctlfile (dir ( search)))
-    (allow subj corepattern.sysctlfile (file ( getattr)))
-
-    (allow subj .file.conffile (dir (remove_name)))
-    (allow subj .file.conffile (file (getattr write unlink)))
-
-    ;; vaalidatedata subj transition
-    (call .validatedata.subj_type_transition (subj))
-    (allow subj .validatedata.execfile (file (read open execute map)))
-
-    ;; Need on /proc for process
-    (allow subj .sys.subj (dir (getattr)))
-    (allow subj .ubusd.subj (dir (getattr)))
-    (allow subj .urngd.subj (dir (getattr)))
-    (allow subj .tftp_server.subj (dir (getattr)))
-    (allow subj .qwesd.subj (dir (getattr)))
-    (allow subj .diag-router.subj (dir (getattr)))
-    (allow subj .qseecomd.subj (dir (getattr)))
-    (allow subj .leprop.subj (dir (getattr)))
-    (allow subj .fw3.subj (lnk_file (read)))
-    (allow subj .net.sysctlfile (file (write open)))
-    (allow subj .fs-scrub-daemon.subj (dir (getattr)))
-    (allow subj .diagrebootapp.subj (dir (getattr)))
-    (allow subj .mbim.subj (dir (getattr)))
-    (allow subj .qmuxbridge.subj (dir (getattr)))
-    (allow subj .dropbear.subj (dir (getattr)))
-    (allow subj .ip.subj (dir (getattr)))
-    (allow subj .odhcpd.subj (dir (getattr)))
-
-    (allow subj wpad.runtimetmpfile (sock_file (unlink)))
-    (allow subj ipv6.sysctlfile (dir (search getattr)))
-    (allow .uci.subj ezmesh.subj (fd (use)))
-    (allow .uci.subj ezmesh.subj (file (append)))
-    (allow .uci.subj ezmesh.subj (fifo_file (write ioctl)))
-    (allow .uci.subj ezmesh.subj (packet_socket (read write)))
-    (allow .uci.subj ezmesh.subj (netlink_socket (read write)))
-    (allow .uci.subj ezmesh.subj (netlink_route_socket (read write)))
-    (allow .uci.subj ezmesh.subj (unix_dgram_socket (read write)))
-    (allow .uci.subj .ezmesh.tmpfile (file (append)))
-    (allow .uci.subj ezmesh.runtimetmpfile (fifo_file (read write)))
-
-    ;; Need domain transition rcnetwork file
-    (call .rcnetwork.execute_initscriptfile_files (subj))
-    (allow subj .rcnetwork.initscriptfile (file (execute read open)))
-
-    ;; Need for /tmp/host, supplicant log
-    (allow subj .wpad.tmpfile (file (getattr append open write unlink)))
-
-    ;; Need for ezmesh R5 service
-    (allow subj .csd_server.subj (file (open read)))
-    (allow subj .csd_server.subj (dir (read open getattr search)))
-    (allow subj .csd_server.subj (lnk_file (read)))
-
-    (allow subj .dlsc.subj (dir (getattr)))
-
-    (allow subj .ethagent.subj (dir (getattr)))
-
-    (allow subj .netmgrd.subj (dir (getattr)))
-
-    (allow subj .qms.subj (dir (search getattr)))
-    (allow subj .qms.subj (file (open read)))
-
-    (allow subj .tlpd.subj (dir (getattr)))
-
-    (allow subj .qcril.subj (dir (getattr)))
-
-    (allow subj .qtether.subj (dir (getattr)))
-
-    (allow subj .msdc.subj (dir (getattr)))
-
-    (allow subj .atfwd.subj (dir (getattr)))
-
-    (allow subj .perf-hal-service.subj (dir (getattr)))
-
-    (allow subj .qcmap_cli.subj (dir (getattr)))
-
-    (allow subj .port-bridge.subj (dir (getattr)))
-
-    (allow subj .qbt.subj (dir (search getattr read open)))
-    (allow subj .qbt.subj (file (open read)))
-    (allow subj .qbt.subj (lnk_file (read)))
-
-    (allow subj .loc_launcher.subj (dir (getattr)))
-    (allow subj .loc_hal_daemon.subj (dir (getattr)))
-    (allow subj .loc_lowi_server.subj (dir (getattr)))
-    (allow subj .loc_xtra_daemon.subj (dir (getattr)))
-
-    (allow subj .mlid.subj (dir (getattr)))
-
-    (allow subj self (capability (chown fowner fsetid)))
-
-    (allow subj .netifd.miscfile (dir (read search open)))
-
-    ;; Need for WiFi7 AP bring up
-    (allow subj .stat.procfile (file (read open)))
-
-    (allow subj .fs.procfile (dir (read open search)))
-
-    (allow subj .bus.procfile (dir (read open search)))
-
-    (allow subj .tty.procfile (dir (read open search)))
-
-    (allow subj .driver.procfile (dir (read open search)))
-
-    (allow subj .sysvipc.procfile (dir (read open search)))
-
-    (allow subj .dynamicdebug.procfile (dir (read open search)))
-
-    (allow subj .proc.fs (dir (read open)))
-
-    (allow subj .wpad.subj (dir (read search open)))
-    (allow subj .wpad.subj (file (read open)))
-
-    ;;iface-up subj transition
-    (call .ifup.subj_type_transition (subj))
-    (allow subj .ifup.execfile (file (getattr read open execute)))
-
-    (allow subj .ipacm.subj (dir (getattr)))
-    (allow subj ezmesh.runtimetmpfile (sock_file (write)))
-    (allow subj .tmpfile.runtimetmpfile (sock_file (create unlink)))
-
-    (call .ezmesh.subj_type_transition (subj))
-    (call .random.read_nodedev_chr_files (subj))
-    (call .pmsg_dev.read_nodedev_chr_files (subj))
-    (call .ipa.readwrite_nodedev_chr_files (subj))
-
-    ;; Permission redirect wlanconfig <athX> list chan output to a file in /tmp/run/data
-    (allow subj qcmap_cm.runtimetmpfile (file (write ioctl)))
-
-    ;; Need permission for "/sys/kernel/debug/cnss/mlo_config"
-    (allow subj .debug.fs (file (getattr)))
+	;;
+	;; Contexts
+	;;
+	(filecon "/usr/sbin/wlan_services" file execfile_file_context)
+	(filecon "/data/vendor/wifi" dir datafile_file_context)
+	(filecon "/data/vendor/wifi/.*" any datafile_file_context)
+	(filecon "/dev/wlan" char nodedev_file_context)
+	(filecon "/tmp/sigma_dut-sta\.conf" file tmpfile_file_context)
+	(filecon "/tmp/hostapd\.log" file tmpfile_file_context)
+	(filecon "/tmp/supplicant\.log" file tmpfile_file_context)
+	(filecon "/tmp/sigma_dut-ap\.conf" file tmpfile_file_context)
+	(filecon "/tmp/sigma_dut-ap_0\.conf" file tmpfile_file_context)
+	(filecon "/tmp/sigma_dut-ping\.sh" file tmpfile_file_context)
+	(filecon "/tmp/sigma_dut-ping\.[0-9]+" file tmpfile_file_context)
+	(filecon "/data/wsc_settings_STAUT" file datafile_file_context)
+	(filecon "/data/wsc_settings_APUT" file datafile_file_context)
+
+	(filecon "/usr/bin/cfg80211tool" file execfile_file_context)
+	(filecon "/usr/bin/cfg80211tool.1" file execfile_file_context)
+	(filecon "/usr/bin/wlanconfig" file execfile_file_context)
+	(filecon "/usr/bin/acfg_tool" file execfile_file_context)
+	(filecon "/usr/bin/sigma_dut" file execfile_file_context)
+	(filecon "/usr/bin/ctrl_app_dut" file execfile_file_context)
+	(filecon "/usr/bin/app" file execfile_file_context)
+	(filecon "/usr/local/lib/libqca_nl80211_wrapper.so" file datafile_file_context)
+	(filecon "/tmp/sysinfo/board_name" file tmpfile_file_context)
+	(filecon "/tmp/no_qca_da" file tmpfile_file_context)
+	(filecon "/tmp/first_boot_done" file tmpfile_file_context)
+	(filecon "/var/run/load_module_lock" file runtimetmpfile_file_context)
+	(filecon "/etc/misc/ipq" dir conffile_file_context)
+	(filecon "/etc/misc/ipq/.*" any conffile_file_context)
+	(filecon "/data/vendor/ipq" dir datafile_file_context)
+	(filecon "/data/vendor/ipq/.*" any datafile_file_context)
+	(filecon "/etc/sawf" dir conffile_file_context)
+	(filecon "/etc/sawf/.*" any conffile_file_context)
+	(filecon "/var/run/hostapd-.*\.conf" file runtimetmpfile_file_context)
+	(filecon "/var/run/hostapd-.*\.lock" file runtimetmpfile_file_context)
+	(filecon "/var/run/wpa_supplicant-.*\.conf" file runtimetmpfile_file_context)
+	(filecon "/var/run/wpa_supplicant-.*\.lock" file runtimetmpfile_file_context)
+	(filecon "/usr/bin/cnssdaemon" file execfile_file_context)
+	(filecon "/usr/bin/cnsscli" file execfile_file_context)
+	(filecon "/var/run/cnss_user_server" socket runtimetmpfile_file_context)
+	(filecon "/var/run/cnss_user_client" socket runtimetmpfile_file_context)
+	(filecon "/tmp/acfg-app" file tmpfile_file_context)
+	(filecon "/etc/acfg_common.conf" file conffile_file_context)
+	(filecon "/tmp/qcn9224" dir tmpfile_file_context)
+	(filecon "/lib/read_caldata_to_fs\.sh" file libfile_file_context)
+	(filecon "/lib/create_cfg_caldata\.sh" file libfile_file_context)
+	(filecon "/tmp/ftm.conf" file tmpfile_file_context)
+	;; IPQ sigma-dut
+	(filecon "/var/log/sigma" file logtmpfile_file_context)
+	(filecon "/tmp/wpa_ctrl_[0-9]+\-[0-9]+" socket tmpfile_file_context)
+	(filecon "/var/run/cnss" dir runtimetmpfile_file_context)
+	(filecon "/var/run/cnss/.*" any runtimetmpfile_file_context)
+	(filecon "/tmp/macaddr" file tmpfile_file_context)
+	;; IPQ ctrl_app_dut
+	(filecon "/tmp/applogs" file tmpfile_file_context)
+
+	;;
+	;; Macros
+	;;
+	(macro dontaudit_pgrep_killall_cmd_search_perms ((type ARG1) (type ARG2))
+	(dontaudit ARG1 ARG2 (dir (read open search)))
+	(dontaudit ARG1 ARG2 (file (read open)))
+	(dontaudit ARG1 ARG2 (lnk_file (read)))
+	)
+
+	(macro read_sysfile_dirs ((type ARG1))
+	(allow ARG1 .block.sysfile (dir (search read open)))
+	)
+
+	(macro obj_type_transition_tmpfile ((type ARG1) (class ARG2) (name ARG3))
+	(call .tmp.fs_obj_type_transition (ARG1 tmpfile ARG2 ARG3)))
+
+	(macro obj_type_transition_libfile ((type ARG1) (class ARG2) (name ARG3))
+	(call .file.libfile_obj_type_transition (ARG1 libfile ARG2 ARG3)))
+
+	(macro obj_type_transition_runtimetmpfile ((type ARG1) (class ARG2) (name ARG3))
+	(call .tmpfile.runtimetmpfile_obj_type_transition (ARG1 runtimetmpfile ARG2 ARG3)))
+
+	(macro obj_type_transition_runtimetmpfile_all ((type ARG1))
+	(call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "wifilock"))
+	(call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "load_module_lock"))
+	(call .wifi.obj_type_transition_runtimetmpfile (ARG1 file "*"))
+	(call .wifi.obj_type_transition_runtimetmpfile (ARG1 sock_file "cnss_user_server"))
+	(call .wifi.obj_type_transition_runtimetmpfile (ARG1 sock_file "cnss_user_client"))
+	(call .wifi.obj_type_transition_runtimetmpfile (ARG1 dir "cnss"))
+	)
+
+	(macro obj_type_transition_conffile ((type ARG1))
+	(call .file.conffile_obj_type_transition (ARG1 conffile dir "ipq"))
+	(call .file.conffile_obj_type_transition (ARG1 conffile dir "sawf"))
+	)
+
+	(macro obj_type_transition_execfile_ext ((type ARG1))
+	(call .file.execfile_obj_type_transition (ARG1 execfile file "wlan_services"))
+	(call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool"))
+	(call .file.execfile_obj_type_transition (ARG1 execfile file "cfg80211tool.1"))
+	(call .file.execfile_obj_type_transition (ARG1 execfile file "wlanconfig"))
+	(call .file.execfile_obj_type_transition (ARG1 execfile file "acfg_tool"))
+	(call .file.execfile_obj_type_transition (ARG1 execfile file "sigma_dut"))
+	(call .file.execfile_obj_type_transition (ARG1 execfile file "ctrl_app_dut"))
+	(call .file.execfile_obj_type_transition (ARG1 execfile file "app"))
+	)
+
+	(macro obj_type_transition_datafile ((type ARG1))
+	(call .file.datafile_obj_type_transition
+	(ARG1 datafile dir "wifi"))
+	(call .file.datafile_obj_type_transition
+	(ARG1 datafile dir "ipq"))
+	(call .file.datafile_obj_type_transition
+	(ARG1 datafile file "libqca_nl80211_wrapper.so"))
+	(call .file.datafile_obj_type_transition (ARG1 datafile file "wsc_settings_APUT"))
+	(call .file.datafile_obj_type_transition (ARG1 datafile file "wsc_settings_STAUT"))
+	)
+
+
+
+	(macro obj_type_transition_nodedev ((type ARG1))
+	(call .tmp.fs_obj_type_transition (ARG1 nodedev chr_file "wlan")))
+
+	;;
+	;; Policy
+	;;
+	(blockinherit .tmpfile.obj_template)
+	(blockinherit .tmpfile.runtime.obj_template)
+	(blockinherit .tmpfile.lock.obj_template)
+	(blockinherit .tmpfile.conf.obj_template)
+	(blockinherit .tmpfile.log.obj_template)
+	(blockinherit .file.conf.obj_template)
+	(blockinherit .file.data.obj_template)
+	(blockinherit .file.lib.obj_template)
+	(blockinherit .dev.node.obj_template)
+
+	(call obj_type_transition_runtimetmpfile_all (subj))
+	(call obj_type_transition_execfile_ext (subj))
+	(call obj_type_transition_nodedev (subj))
+	(call obj_type_transition_tmpfile (subj file "wireless.tmp"))
+	(call obj_type_transition_tmpfile (subj file ".wifi-config-done"))
+	(call obj_type_transition_tmpfile (subj file "first_boot_done"))
+	(call obj_type_transition_tmpfile (subj file "no_qca_da"))
+	(call obj_type_transition_tmpfile (subj sock_file "acfg-app"))
+	(call obj_type_transition_libfile (subj file "read_caldata_to_fs.sh"))
+	(call obj_type_transition_libfile (subj file "create_cfg_caldata.sh"))
+	(call obj_type_transition_tmpfile (subj dir "qcn9224"))
+	(call obj_type_transition_conffile (subj))
+	(call obj_type_transition_datafile (subj))
+	;; Transitions for /tmp/wpa_ctrl_$pid-$cnt client sockets (IPQ sigma-dut)
+	(call obj_type_transition_tmpfile (subj sock_file "*"))
+	(call obj_type_transition_tmpfile(subj file "macaddr"))
+	(call obj_type_transition_tmpfile (subj file "sigma_dut-sta.conf"))
+	(call obj_type_transition_tmpfile (subj file "sigma_dut-ap.conf"))
+	(call obj_type_transition_tmpfile (subj file "sigma_dut-ap_0.conf"))
+	(call obj_type_transition_tmpfile (subj file "sigma_dut-ping.sh"))
+	(call obj_type_transition_tmpfile(subj lnk_file "ftm.conf"))
+	;; Transition for /tmp/sigma_dut-ping.$cnt
+	(call obj_type_transition_tmpfile (subj file "*"))
+	;; IPQ ctrl_app_dut
+	(call obj_type_transition_tmpfile (subj file "applogs"))
+
+	(allow subj .sys.subj (fifo_file (read write ioctl)))
+	(allow subj .sys.subj (unix_stream_socket (read write)))
+	(allow subj .qcmap_cli.subj (fd (use)))
+	(allow subj .qcmap_cli.subj (fifo_file (read write)))
+	(allow subj .qcmap_cli.subj (fifo_file (ioctl)))
+	(allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+	(allow subj .qcmap_cli.subj (netlink_route_socket( read write )))
+	(allow subj .qcmap_ref.subj (fd (use)))
+	(allow subj .qcmap_ref.subj (fifo_file (read write)))
+	(allow subj .qcmap_ref.subj (fifo_file (ioctl)))
+	(allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
+	(allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
+
+	;; For ifconfig
+	(allow subj self (capability (net_admin)))
+	(allow subj .net.procfile (file (read open)))
+	(allow subj .net.procfile (lnk_file (read)))
+	(allow subj self (udp_socket (create ioctl)))
+
+	;; To add MLD with bridge
+	(allow subj self create_tcp_socket)
+	(allow subj self (unix_stream_socket (create read write ioctl)))
+
+	;; Need read on /lib/network/config.sh
+	(allow subj .network.miscfile (dir (read search open)))
+	(allow subj .network.miscfile (file (getattr read open)))
+
+	;; Need to print on /dev/console
+	(allow subj .console.ttydev (chr_file (open write)))
+
+	;; Need search getattr on /sys/module/{wlan_firmware_service cnss_plat_ipc_qmi_svc}
+	(allow subj .module.sysfile (dir (search getattr)))
+
+	;; To insmod/rmmod
+	(call .kmodloader.subj_type_transition (subj))
+
+	;; Need read on /lib/modules/*
+	(allow subj .file.modulesfile (dir (getattr read open search)))
+	(allow subj .file.modulesfile (file (getattr)))
+
+	;; Need read open on /etc/openwrt_release
+	(allow subj .osrelease.miscfile (file (read open)))
+
+	;; Need open write on /dev/kmsg
+	(allow subj .kmsg.nodedev (chr_file (open write)))
+
+	;; Need manage on /data/vendor/wifi
+	(call .wifi.manage_datafile_dirs (subj))
+	(call .wifi.manage_datafile_files (subj))
+	(call .wifi.manage_datafile_sock_files (subj))
+
+	;; Need permissions on /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
+	(call .file.search_initscriptfile_dirs (subj))
+	(call .file.execute_initscriptfile_files (subj))
+	;; ujail permission on /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
+	(allow subj .procd.execfile (file (getattr)))
+	;; Need permissions on
+	;; /tmp/lock/{procd_hostapd-daemon.init.lock procd_wpa-supplicant_qcacld.init.lock}
+	(call .tmpfile.readwrite_locktmpfile_dirs (subj))
+	(call .tmpfile.create_locktmpfile_files (subj))
+	(call .tmpfile.read_locktmpfile_files (subj))
+
+
+
+	;; Need to read template files under /etc/misc/wifi
+	(call .wpad.search_miscfile_dirs (subj))
+	(call .wpad.read_miscfile_files (subj))
+
+	;; Need to run command 'date' for logs in qcacld32.sh
+	(allow subj .file.conffile (lnk_file (read getattr unlink)))
+	(call .locale.read_miscfile_files (subj))
+	(call .locale.map_miscfile_files (subj))
+
+	;; Need to print on adb shell if 'ENABLE_WLAN_SCRIPT_LOG=1'
+	(call .sys.readwriteinherited_ptydev_chr_files (subj))
+	;; Need to print on serial console if 'ENABLE_WLAN_SCRIPT_LOG=1'
+	(call .dev.readwriteinherited_ttydev_chr_files (subj))
+
+	;; wlan_services needs to call uci/jshn/ubus when tyring
+	;; to stop/start WLAN
+	(call .uci.subj_type_transition (subj))
+	(call .jshn.subj_type_transition (subj))
+	(call .ubus.subj_type_transition (subj))
+
+	;; Need write on /dev/wlan
+	(call .wifi.write_nodedev_chr_files (subj))
+
+	(allow subj .sys.subj (fifo_file (write)))
+	(allow subj .ubusd.subj (lnk_file (read)))
+
+	;; For /tmp/sysinfo/board_name
+	(allow subj .preinit.tmpfile (dir (search getattr)))
+	(allow subj .preinit.tmpfile (file (getattr read open write)))
+
+	;; Read firmware from /lib/firmware (softlink to /firmware)
+	(allow subj .firmware.miscfile (dir (read open getattr search)))
+	(allow subj .firmware.miscfile (file (read open getattr)))
+	(allow subj .firmware.miscfile (lnk_file (getattr read)))
+
+	;; Read devicetree from /sys/firmware
+	(allow subj .firmware.sysfile (dir (search getattr read open)))
+	(allow subj .firmware.sysfile (file (getattr)))
+
+	;; Access to /firmware/image/qcn9224
+	(allow subj .dos.fs (dir (search getattr)))
+	(allow subj .dos.fs (file (getattr read open)))
+	(allow subj .qcfirmware.miscfile (dir (search getattr)))
+	(allow subj .qcfirmware.miscfile (file (getattr read open)))
+
+	;; Write /sys/module/firmware_class/parameters/path
+	(allow subj .module.sysfile (file (open write)))
+
+	;; Read/write ini files (/etc/misc/ipq/.*)
+	(allow subj .wifi.conffile (dir (search getattr read open write add_name remove_name )))
+	(allow subj .wifi.conffile (file (getattr read open append write unlink create ioctl setattr rename)))
+
+	;; cfg/default in /data/vendor/ipq/.*
+	(allow subj .wifi.datafile (dir (create search write add_name getattr setattr)))
+	(allow subj .wifi.datafile (file (create write open getattr read)))
+
+	;; sys entries for wireless interfaces
+	(allow subj .kernel.sysfile (dir (search)))
+
+	;; Read debug.fs directories
+	(allow subj .debug.fs (dir (search read open getattr)))
+
+	;; cnssdaemon and cnsscli support
+	(allow subj self create_netlink_socket)
+	(allow subj self create_qipcrtr_socket)
+	(allow subj .logd.miscfile (sock_file (write)))
+	(allow subj .logd.subj (unix_dgram_socket (sendto)))
+	(allow subj self (unix_dgram_socket (sendto)))
+	(allow subj .sys.subj (system (module_request)))
+	(call .wifi.manage_runtimetmpfile_sock_files (subj))
+	(call .wifi.manage_runtimetmpfile_dirs (subj))
+	(call .wifi.create_tmpfile_lnk_files (subj))
+
+	;; Do not audit dac_read_search for boot_kpi dir since kpi_values file has
+	;; permissions
+	(dontaudit subj self (capability (dac_read_search)))
+
+	;; 'pgrep' and 'killall' commands permissions
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .proc.fs))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .sys.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .ubusd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .urngd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .qwesd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .diag-router.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .qseecomd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .uhttpd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .leprop.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .dropbear.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .ip.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .netifd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .logd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .rmt_storage.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .rpcd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .diagrebootapp.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .dnsmasq.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .hotplugcall.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .rcdnsmasq.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .wpad.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .odhcpd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .ipacm.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .ipacmdiag.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .netmgrd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_cm.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_ref.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_launcher.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_lowi_server.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .tftp_server.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .fs-scrub-daemon.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .mbim.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_xtra_daemon.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_hal_daemon.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .dataadpl.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .qtether.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .atfwd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .port-bridge.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .qcmap_cli.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .odhcp6c.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .qmuxbridge.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .qcril.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .msdc.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .perf-hal-service.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .dlsc.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .tlpd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .mlid.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .uci.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .ethagent.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .stmfd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .qms.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .emergencyalert.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .logread.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .nftables.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .pppd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .ucode.subj))
+
+	;; Look for files in /tmp
+	(allow subj .tmp.fs (file (create read write getattr open unlink)))
+
+	;; Read /proc/cmdline
+	(call .cmdline.read_procfile_files (subj))
+
+	;; Write fast_boot_vap_mode files
+	(call .wifi.write_miscfile_dirs (subj))
+	(call .wifi.write_miscfile_files (subj))
+	(call .wifi.create_miscfile_files (subj))
+
+	(allow subj .meminfo.procfile (file (read open)))
+
+	;; To support ftm art partition
+	(call .mtd.read_procfile_files (subj))
+	(call read_sysfile_dirs (subj))
+	(call .block.read_sysfile_lnk_files (subj))
+	(call .wifi.create_tmpfile_dirs (subj))
+	(call .tmp.read_fs_blk_files (subj))
+	(call .wifi.readwrite_tmpfile_dirs (subj))
+	(call .mmc.read_stordev_blk_files (subj))
+
+	;; Read /proc/interrupts and /proc/cpuinfo
+	(allow subj .interrupts.procfile (file (read open)))
+	(allow subj .cpuinfo.procfile (file (read open)))
+
+	;; Write to /proc/irq/$irq/smp_affinity
+	(allow subj .irq.procfile (dir (search write add_name read open)))
+	(allow subj .irq.procfile (file (create write open)))
+
+	;; Access to /lib/wifi/qcacommands_*.xml
+	(allow subj .wifi.miscfile (file (map)))
+
+	;; Sockets used by user-space tools
+	(allow subj self create_netlink_generic_socket)
+	(allow subj self create_unix_dgram_socket)
+
+	;; acfg_tool
+	(allow subj self create_netlink_scsitransport_socket)
+	(allow subj self create_netlink_route_socket)
+	(allow subj .tmp.fs (dir (remove_name)))
+	(call .wifi.create_tmpfile_sock_files (subj))
+	(call .wifi.delete_tmpfile_sock_files (subj))
+	(dontaudit subj self (capability (dac_override)))
+
+	;; TFTP server related
+	(dontaudit subj tftp_server.datafile (dir (search)))
+
+	;; IPQ sigma_dut
+	(call .tmpfile.logtmpfile_obj_type_transition(subj logtmpfile file "sigma"))
+	(call .wifi.manage_logtmpfile_files (subj))
+	(call .wifi.readwrite_logtmpfile_files (.iw.subj))
+	(allow subj .ip.execfile execute_file)
+	(allow subj .ip.execfile (file (map)))
+	(allow subj self (netlink_route_socket (nlmsg_read nlmsg_write)))
+	(allow .iw.subj .wifi.subj readwrite_tcp_socket)
+	(allow subj .wpad.subj (unix_dgram_socket (sendto)))
+	(call .wpad.write_runtimetmpfile_sock_files (subj))
+	(call .file.execute_execfile_files (subj))
+	;; uci-commit wireless
+	(allow subj .uci.conffile (dir (remove_name)))
+	(allow subj .uci.conffile (file (setattr unlink)))
+	;; Talk to sigma backbone
+	(allow subj .net.netif (netif (egress)))
+	(allow subj .net.netnode (node (sendto)))
+	(allow subj self create_tcp_stream_socket)
+	(allow subj .unreserved.netport (tcp_socket (name_bind name_connect)))
+	(allow subj .net.netnode (tcp_socket (node_bind)))
+
+	;; mcl sigma_dut
+	(call .sys.loadkernelmodule.subj_type (subj))
+	;; mcl sigma_dut ping
+	(allow subj self create_rawip_socket)
+	(allow subj self (capability (net_admin net_raw)))
+	;; mcl sigma_dut access to /tmp/resolv.conf.d/resolv.conf.auto
+	(allow subj .resolv.tmpfile (dir (search)))
+	(allow subj .resolv.tmpfile (file (read open)))
+	;; mcl sigma_dut exec /tmp/sigma_dut-ping.sh
+	(allow subj .wifi.tmpfile (file (execute execute_no_trans)))
+	;; mcl [sigma_dut|quicktrack] ctrl socket permission
+	(allow subj self create_udp_socket)
+	(allow subj .unreserved.netport (udp_socket (name_bind)))
+	(allow subj .net.netnode (udp_socket (node_bind)))
+
+	;; mcl quicktrack
+	(allow subj .httpproxy.netport (tcp_socket (name_connect)))
+
+	;; sysctl command on dev.nss nodes
+	(allow subj .sys.sysctlfile (dir (read open search)))
+	(allow subj .dev.sysctlfile (dir (search)))
+
+	;; Execute hostapd/wpa_supplicant binaries
+	;;(call .wpad.mapexecute_execfile_files (subj))
+	(call .wpad.subj_type_transition (subj))
+
+	;; Access to /var/run/{hostapd,wpa_supplicant} ctrl ifaces
+	(call .wpad.search_runtimetmpfile_dirs (subj))
+	(call .wpad.read_runtimetmpfile_sock_files (subj))
+
+	;; Access module parameters
+	(call .module.read_sysfile_files (subj))
+
+	;; Source include /etc/rc.common
+	(allow subj .rccommon.conffile (file (read open)))
+
+	;; Use /usr/local/lib/libqca_nl80211_wrapper.so
+	(call .wifi.mapexecute_datafile_files (subj))
+
+	;; Use /usr/sbin/cfg80211tool
+	(call .wifi.execute_execfile_files (subj))
+
+	;; Execute /usr/bin/jsonfilter
+	(call .jsonfilter.mapexecute_execfile_files (subj))
+	(call .jsonfilter.read_execfile_files (subj))
+
+	;; Manage /tmp and /var/run files owned by wifi
+	(call .wifi.manage_tmpfile_files (subj))
+	(call .wifi.manage_runtimetmpfile_files (subj))
+
+	;; Remove files written to /var/run
+	(allow subj .tmpfile.runtimetmpfile (dir (remove_name)))
+	(allow subj .tmpfile.runtimetmpfile (file (read open lock write)))
+	(allow subj wpad.runtimetmpfile (file (getattr read open)))
+	(allow subj .tmpfile.runtimetmpfile (lnk_file (create read getattr unlink)))
+
+	;; IPQ AFC
+	(allow subj .afc.subj (dir (read open search getattr)))
+	(allow subj .afc.subj (file (read open)))
+	(allow subj .afc.subj (lnk_file (read)))
+
+	;; Read /lib/wifi/qcacld32-modules and mv WCNSS_qcom_cfg.ini
+	(allow subj .wifi.miscfile (lnk_file (read)))
+	(allow subj .wpad.miscfile (lnk_file (read unlink)))
+
+	;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
+	;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
+	(call capabilities.getattr_conffile_files (subj))
+	(call capabilities.search_conffile_dirs (subj))
+
+	;; Allow to create tmp file when update WCNSS_qcom_cfg.ini
+	(call .wpad.manage_miscfile_files (subj))
+	(call .wpad.write_miscfile_dirs (subj))
+
+	;; Allow mv operation about backup WCNSS_qcom_cfg.ini
+	(allow subj .wifi.subj (process (setfscreate)))
+	(allow subj .wifi.datafile (file (relabelfrom relabelto)))
+
+	;; To access /sys/kernel/boot_kpi/kpi_values
+	(call .kpi_values.readwrite_sysfile_files (subj))
+
+	;; Allow to check folder's group
+	(allow subj .nameservice.miscfile (file (open read)))
+	;; Need permission to netifd for link toggle from rment.script
+	(allow subj .netifd.subj (fd (use)))
+	(allow subj .netifd.subj readwrite_netlink_route_socket)
+	(allow subj .netifd.subj (fifo_file (read write ioctl)))
+	(allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+
+	(call .sys.readwrite_rootfile_dirs (subj))
+
+	;; Need permission for wifi
+	(allow subj sys.rootfile (dir (read)))
+
+	;; Read mmc blocks
+	(call .dev.stor.read.subj_type (subj))
+
+	;; Need permission for cfg80211tool command
+	(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+
+	;; Search data files in /tmp/data
+	(call .qcmap_cm.search_tmpfile_dirs (subj))
+
+	;; For iwconfig
+	(allow subj .file.execfile (file (read open execute)))
+
+	;; For ifstatus
+	(call .ifstatus.execute_execfile_files (subj))
+
+	;; IPQ ctrl_app_dut
+	(allow subj self readwrite_udp_socket)
+	;; Overwrite oom_score_adj
+	(allow subj .wpad.subj (file (write)))
+
+	;; IPQ EasyMesh
+	(allow subj self (capability (sys_resource)))
+	(allow subj .rcnetwork.subj (dir (search)))
+	(allow subj .rcnetwork.subj read_file)
+	(allow subj .rcnetwork.subj read_lnk_file)
+	(allow subj .ezmesh.initscriptfile (file (unlink getattr read open execute execute_no_trans map write create lock append rename)))
+	(allow subj .ezmesh.tmpfile (file (unlink getattr read open execute map write create lock append rename)))
+	(allow subj .ifstatus.subj (dir (search)))
+	(allow subj .ifstatus.subj read_lnk_file)
+	(allow subj .ifstatus.subj read_file)
+	(allow subj .fw3.subj read_file)
+	(allow subj .fw3.subj (dir (search)))
+	(allow subj .ubus.subj read_file)
+	(allow subj .ubus.subj (dir (search)))
+	(allow subj .ubus.subj read_lnk_file)
+	(allow subj .devices.sysfile (file (unlink getattr read open execute map write create lock append rename)))
+	(allow subj .devices.sysfile (dir (add_name write)))
+	(allow subj .ezmesh.execfile (file (unlink getattr read open execute map write create lock append rename)))
+	(allow subj .hotplugcall.subj (fifo_file (unlink getattr read open execute map write create lock append rename ioctl)))
+	(allow subj .wpad.subj (file (write)))
+	(allow subj .wpad.subj (process (signal)))
+	(allow subj .rccron.subj (dir (search)))
+	(allow subj .rccron.subj read_file)
+	(allow subj .rccron.subj read_lnk_file)
+	(allow subj .kmodloader.subj read_file)
+	(allow subj .kmodloader.subj (dir (search)))
+	(allow subj .jsonfilter.subj read_file)
+	(allow subj .jsonfilter.subj read_lnk_file)
+	(allow subj .jsonfilter.subj (dir (search)))
+	(allow subj .rcsysntpd.subj read_file)
+	(allow subj .rcsysntpd.subj read_lnk_file)
+	(allow subj .rcsysntpd.subj (dir (search)))
+	(allow subj .net.sysctlfile (dir (search)))
+	(allow subj self (capability (sys_ptrace)))
+	(allow subj .ipacm.subj (fd (use)))
+	(allow subj .ipacm.subj (fifo_file (read write ioctl)))
+	(allow subj .ipacm.subj (netlink_route_socket( read write )))
+	(allow subj .ipacm.subj readwrite_netlink_netfilter_socket)
+	(allow subj .ipacm.subj (udp_socket (read write)))
+	(allow subj .ipacm.subj create_netlink_netfilter_socket)
+	(allow subj .ipacm.runtimetmpfile (file (read write)))
+	(allow subj self (netlink_route_socket (read write)))
+
+	;; Sigma specific denials handled.
+	(allow subj .qcmap_cm.conffile (file (read open)))
+	(allow subj .qcmap_cm.conffile (dir (search)))
+
+	(allow subj .qcmap_cm.subj (dir (getattr)))
+	(allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+	(allow subj .qcmap_ref.subj (dir (getattr)))
+	(allow subj .uhttpd.subj (dir (getattr)))
+	(allow subj .ipacmdiag.subj (dir (getattr)))
+	(allow subj .netifd.subj (dir (getattr)))
+	(allow subj .logd.subj (dir (getattr)))
+	(allow subj .rmt_storage.subj (dir (getattr)))
+	(allow subj .rpcd.subj (dir (getattr)))
+	(allow subj .wpad.subj (dir (getattr)))
+	(allow subj .dnsmasq.subj (dir (getattr)))
+
+	(allow subj ezmesh.subj (dir (search getattr)))
+	(allow subj ezmesh.subj (file (read open)))
+	(allow subj ezmesh.subj (lnk_file (read)))
+	(allow subj ezmesh.subj (unix_dgram_socket (sendto)))
+	(allow subj .ezmesh.runtimetmpfile (dir (write)))
+
+	;; Need open for /proc/sys/kernel/
+	(allow subj kernel.sysctlfile (dir ( search)))
+	(allow subj corepattern.sysctlfile (file ( getattr)))
+
+	(allow subj .file.conffile (dir (remove_name)))
+	(allow subj .file.conffile (file (getattr write unlink)))
+
+	;; vaalidatedata subj transition
+	(call .validatedata.subj_type_transition (subj))
+	(allow subj .validatedata.execfile (file (read open execute map)))
+
+	;; Need on /proc for process
+	(allow subj .sys.subj (dir (getattr)))
+	(allow subj .ubusd.subj (dir (getattr)))
+	(allow subj .urngd.subj (dir (getattr)))
+	(allow subj .tftp_server.subj (dir (getattr)))
+	(allow subj .qwesd.subj (dir (getattr)))
+	(allow subj .diag-router.subj (dir (getattr)))
+	(allow subj .qseecomd.subj (dir (getattr)))
+	(allow subj .leprop.subj (dir (getattr)))
+	(allow subj .fw3.subj (lnk_file (read)))
+	(allow subj .net.sysctlfile (file (write open)))
+	(allow subj .fs-scrub-daemon.subj (dir (getattr)))
+	(allow subj .diagrebootapp.subj (dir (getattr)))
+	(allow subj .mbim.subj (dir (getattr)))
+	(allow subj .qmuxbridge.subj (dir (getattr)))
+	(allow subj .dropbear.subj (dir (getattr)))
+	(allow subj .ip.subj (dir (getattr)))
+	(allow subj .odhcpd.subj (dir (getattr)))
+
+	(allow subj wpad.runtimetmpfile (sock_file (unlink)))
+	(allow subj ipv6.sysctlfile (dir (search getattr)))
+	(allow .uci.subj ezmesh.subj (fd (use)))
+	(allow .uci.subj ezmesh.subj (file (append)))
+	(allow .uci.subj ezmesh.subj (fifo_file (write ioctl)))
+	(allow .uci.subj ezmesh.subj (packet_socket (read write)))
+	(allow .uci.subj ezmesh.subj (netlink_socket (read write)))
+	(allow .uci.subj ezmesh.subj (netlink_route_socket (read write)))
+	(allow .uci.subj ezmesh.subj (unix_dgram_socket (read write)))
+	(allow .uci.subj .ezmesh.tmpfile (file (append)))
+	(allow .uci.subj ezmesh.runtimetmpfile (fifo_file (read write)))
+
+	;; Need domain transition rcnetwork file
+	(call .rcnetwork.execute_initscriptfile_files (subj))
+	(allow subj .rcnetwork.initscriptfile (file (execute read open)))
+
+	;; Need for /tmp/host, supplicant log
+	(allow subj .wpad.tmpfile (file (getattr append open write unlink)))
+
+	;; Need for ezmesh R5 service
+	(allow subj .csd_server.subj (file (open read)))
+	(allow subj .csd_server.subj (dir (read open getattr search)))
+	(allow subj .csd_server.subj (lnk_file (read)))
+
+	(allow subj .dlsc.subj (dir (getattr)))
+
+	(allow subj .ethagent.subj (dir (getattr)))
+
+	(allow subj .netmgrd.subj (dir (getattr)))
+
+	(allow subj .qms.subj (dir (search getattr)))
+	(allow subj .qms.subj (file (open read)))
+
+	(allow subj .tlpd.subj (dir (getattr)))
+
+	(allow subj .qcril.subj (dir (getattr)))
+
+	(allow subj .qtether.subj (dir (getattr)))
+
+	(allow subj .msdc.subj (dir (getattr)))
+
+	(allow subj .atfwd.subj (dir (getattr)))
+
+	(allow subj .perf-hal-service.subj (dir (getattr)))
+
+	(allow subj .qcmap_cli.subj (dir (getattr)))
+
+	(allow subj .port-bridge.subj (dir (getattr)))
+
+	(allow subj .qbt.subj (dir (search getattr read open)))
+	(allow subj .qbt.subj (file (open read)))
+	(allow subj .qbt.subj (lnk_file (read)))
+
+	(allow subj .loc_launcher.subj (dir (getattr)))
+	(allow subj .loc_hal_daemon.subj (dir (getattr)))
+	(allow subj .loc_lowi_server.subj (dir (getattr)))
+	(allow subj .loc_xtra_daemon.subj (dir (getattr)))
+
+	(allow subj .mlid.subj (dir (getattr)))
+
+	(allow subj self (capability (chown fowner fsetid)))
+
+	(allow subj .netifd.miscfile (dir (read search open)))
+
+	;; Need for WiFi7 AP bring up
+	(allow subj .stat.procfile (file (read open)))
+
+	(allow subj .fs.procfile (dir (read open search)))
+
+	(allow subj .bus.procfile (dir (read open search)))
+
+	(allow subj .tty.procfile (dir (read open search)))
+
+	(allow subj .driver.procfile (dir (read open search)))
+
+	(allow subj .sysvipc.procfile (dir (read open search)))
+
+	(allow subj .dynamicdebug.procfile (dir (read open search)))
+
+	(allow subj .proc.fs (dir (read open)))
+
+	(allow subj .wpad.subj (dir (read search open)))
+	(allow subj .wpad.subj (file (read open)))
+
+	;;iface-up subj transition
+	(call .ifup.subj_type_transition (subj))
+	(allow subj .ifup.execfile (file (getattr read open execute)))
+
+	(allow subj .ipacm.subj (dir (getattr)))
+	(allow subj ezmesh.runtimetmpfile (sock_file (write)))
+	(allow subj .tmpfile.runtimetmpfile (sock_file (create unlink)))
+
+	(call .ezmesh.subj_type_transition (subj))
+	(call .random.read_nodedev_chr_files (subj))
+	(call .pmsg_dev.read_nodedev_chr_files (subj))
+	(call .ipa.readwrite_nodedev_chr_files (subj))
+
+	;; Permission redirect wlanconfig <athX> list chan output to a file in /tmp/run/data
+	(allow subj qcmap_cm.runtimetmpfile (file (write ioctl)))
+
+	;; Need permission for "/sys/kernel/debug/cnss/mlo_config"
+	(allow subj .debug.fs (file (getattr)))
 )

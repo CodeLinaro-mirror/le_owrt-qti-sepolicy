@@ -1,31 +1,49 @@
-;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .rcboot
 
 ;; policy
 
-    (allow subj .tmpfile.locktmpfile (dir (setattr)))
-    (allow subj self (capability (dac_override dac_read_search fowner)))
-    (call .rcuhttpd.execute_initscriptfile_files (subj))
-     (call .kmsg.readwrite_nodedev_chr_files (subj))
-     (call .modules.read_procfile_files (subj))
-     (call .tmpfile.manage_locktmpfile_files (subj))
-     (call .tmpfile.create_logtmpfile_dirs (subj))
-     (allow subj .openssl.execfile (file (getattr)))
-     (call .openssl.execute_execfile_files(subj))
-     (call .ssl.search_certfile_dirs(subj))
+	(allow subj self (capability (dac_override dac_read_search fowner)))
 
-    (allow subj .nameservice.miscfile (file (append)))
-    (call .uci.manage_conffile_files (subj))
-    (allow subj uci.conffile (dir( remove_name )))
+	(call .rcuhttpd.execute_initscriptfile_files (subj))
 
-    (allow subj tmp.fs (file (create open read write getattr unlink)))
-    (allow subj tmp.fs (dir (remove_name)))
-    (allow subj uci.defaults.conffile (dir (create add_name setattr rename reparent)))
-    (allow subj file.conffile (chr_file (create link rename)))
+	(call .kmsg.readwrite_nodedev_chr_files (subj))
 
-    (allow subj dropbear.certfile (dir (search)))
+	(call .modules.read_procfile_files (subj))
+
+	(call .tmpfile.create_logtmpfile_dirs (subj))
+	(call .tmpfile.manage_locktmpfile_files (subj))
+	(allow subj .tmpfile.locktmpfile (dir (setattr)))
+
+	(allow subj tmp.fs (dir (remove_name)))
+	(allow subj tmp.fs (file (create open read write getattr unlink)))
+
+	(allow subj dropbear.certfile (dir (search)))
+
+	(call .ssl.search_certfile_dirs (subj))
+	(call .openssl.execute_execfile_files (subj))
+	(allow subj .openssl.execfile (file (getattr)))
+
+	(allow subj .nameservice.miscfile (file (append)))
+
+	(call .uci.manage_conffile_files (subj))
+	(allow subj uci.conffile (dir (setattr remove_name)))
+	(allow subj uci.defaults.conffile (dir (create add_name setattr rename reparent)))
+
+	(allow subj file.conffile (dir (setattr)))
+	(allow subj file.conffile (chr_file (create link rename)))
+
+	;; wifi permissions
+	(call .wifi.subj_type_transition (subj))
+	(allow subj .wifi.miscfile (dir (read open search)))
+	(allow subj .wifi.miscfile (file (open read execute)))
+
+	;; ucode permissions
+	(call .ucode.subj_type_transition (subj))
+	(allow subj .ucode.execfile (file (open read execute getattr)))
+
 )
 
 

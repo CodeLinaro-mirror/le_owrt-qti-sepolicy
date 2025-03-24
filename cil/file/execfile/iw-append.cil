@@ -1,8 +1,18 @@
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023,2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .iw
-        ;; IPQ ctrl_app_dut
-        (allow subj .wifi.subj readwrite_udp_socket)
-        (allow subj .wifi.tmpfile readwrite_file)
+	;; IPQ ctrl_app_dut
+	(allow subj .wifi.subj readwrite_udp_socket)
+	(allow subj .wifi.tmpfile readwrite_file)
+
+	;; Need permission for pppd
+	(allow subj .pppd.subj (fd (use)))
+	(allow subj .pppd.subj (fifo_file (write ioctl)))
+
+	;;Need permission for iw
+	(allow subj .qcmap_cm.subj (packet_socket (read write)))
+	(allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+	(allow subj .qcmap_cm.subj (netlink_socket (read write)))
+
 )

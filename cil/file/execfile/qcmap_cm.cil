@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -1001,7 +1001,7 @@
     ;; Need permission for awk and backhaulCommonConfig single route
     (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
     (allow subj resolv.tmpfile (file (getattr create read write open ioctl setattr append rename unlink)))
-    (allow subj odhcp6c.tmpfile (file (read getattr write unlink)))
+    (allow subj odhcp6c.tmpfile (file (read getattr write unlink open)))
 
     ;; Need permission for wpad runtime file
     (allow subj .wpad.runtimetmpfile (dir (search)))
@@ -1451,4 +1451,10 @@
     (call .qms.readwrite_tmpfile_sock_files (subj))
     (allow subj qms.subj (unix_stream_socket( connectto )))
 
+    ;;Need permission for pppd
+    (allow subj pppd.tmpfile (file (getattr)))
+
+    ;;Need for Health monitor XML access/update for factory reset
+    (allow subj .health_monitor.conffile (dir (search write add_name remove_name)))
+    (allow subj .health_monitor.conffile (file (read write open lock getattr create ioctl unlink)))
 )

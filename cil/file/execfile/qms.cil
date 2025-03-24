@@ -1,126 +1,141 @@
-;; Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
 (in .sys
-    (call .qms.subj_type_transition (subj)))
+	(call .qms.subj_type_transition (subj)))
 
 (in .file
-    (call .qms.obj_type_transition_datafile (unconfined.subj_typeattr))
-    (call .qms.obj_type_transition_execfile (unconfined.subj_typeattr)))
+	(call .qms.obj_type_transition_datafile (unconfined.subj_typeattr))
+	(call .qms.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
 (block qms
-    (filecon
-        "/usr/bin/qms"
-        file
-        execfile_file_context)
+	(filecon
+	"/usr/bin/qms"
+	file
+	execfile_file_context)
 
-    (filecon
-        "/dev/socket/qms"
-        socket
-        tmpfile_file_context)
+	(filecon
+	"/dev/socket/qms"
+	socket
+	tmpfile_file_context)
 
-    (filecon
-         "/data/vendor/qms"
-         dir
-         datafile_file_context)
+	(filecon
+	"/data/vendor/qms"
+	dir
+	datafile_file_context)
 
-    (filecon
-        "/data/vendor/qms/.*"
-        any
-        datafile_file_context)
+	(filecon
+	"/data/vendor/qms/.*"
+	any
+	datafile_file_context)
 
-    (filecon
-         "/data/vendor/qms_logs"
-         dir
-         datafile_file_context)
+	(filecon
+	"/data/vendor/qms_logs"
+	dir
+	datafile_file_context)
 
-    (filecon
-        "/data/vendor/qms_logs/.*"
-        any
-        datafile_file_context)
+	(filecon
+	"/data/vendor/qms_logs/.*"
+	any
+	datafile_file_context)
 
-    ;;
-    ;; Macros
-    ;;
-    (macro obj_type_transition_execfile ((type ARG1))
-        (call .file.execfile_obj_type_transition
-        (ARG1 execfile file "qms")))
+	;;
+	;; Macros
+	;;
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "qms")))
 
-    (macro obj_type_transition_datafile ((type ARG1))
-        (call .file.datafile_obj_type_transition
-            (ARG1 datafile dir "qms"))
-        (call .file.datafile_obj_type_transition
-            (ARG1 datafile dir "qms_logs")))
+	(macro obj_type_transition_datafile ((type ARG1))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile dir "qms"))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile dir "qms_logs")))
 
-    (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
-    (call .tmp.fs_obj_type_transition
-    (ARG1 tmpfile ARG2 ARG3)))
+	(macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+		(call .tmp.fs_obj_type_transition
+			(ARG1 tmpfile ARG2 ARG3)))
 
-    ;;
-    ;; Policy
-    ;;
-    (blockinherit .agent.base_template)
-    (blockinherit .file.conf.obj_template)
-    (blockinherit .tmpfile.obj_template)
-    (blockinherit .file.data.obj_template)
+	;;
+	;; Policy
+	;;
+	(blockinherit .agent.base_template)
+	(blockinherit .file.conf.obj_template)
+	(blockinherit .file.data.obj_template)
+	(blockinherit .tmpfile.obj_template)
 
-    (call obj_type_transition_tmpfile (subj sock_file "qms"))
+	(allow subj self (capability (net_admin dac_read_search)))
 
-    (allow qms.subj file.conffile (dir (search)))
-    (allow subj shell.execfile (file (execute execute_no_trans getattr map open read)))
-    (allow subj .sys.fs (filesystem(getattr)))
-    (allow subj self (capability (net_admin)))
-    (allow subj self create_netlink_socket)
-    (allow subj self create_qipcrtr_socket)
-    (allow subj self create_netlink_generic_socket)
-    (allow subj self create_netlink_route_socket)
-    (allow subj self create_udp_socket)
-    (allow subj self (unix_dgram_socket (create connect write sendto ioctl)))
-    (allow subj self (unix_stream_socket (create connect read write listen bind sendto connectto accept)))
-    (allow subj self (tipc_socket (create bind read write setopt)))
-    (allow subj diag-router.subj (unix_stream_socket (connectto)))
-    (allow subj logd.miscfile (sock_file (write)))
-    (allow subj logd.subj (unix_dgram_socket (sendto)))
-    (allow subj qms.tmpfile (sock_file (create setattr unlink)))
-    (allow subj .qcmap_cm.runtimetmpfile (dir (search write add_name)))
-    (allow subj .qcmap_cm.runtimetmpfile (file (create read write append open)))
-    (allow subj .tmpfile.runtimetmpfile (dir (search)))
-    (allow subj .tmpfile.conftmpfile (dir (search)))
-    (allow subj leprop.miscfile (sock_file (read write)))
-    (allow subj leprop.subj (unix_stream_socket ( connectto )))
-    (allow subj .file.conffile (lnk_file (read)))
-    (allow subj .ssl.conftmpfile (dir (search)))
-    (allow subj .ssl.conftmpfile (file (read getattr open)))
-    (allow subj .ssl.certfile (dir (search read open getattr)))
-    (allow subj .ssl.certfile (file (read open)))
-    (allow subj .wifi.datafile (dir (search)))
-    (allow subj .wifi.datafile (sock_file (getattr)))
-    (allow subj self (capability (dac_read_search)))
-    (allow subj .tmp.fs (dir (remove_name)))
+	(call obj_type_transition_tmpfile (subj sock_file "qms"))
+	(allow subj self create_qipcrtr_socket)
 
-    (allow subj self (netlink_socket (read write)))
-    (allow subj self (netlink_route_socket (read write)))
+	(allow subj self create_netlink_socket)
+	(allow subj self create_netlink_generic_socket)
+	(allow subj self create_netlink_route_socket)
+	(allow subj self (netlink_socket (read write)))
+	(allow subj self (netlink_route_socket (read write nlmsg_write nlmsg_read)))
 
-    (allow subj self (netlink_route_socket (nlmsg_write nlmsg_read)))
+	(allow subj self create_udp_socket)
+	(allow subj self (unix_dgram_socket (create connect write sendto ioctl)))
+	(allow subj self (unix_stream_socket (create connect read write listen bind sendto connectto accept)))
 
-    (allow subj .locale.miscfile (file (getattr map open read)))
+	(allow subj self (tipc_socket (create bind read write setopt)))
 
-    ;; Manage files in /data/vendor/
-    (call .qms.manage_datafile_dirs (subj))
-    (call .qms.manage_datafile_files (subj))
+	(allow subj diag-router.subj (unix_stream_socket (connectto)))
 
-    ;; To execute /usr/sbin/wpa_cli
-    (call .wpad.subj_type_transition (subj))
-    (allow subj .wpad.execfile (file (getattr execute read open)))
+	(allow subj logd.miscfile (sock_file (write)))
+	(allow subj logd.subj (unix_dgram_socket (sendto)))
 
-    ;; Need search on selinux dir
-    (call .selinux.search_conffile_dirs(subj))
-    ;; Need gettarr on selinux filesystem
-    (call .selinux.getattr_filesystems (subj))
-    ;; Need search for fs dir with tcontext=u:r:fs.sysfile
-    (call .fs.search_sysfile_dirs (subj))
-    ;; Need search for tcontext=u:r:sys.fs tclass=dir
-    (call .sys.search_fs_dirs (subj))
+	(allow subj .qcmap_cm.runtimetmpfile (dir (search write add_name)))
+	(allow subj .qcmap_cm.runtimetmpfile (file (create read write append open)))
+
+	(allow subj .tmpfile.runtimetmpfile (dir (search)))
+	(allow subj .tmpfile.conftmpfile (dir (search)))
+
+	(allow subj leprop.miscfile (sock_file (read write)))
+	(allow subj leprop.subj (unix_stream_socket ( connectto )))
+
+	(allow subj .file.conffile (lnk_file (read)))
+
+	(allow subj .ssl.conftmpfile (dir (search)))
+	(allow subj .ssl.conftmpfile (file (read getattr open)))
+
+	(allow subj .ssl.certfile (dir (search read open getattr)))
+	(allow subj .ssl.certfile (file (read open)))
+
+	(allow subj .wifi.datafile (dir (search)))
+	(allow subj .wifi.datafile (sock_file (getattr)))
+
+	(allow subj .tmp.fs (dir (remove_name)))
+	(allow subj qms.tmpfile (sock_file (create setattr unlink)))
+
+	;; Manage files in /data/vendor/
+	(call .qms.manage_datafile_dirs (subj))
+	(call .qms.manage_datafile_files (subj))
+
+	(allow qms.subj kernel.sysfile (dir (search)))
+	(allow qms.subj file.conffile (dir (search)))
+
+	;; To execute /usr/sbin/wpa_cli
+	(call .wpad.subj_type_transition (subj))
+	(allow subj .wpad.execfile (file (getattr execute read open)))
+
+	(call .selinux.search_conffile_dirs (subj))
+	(call .selinux.getattr_filesystems (subj))
+	(allow subj .locale.miscfile (file (getattr map open read)))
+
+	(call .fs.search_sysfile_dirs (subj))
+	(call .sys.search_fs_dirs (subj))
+
+	(allow subj shell.execfile (file (execute execute_no_trans getattr map open read)))
+
+	(allow subj .sys.fs (filesystem (getattr)))
+
+	(call .kpi_values.append_sysfile_files (subj))
+	(allow subj .kpi_values.sysfile (file (read)))
+
+	;;read proc fs files
+	(call .proc.read_fs_files (subj))
 )

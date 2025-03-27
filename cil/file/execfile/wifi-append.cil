@@ -555,6 +555,9 @@
 	;; For RCU
 	(allow subj rcucitrack.subj (dir (search)))
 
+	;; For Healthmonitor
+	(allow subj health_monitor.subj (dir (search)))
+
 	;; IPQ ctrl_app_dut
 	(allow subj self readwrite_udp_socket)
 	;; Overwrite oom_score_adj

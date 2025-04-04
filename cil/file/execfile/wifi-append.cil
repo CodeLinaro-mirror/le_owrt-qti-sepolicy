@@ -592,6 +592,7 @@
 	(allow subj .rccron.subj read_lnk_file)
 	(allow subj .kmodloader.subj read_file)
 	(allow subj .kmodloader.subj (dir (search)))
+	(allow subj .kmodloader.subj (lnk_file (read)))
 	(allow subj .jsonfilter.subj read_file)
 	(allow subj .jsonfilter.subj read_lnk_file)
 	(allow subj .jsonfilter.subj (dir (search)))
@@ -748,6 +749,12 @@
 
 	;; For rcodhcpd
 	(allow subj .rcodhcpd.subj (dir (search)))
+
+	;; For rcdropbear
+	(allow subj .rcdropbear.subj (dir (search)))
+
+	;; For rcgpioswitch
+	(allow subj .rcgpioswitch.subj (dir (search)))
 
 	(allow subj .wpad.subj (dir (read search open)))
 	(allow subj .wpad.subj (file (read open)))

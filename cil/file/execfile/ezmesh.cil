@@ -154,8 +154,6 @@
                     (ARG1 runtimetmpfile sock_file "*"))
 (call .tmpfile.runtimetmpfile_obj_type_transition
                     (ARG1 runtimetmpfile fifo_file "wsplc.pipe"))
-(call .tmpfile.runtimetmpfile_obj_type_transition
-                    (ARG1 runtimetmpfile dir "*"))
 )
 
     (macro read_sysfile_dirs ((type ARG1))

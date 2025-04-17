@@ -1,19 +1,22 @@
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022, 2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .rcsysntpd
 
 (block rcsysntpdtmp
 
-       ;; policy
+	;; policy
 
-       (blockinherit .agent.base_template))
-        (call .uci.search_conffile_dirs (subj))
-        (call .uci.read_conffile_files (subj))
-        (call .uci.search_tmpfile_dirs (subj))
-        (allow subj self create_unix_stream_stream_socket)
-        (allow subj self (capability ( dac_read_search)))
-        (allow .rcsysntpd.subj .sys.fs (filesystem(getattr)))
-        (allow .rcsysntpd.subj .filesystems.procfile (file(read)))
+	(blockinherit .agent.base_template))
+
+	(allow subj self (capability (dac_read_search)))
+
+	(allow subj self create_unix_stream_stream_socket)
+	(allow subj .sys.fs (filesystem (getattr)))
+	(allow subj .filesystems.procfile (file (open read)))
+
+	(call .uci.search_conffile_dirs (subj))
+	(call .uci.read_conffile_files (subj))
+	(call .uci.search_tmpfile_dirs (subj))
+
 )
-

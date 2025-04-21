@@ -64,6 +64,16 @@
         runtimetmpfile_file_context)
 
         (filecon
+        "/tmp/run/health_monitor/modem_ssr_script.sh"
+        file
+        runtimetmpfile_file_context)
+
+        (filecon
+        "/tmp/run/health_monitor/.*"
+        file
+        runtimetmpfile_file_context)
+
+        (filecon
         "/dev/socket/health_monitor/.*"
         socket
         tmpfile_file_context)
@@ -82,12 +92,14 @@
         )
 
         (macro obj_type_transition_runtimetmpfile ((type ARG1))
-                        (call .ezmesh.runtimetmpfile_obj_type_transition
+                        (call .tmpfile.runtimetmpfile_obj_type_transition
                                         (ARG1 runtimetmpfile dir "health_monitor"))
-                        (call .ezmesh.runtimetmpfile_obj_type_transition
+                        (call .tmpfile.runtimetmpfile_obj_type_transition
                                         (ARG1 runtimetmpfile file "health_monitor.pid"))
-                        (call .ezmesh.runtimetmpfile_obj_type_transition
+                        (call .tmpfile.runtimetmpfile_obj_type_transition
                                         (ARG1 runtimetmpfile file "health_monitor_cfg.tmp"))
+                        (call .tmpfile.runtimetmpfile_obj_type_transition
+                                        (ARG1 runtimetmpfile file "modem_ssr_script.sh"))
         )
 
         (macro obj_type_transition_tmpfile ((type ARG1))
@@ -157,7 +169,7 @@
         (call .health_monitor.write_tmpfile_sock_files (subj))
         (allow subj .health_monitor.conffile (file (read write open lock getattr create ioctl unlink)))
         (allow subj .health_monitor.runtimetmpfile (dir (add_name open create remove_name search read write)))
-        (allow subj .health_monitor.runtimetmpfile (file (create write open ioctl getattr read)))
+        (allow subj .health_monitor.runtimetmpfile (file (create write open ioctl getattr read append unlink setattr)))
         (allow subj .health_monitor.runtimetmpfile (sock_file (create write)))
         ;;Need for accessing files and logging in /data/health_monitor
         (allow subj .health_monitor.datafile (dir (search write add_name remove_name)))
@@ -286,9 +298,6 @@
         (allow subj ubusd.subj (dir (search)))
         (allow subj ubusd.subj (file (read)))
         (allow subj ubusd.subj (unix_stream_socket (connectto)))
-
-        (allow subj ezmesh.runtimetmpfile (dir (add_name open create remove_name search read write)))
-        (allow subj ezmesh.runtimetmpfile (file (create append write open ioctl read getattr unlink)))
 
         ;;Need for dns query/nslookup
         (call .net.search_sysctlfile_dirs (subj))

@@ -39,6 +39,7 @@
 	(call .wifi.subj_type_transition (subj))
 	(allow subj .wifi.miscfile (dir (read open search)))
 	(allow subj .wifi.miscfile (file (open read execute)))
+	(allow subj .wifi.execfile (file (execute)))
 
 	;; ucode permissions
 	(call .ucode.subj_type_transition (subj))

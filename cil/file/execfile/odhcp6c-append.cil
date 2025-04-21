@@ -182,4 +182,7 @@
 
     ;; Need permission for pppd
     (allow subj pppd.tmpfile (file (getattr read open)))
+
+    ;;Dont audit rule for ohcp6
+    (dontaudit subj self (capability (sys_admin)))
 )

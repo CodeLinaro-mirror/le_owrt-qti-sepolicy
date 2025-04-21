@@ -185,4 +185,7 @@
 
     ;;Dont audit rule for ohcp6
     (dontaudit subj self (capability (sys_admin)))
+
+    ;; Need permission for tcp_socket
+    (allow subj self create_tcp_socket)
 )

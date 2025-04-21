@@ -29,6 +29,8 @@
   (allow subj .iproute2.conffile (dir (search)))
   ;;Need permission for pppd
   (allow subj .pppd.subj (fd (use)))
+  ;;Need read, write permission on qcmap_cm.subj
+  (allow subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
   ;; Suppress rule for grep
   (dontaudit subj .ucode.subj (fifo_file(write)))
 )

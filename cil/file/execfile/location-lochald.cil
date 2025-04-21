@@ -46,6 +46,7 @@
 	(call .loc_engine_service.sendto_unix_dgram_sockets (subj))
 	(call .loc_xtwifi_client.sendto_unix_dgram_sockets (subj))
 	(call .loc_xtwifi_inet.sendto_unix_dgram_sockets (subj))
+	(call .loc_blp_svc.sendto_unix_dgram_sockets (subj))
 	;; manage loc_socket nodedev link files
 	(call .loc_socket.manage_nodedev_lnk_files (subj))
 

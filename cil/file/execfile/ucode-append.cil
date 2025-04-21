@@ -5,21 +5,20 @@
 (in .ucode
 
 ;; policy
-	(allow subj self (capability (dac_read_search)))
+	(allow subj self (capability (dac_read_search net_admin net_raw)))
 
 	(call .xtables.subj_type_transition (subj))
 	(allow subj .xtables.execfile ( file (read open execute map getattr)))
 
 	(call .ucode.subj_type_transition (subj))
 	(allow subj .ucode.subj (netlink_netfilter_socket (read create bind getattr write)))
+	(allow subj .ucode.subj (rawip_socket (create getopt setopt)))
 
 	(call .uci.subj_type_transition (subj))
 	(allow subj .uci.execfile (file(read open execute map getattr)))
 
-	(allow subj .qcmap_ref.subj (fd (use)))
-	(allow subj .qcmap_ref.subj (fifo_file (read write)))
-	(allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
-	(allow subj .qcmap_ref.subj (netlink_route_socket(read write)))
+	(allow subj .qcmap_cm.conffile (dir (search)))
+	(allow subj .qcmap_cm.conffile (file (read open)))
 
 	(allow subj .qcmap_cli.subj (fd (use)))
 	(allow subj .qcmap_cli.subj (fifo_file (read write)))

@@ -87,4 +87,5 @@
            (allow subj ubusd.subj (dir (read open search)))
            (allow subj tftp_server.subj (lnk_file (read)))
            (allow subj diag-router.subj (dir (read open search)))
+           (dontaudit subj qcmap_cm.subj (udp_socket( read write)))
        )

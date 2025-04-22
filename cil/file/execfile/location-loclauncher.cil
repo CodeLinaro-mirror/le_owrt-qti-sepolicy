@@ -38,7 +38,6 @@
     (call .loc_xtwifi_inet.execute_execfile_files (subj))
     (call .loc_edgnss_daemon.execute_execfile_files (subj))
     (call .loc_engine_service.execute_execfile_files (subj))
-    (call .loc_blp_svc.execute_execfile_files (subj))
 
     ;; Execute these daemons with an automatic transition to required context by default
     (call .loc_lowi_server.subj_type_transition (subj))
@@ -53,8 +52,6 @@
     (call .loc_edgnss_daemon.execfile_subj_type_transition (subj .loc_edgnss_daemon.subj))
     (call .loc_engine_service.subj_type_transition (subj))
     (call .loc_engine_service.execfile_subj_type_transition (subj .loc_engine_service.subj))
-    (call .loc_blp_svc.subj_type_transition (subj))
-    (call .loc_blp_svc.execfile_subj_type_transition (subj .loc_blp_svc.subj))
 
     ;; Below transition denials seen after adding ujail support in loc-launcher rc
     (call .loc_lowi_server.nnptransition (subj))
@@ -63,7 +60,6 @@
     (call .loc_xtwifi_inet.nnptransition (subj))
     (call .loc_edgnss_daemon.nnptransition (subj))
     (call .loc_engine_service.nnptransition (subj))
-    (call .loc_blp_svc.nnptransition (subj))
 
     ;; import common rules for location deamons
     (call loc_daemons_common_rules (subj))

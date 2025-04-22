@@ -21,6 +21,7 @@
 	execfile_file_context)
 
 	;;
+
 	;; Macros
 
 	(macro obj_type_transition_execfile ((type ARG1))
@@ -28,62 +29,49 @@
 			(ARG1 execfile file "ipa")))
 
 	;;
+
 	;; Policy
 
 	(blockinherit .subj.subj_all_macro_template)
 	(blockinherit .agent.base_template)
 
-	(allow subj self (capability (chown fsetid)))
-
 	(call .ipa.readwrite_nodedev_chr_files (subj))
 	(call .ipa.mapexecute_nodedev_chr_files (subj))
-
-	(allow subj ipacli.execfile (file (execute_no_trans)))
 
 	(allow subj self create_unix_stream_socket)
 	(allow subj self write_unix_stream_socket)
 	(allow subj self (unix_stream_socket (read)))
+	(call .sys.connectto_unix_stream_sockets (subj))
 	(allow subj self (unix_dgram_socket (create connect)))
 	(allow subj self write_unix_dgram_socket)
-
-	(call .sys.connectto_unix_stream_sockets (subj))
-
-	(call .logd.write_miscfile_sock_files (subj))
 	(call .logd.sendto_unix_dgram_sockets (subj))
 
 	(call .ipacm.readwrite_conffile_files (subj))
-	(call .ipacm.create_conffile_files (subj))
+	(call .ipacm.create_conffile_files(subj))
+	(allow subj .ipacm.conffile (file (setattr)))
 	(call .ipacm.addname_conffile_dirs (subj))
 	(call .ipacm.readwrite_conffile_dirs (subj))
 	(call .ipacm.search_conffile_dirs (subj))
-	(allow subj .ipacm.conffile (file (setattr unlink)))
-
+	(call .qcmap_cm.create_conffile_files(subj))
 	(call .qcmap_cm.addname_conffile_dirs (subj))
 	(call .qcmap_cm.readwrite_conffile_dirs (subj))
 	(call .qcmap_cm.search_conffile_dirs (subj))
-	(call .qcmap_cm.create_conffile_files (subj))
-	(allow subj qcmap_cm.subj (dir (open lock read write)))
-	(allow subj qcmap_cm.subj (file (create)))
-	(allow subj qcmap_cm.conffile (file (open lock read write)))
-	(allow subj qcmap_cm.tmpfile (dir (search write add_name remove_name)))
-	(allow subj qcmap_cm.tmpfile (file (write open ioctl create getattr setattr unlink read)))
-
-	(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+	(allow subj ipacm.conffile (file (unlink)))
+	(call .logd.write_miscfile_sock_files (subj))
+	(call .nameservice.read_miscfile_files (subj))
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
+	(allow .sdcard.miscfile .xattr.fs (filesystem (associate)))
+	(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+	(allow subj self (capability (chown fsetid)))
 
 	(call .selinux.search_conffile_dirs (subj))
-	(call .selinux.getattr_filesystems (subj))
+	(call .selinux.getattr_filesystems(subj))
+
 	(call .shell.execute_execfile_files (subj))
 
-	(call .odhcp6c.use_fds (subj))
-
-	(call .kernel.search_sysfile_dirs (subj))
 	(call .fs.search_sysfile_dirs (subj))
 	(call .sys.search_fs_dirs (subj))
-
-	(call .nameservice.read_miscfile_files (subj))
-	(allow .sdcard.miscfile .xattr.fs (filesystem (associate)))
 
 	(call .console.readwriteinherited_ttydev_chr_files (subj))
 	(call .dev.readwriteinherited_ttydev_chr_files (subj))
@@ -94,6 +82,14 @@
 	(call .netifd.readwrite_unix_stream_sockets (subj))
 	(call .netifd.search_miscfile_dirs (subj))
 	(allow subj .netifd.subj (dir (getattr)))
+
+	(call .odhcp6c.use_fds (subj))
+
+	(call .kernel.search_sysfile_dirs (subj))
+
+	(dontaudit subj .qcmap_cm.tmpfile (file (read)))
+
+	(allow subj ipacli.execfile (file(execute_no_trans)))
 
 	;; Need permission for pppd
 	(allow subj pppd.subj (fd (use)))

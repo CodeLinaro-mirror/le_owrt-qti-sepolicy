@@ -560,8 +560,6 @@
 
 	;; For Healthmonitor
 	(allow subj health_monitor.subj (dir (search)))
-	(allow subj health_monitor.subj (lnk_file (read)))
-	(allow subj health_monitor.subj (file (read)))
 
 	;; IPQ ctrl_app_dut
 	(allow subj self readwrite_udp_socket)

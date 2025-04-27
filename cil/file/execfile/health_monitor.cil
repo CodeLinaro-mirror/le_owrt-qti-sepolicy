@@ -1,0 +1,309 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+        (call .health_monitor.subj_type_transition (subj)))
+
+(in .file
+        (call .health_monitor.obj_type_transition_execfile (unconfined.subj_typeattr))
+        (call .health_monitor.obj_type_transition_conffile (unconfined.subj_typeattr))
+        (call .health_monitor.obj_type_transition_datafile (unconfined.subj_typeattr))
+        (call .health_monitor.obj_type_transition_tmpfile (unconfined.subj_typeattr))
+        (call .health_monitor.obj_type_transition_runtimetmpfile (unconfined.subj_typeattr)))
+
+(block health_monitor
+        ;;
+        ;;Contexts
+        ;;
+
+        (filecon
+        "/usr/bin/health_monitor"
+        file
+        execfile_file_context)
+
+        (filecon
+        "/etc/data/health_monitor_cfg.xml"
+        any
+        conffile_file_context)
+
+        (filecon
+        "/etc/data/factory_health_monitor_cfg.xml"
+        file
+        conffile_file_context)
+
+        (filecon
+        "/data/health_monitor"
+        dir
+        datafile_file_context)
+
+        (filecon
+        "/data/health_monitor/.*"
+        any
+        datafile_file_context)
+
+        (filecon
+        "/dev/socket/health_monitor"
+        dir
+        tmpfile_file_context)
+
+        (filecon
+        "/tmp/run/health_monitor"
+        dir
+        runtimetmpfile_file_context)
+
+        (filecon
+        "/tmp/run/health_monitor/health_monitor.pid"
+        file
+        runtimetmpfile_file_context)
+
+        (filecon
+        "/tmp/run/health_monitor/health_monitor_cfg.tmp"
+        file
+        runtimetmpfile_file_context)
+
+        (filecon
+        "/tmp/run/health_monitor/modem_ssr_script.sh"
+        file
+        runtimetmpfile_file_context)
+
+        (filecon
+        "/tmp/run/health_monitor/.*"
+        file
+        runtimetmpfile_file_context)
+
+        (filecon
+        "/dev/socket/health_monitor/.*"
+        socket
+        tmpfile_file_context)
+
+        ;; Macros
+        ;;
+
+        (macro obj_type_transition_execfile ((type ARG1))
+                        (call .file.execfile_obj_type_transition
+                                        (ARG1 execfile file "health_monitor")))
+
+        (macro pidof_denials ((type ARG1) (type ARG2))
+                        (allow ARG1 ARG2 (dir (read open search getattr)))
+                        (allow ARG1 ARG2 (file (read open)))
+                        (allow ARG1 ARG2 (lnk_file (read)))
+        )
+
+        (macro obj_type_transition_runtimetmpfile ((type ARG1))
+                        (call .tmpfile.runtimetmpfile_obj_type_transition
+                                        (ARG1 runtimetmpfile dir "health_monitor"))
+                        (call .tmpfile.runtimetmpfile_obj_type_transition
+                                        (ARG1 runtimetmpfile file "health_monitor.pid"))
+                        (call .tmpfile.runtimetmpfile_obj_type_transition
+                                        (ARG1 runtimetmpfile file "health_monitor_cfg.tmp"))
+                        (call .tmpfile.runtimetmpfile_obj_type_transition
+                                        (ARG1 runtimetmpfile file "modem_ssr_script.sh"))
+        )
+
+        (macro obj_type_transition_tmpfile ((type ARG1))
+                        (call .tmp.fs_obj_type_transition
+                                        (ARG1 tmpfile dir "health_monitor")))
+
+        (macro obj_type_transition_conffile ((type ARG1))
+                        (call .qcmap_cm.conffile_obj_type_transition
+                                        (ARG1 conffile file "health_monitor_cfg.xml"))
+                        (call .qcmap_cm.conffile_obj_type_transition
+                                        (ARG1 conffile file "factory_health_monitor_cfg.xml")))
+
+        (macro obj_type_transition_datafile ((type ARG1))
+                        (call .file.datafile_obj_type_transition
+                        (ARG1 datafile dir "health_monitor")))
+
+        ;; Policy
+        (blockinherit .agent.base_template)
+        (blockinherit file.conf.obj_template)
+        (blockinherit file.data.obj_template)
+        (blockinherit .tmpfile.runtime.obj_template)
+        (blockinherit .tmpfile.obj_template)
+        (blockinherit .dev.tty.obj_template)
+
+        (call capabilities.search_conffile_dirs (subj))
+        (call capabilities.getattr_conffile_files (subj))
+        (allow subj self (capability (net_raw net_admin)))
+        (allow subj .sys.subj (process (signal)))
+
+        (call .shell.mapexecute_execfile_files (subj))
+        (call .shell.manage_execfile_files (subj))
+        (allow subj .shell.execfile (file (execute_no_trans)))
+
+        ;; Need gettarr on selinux filesystem
+        (call .selinux.search_conffile_dirs (subj))
+        (call .selinux.getattr_filesystems (subj))
+
+        (allow subj .locale.miscfile (file (read open getattr map)))
+
+        (call .dev.readwriteinherited_ttydev_chr_files (subj))
+        (call .console.readwriteinherited_ttydev_chr_files (subj))
+        (call .ttyd.readwriteinherited_ptydev_chr_files (subj))
+        (allow subj  ttydev readwriteinherited_chr_file)
+
+        ;; Need to print on adb shell
+        (call .sys.readwriteinherited_ptydev_chr_files (subj))
+        (call .sys.search_fs_dirs (subj))
+        (call .sys.connectto_unix_stream_sockets (subj))
+        (call .sys.search_sysctlfile_dirs (subj))
+        (allow subj .sys.rootfile (dir (open read)))
+        ;; Need permission to reboot for executing recovery action
+        (allow subj .sys.subj (dir (search)))
+        (allow subj .sys.subj (file (read write open)))
+        (allow subj .sys.subj (lnk_file (read)))
+        (allow subj sys.subj (system (module_request)))
+
+        (call .fs.search_sysfile_dirs (subj))
+        (call .functions.search_miscfile_dirs (subj))
+        (call .functions.manage_miscfile_files (subj))
+
+        ;; Need permissions on /tmp/data/
+        (call .health_monitor.execute_execfile_files (subj))
+        (call .health_monitor.manage_tmpfile_dirs (subj))
+        (call .health_monitor.manage_tmpfile_files (subj))
+        ;; Need permissions on bootup
+        (call .health_monitor.create_tmpfile_sock_files (subj))
+        (call .health_monitor.write_tmpfile_sock_files (subj))
+        (allow subj .health_monitor.conffile (file (read write open lock getattr create ioctl unlink)))
+        (allow subj .health_monitor.runtimetmpfile (dir (add_name open create remove_name search read write)))
+        (allow subj .health_monitor.runtimetmpfile (file (create write open ioctl getattr read append unlink setattr)))
+        (allow subj .health_monitor.runtimetmpfile (sock_file (create write)))
+        ;;Need for accessing files and logging in /data/health_monitor
+        (allow subj .health_monitor.datafile (dir (search write add_name remove_name)))
+        (allow subj .health_monitor.datafile (file (create append write open ioctl read getattr unlink)))
+        (allow subj health_monitor.tmpfile (sock_file (unlink)))
+
+        ;; Need qipcrtr socket creations
+        (allow subj  self  create_qipcrtr_socket)
+        ;; netlink_kobject_uevent_socket
+        (allow subj self create_unix_stream_socket)
+        (allow subj self create_netlink_route_socket)
+        (allow subj self create_rawip_socket)
+        (allow subj self create_udp_socket)
+        (allow subj self create_netlink_netfilter_socket)
+        (allow subj self create_unix_dgram_socket)
+        (allow subj self (unix_dgram_socket (sendto)))
+
+        ;; Need remove_name on /tmp/
+        (allow subj tmp.fs (dir (remove_name)))
+
+        ;; Need read open on libubox
+        (call .libubox.search_datafile_dirs (subj))
+        (call .libubox.manage_datafile_files (subj))
+
+        (call .ubus.subj_type_transition (subj))
+        (allow ubus.subj subj (unix_stream_socket (read write)))
+        (allow ubus.subj subj readwriteinherited_fifo_file)
+        (allow ubus.subj subj (fd (use)))
+
+        (call .nameservice.read_miscfile_files (subj))
+
+        ;; Need read, execute on /etc/init.d/network
+        (call .resolv.manage_tmpfile_files (subj))
+
+        ;; Need execute o jsonfilter.execfile
+        (call .jsonfilter.read_execfile_files (subj))
+        (call .jsonfilter.execute_execfile_files (subj))
+        (allow jsonfilter.subj subj (fd (use)))
+        (allow jsonfilter.subj subj readwriteinherited_fifo_file)
+        (allow jsonfilter.subj subj (unix_stream_socket (read write)))
+        (allow jsonfilter.subj subj (netlink_route_socket (read write)))
+
+        ;; Need permission for jshn
+        (call .jshn.subj_type_transition (subj))
+        (allow jshn.subj subj (unix_stream_socket (read write)))
+        (allow jshn.subj subj readwriteinherited_fifo_file)
+        (allow jshn.subj subj (fd (use)))
+        (allow subj .jshn.execfile (file (getattr execute read open map)))
+
+        (call .kernel.search_sysfile_dirs (subj))
+        (call .debug.search_fs_dirs (subj))
+        (call .config.addname_fs_dirs (subj))
+        (call .config.search_fs_dirs (subj))
+        (call .config.create_fs_files (subj))
+        (call .config.readwrite_fs_files (subj))
+
+        (call .file.readwrite_conffile_dirs (subj))
+        (call .file.search_conffile_dirs (subj))
+        (call .file.search_initscriptfile_dirs (subj))
+        (call .file.execute_initscriptfile_files (subj))
+        (call .file.read_conffile_files (subj))
+        (call .file.execute_execfile_files (subj))
+        (call .file.read_execfile_files (subj))
+        (call .file.read_conffile_lnk_files (subj))
+        (call .file.manage_conffile_lnk_files (subj))
+        (allow subj .file.execfile (file (getattr)))
+        (allow subj .file.conffile (file (create)))
+
+        (call .tmpfile.readwrite_runtimetmpfile_dirs (subj))
+        (call .tmpfile.search_locktmpfile_dirs (subj))
+        (call .tmpfile.readwrite_locktmpfile_dirs (subj))
+        (call .tmpfile.create_locktmpfile_files (subj))
+        (allow subj .tmpfile.runtimetmpfile (file (open lock create)))
+
+        (call .netfilter.search_sysctlfile_dirs (subj))
+        (call .netfilter.readwrite_sysctlfile (subj))
+        (call .netfilter.readwrite_sysctlfile_sock_files (subj))
+        (call .netfilter.manage_sysctlfile_files (subj))
+
+        (call .rccommon.read_conffile_files (subj))
+        (call .rccommon.manage_conffile_files (subj))
+
+        (allow subj proc.fs (dir (read open getattr)))
+        (allow subj proc.fs (file (read open)))
+
+        (call .resolv.search_tmpfile_dirs (subj))
+        (call .resolv.append_tmpfile_files (subj))
+
+        (call .hotplugcall.mapexecute_execfile_files (subj))
+        ;; this is invoked by "pidof" utility
+        (call .diag-router.connectto_unix_stream_sockets (subj))
+        (allow subj .diag-router.subj (dir (search)))
+        (allow subj .diag-router.subj (file (read open)))
+        (allow subj .diag-router.subj (lnk_file (read open)))
+
+        ;; Needed for the /dev/kmsg write
+        (call .kmsg.readwrite_nodedev_chr_files (subj))
+
+        ;;open/write pmsg_dev.nodedev
+        (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+
+        ;;Need for Health monitor XML access/update
+        (allow subj .qcmap_cm.conffile (dir (search write add_name remove_name)))
+
+        ;; Need for search , manage , add_name in /dev
+        (call .devices.search_sysfile_dirs (subj))
+        (call .devices.addname_sysfile_dirs (subj))
+        (call .devices.write_sysfile_dirs (subj))
+        (call .devices.manage_sysfile_files (subj))
+        (allow subj .devices.sysfile (dir (read open)))
+        (allow subj devices.sysfile (file (create)))
+
+        ;; For health_monitor process to run on bootup
+        (call .logd.sendto_unix_dgram_sockets (subj))
+        (allow subj logd.miscfile (sock_file (write)))
+        (allow subj .logd.subj (file (read)))
+
+        ;;Need for editing /sys/class/remoteproc/remoteproc0/recovery
+        (call .class.search_sysfile_dirs (subj))
+        (allow subj .class.sysfile (dir (read open)))
+        (allow subj .class.sysfile (lnk_file (read write)))
+
+        ;;Need service to start and create/delete file in /var/run
+        (allow subj ubusd.runtimetmpfile (dir (search)))
+        (allow subj ubusd.runtimetmpfile (sock_file (write)))
+        (allow subj ubusd.subj (dir (search)))
+        (allow subj ubusd.subj (file (read)))
+        (allow subj ubusd.subj (unix_stream_socket (connectto)))
+
+        ;;Need for dns query/nslookup
+        (call .net.search_sysctlfile_dirs (subj))
+        (allow subj net.netnode (udp_socket (node_bind)))
+        (allow subj net.netif (netif (egress)))
+        (allow subj net.netnode (node (sendto)))
+
+        (dontaudit subj self (capability (dac_override)))
+)

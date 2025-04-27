@@ -1,28 +1,31 @@
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022,2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .validatedata
 
-;; policy
+	;; policy
 
-    (allow subj self (capability (dac_override dac_read_search)))
-    (call .qcmap_cli.use_fds (subj))
-    (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
-    (allow .validatedata.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
-    (allow subj hotplugcall.subj (fd( use )))
-    (allow subj hotplugcall.subj (fifo_file( write ioctl )))
-    (allow subj netifd.subj (netlink_route_socket( read write )))
-    (allow subj netifd.subj (netlink_kobject_uevent_socket( read write )))
-    (allow subj netifd.subj (fd( use )))
+	(allow subj self (capability (dac_override dac_read_search)))
 
-;; Ezmesh specific
-    (allow .validatedata.subj .hotplugcall.subj (fd (use)))
-    (allow .validatedata.subj .hotplugcall.subj (fifo_file(write)))
-;; Ezmesh Sigma specific
-    (allow .validatedata.subj wifi.subj (fd (use)))
-    (allow .validatedata.subj wifi.subj (tcp_socket (read write)))
-    (allow .validatedata.subj wifi.subj (fifo_file (write ioctl)))
-    (allow .validatedata.subj wifi.logtmpfile (file (read append)))
+	(call .qcmap_cli.use_fds (subj))
+	(call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+	(allow .validatedata.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+
+	(allow subj netifd.subj (netlink_route_socket( read write )))
+	(allow subj netifd.subj (netlink_kobject_uevent_socket( read write )))
+	(allow subj netifd.subj (fd( use )))
+
+	;; Ezmesh specific
+	(allow subj hotplugcall.subj (fd (use)))
+	(allow subj hotplugcall.subj (fifo_file(write)))
+
+	;; Ezmesh Sigma specific
+	(allow subj wifi.subj (fd (use)))
+	(allow subj wifi.subj (tcp_socket (read write)))
+	(allow subj wifi.subj (fifo_file (write ioctl)))
+	(allow subj wifi.logtmpfile (file (read append)))
+
+	(allow subj tmpfile.runtimetmpfile (dir (search)))
 )
 
 

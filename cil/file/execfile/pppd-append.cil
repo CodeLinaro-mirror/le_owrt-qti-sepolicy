@@ -155,4 +155,6 @@
 	(call .jsonfilter.subj_type_transition (subj))
 	(call .jsonfilter.read_execfile_files (subj))
 	(allow subj .jsonfilter.execfile (file (getattr execute map)))
+
+	(allow subj conntrack.execfile (file (getattr execute)))
 )

@@ -10,6 +10,7 @@
   (allow subj .qcmap_ref.subj (fd (use)))
   (allow subj .qcmap_ref.subj readwriteinherited_fifo_file)
   (allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
+  (allow subj .netmgrd.subj (udp_socket (read write)))
   ;; Need for adding iptable-save
   (allow subj .locale.miscfile (file (read open getattr map)))
   ;; Add rule for fw3 sub
@@ -28,4 +29,6 @@
   (allow subj .iproute2.conffile (dir (search)))
   ;;Need permission for pppd
   (allow subj .pppd.subj (fd (use)))
+  ;; Suppress rule for grep
+  (dontaudit subj .ucode.subj (fifo_file(write)))
 )

@@ -1,17 +1,22 @@
-;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .rcdropbear
 
 (block rcdropbeartmp
 
-       ;; policy
+	;; policy
+	(blockinherit .agent.base_template))
 
-       (blockinherit .agent.base_template))
+	(allow subj self (capability (chown dac_override fowner dac_read_search fsetid )))
 
-       (call .uci.search_conffile_dirs (subj))
-       (call .uci.read_conffile_files (subj))
-       (call .uci.search_tmpfile_dirs (subj))
-       (allow subj self (capability (chown dac_override fowner dac_read_search fsetid )))
-       (allow subj locale.miscfile (file (open read getattr map)))
+	(allow subj file.conffile (dir (setattr)))
+
+	(call .uci.search_conffile_dirs (subj))
+	(call .uci.read_conffile_files (subj))
+	(call .uci.search_tmpfile_dirs (subj))
+
+	(allow subj locale.miscfile (file (open read getattr map)))
+
+	(dontaudit subj self (capability (sys_admin)))
 )

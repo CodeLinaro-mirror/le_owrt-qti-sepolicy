@@ -561,7 +561,7 @@
 	;; For Healthmonitor
 	(allow subj health_monitor.subj (dir (search)))
 	(allow subj health_monitor.subj (lnk_file (read)))
-	(allow subj health_monitor.subj (file (read)))
+	(allow subj health_monitor.subj (file (read open)))
 
 	;; IPQ ctrl_app_dut
 	(allow subj self readwrite_udp_socket)
@@ -790,6 +790,10 @@
 	(allow subj .uci.tmpfile (file (getattr read open lock)))
 
 	(allow subj .rcboot.subj (fd (use)))
+	(allow subj .rcboot.subj (dir (search)))
+	(allow subj .rcboot.subj (file (read open)))
+	(allow subj .rcboot.subj (lnk_file (read)))
+
 
 	(dontaudit subj self (capability (sys_admin)))
 )

@@ -792,4 +792,6 @@
 	(allow subj .rcboot.subj (fd (use)))
 
 	(dontaudit subj self (capability (sys_admin)))
+
+	(allow subj .wifi.tmpfile (lnk_file (read)))
 )

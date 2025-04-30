@@ -557,6 +557,7 @@
 
 	;; For RCU
 	(allow subj rcucitrack.subj (dir (search)))
+	(allow subj rcucitrack.subj (file (read)))
 
 	;; For Healthmonitor
 	(allow subj health_monitor.subj (dir (search)))

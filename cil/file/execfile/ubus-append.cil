@@ -63,6 +63,7 @@
 
 ;; Need permission for pppd
 (allow subj .pppd.subj (fifo_file (write ioctl)))
+
+(allow subj ipv6.sysctlfile (file (read)))
+(allow subj qcmap_cm.runtimetmpfile (file (read)))
 )
-
-

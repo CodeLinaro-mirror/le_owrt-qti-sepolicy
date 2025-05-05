@@ -24,6 +24,14 @@
                 "/usr/bin/mirror_copy"
                 file
                 execfile_file_context)
+        (filecon
+                "/usr/bin/swupdate_app"
+                file
+                execfile_file_context)
+        (filecon
+                "/usr/bin/swupdate_console_app"
+                file
+                execfile_file_context)
 	(filecon
 		"/data/full_update_ext4_ab.zip"
 		file
@@ -126,14 +134,19 @@
 	(call obj_type_transition_tmpfile (subj file "last_install"))
 
 	(allow subj self(capability (chown dac_override dac_read_search fowner fsetid sys_resource)))
+	(allow subj sys.subj (process (signal)))
 
 	(allow cache.miscfile self (filesystem (associate)))
 	(allow subj cache.miscfile (dir ( create getattr open read remove_name rmdir add_name search write )))
 	(allow subj cache.miscfile (file ( ioctl read getattr setattr unlink create open write rename append)))
 	(allow subj cache.miscfile (filesystem ( getattr )))
 
-	(allow subj file.conffile(lnk_file (read)))
-	(allow subj file.conffile (file ( open read getattr)))
+	(allow subj file.conffile (dir (write add_name)))
+	(allow subj file.conffile (file (open read write create ioctl getattr)))
+	(allow subj file.conffile (lnk_file (read getattr)))
+
+	(allow subj logd.miscfile (sock_file (write)))
+	(allow subj logd.subj (unix_dgram_socket (sendto)))
 
 	(allow subj fs.sysfile(dir (search)))
 	(allow subj selinux.conffile(dir (search)))
@@ -154,7 +167,9 @@
 	(allow subj leprop.miscfile (sock_file ( write )))
 	(allow subj leprop.subj (unix_stream_socket ( connectto )))
 
-	(allow subj self (unix_stream_socket ( connect create read write )))
+	(allow subj self (unix_stream_socket (connect create read write)))
+	(allow subj self (qipcrtr_socket (create)))
+	(allow subj self (unix_dgram_socket (create write connect)))
 	(allow subj cmdline.procfile (file ( open read )))
 
 	(allow subj mmc.stordev (blk_file ( getattr read open write ioctl )))
@@ -192,5 +207,9 @@
 	(allow subj vm.sysctlfile (dir (search)))
 	(allow subj vm.sysctlfile (file ( open write )))
 
-	(allow subj meminfo.procfile (file ( read open )))
+	(allow subj meminfo.procfile (file (read open)))
+
+	(allow subj diag-router.subj (unix_stream_socket (connectto)))
+
+	(dontaudit subj self (capability (sys_admin)))
 )

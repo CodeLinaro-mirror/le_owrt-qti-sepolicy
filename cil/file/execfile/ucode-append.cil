@@ -87,5 +87,13 @@
 	(dontaudit subj dropbear.subj (dir (search)))
 	(dontaudit subj ip.subj (dir (search)))
 	(dontaudit subj netmgrd.subj (dir (search)))
+	(dontaudit subj rmt_storage.subj (dir (search)))
+	(dontaudit subj wifi.subj (dir (search)))
+	(dontaudit subj stmfd.subj (dir (search)))
+	(dontaudit subj health_monitor.subj (dir (search)))
+	(dontaudit subj odhcpd.subj (dir (search)))
+	(dontaudit subj uhttpd.subj (dir (search)))
+	(dontaudit subj qms.subj (dir (search)))
+	(dontaudit subj recovery.subj (dir (search)))
 
 )

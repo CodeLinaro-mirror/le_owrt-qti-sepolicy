@@ -475,6 +475,9 @@
 	(call .wpad.search_runtimetmpfile_dirs (subj))
 	(call .wpad.read_runtimetmpfile_sock_files (subj))
 
+	;; Need permissions for ipcalc.sh
+	(allow subj .ipcalc.subj (dir (search)))
+
 	;; Access module parameters
 	(call .module.read_sysfile_files (subj))
 

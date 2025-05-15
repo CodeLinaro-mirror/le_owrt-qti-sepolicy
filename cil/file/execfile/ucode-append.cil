@@ -54,6 +54,7 @@
 	(dontaudit subj devices.sysfile (file (write)))
 	(dontaudit subj bus.sysfile (lnk_file (read)))
 	(dontaudit subj net.procfile (lnk_file (read)))
+	(dontaudit subj miniupnpd.datafile (file (read)))
 
 	(dontaudit subj bus.procfile (dir (search)))
 	(dontaudit subj irq.procfile (dir (search)))

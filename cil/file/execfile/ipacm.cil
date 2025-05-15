@@ -288,5 +288,8 @@
 
 	(allow .ipacm.runtimetmpfile .xattr.fs (filesystem (associate)))
 
+	;; To allow ipacm to read /etc/localtime
+	(allow subj file.conffile (lnk_file (read)))
+
 	;;
 )

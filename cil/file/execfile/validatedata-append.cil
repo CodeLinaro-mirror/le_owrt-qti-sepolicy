@@ -9,7 +9,8 @@
 
 	(call .qcmap_cli.use_fds (subj))
 	(call .qcmap_cli.readwrite_unix_stream_sockets (subj))
-	(allow .validatedata.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+
+	(allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
 
 	(allow subj netifd.subj (netlink_route_socket( read write )))
 	(allow subj netifd.subj (netlink_kobject_uevent_socket( read write )))
@@ -27,9 +28,4 @@
 
 	(allow subj tmpfile.runtimetmpfile (dir (search)))
 )
-
-
-
-
-
 

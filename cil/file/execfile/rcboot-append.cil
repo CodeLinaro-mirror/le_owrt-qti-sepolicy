@@ -34,6 +34,7 @@
 
 	(allow subj file.conffile (dir (setattr)))
 	(allow subj file.conffile (chr_file (create link rename)))
+        (allow subj file.datafile (file (getattr)))
 
 	;; wifi permissions
 	(call .wifi.subj_type_transition (subj))

@@ -156,5 +156,5 @@
 	(call .jsonfilter.read_execfile_files (subj))
 	(allow subj .jsonfilter.execfile (file (getattr execute map)))
 
-	(allow subj conntrack.execfile (file (getattr)))
+	(allow subj conntrack.execfile (file (getattr execute read open)))
 )

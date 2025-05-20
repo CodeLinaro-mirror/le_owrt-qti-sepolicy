@@ -662,6 +662,7 @@
     (call .qcmap_cm.manage_tmpfile_files (subj))
     (call .sys.search_sysctlfile_dirs (subj))
     (call .net.search_sysctlfile_dirs (subj))
+    (call .net.readwrite_sysctlfile_files (subj))
     (call .netfilter.search_sysctlfile_dirs (subj))
     (call .netfilter.readwrite_sysctlfile_files (subj))
     (allow subj .devices.sysfile (dir (read open)))

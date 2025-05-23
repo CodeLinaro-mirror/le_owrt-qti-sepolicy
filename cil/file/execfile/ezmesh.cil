@@ -1,4 +1,4 @@
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -157,8 +157,6 @@
                     (ARG1 runtimetmpfile sock_file "*"))
 (call .tmpfile.runtimetmpfile_obj_type_transition
                     (ARG1 runtimetmpfile fifo_file "wsplc.pipe"))
-(call .tmpfile.runtimetmpfile_obj_type_transition
-                    (ARG1 runtimetmpfile dir "*"))
 )
 
     (macro read_sysfile_dirs ((type ARG1))

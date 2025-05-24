@@ -5,21 +5,20 @@
 (in .ucode
 
 ;; policy
-	(allow subj self (capability (dac_read_search)))
+	(allow subj self (capability (dac_read_search net_admin net_raw)))
 
 	(call .xtables.subj_type_transition (subj))
 	(allow subj .xtables.execfile ( file (read open execute map getattr)))
 
 	(call .ucode.subj_type_transition (subj))
 	(allow subj .ucode.subj (netlink_netfilter_socket (read create bind getattr write)))
+	(allow subj .ucode.subj (rawip_socket (create getopt setopt)))
 
 	(call .uci.subj_type_transition (subj))
 	(allow subj .uci.execfile (file(read open execute map getattr)))
 
-	(allow subj .qcmap_ref.subj (fd (use)))
-	(allow subj .qcmap_ref.subj (fifo_file (read write)))
-	(allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
-	(allow subj .qcmap_ref.subj (netlink_route_socket(read write)))
+	(allow subj .qcmap_cm.conffile (dir (search)))
+	(allow subj .qcmap_cm.conffile (file (read open)))
 
 	(allow subj .qcmap_cli.subj (fd (use)))
 	(allow subj .qcmap_cli.subj (fifo_file (read write)))
@@ -55,6 +54,7 @@
 	(dontaudit subj devices.sysfile (file (write)))
 	(dontaudit subj bus.sysfile (lnk_file (read)))
 	(dontaudit subj net.procfile (lnk_file (read)))
+	(dontaudit subj miniupnpd.datafile (file (read)))
 
 	(dontaudit subj bus.procfile (dir (search)))
 	(dontaudit subj irq.procfile (dir (search)))
@@ -87,5 +87,13 @@
 	(dontaudit subj dropbear.subj (dir (search)))
 	(dontaudit subj ip.subj (dir (search)))
 	(dontaudit subj netmgrd.subj (dir (search)))
+	(dontaudit subj rmt_storage.subj (dir (search)))
+	(dontaudit subj wifi.subj (dir (search)))
+	(dontaudit subj stmfd.subj (dir (search)))
+	(dontaudit subj health_monitor.subj (dir (search)))
+	(dontaudit subj odhcpd.subj (dir (search)))
+	(dontaudit subj uhttpd.subj (dir (search)))
+	(dontaudit subj qms.subj (dir (search)))
+	(dontaudit subj recovery.subj (dir (search)))
 
 )

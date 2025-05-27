@@ -43,6 +43,8 @@
 	(allow subj class.sysfile (dir (read open)))
 	(allow subj proc.fs (dir (read open)))
 	(allow subj fs.procfile (dir (search)))
+	(allow subj .ethagent.subj (dir (search)))
+	(allow subj .qtether.subj (dir (search)))
 
 	;; Suppress rule for grep
 	(dontaudit subj .file.initscriptfile (dir (search)))

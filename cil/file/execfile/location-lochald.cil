@@ -148,6 +148,11 @@
 	(call .ssgtzd_socket.manage_ssgtzd_socket_files (subj))
 	(call .ssgtzd.connectto_unix_stream_sockets (subj))
 
+	;; qcril sepolicy rules
+	(call .qcril.connectto_unix_stream_sockets (subj))
+	(call .qcril.search_runtimetmpfile_dirs (subj))
+	(call .qcril.write_runtimetmpfile_sock_files (subj))
+
 	;; Need qipcrtr socket creations
 	(allow subj  self  create_qipcrtr_socket)
 )

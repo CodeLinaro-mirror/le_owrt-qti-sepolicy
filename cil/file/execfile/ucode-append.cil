@@ -39,6 +39,7 @@
 
 	(allow subj .filesystems.procfile (file (read open)))
 	(allow subj file.datafile (dir (read open)))
+	(allow subj file.datafile (file (read)))
 	(allow subj bus.sysfile (dir (search read open)))
 	(allow subj class.sysfile (dir (read open)))
 	(allow subj proc.fs (dir (read open)))

@@ -1,102 +1,86 @@
-
-;;Copyright (c) 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
-(in .ucode
+(in ucode
+
+;;
+;; Macros
+;;
 
 ;; policy
-	(allow subj self (capability (dac_read_search net_admin net_raw)))
+        (allow subj self (capability (dac_read_search net_admin net_raw)))
 
-	(call .xtables.subj_type_transition (subj))
-	(allow subj .xtables.execfile ( file (read open execute map getattr)))
+        (call .xtables.subj_type_transition (subj))
+        (allow subj .xtables.execfile ( file (read open execute map getattr)))
 
-	(call .ucode.subj_type_transition (subj))
-	(allow subj .ucode.subj (netlink_netfilter_socket (read create bind getattr write)))
-	(allow subj .ucode.subj (rawip_socket (create getopt setopt)))
+        (allow subj .ucode.subj (netlink_netfilter_socket (read create bind getattr write)))
+        (allow subj .ucode.subj (rawip_socket (create getopt setopt)))
 
-	(call .uci.subj_type_transition (subj))
-	(allow subj .uci.execfile (file(read open execute map getattr)))
+        (call .uci.subj_type_transition (subj))
+        (allow subj .uci.execfile (file(read open execute map getattr)))
 
-	(allow subj .qcmap_cm.conffile (dir (search)))
-	(allow subj .qcmap_cm.conffile (file (read open)))
+        (allow subj .qcmap_cm.conffile (dir (search)))
+        (allow subj .qcmap_cm.conffile (file (read open)))
 
-	(allow subj .qcmap_cli.subj (fd (use)))
-	(allow subj .qcmap_cli.subj (fifo_file (read write)))
-	(allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
+        (allow subj .qcmap_cli.subj (fd (use)))
+        (allow subj .qcmap_cli.subj (fifo_file (read write)))
+        (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
 
-	(allow subj .netifd.miscfile (dir (search getattr read open)))
+        (allow subj .netifd.miscfile (dir (search getattr read open)))
 
-	;; Need obj_type_transition for /etc/firewall.user.*
-	(call .firewall.obj_type_transition_conffile_ext (subj))
-	(allow subj .firewall.conffile (file (read open)))
+        ;; Need obj_type_transition for /etc/firewall.user.*
+        (call .firewall.obj_type_transition_conffile_ext (subj))
+        (allow subj .firewall.conffile (file (read open)))
 
-	;; Need read for /etc/firewall.user
-	(call .file.read_conffile_files (subj))
-	(allow subj .rcfirewall.subj (fd (use)))
+        ;; Need read for /etc/firewall.user
+        (call .file.read_conffile_files (subj))
+        (allow subj .rcfirewall.subj (fd (use)))
 
-	(allow subj .sys.rootfile (dir (open read)))
-	(allow subj .sys.fs (filesystem (getattr)))
+        (allow subj .ethagent.subj (dir (search)))
+        (allow subj .qtether.subj (dir (search)))
 
-	(allow subj .filesystems.procfile (file (read open)))
-	(allow subj file.datafile (dir (read open)))
-	(allow subj file.datafile (file (read)))
-	(allow subj bus.sysfile (dir (search read open)))
-	(allow subj class.sysfile (dir (read open)))
-	(allow subj proc.fs (dir (read open)))
-	(allow subj fs.procfile (dir (search)))
-	(allow subj .ethagent.subj (dir (search)))
-	(allow subj .qtether.subj (dir (search)))
+        (allow subj .sys.rootfile (dir (open read)))
+        (allow subj .sys.fs (filesystem (getattr)))
 
-	;; Suppress rule for grep
-	(dontaudit subj .file.initscriptfile (dir (search)))
-	(dontaudit subj .rcfirewall.initscriptfile (file (read open)))
+        (allow subj .filesystems.procfile (file (read open)))
+        (allow subj file.datafile (dir (read open)))
+        (allow subj file.datafile (file (read)))
 
-	(dontaudit subj wifi.subj (fd (use)))
-	(dontaudit subj self (capability (sys_admin)))
+        (allow subj bus.sysfile (dir (search read open)))
+        (allow subj class.sysfile (dir (read open)))
+        (allow subj proc.fs (dir (read open)))
+        (allow subj fs.procfile (dir (search)))
+        (allow subj sys.subj readwriteinherited_fifo_file)
 
-	(dontaudit subj devices.sysfile (file (write)))
-	(dontaudit subj bus.sysfile (lnk_file (read)))
-	(dontaudit subj net.procfile (lnk_file (read)))
-	(dontaudit subj miniupnpd.datafile (file (read)))
+        (allow subj self create_unix_dgram_socket)
+        (allow subj wifi.subj  (fd (use)))
+        (allow subj wifi.subj  (fifo_file ( write read  )))
 
-	(dontaudit subj bus.procfile (dir (search)))
-	(dontaudit subj irq.procfile (dir (search)))
-	(dontaudit subj tty.procfile (dir (search)))
-	(dontaudit subj driver.procfile (dir (search)))
-	(dontaudit subj sysvipc.procfile (dir (search)))
-	(dontaudit subj dynamicdebug.procfile (dir (search)))
-	(dontaudit subj sys.sysctlfile (dir (search)))
-	(dontaudit subj firmware.sysfile (dir (search)))
-	(dontaudit subj sys.subj (dir (search)))
-	(dontaudit subj ubusd.subj (dir (search)))
-	(dontaudit subj urngd.subj (dir (search)))
-	(dontaudit subj tftp_server.subj  (dir (search)))
-	(dontaudit subj diag-router.subj (dir (search)))
-	(dontaudit subj mbim.subj (dir (search)))
-	(dontaudit subj qwesd.subj  (dir (search)))
-	(dontaudit subj qseecomd.subj (dir (search)))
-	(dontaudit subj qcmap_cm.subj  (dir (search)))
-	(dontaudit subj leprop.subj (dir (search)))
-	(dontaudit subj ipacm.subj (dir (search)))
-	(dontaudit subj ipacmdiag.subj (dir (search)))
-	(dontaudit subj netifd.subj (dir (search)))
-	(dontaudit subj logd.subj (dir (search)))
-	(dontaudit subj rpcd.subj (dir (search)))
-	(dontaudit subj fs-scrub-daemon.subj (dir (search)))
-	(dontaudit subj afc.subj (dir (search)))
-	(dontaudit subj dnsmasq.subj (dir (search)))
-	(dontaudit subj diagrebootapp.subj (dir (search)))
-	(dontaudit subj qmuxbridge.subj (dir (search)))
-	(dontaudit subj dropbear.subj (dir (search)))
-	(dontaudit subj ip.subj (dir (search)))
-	(dontaudit subj netmgrd.subj (dir (search)))
-	(dontaudit subj rmt_storage.subj (dir (search)))
-	(dontaudit subj wifi.subj (dir (search)))
-	(dontaudit subj stmfd.subj (dir (search)))
-	(dontaudit subj health_monitor.subj (dir (search)))
-	(dontaudit subj odhcpd.subj (dir (search)))
-	(dontaudit subj uhttpd.subj (dir (search)))
-	(dontaudit subj qms.subj (dir (search)))
-	(dontaudit subj recovery.subj (dir (search)))
+        (allow ucode.subj  logd.miscfile write_sock_file)
+        (allow ucode.subj  logd.subj (unix_dgram_socket (sendto)))
+
+        (call .nameservice.read_miscfile_files (subj))
+
+        (allow ucode.subj file.execfile (file  (execute_no_trans)))
+
+        (dontaudit ucode.subj  ubusd.subj   (dir  (search)))
+        (dontaudit   ucode.subj  urngd.subj   (dir  (search)))
+
+        ;; Needed to search /proc tree .
+        ;; where most the file are owned by respectie processes
+        ;; reading its own created  files / tree is allowed for others
+        ;; it should be dontaudit.
+        (dontaudit  ucode.subj   sys.subj  (dir  (audit_access)))
+        (dontaudit  ucode.subj  sys.subj  (file   (audit_access)))
+        (dontaudit  ucode.subj  sys.subj  (file   (audit_access)))
+        (dontaudit  ucode.subj  sys.subj  (lnk_file   (audit_access)))
+        (dontaudit  ucode.subj  ubusd.subj   (lnk_file  (audit_access )))
+        (dontaudit  ucode.subj  urngd.subj   (lnk_file  (audit_access)))
+
+        ;; there is no functional issue but too much flooding of denial
+        ;; so following block is to suppress the denails.
+        (call .file.dontaudit_manage_all_dirs (ucode.subj))
+        (call .file.dontaudit_manage_all_files (ucode.subj))
+        (call .file.dontaudit_manage_all_lnk_files (ucode.subj))
 
 )

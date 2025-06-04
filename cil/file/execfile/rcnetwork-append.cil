@@ -1,4 +1,4 @@
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .rcnetwork
@@ -8,13 +8,13 @@
        ;; policy
 
        (blockinherit .agent.base_template))
-         (allow subj self (capability (dac_read_search)))
+         (allow subj self (capability (dac_read_search dac_override)))
          (call .qcmap_cli.use_fds (subj))
-         (allow subj self (capability (dac_override)))
          (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
          (allow .rcnetwork.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
          (call .qcmap_cm.search_tmpfile_dirs (subj))
          (allow subj .qcmap_cm.tmpfile (dir (getattr)))
+         (allow subj .uci.conffile (dir (search)))
 
        ;;
        (allow .iw.subj .rcnetwork.subj (fd (use)))

@@ -1,5 +1,5 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-;; Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; Sepolicy rules for location daemon - location_hal_daemon
@@ -36,20 +36,10 @@
 	;; import common rules for location deamons
 	(call loc_daemons_common_rules (subj))
 
-	;; communicate with location daemons via unix dgram sockets
-	(call .loc_xtra_daemon.sendto_unix_dgram_sockets (subj))
-	(call .loc_edgnss_daemon.sendto_unix_dgram_sockets (subj))
-	(call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
-	(call .loc_launcher.sendto_unix_dgram_sockets (subj))
 	;; connect to loc_launcher target stream
 	(call .loc_launcher.connectto_unix_stream_sockets (subj))
-	(call .loc_engine_service.sendto_unix_dgram_sockets (subj))
-	(call .loc_xtwifi_client.sendto_unix_dgram_sockets (subj))
-	(call .loc_xtwifi_inet.sendto_unix_dgram_sockets (subj))
 	;; manage loc_socket nodedev link files
 	(call .loc_socket.manage_nodedev_lnk_files (subj))
-
-	(call .mlid.sendto_unix_dgram_sockets (subj))
 
 	;; communicate with location test apps which runs in sys.subj ctxt
 	(call .sys.sendto_unix_dgram_sockets (subj))
@@ -61,10 +51,10 @@
 	;; Need search on sysfile dir
 	(call .fs.search_sysfile_dirs (subj))
 
-	;; Need search on selinux dir
-	(call .selinux.search_conffile_dirs(subj))
 	;; Need gettarr on selinux filesystem
 	(call .selinux.getattr_filesystems (subj))
+	;; Need search on selinux dir
+	(call .selinux.search_conffile_dirs(subj))
 	;; Need execute on shell.execfile files
 	(call .shell.execute_execfile_files (subj))
 
@@ -82,20 +72,20 @@
 
 	;;connect to leprop socket
 	(call .leprop.connectto_unix_stream_sockets (subj))
-	;; needed to read  /dev/socket/leprop-service
-	(allow subj  leprop.miscfile  (sock_file  (read write)))
+	(call .leprop.manage_miscfile_sock_files (subj))
 
 	;; Need read open execute on /etc/data/backhaulWWANConfig.sh
 	(call .qcmap_cm.search_conffile_dirs (subj))
 	(call .qcmap_cm.execute_conffile_files (subj))
-	;; SpeedTest related permissions
-	(allow subj qcmap_cm.subj (unix_dgram_socket (sendto)))
+	(call .qcmap_cm.sendto_unix_dgram_sockets (subj))
 
 	;; qcmap related
-	(allow subj qcmap_ref.tmpfile (file (getattr read open)))
+	(call .qcmap_ref.read_tmpfile_files (subj))
 
 	;; KPI node access
 	(call .kpi_values.manage_sysfile_files (subj))
+	;; read urandom
+	(call .random.read_nodedev_chr_files (subj))
 
 	;; Need execute on /sbin/uci
 	(call .uci.execute_execfile_files (subj))
@@ -146,7 +136,7 @@
 
 	(call .powerstate_socket.search_nodedev_dirs (subj))
 	(call .powerstate_socket.manage_powerstate_socket_files (subj))
-	(allow subj .powerstate.subj (unix_stream_socket (connectto)))
+	(call .powerstate.connectto_unix_stream_sockets (subj))
 
 	;; Permissions for /sys/power/wake_unlock
 	(call .power.search_sysfile_dirs(subj))
@@ -155,10 +145,12 @@
 	;; Qwes related permissions
 	(call .qwesd_mink_socket.search_nodedev_dirs (subj))
 	(call .qwesd_mink_socket.readwrite_nodedev_sock_files (subj))
-	(allow subj .qwesd.subj (unix_stream_socket (connectto)))
+	(call .qwesd.connectto_unix_stream_sockets (subj))
 
-	;; read urandom
-	(call .random.read_nodedev_chr_files (subj))
+	;; ssgtzd related permissions
+	(call .ssgtzd_socket.manage_ssgtzd_socket_files (subj))
+	(call .ssgtzd.connectto_unix_stream_sockets (subj))
+
 
 	;; Need qipcrtr socket creations
 	(allow subj  self  create_qipcrtr_socket)

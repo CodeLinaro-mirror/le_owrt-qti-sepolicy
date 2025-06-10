@@ -1,5 +1,5 @@
 
-;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .fw3
@@ -49,6 +49,7 @@
 (allow subj .qcmap_ref.subj (fifo_file(getattr)))
 (allow subj .sys.fs (filesystem (getattr)))
 (allow subj .filesystems.procfile (file (read open)))
+(allow subj .qcmap_cm.conffile (dir (search)))
 
 ;; Need permission for /usr/share/pbr/pbr.firewall.include
 (allow subj .file.datafile (file (getattr)))

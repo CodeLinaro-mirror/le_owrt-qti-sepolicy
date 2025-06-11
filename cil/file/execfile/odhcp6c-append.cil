@@ -182,7 +182,10 @@
     (allow subj .locale.miscfile (file (read open getattr map)))
 
     ;; Need permission for pppd
-    (allow subj pppd.tmpfile (file (getattr read open)))
+    (allow subj .pppd.tmpfile (file (getattr read open)))
+
+    ;; Need permission for statetmpfile
+    (allow subj .netifd.statetmpfile (file (create getattr write read open lock ioctl)))
 
     ;; Need permission for conntrack
     (allow subj conntrack.execfile (file (getattr)))

@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -215,7 +215,6 @@
 	(allow subj ipacm.conffile (dir (watch)))
 	(call .ipacm.readwrite_conffile_dirs(subj))
 	(allow subj qcmap_cm.conffile (dir (watch)))
-	(allow subj qcmap_cm.conffile (file (getattr read open)))
 
 	(call .ipacm.create_datafile (subj))
 	(call .ipacm.readwrite_datafile (subj))

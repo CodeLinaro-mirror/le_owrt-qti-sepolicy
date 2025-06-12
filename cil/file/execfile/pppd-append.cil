@@ -1,4 +1,4 @@
-;;Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .pppd
@@ -126,8 +126,8 @@
 	;; Need permission for ip6tables and odhcpd and search on /tmp/state/
 	(call .tmpfile.search_statetmpfile_dirs (subj))
 	(allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
-	(allow subj .tmpfile.locktmpfile (dir (search)))
-	(allow subj .tmpfile.locktmpfile (file (open)))
+	(allow subj .tmpfile.locktmpfile (dir (search write add_name)))
+	(allow subj .tmpfile.locktmpfile (file (open create)))
 	(allow subj .rccommon.conffile (file (read)))
 	(allow subj odhcp6c.tmpfile (file (read write getattr open unlink)))
 

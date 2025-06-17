@@ -144,6 +144,10 @@
 	(call .qwesd_mink_socket.readwrite_nodedev_sock_files (subj))
 	(call .qwesd.connectto_unix_stream_sockets (subj))
 
+	;; ssgtzd related permissions
+	(call .ssgtzd_socket.manage_ssgtzd_socket_files (subj))
+	(call .ssgtzd.connectto_unix_stream_sockets (subj))
+
 	;; Need qipcrtr socket creations
 	(allow subj  self  create_qipcrtr_socket)
 )

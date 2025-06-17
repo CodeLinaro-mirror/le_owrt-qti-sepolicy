@@ -45,6 +45,13 @@
 	(call .leprop.connectto_unix_stream_sockets (subj))
 	(call .leprop.manage_miscfile_sock_files (subj))
 
+	;; ssgtzd related permissions
+	(call .ssgtzd_socket.manage_ssgtzd_socket_files (subj))
+	(call .ssgtzd.connectto_unix_stream_sockets (subj))
+
+	;; sendto processes launched from shell
+	(call .sys.sendto_unix_dgram_sockets (subj))
+
 	;; read ssl certificates
 	(call .ssl.list_certfile_dirs (subj))
 	(call .ssl.read_certfile_files (subj))

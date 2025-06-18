@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -984,7 +984,6 @@
     (call pidof_denials (subj odhcp6c.subj))
     (call pidof_denials (subj uci.subj))
 
-    (allow subj .filesystems.procfile (file (read)))
     (allow subj .sys.fs (filesystem(getattr)))
     (allow subj .qseecomd.subj (lnk_file (read open)))
 
@@ -1458,4 +1457,5 @@
     ;;Need for Health monitor XML access/update for factory reset
     (allow subj .health_monitor.conffile (dir (search write add_name remove_name)))
     (allow subj .health_monitor.conffile (file (read write open lock getattr create ioctl unlink)))
+    (dontaudit subj .filesystems.procfile (file (read open)))
 )

@@ -1,5 +1,5 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
@@ -475,6 +475,9 @@
 	(call .wpad.search_runtimetmpfile_dirs (subj))
 	(call .wpad.read_runtimetmpfile_sock_files (subj))
 
+	;; Need permissions for ipcalc.sh
+	(allow subj .ipcalc.subj (dir (search)))
+
 	;; Access module parameters
 	(call .module.read_sysfile_files (subj))
 
@@ -645,6 +648,7 @@
 
 	;; vaalidatedata subj transition
 	(call .validatedata.subj_type_transition (subj))
+	(allow subj .validatedata.execfile (dir (search)))
 	(allow subj .validatedata.execfile (file (read open execute map)))
 
 	;; Need on /proc for process
@@ -764,6 +768,7 @@
 
 	;;iface-up subj transition
 	(call .ifup.subj_type_transition (subj))
+	(allow subj .ifup.execfile (dir (search)))
 	(allow subj .ifup.execfile (file (getattr read open execute)))
 
 	(allow subj .ipacm.subj (dir (getattr)))

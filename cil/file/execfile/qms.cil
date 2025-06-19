@@ -78,15 +78,18 @@
 	(allow subj self (netlink_route_socket (read write nlmsg_write nlmsg_read)))
 
 	(allow subj self create_udp_socket)
-	(allow subj self (unix_dgram_socket (create connect write sendto ioctl)))
-	(allow subj self (unix_stream_socket (create connect read write listen bind sendto connectto accept)))
+	(allow subj self create_unix_dgram_socket)
+	(call qms.sendto_unix_dgram_sockets (subj))
+	(allow subj self create_unix_stream_stream_socket)
+	(call qms.connectto_unix_stream_sockets(subj))
+	(allow subj self (unix_stream_socket (sendto)))
 
-	(allow subj self (tipc_socket (create bind read write setopt)))
+	(allow subj self create_tipc_socket)
 
-	(allow subj diag-router.subj (unix_stream_socket (connectto)))
+	(call diag-router.connectto_unix_stream_sockets(subj))
 
 	(allow subj logd.miscfile (sock_file (write)))
-	(allow subj logd.subj (unix_dgram_socket (sendto)))
+	(call logd.sendto_unix_dgram_sockets (subj))
 
 	(allow subj .qcmap_cm.runtimetmpfile (dir (search write add_name)))
 	(allow subj .qcmap_cm.runtimetmpfile (file (create read write append open)))
@@ -95,7 +98,7 @@
 	(allow subj .tmpfile.conftmpfile (dir (search)))
 
 	(allow subj leprop.miscfile (sock_file (read write)))
-	(allow subj leprop.subj (unix_stream_socket ( connectto )))
+	(call leprop.connectto_unix_stream_sockets(subj))
 
 	(allow subj .ssl.conftmpfile (dir (search)))
 	(allow subj .ssl.conftmpfile (file (read getattr open)))

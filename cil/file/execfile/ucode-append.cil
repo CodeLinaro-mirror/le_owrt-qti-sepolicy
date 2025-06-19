@@ -39,10 +39,13 @@
 
 	(allow subj .filesystems.procfile (file (read open)))
 	(allow subj file.datafile (dir (read open)))
+	(allow subj file.datafile (file (read)))
 	(allow subj bus.sysfile (dir (search read open)))
 	(allow subj class.sysfile (dir (read open)))
 	(allow subj proc.fs (dir (read open)))
 	(allow subj fs.procfile (dir (search)))
+	(allow subj .ethagent.subj (dir (search)))
+	(allow subj .qtether.subj (dir (search)))
 
 	;; Suppress rule for grep
 	(dontaudit subj .file.initscriptfile (dir (search)))
@@ -54,6 +57,7 @@
 	(dontaudit subj devices.sysfile (file (write)))
 	(dontaudit subj bus.sysfile (lnk_file (read)))
 	(dontaudit subj net.procfile (lnk_file (read)))
+	(dontaudit subj miniupnpd.datafile (file (read)))
 
 	(dontaudit subj bus.procfile (dir (search)))
 	(dontaudit subj irq.procfile (dir (search)))

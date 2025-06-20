@@ -1,62 +1,58 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; Sepolicy rules for location daemon - lowi-server
 (in .file
-    ;; location exec files transition
-    (call .loc_lowi_server.obj_type_transition_execfile (unconfined.subj_typeattr)))
+	;; location exec files transition
+	(call .loc_lowi_server.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
 ;;#============= Lowi Server ==============
 (block loc_lowi_server
-    ;;
-    ;; Contexts
-    ;; --------
-    (filecon "/usr/bin/lowi-server" file execfile_file_context)
+	;;
+	;; Contexts
+	;; --------
+	(filecon "/usr/bin/lowi-server" file execfile_file_context)
 
-    ;;
-    ;; Macros
-    ;; ------
-    (macro obj_type_transition_execfile ((type ARG1))
-          (call .file.execfile_obj_type_transition
-                (ARG1 execfile file "lowi-server")))
+	;;
+	;; Macros
+	;; ------
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "lowi-server")))
 
-    ;;
-    ;; Policy
-    ;; ------
-    (blockinherit .agent.base_template)
-    (blockinherit .file.exec.obj_macro_template)
-    (blockinherit .loc_daemons_common.loc_daemons_common_template)
+	;;
+	;; Policy
+	;; ------
+	(blockinherit .agent.base_template)
+	(blockinherit .file.exec.obj_macro_template)
+	(blockinherit .loc_daemons_common.loc_daemons_common_template)
 
-    ;; import common rules for location deamons
-    (call loc_daemons_common_rules (subj))
+	(allow subj self (capability (net_admin)))
 
-    (call subj_type_transition (subj))
+	;; import common rules for location deamons
+	(call loc_daemons_common_rules (subj))
 
-    (allow subj self (capability (net_admin)))
+	(call subj_type_transition (subj))
 
-    ;; netlink_route_socket
-    (allow subj self create_netlink_route_socket)
+	(call .sys.requestmodule (subj))
 
-    ;; netlink_generic_socket
-    (allow subj self create_netlink_generic_socket)
+	(call .unknown.manage_miscfile_dirs (subj))
 
-    ;; Create udp_socket
-    (allow subj self create_udp_socket)
+	(call .loc_launcher.use_fds (subj))
 
-    (call .sys.requestmodule (subj))
+	;; connect to loc_launcher target stream
+	(call .loc_launcher.connectto_unix_stream_sockets (subj))
 
-    ;; connect to loc_launcher target stream
-    (call .loc_launcher.connectto_unix_stream_sockets (subj))
+	;;connect to mlid socket
+	(call .mlid.connectto_unix_stream_sockets (subj))
+	(allow subj mlid.subj create_unix_stream_socket)
 
-    ;; communicate with location daemons via unix dgram sockets
-    (call .loc_launcher.sendto_unix_dgram_sockets (subj))
-    (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
+	;; netlink sockets
+	(allow subj self create_netlink_route_socket)
+	(allow subj self create_netlink_generic_socket)
+	(allow subj self create_netlink_socket)
 
-    (allow subj mlid.subj (unix_stream_socket (read write)))
-    ;;connect to mlid socket
-    (call .mlid.connectto_unix_stream_sockets (subj))
-    (call .mlid.sendto_unix_dgram_sockets (subj))
-
-    (call .loc_launcher.use_fds (subj))
+	;; Create udp_socket
+	(allow subj self create_udp_socket)
 )

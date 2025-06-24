@@ -110,7 +110,7 @@
 	(allow subj .wifi.datafile (sock_file (getattr)))
 
 	(allow subj .tmp.fs (dir (remove_name)))
-	(allow subj qms.tmpfile (sock_file (create setattr unlink)))
+	(allow subj qms.tmpfile (sock_file (create setattr unlink write)))
 
 	;; Manage files in /data/vendor/
 	(call .qms.manage_datafile_dirs (subj))
@@ -147,4 +147,8 @@
 	;; Read class sysfile
 	(call .class.search_sysfile_dirs (subj))
 	(call .class.read_sysfile_lnk_files (subj))
+
+	;; ssgtzd related permissions
+	(call .ssgtzd_socket.manage_ssgtzd_socket_files (subj))
+	(call .ssgtzd.connectto_unix_stream_sockets (subj))
 )

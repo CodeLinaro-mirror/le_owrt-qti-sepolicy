@@ -1,162 +1,153 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; Sepolicy rules for location daemon - location_hal_daemon
 (in .sys
-    (call .loc_hal_daemon.subj_type_transition (subj)))
+	(call .loc_hal_daemon.subj_type_transition (subj)))
 
 (in .file
-    ;; location exec files transition
-    (call .loc_hal_daemon.obj_type_transition_execfile (unconfined.subj_typeattr)))
+	;; location exec files transition
+	(call .loc_hal_daemon.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
 ;;#============= Location Hal Daemon ==============
 (block loc_hal_daemon
-    ;;
-    ;; Contexts
-    ;; --------
-    (filecon "/usr/bin/location_hal_daemon" file execfile_file_context)
+	;;
+	;; Contexts
+	;; --------
+	(filecon "/usr/bin/location_hal_daemon" file execfile_file_context)
 
-    ;;
-    ;; Macros
-    ;; ------
-    (macro obj_type_transition_execfile ((type ARG1))
-          (call .file.execfile_obj_type_transition
-                (ARG1 execfile file "location_hal_daemon")))
+	;;
+	;; Macros
+	;; ------
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "location_hal_daemon")))
 
-    ;;
-    ;; Policy
-    ;; ------
-    (blockinherit .agent.base_template)
-    (blockinherit .loc_daemons_common.loc_daemons_common_template)
+	;;
+	;; Policy
+	;; ------
+	(blockinherit .agent.base_template)
+	(blockinherit .loc_daemons_common.loc_daemons_common_template)
 
-    ;; import common rules for location deamons
-    (call loc_daemons_common_rules (subj))
+	;; Set supplementary groups
+	(allow subj self (capability (setgid)))
 
-    ;; Set supplementary groups
-    (allow subj self (capability (setgid)))
+	;; import common rules for location deamons
+	(call loc_daemons_common_rules (subj))
 
-    ;; communicate with location daemons via unix dgram sockets
-    (call .loc_xtra_daemon.sendto_unix_dgram_sockets (subj))
-    (call .loc_edgnss_daemon.sendto_unix_dgram_sockets (subj))
-    (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
-    (call .loc_launcher.sendto_unix_dgram_sockets (subj))
-    (call .loc_engine_service.sendto_unix_dgram_sockets (subj))
-    (call .mlid.sendto_unix_dgram_sockets (subj))
-    (call .loc_xtwifi_client.sendto_unix_dgram_sockets (subj))
-    (call .loc_xtwifi_inet.sendto_unix_dgram_sockets (subj))
+	;; connect to loc_launcher target stream
+	(call .loc_launcher.connectto_unix_stream_sockets (subj))
+	;; manage loc_socket nodedev link files
+	(call .loc_socket.manage_nodedev_lnk_files (subj))
 
-    ;; communicate with location test apps which runs in sys.subj ctxt
-    (call .sys.sendto_unix_dgram_sockets (subj))
+	;; communicate with location test apps which runs in sys.subj ctxt
+	(call .sys.sendto_unix_dgram_sockets (subj))
+	;; connect to location test apps target stream
+	(call .sys.connectto_unix_stream_sockets (subj))
+	;; Need open read perm on /
+	(call .sys.list_rootfile_dirs (subj))
 
-    ;; connect to location test apps target stream
-    (call .sys.connectto_unix_stream_sockets (subj))
+	;; Need search on sysfile dir
+	(call .fs.search_sysfile_dirs (subj))
 
-    ;; connect to loc_launcher target stream
-    (call .loc_launcher.connectto_unix_stream_sockets (subj))
+	;; Need gettarr on selinux filesystem
+	(call .selinux.getattr_filesystems (subj))
+	;; Need search on selinux dir
+	(call .selinux.search_conffile_dirs(subj))
+	;; Need execute on shell.execfile files
+	(call .shell.execute_execfile_files (subj))
 
-    ;; Need execute on shell.execfile files
-    (call .shell.execute_execfile_files (subj))
-    ;; Need search on sysfile dir
-    (call .fs.search_sysfile_dirs (subj))
+	;; read kernel sysfs
+	(call .kernel.search_sysfile_dirs (subj))
 
-    ;; Need gettarr on selinux filesystem
-    (call .selinux.getattr_filesystems (subj))
-    ;; Need search on selinux dir
-    (call .selinux.search_conffile_dirs(subj))
+	;; read debug.fs dir
+	(call .debug.search_fs_dirs (subj))
 
-    ;; Need qipcrtr socket creations
-    (allow subj  self  create_qipcrtr_socket)
+	;; read /etc/group
+	(call .nameservice.read_miscfile_files (subj))
 
-    ;; read kernel sysfs
-    (call .kernel.search_sysfile_dirs (subj))
+	;; Search system directory
+	(call .unknown.search_miscfile_dirs(subj))
 
-    ;; read debug.fs dir
-    (call .debug.search_fs_dirs (subj))
+	;;connect to leprop socket
+	(call .leprop.connectto_unix_stream_sockets (subj))
+	(call .leprop.manage_miscfile_sock_files (subj))
 
-    ;; read /etc/group
-    (call .nameservice.read_miscfile_files (subj))
+	;; Need read open execute on /etc/data/backhaulWWANConfig.sh
+	(call .qcmap_cm.search_conffile_dirs (subj))
+	(call .qcmap_cm.execute_conffile_files (subj))
+	(call .qcmap_cm.sendto_unix_dgram_sockets (subj))
 
-    ;; Search system directory
-    (call .unknown.search_miscfile_dirs(subj))
+	;; qcmap related
+	(call .qcmap_ref.read_tmpfile_files (subj))
 
-    ;; manage loc_socket nodedev link files
-    (call .loc_socket.manage_nodedev_lnk_files (subj))
+	;; KPI node access
+	(call .kpi_values.manage_sysfile_files (subj))
 
-    ;; needed to read  /dev/socket/leprop-service
-    (allow subj  leprop.miscfile  (sock_file  (read write)))
-    ;;connect to leprop socket
-    (call .leprop.connectto_unix_stream_sockets (subj))
+	;; read urandom
+	(call .random.read_nodedev_chr_files (subj))
 
-    ;; Need read open execute on /etc/data/backhaulWWANConfig.sh
-    (call .qcmap_cm.search_conffile_dirs (subj))
-    (call .qcmap_cm.execute_conffile_files (subj))
+	;; Need execute on /sbin/uci
+	(call .uci.execute_execfile_files (subj))
+	(call .uci.read_execfile_files (subj))
 
-    ;; qcmap related
-    (allow subj qcmap_ref.tmpfile (file (getattr read open)))
+	;; Need read perm on uci.conf files.
+	(call .uci.list_conffile_dirs (subj))
+	(call .uci.read_conffile_files (subj))
 
-    ;; KPI node access
-    (call .kpi_values.manage_sysfile_files (subj))
+	;; Need read perm on uci.tmp files.
+	(call .uci.search_tmpfile_dirs (subj))
+	(call .uci.read_tmpfile_files (subj))
 
-    ;; read urandom
-    (call .random.read_nodedev_chr_files (subj))
+	;; Need read perm on libubox files.
+	(call .libubox.list_datafile_dirs(subj))
+	(call .libubox.read_datafile_files (subj))
 
-    ;; Need open read perm on /
-    (call .sys.list_rootfile_dirs (subj))
+	;; Need read perm on tmpfile.locktmpfile files.
+	(call .tmpfile.list_locktmpfile_dirs (subj))
+	(call .tmpfile.read_locktmpfile_files (subj))
 
-    ;; Need execute on /sbin/uci
-    (call .uci.execute_execfile_files (subj))
-    (call .uci.read_execfile_files (subj))
+	;; Need search, read on /etc/init.d - backhaulWWANCon
+	(call .file.list_initscriptfile_dirs (subj))
 
-    ;; Need read perm on uci.conf files.
-    (call .uci.list_conffile_dirs (subj))
-    (call .uci.read_conffile_files (subj))
+	;; Need execute, read on /etc/init.d/network - backhaulWWANCon
+	(call .rcnetwork.execute_initscriptfile_files (subj))
+	(call .rcnetwork.read_initscriptfile_files (subj))
 
-    ;; Need read perm on uci.tmp files.
-    (call .uci.search_tmpfile_dirs (subj))
-    (call .uci.read_tmpfile_files (subj))
+	;; Need execute, read on /etc/init.d/firewall - backhaulWWANCon
+	(call .rcfirewall.execute_initscriptfile_files (subj))
+	(call .rcfirewall.read_initscriptfile_files (subj))
 
-    ;; Need read perm on libubox files.
-    (call .libubox.list_datafile_dirs(subj))
-    (call .libubox.read_datafile_files (subj))
+	;; Need read open on /etc/rc.common/network
+	(call .rccommon.read_conffile_files (subj))
 
-    ;; Need read perm on tmpfile.locktmpfile files.
-    (call .tmpfile.list_locktmpfile_dirs (subj))
-    (call .tmpfile.read_locktmpfile_files (subj))
+	;;Need search read on /lib/functions.sh
+	(call .functions.list_miscfile_dirs(subj))
+	(call .functions.read_miscfile_files(subj))
 
-    ;; Need search, read on /etc/init.d - backhaulWWANCon
-    (call .file.list_initscriptfile_dirs (subj))
-    ;; Need execute, read on /etc/init.d/network - backhaulWWANCon
-    (call .rcnetwork.execute_initscriptfile_files (subj))
-    (call .rcnetwork.read_initscriptfile_files (subj))
-    ;; Need execute, read on /etc/init.d/firewall - backhaulWWANCon
-    (call .rcfirewall.execute_initscriptfile_files (subj))
-    (call .rcfirewall.read_initscriptfile_files (subj))
+	;; Needed to for diagrebootapp to connect to diag-router
+	(call .diag-router.unix_stream_connect(subj))
 
-    ;; Need read open on /etc/rc.common/network
-    (call .rccommon.read_conffile_files (subj))
+	;; Deep sleep related
+	(call .httpproxy.tcp_connect_netports (subj))
 
-    ;;Need search read on /lib/functions.sh
-    (call .functions.list_miscfile_dirs(subj))
-    (call .functions.read_miscfile_files(subj))
+	(call .net.egress_netifs (subj))
+	(call .net.recvfromsendto_netnodes (subj))
 
-    ;; Needed to for diagrebootapp to connect to diag-router
-    (call .diag-router.unix_stream_connect(subj))
+	(call .powerstate_socket.search_nodedev_dirs (subj))
+	(call .powerstate_socket.manage_powerstate_socket_files (subj))
+	(call .powerstate.connectto_unix_stream_sockets (subj))
 
-    ;; Deep sleep related
-    (call .httpproxy.tcp_connect_netports (subj))
-    (call .net.egress_netifs (subj))
-    (call .net.recvfromsendto_netnodes (subj))
-    (call .powerstate_socket.search_nodedev_dirs (subj))
-    (call .powerstate_socket.manage_powerstate_socket_files (subj))
-    (allow subj .powerstate.subj (unix_stream_socket (connectto)))
+	;; Qwes related permissions
+	(call .qwesd_mink_socket.search_nodedev_dirs (subj))
+	(call .qwesd_mink_socket.readwrite_nodedev_sock_files (subj))
+	(call .qwesd.connectto_unix_stream_sockets (subj))
 
-    ;; Qwes related permissions
-    (call .qwesd_mink_socket.search_nodedev_dirs (subj))
-    (call .qwesd_mink_socket.readwrite_nodedev_sock_files (subj))
-    (allow subj .qwesd.subj (unix_stream_socket (connectto)))
+	;; ssgtzd related permissions
+	(call .ssgtzd_socket.manage_ssgtzd_socket_files (subj))
+	(call .ssgtzd.connectto_unix_stream_sockets (subj))
 
-    ;; SpeedTest related permissions
-    (allow subj qcmap_cm.subj (unix_dgram_socket (sendto)))
-
+	;; Need qipcrtr socket creations
+	(allow subj  self  create_qipcrtr_socket)
 )

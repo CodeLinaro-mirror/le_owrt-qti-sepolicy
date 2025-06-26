@@ -47,6 +47,11 @@
         tmpfile_file_context)
 
         (filecon
+        "/dev/socket/dcc*"
+        socket
+        tmpfile_file_context)
+
+        (filecon
         "/tmp/run/qnicorn_connect"
         any
         runtimetmpfile_file_context)

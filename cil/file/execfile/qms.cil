@@ -1,4 +1,4 @@
-;; Copyright (c) 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -139,4 +139,12 @@
 
 	;;read proc fs files
 	(call .proc.read_fs_files (subj))
+
+	;; Read devices sysfile
+	(call .devices.search_sysfile_dirs (subj))
+	(call .devices.read_sysfile_files (subj))
+
+	;; Read class sysfile
+	(call .class.search_sysfile_dirs (subj))
+	(call .class.read_sysfile_lnk_files (subj))
 )

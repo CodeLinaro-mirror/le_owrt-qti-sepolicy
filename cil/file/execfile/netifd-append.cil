@@ -1,4 +1,4 @@
-;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .file
@@ -327,6 +327,7 @@
           (call .nftables.mapexecute_execfile_files (subj))
 
           (allow subj dnsmasq.conffile (file(read open)))
+          (call .net.readwrite_sysctlfile_files (subj))
 
           (dontaudit subj self (capability (sys_admin)))
 )

@@ -189,6 +189,8 @@
 
 	;; For loc_xtwifi_client
 	(allow subj .loc_xtwifi_client.subj (dir (search)))
+	(allow subj .loc_xtwifi_client.subj (file  (read)))
+	(allow subj .loc_xtwifi_client.subj (lnk_file  (read)))
 
 	;; For ifconfig
 	(allow subj self (capability (net_admin)))

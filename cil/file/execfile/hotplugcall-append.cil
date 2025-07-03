@@ -1,4 +1,4 @@
-;; Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -264,4 +264,5 @@
       ;; Need for pbr nftables files
       (call .file.readwrite_conffile_files (subj))
       (call .dnsmasq.obj_type_transition_tmpfile (subj dir "dnsmasq.d"))
+      (allow subj .pppd.subj (fd (use)))
 )

@@ -729,6 +729,8 @@
 	(allow subj .loc_lowi_server.subj (dir (getattr)))
 	(allow subj .loc_xtra_daemon.subj (dir (getattr)))
 
+	(allow subj .ssgtzd.subj (dir (search)))
+
 	(allow subj .mlid.subj (dir (getattr)))
 
 	(allow subj self (capability (chown fowner fsetid)))

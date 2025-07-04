@@ -146,5 +146,6 @@
 
 	;; Read class sysfile
 	(call .class.search_sysfile_dirs (subj))
+	(call .class.list_sysfile_dirs(subj))
 	(call .class.read_sysfile_lnk_files (subj))
 )

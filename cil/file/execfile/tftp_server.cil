@@ -96,7 +96,7 @@
 
 	(allow subj unknown.miscfile (dir (search)))
 
-	(allow subj tftp_server.datafile (dir (open setattr read search write add_name)))
+	(allow subj tftp_server.datafile (dir (open setattr read search write create add_name)))
 	(allow subj tftp_server.datafile (file (open setattr read create write ioctl)))
 
 	;; Needed for accessing oempd mbns.

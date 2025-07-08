@@ -165,6 +165,10 @@
     (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
     (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
 
+    ;; Need permission for mwan3
+    (call .mwan3.search_runtimetmpfile_dirs (subj))
+    (call .mwan3.read_runtimetmpfile_files (subj))
+
     ;; Need subj transition for ipa
     (call .ipacli.subj_type_transition (subj))
 

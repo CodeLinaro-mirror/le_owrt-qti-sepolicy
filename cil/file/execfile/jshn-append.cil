@@ -1,5 +1,5 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .jshn
@@ -7,6 +7,10 @@
 ;; policy
 
 	(allow subj self (capability (dac_override dac_read_search)))
+
+	(allow subj ucode.subj (fd (use)))
+	(allow subj ucode.subj (fifo_file (write ioctl)))
+	(allow subj fw3.datafile (file (read)))
 
 	(call .qcmap_cli.use_fds (subj))
 	(call .qcmap_cli.readwrite_unix_stream_sockets (subj))

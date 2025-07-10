@@ -3,6 +3,9 @@
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; Sepolicy rules for location daemon - lowi-server
+(in .sys
+	(call .loc_lowi_server.subj_type_transition (subj)))
+
 (in .file
 	;; location exec files transition
 	(call .loc_lowi_server.obj_type_transition_execfile (unconfined.subj_typeattr)))
@@ -28,6 +31,8 @@
 	(blockinherit .file.exec.obj_macro_template)
 	(blockinherit .loc_daemons_common.loc_daemons_common_template)
 
+	;; Set groups for child process
+	(allow subj self (capability (setgid)))
 	(allow subj self (capability (net_admin)))
 
 	;; import common rules for location deamons
@@ -36,6 +41,7 @@
 	(call subj_type_transition (subj))
 
 	(call .unknown.manage_miscfile_dirs (subj))
+	(call .nameservice.read_miscfile_files (subj))
 
 	(call .loc_launcher.use_fds (subj))
 

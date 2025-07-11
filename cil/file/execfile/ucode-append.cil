@@ -75,7 +75,7 @@
         (allow ucode.subj file.execfile (file  (execute_no_trans)))
         (allow ucode.subj file.datafile (file  (open)))
         (allow ucode.subj file.conffile (dir  (create write remove_name rename)))
-        (allow ucode.subj file.conffile (file  (create write rename)))
+        (allow ucode.subj file.conffile (file  (create write rename unlink)))
 
         (call .validatedata.subj_type_transition (subj))
         (allow subj validatedata.execfile (file (open read execute map)))
@@ -192,6 +192,7 @@
         (call allow_search_read_getattr_cmd_perms (mka_authenticator.subj))
         (call allow_search_read_getattr_cmd_perms (ssgtzd.subj))
         (call allow_search_read_getattr_cmd_perms (wifi.subj))
+        (call allow_search_read_getattr_cmd_perms (rcfirewall.subj))
 
         (dontaudit subj self (capability (sys_admin)))
 )

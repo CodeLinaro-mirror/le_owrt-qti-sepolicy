@@ -71,5 +71,5 @@
 
 (allow subj ipv6.sysctlfile (file (read)))
 (allow subj qcmap_cm.runtimetmpfile (file (read)))
-(dontaudit subj ubusd.subj (capability (sys_admin)))
+(dontaudit subj self (capability (sys_admin)))
 )

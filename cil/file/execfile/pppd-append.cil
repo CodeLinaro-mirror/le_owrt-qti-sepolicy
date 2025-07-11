@@ -119,7 +119,7 @@
 	(allow subj self (netlink_generic_socket (create)))
 
 	;; Need permission for awk and backhaulCommonC
-	(allow subj resolv.tmpfile (dir (search write)))
+	(allow subj resolv.tmpfile (dir (search write add_name remove_name)))
 	(allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
 	(allow subj self create_rawip_socket)
 
@@ -156,6 +156,6 @@
 	(call .jsonfilter.read_execfile_files (subj))
 	(allow subj .jsonfilter.execfile (file (getattr execute map)))
 
-	(allow subj conntrack.execfile (file (getattr execute read open)))
-        (call .conntrack.subj_type_transition (subj))
+	(allow subj conntrack.execfile (file (getattr execute read open map)))
+	(call .conntrack.subj_type_transition (subj))
 )

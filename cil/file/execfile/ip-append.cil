@@ -59,4 +59,7 @@
   (allow subj ipv6.sysctlfile (file (read)))
   (allow subj file.conffile (lnk_file(read)))
 
+  ;;rule for ip
+  (allow subj locale.miscfile (file (read)))
+
 )

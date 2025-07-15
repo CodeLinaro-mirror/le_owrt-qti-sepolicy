@@ -265,4 +265,8 @@
       (call .file.readwrite_conffile_files (subj))
       (call .dnsmasq.obj_type_transition_tmpfile (subj dir "dnsmasq.d"))
       (allow subj .pppd.subj (fd (use)))
+
+
+;; Need for sysfs setattr access
+	(allow .hotplugcall.subj .devices.sysfile (file (setattr)))
 )

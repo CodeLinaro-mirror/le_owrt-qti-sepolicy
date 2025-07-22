@@ -42,6 +42,7 @@
     (allow subj qcmap_ref.tmpfile (file (getattr read open)))
     (allow subj .netifd.miscfile (dir (read open)))
     (allow subj .tmp.fs (dir (remove_name)))
+    (allow subj .tmp.fs (sock_file (write)))
     (allow subj odhcp6c.tmpfile (file (unlink)))
 
     ;; Need permissions write log from backhaulCommonConfig.sh
@@ -94,7 +95,7 @@
     (allow subj self (netlink_route_socket (nlmsg_read nlmsg_write)))
     (allow subj .netifd.tmpfile (file (getattr read open append create)))
     (allow subj .qcmap_cm.subj (process (signal)))
-    (allow subj .odhcp6c.subj (capability (kill)))
+    (allow subj .odhcp6c.subj (capability (kill dac_override)))
     (call .iw.subj_type_transition (subj))
     (allow subj self (netlink_generic_socket(create)))
     (allow iw.subj odhcp6c.subj (fd (use)))

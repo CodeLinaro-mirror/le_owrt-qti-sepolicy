@@ -1,4 +1,4 @@
-;; Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
@@ -27,6 +27,14 @@
 	(filecon "/data/persist/hlos_rfs/shared/.*"
 	any
 	datafile_file_context)
+	(filecon
+		"/data/tombstones"
+		dir
+		datafile_file_context)
+	(filecon
+		"/data/tombstones/.*"
+		any
+		datafile_file_context)
 
 	;;
 	;; Macros
@@ -88,7 +96,7 @@
 
 	(allow subj unknown.miscfile (dir (search)))
 
-	(allow subj tftp_server.datafile (dir (open setattr read search write add_name)))
+	(allow subj tftp_server.datafile (dir (open setattr read search write create add_name)))
 	(allow subj tftp_server.datafile (file (open setattr read create write ioctl)))
 
 	;; Needed for accessing oempd mbns.

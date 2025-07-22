@@ -1,4 +1,4 @@
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -38,14 +38,60 @@
           (allow subj kmsg.nodedev (chr_file(write open)))
           (call .kmodloader.subj_type_transition (subj))
           (allow kmodloader.subj data_path_opt.subj (fd(use)))
-          (allow kmodloader.subj data_path_opt.subj (fifo_file (read)))
-          (allow kmodloader.subj data_path_opt.subj (fifo_file(write ioctl)))
+          (allow kmodloader.subj data_path_opt.subj (fifo_file(read write ioctl)))
           (call .shell.execute_execfile_files (subj))
           (allow subj file.modulesfile(dir(search getattr read open write)))
+          (allow subj file.modulesfile (file (getattr)))
           (allow subj sys.ptydev(chr_file(read write)))
           (allow subj sys.sysctlfile(dir(search)))
           (allow subj net.sysctlfile(dir(search)))
           (call .net.write_sysctlfile_files(subj))
           (call .debug.search_sysctlfile_dirs(subj))
           (call .debug.write_sysctlfile_files(subj))
+
+	;; Domain Transition to initscriptfile
+	(call .file.execute_initscriptfile_files (subj))
+	(allow subj file.initscriptfile (dir (search)))
+	(allow subj file.initscriptfile (file (execute read open)))
+
+	(allow subj rccommon.conffile (file (read open)))
+
+	(allow subj functions.miscfile (dir (search)))
+	(allow subj functions.miscfile (file (read open getattr)))
+
+	(allow subj netfilter.sysctlfile (dir (search)))
+	(allow subj netfilter.sysctlfile (file (open write)))
+
+	(allow subj module.sysfile (dir (search getattr)))
+
+	(allow subj libubox.datafile (dir (search)))
+	(allow subj libubox.datafile (file (read open)))
+
+	(allow subj tmpfile.runtimetmpfile (dir (search)))
+	(allow subj tmpfile.locktmpfile (dir (search write add_name)))
+	(allow subj tmpfile.locktmpfile (file (open create)))
+
+	(call .jshn.subj_type_transition (subj))
+	(allow jshn.subj data_path_opt.subj (fd (use)))
+	(allow jshn.subj data_path_opt.subj (fifo_file (read write ioctl)))
+	(allow subj jshn.execfile (file (getattr execute read open map)))
+
+	;; Domain Transition to uci execfile
+	(call .uci.execute_execfile_files (subj))
+	(allow subj .uci.execfile (file (getattr read execute open map)))
+	(allow subj uci.conffile (dir (search)))
+	(allow subj uci.conffile (file (read getattr open lock)))
+	(allow subj uci.tmpfile (dir (search)))
+
+	(call .ubus.subj_type_transition (subj))
+	(allow ubus.subj data_path_opt.subj (fd (use)))
+	(allow ubus.subj data_path_opt.subj (fifo_file(read)))
+
+	(allow subj ubusd.runtimetmpfile (dir (search)))
+	(allow subj ubusd.runtimetmpfile (sock_file (write)))
+
+	(allow subj kernel.sysfile (dir (search)))
+
+	(allow subj debug.fs (dir (search)))
+	(allow subj debug.fs (file (write open)))
 )

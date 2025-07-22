@@ -57,5 +57,9 @@
   (allow subj .sys.subj (packet_socket (read write)))
   ;; rule for ipv6
   (allow subj ipv6.sysctlfile (file (read)))
+  (allow subj file.conffile (lnk_file(read)))
+
+  ;;rule for ip
+  (allow subj locale.miscfile (file (read)))
 
 )

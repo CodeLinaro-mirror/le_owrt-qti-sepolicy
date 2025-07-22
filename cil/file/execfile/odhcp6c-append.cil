@@ -1,4 +1,4 @@
-;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .odhcp6c
@@ -182,6 +182,9 @@
 
     ;; Need permission for pppd
     (allow subj pppd.tmpfile (file (getattr read open)))
+
+    ;; Need permission for conntrack
+    (allow subj conntrack.execfile (file (getattr)))
 
     ;;Dont audit rule for ohcp6
     (dontaudit subj self (capability (sys_admin)))

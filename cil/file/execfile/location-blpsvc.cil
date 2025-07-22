@@ -1,0 +1,85 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Sepolicy rules for blpsvc
+(in .file
+	;; location exec files transition
+	(call .loc_blp_svc.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+;;#============= blpsvc ==============
+(block loc_blp_svc
+	;;
+	;; Contexts
+	;; --------
+	(filecon "/usr/bin/blpsvc" file execfile_file_context)
+
+	;;
+	;; Macros
+	;; ------
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "blpsvc")))
+
+	;;
+	;; Policy
+	;; ------
+	(blockinherit .agent.base_template)
+	(blockinherit .file.exec.obj_macro_template)
+	(blockinherit .loc_daemons_common.loc_daemons_common_template)
+
+	;; import common rules for location deamons
+	(call loc_daemons_common_rules (subj))
+
+	(call subj_type_transition (subj))
+
+	;; udp_socket
+	(call .net.udp_bind_netnodes (subj))
+	(call .net.egress_netifs (subj))
+	(call .net.recvfromsendto_netnodes (subj))
+	(allow subj self create_udp_socket)
+
+	;; create tcp sockets
+	(call .http.tcp_connect_netports (subj))
+	(allow subj self create_tcp_socket)
+	(allow subj .unreserved.netport (tcp_socket (name_bind name_connect)))
+
+	;; read resolv.conf
+	(call .resolv.read.subj_type (subj))
+
+	(call .loc_launcher.use_fds (subj))
+
+	;; read /etc/group
+	(call .nameservice.read_miscfile_files (subj))
+
+	;; read urandom
+	(call .random.read_nodedev_chr_files (subj))
+
+	;; read ssl certificates
+	(call .ssl.list_certfile_dirs (subj))
+	(call .ssl.read_certfile_files (subj))
+
+	;; search tmpfiledir
+	(call .tmpfile.search_statetmpfile_dirs (subj))
+
+	;; osrelease miscfile
+	(call .osrelease.manage_miscfile_files (subj))
+	;; leprop
+	(call .leprop.manage_miscfile_sock_files (subj))
+	(call .leprop.connectto_unix_stream_sockets (subj))
+
+	;; sysfile
+	(call .firmware.manage_sysfile_dirs (subj))
+	(call .firmware.manage_sysfile_files (subj))
+	(call .class.manage_sysfile_dirs (subj))
+	(call .class.manage_sysfile_lnk_files (subj))
+
+	;; nodedev
+	(call .loc_socket.manage_nodedev_lnk_files (subj))
+	(call .loc_socket.manage_nodedev_files (subj))
+	(call .loc_socket.mapexecute_nodedev_files (subj))
+
+	(call .loc_data.mapexecute_datafile_files (subj))
+)

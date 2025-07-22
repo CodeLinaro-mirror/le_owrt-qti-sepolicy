@@ -1,4 +1,4 @@
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -144,6 +144,7 @@
 
 	;; Need search on /tmp/run/
 	(allow subj .tmpfile.runtimetmpfile (dir (search)))
+	(allow subj tmpfile.conftmpfile (dir (search)))
 
 	;; Need search on runtimetmpfile
 	(allow subj mka_supplicant.runtimetmpfile (dir (search write remove_name add_name)))

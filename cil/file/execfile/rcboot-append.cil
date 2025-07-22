@@ -1,4 +1,4 @@
-;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .rcboot
@@ -46,6 +46,14 @@
 	(call .ucode.subj_type_transition (subj))
 	(allow subj .ucode.execfile (file (open read execute getattr)))
 
+	;; Need permission for pbr
+	(allow subj .file.initscriptfile (file (getattr read open)))
+
+	;; Need read on firewall initscriptfile
+	(allow subj .rcfirewall.initscriptfile (file (read open)))
+
+	;; Need getattr on nftables
+	(allow subj .nftables.execfile (file (getattr)))
 )
 
 

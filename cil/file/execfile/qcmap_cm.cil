@@ -78,6 +78,11 @@
          file
          execfile_file_context)
 
+	(filecon
+         "/usr/bin/QCMAP_ETHBHInterface"
+         file
+         execfile_file_context)
+
         (filecon
          "/tmp/run/charon\.vici"
          socket

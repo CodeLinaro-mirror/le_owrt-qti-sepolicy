@@ -292,8 +292,8 @@
 	(allow subj .module.sysfile (file (open write)))
 
 	;; Read/write ini files (/etc/misc/ipq/.*)
-	(allow subj .wifi.conffile (dir (search getattr read open write add_name remove_name )))
-	(allow subj .wifi.conffile (file (getattr read open append write unlink create ioctl setattr rename)))
+	(allow subj .wifi.conffile (dir (search getattr read open write add_name remove_name create setattr rename reparent)))
+	(allow subj .wifi.conffile (file (getattr read open append write unlink create ioctl setattr rename link)))
 
 	;; cfg/default in /data/vendor/ipq/.*
 	(allow subj .wifi.datafile (dir (create search write add_name getattr setattr)))
@@ -652,7 +652,7 @@
 
 	(allow subj .file.conffile (dir (remove_name create setattr rename reparent)))
 	(allow subj .file.conffile (file (getattr write unlink create open ioctl rename read)))
-	(allow subj .file.conffile (chr_file (link rename unlink)))
+	(allow subj .file.conffile (chr_file (link rename unlink create)))
 
 	;; vaalidatedata subj transition
 	(call .validatedata.subj_type_transition (subj))
@@ -794,7 +794,7 @@
 	(allow subj qcmap_cm.runtimetmpfile (file (write ioctl)))
 
 	;; Need permission for "/sys/kernel/debug/cnss/mlo_config"
-	(allow subj .debug.fs (file (getattr)))
+	(allow subj .debug.fs (file (getattr write open)))
 
 	(allow subj .ucode.execfile (file (getattr execute read open map)))
 	;; Domain name transition for ucode.execfile for execute_no_trans permission

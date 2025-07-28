@@ -75,6 +75,7 @@
 ;; Need for call netifd
      (call .netifd.subj_type_transition (subj))
      (allow subj .netifd.miscfile (dir (read open)))
+     (allow subj .netifd.statetmpfile (file (getattr write read open lock ioctl)))
 
 ;; Need for qcmap_ref
       (call .qcmap_ref.use_fds (subj))
@@ -219,7 +220,7 @@
       (allow subj .wpad.subj (unix_dgram_socket (read sendto accept)))
       (call .wifi.subj_type_transition (subj))
       (allow subj uci.statetmpfile (file (read open)))
-      (call .validatedata.subj_type_transition (subj))	
+      (call .validatedata.subj_type_transition (subj))
       (allow subj validatedata.execfile (file (execute read open map)))
       (allow subj dnsmasq.tmpfile (dir (getattr)))
       (call .dnsmasq.subj_type_transition (subj))

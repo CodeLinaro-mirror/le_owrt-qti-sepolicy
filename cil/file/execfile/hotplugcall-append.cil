@@ -114,6 +114,12 @@
       (allow subj .qcmap_cm.conffile (dir (search read getattr)))
       (allow subj .qcmap_cm.conffile (file (read open write)))
 
+;; Need for qcmap switch backhaul for mwan3 track ip
+      (allow subj .qcmap_cm.runtimetmpfile (dir (search)))
+      (allow subj .qcmap_cm.runtimetmpfile (file (write open)))
+      (allow subj .netifd.tmpfile (file (getattr)))
+      (allow subj .odhcp6c.tmpfile (file (getattr read open)))
+
 ;; Need search read and execute permissions for miniupnpd files
       (call .miniupnpd.obj_type_transition_conftmpfile(subj))
       (call .miniupnpd.obj_type_transition_runtimetmpfile (subj))

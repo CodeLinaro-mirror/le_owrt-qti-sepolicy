@@ -103,6 +103,7 @@
 
         ;; Provide access to ucode
 
+        (call allow_search_read_getattr_cmd_perms(afc.subj))
         (call allow_search_read_getattr_cmd_perms(bus.sysfile))
         (call allow_search_read_getattr_cmd_perms(jshn.subj))
         (call allow_search_read_getattr_cmd_perms(ubus.subj))

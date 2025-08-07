@@ -376,6 +376,13 @@
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .nftables.subj))
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .pppd.subj))
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .ucode.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_xtwifi_client.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .health_monitor.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .ssgtzd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .stmfd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .emergencyalert.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .fw3.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .nftables.subj))
 
 	;; Look for files in /tmp
 	(allow subj .tmp.fs (file (create read write getattr open unlink)))

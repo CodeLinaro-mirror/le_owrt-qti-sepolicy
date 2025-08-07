@@ -1,5 +1,4 @@
-;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
@@ -236,6 +235,7 @@
     (allow subj qms.subj (fifo_file (read write)))
     (allow subj qms.subj (unix_stream_socket (read write)))
     (allow subj qms.subj (netlink_route_socket (read write)))
+    (allow subj qms.subj create_unix_dgram_socket)
 
     ;; kmsg
     (allow subj .kmsg.nodedev (chr_file (write ioctl append)))

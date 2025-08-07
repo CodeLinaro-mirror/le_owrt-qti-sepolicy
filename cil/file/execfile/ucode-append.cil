@@ -99,6 +99,11 @@
         (call .ubus.subj_type_transition (subj))
         (allow subj ubus.execfile (file (open read map execute)))
 
+        (call .jsonfilter.subj_type_transition (subj))
+        (allow subj jsonfilter.execfile (file (open read map execute)))
+
+        (allow subj miniupnpd.datafile (file (open read)))
+
         (allow subj board.miscfile (file (unlink)))
 
         ;; Provide access to ucode

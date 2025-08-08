@@ -206,5 +206,14 @@
         (call allow_search_read_getattr_cmd_perms (rcfirewall.subj))
         (call allow_search_read_getattr_cmd_perms (tcpdump.subj))
 
+        ;;STC
+        (call .file.read_datafile_files (subj))
+        (call .file.manage_conffile_files (subj))
+	(call allow_search_read_getattr_cmd_perms (loc_xtwifi_client.subj))
+	(call allow_search_read_getattr_cmd_perms (ipacli.subj))
+ 	(call allow_search_read_getattr_cmd_perms (ifli.subj))
+	(call allow_search_read_getattr_cmd_perms (aios_daemon.subj))
+	(call allow_search_read_getattr_cmd_perms (data_path_opt.subj))
+
         (dontaudit subj self (capability (sys_admin)))
 )

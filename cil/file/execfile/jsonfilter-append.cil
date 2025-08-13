@@ -17,4 +17,8 @@
 
      (allow subj pppd.subj (fd (use)))
 
+     (allow subj ucode.subj (fd (use)))
+     (allow subj ucode.subj (fifo_file (write)))
+     (allow subj fw3.datafile (file (read)))
+
 )

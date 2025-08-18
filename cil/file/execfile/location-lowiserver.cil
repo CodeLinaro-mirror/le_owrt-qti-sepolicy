@@ -34,6 +34,7 @@
 	;; Set groups for child process
 	(allow subj self (capability (setgid)))
 	(allow subj self (capability (net_admin)))
+	(allow subj self (process (getcap)))
 
 	;; import common rules for location deamons
 	(call loc_daemons_common_rules (subj))

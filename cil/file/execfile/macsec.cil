@@ -300,6 +300,7 @@
 
 	;; Need search on /tmp/run/
 	(allow subj .tmpfile.runtimetmpfile (dir (search)))
+	(allow subj tmpfile.conftmpfile (dir (search)))
 
 	;; Need search on runtimetmpfile
 	(allow subj mka_authenticator.runtimetmpfile (dir (search write remove_name add_name)))

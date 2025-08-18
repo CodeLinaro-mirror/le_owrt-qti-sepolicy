@@ -75,6 +75,7 @@
 ;; Need for call netifd
      (call .netifd.subj_type_transition (subj))
      (allow subj .netifd.miscfile (dir (read open)))
+     (allow subj .netifd.statetmpfile (file (getattr write read open lock ioctl)))
 
 ;; Need for qcmap_ref
       (call .qcmap_ref.use_fds (subj))
@@ -112,6 +113,12 @@
       (call .sys.search_fs_dirs (subj))
       (allow subj .qcmap_cm.conffile (dir (search read getattr)))
       (allow subj .qcmap_cm.conffile (file (read open write)))
+
+;; Need for qcmap switch backhaul for mwan3 track ip
+      (allow subj .qcmap_cm.runtimetmpfile (dir (search)))
+      (allow subj .qcmap_cm.runtimetmpfile (file (write open)))
+      (allow subj .netifd.tmpfile (file (getattr)))
+      (allow subj .odhcp6c.tmpfile (file (getattr read open)))
 
 ;; Need search read and execute permissions for miniupnpd files
       (call .miniupnpd.obj_type_transition_conftmpfile(subj))
@@ -219,7 +226,7 @@
       (allow subj .wpad.subj (unix_dgram_socket (read sendto accept)))
       (call .wifi.subj_type_transition (subj))
       (allow subj uci.statetmpfile (file (read open)))
-      (call .validatedata.subj_type_transition (subj))	
+      (call .validatedata.subj_type_transition (subj))
       (allow subj validatedata.execfile (file (execute read open map)))
       (allow subj dnsmasq.tmpfile (dir (getattr)))
       (call .dnsmasq.subj_type_transition (subj))

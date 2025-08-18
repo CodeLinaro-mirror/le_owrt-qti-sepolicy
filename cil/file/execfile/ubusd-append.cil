@@ -1,4 +1,4 @@
-;;Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .ubusd
@@ -10,6 +10,8 @@
 (allow subj .file.datafile (file (read)))
 (allow subj .kmsg.nodedev (chr_file (read write)))
 (allow subj .logd.miscfile (sock_file (write)))
+
+(dontaudit subj self (capability (sys_admin)))
 
 (block ubusdtmp
 

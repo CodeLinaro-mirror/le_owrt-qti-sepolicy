@@ -1,0 +1,51 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .cpu_sku_helperd.subj_type_transition (subj)))
+
+(block cpu_sku_helperd
+
+    (filecon "/usr/bin/cpu_sku_helperd" file execfile_file_context)
+
+    ;; Policy
+    (blockinherit .agent.base_template)
+
+    ;; Need permission to set supplementary group
+    (allow subj self (capability (setgid)))
+
+    ;; Needed for /sys/ directory search
+    (call .sys.search_fs_dirs (subj))
+
+    ;; Needed for log dgram sockets
+    (allow subj self create_unix_dgram_socket)
+    (call .logd.sendto_unix_dgram_sockets (subj))
+
+    ;; Needed to access unix socket 'cpu_socket' to exchange cpu information
+    (allow subj self create_unix_stream_stream_socket)
+    (call connectto_unix_stream_sockets(subj))
+
+    (call .logd.write_miscfile_sock_files(subj))
+
+    (call .kmsg.readwrite_nodedev_chr_files (subj))
+
+    ;; Needed for system fifo file write:
+    (allow subj .sys.subj (fifo_file (write)))
+
+    (call .file.search_conffile_dirs (subj))
+
+    ;; Needed for accessing /sys/devices/system/cpu
+    (allow subj devices.sysfile ( dir (read search)))
+    (call .devices.readwrite_sysfile_files (subj))
+
+    ;; Allow connecting to unix_stream_sockets created by cpu sku actuator.
+    (call .cpu_sku_actuatord.connectto_unix_stream_sockets(subj))
+    (call .cpu_sku_actuatord.write_unix_stream_sockets(subj))
+
+    ;; Allow management (create, write, delete, etc.) of socket files in /tmp.
+    (allow subj cpu_sku_actuatord.tmpfile (sock_file(link write read)))
+
+    ;; Needed for nameservice miscfile access
+    (call .nameservice.read_miscfile_files (subj))
+
+)

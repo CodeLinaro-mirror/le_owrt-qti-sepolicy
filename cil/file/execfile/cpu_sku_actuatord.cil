@@ -1,0 +1,64 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .cpu_sku_actuatord.subj_type_transition (subj)))
+
+(block cpu_sku_actuatord
+
+    ;; Contexts
+    (filecon "/usr/bin/cpu_sku_actuatord" file execfile_file_context)
+
+    ;; Explicitly define the file context for the CPU socket file as a socket.
+    (filecon "/tmp/cpu_socket" socket tmpfile_file_context)
+
+    ;; This macro encapsulates the common pattern of transitioning an object
+    ;; to the tmpfile type within the .tmp domain.
+    (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+        (call .tmp.fs_obj_type_transition (ARG1 tmpfile ARG2 ARG3)))
+
+    ;; Policy
+    (blockinherit .agent.base_template)
+    (blockinherit .tmpfile.obj_template)
+
+    ;; Apply the temporary file object type transition to the CPU socket.
+    (call obj_type_transition_tmpfile (subj sock_file "cpu_socket"))
+
+    ;; Allow the subject to search system file system directories.
+    (call .sys.search_fs_dirs (subj))
+
+    ;; Allow the subject to create and send to unix_dgram_sockets.
+    ;; Allow creation and full interaction with unix_stream_sockets.
+    (allow subj self create_unix_dgram_socket)
+    (call .logd.sendto_unix_dgram_sockets (subj))
+    (allow subj self create_unix_stream_stream_socket)
+    (call connectto_unix_stream_sockets(subj))
+
+    (call .logd.write_miscfile_sock_files(subj))
+
+    (allow subj .sys.subj (fifo_file (write)))
+
+    (call .file.search_conffile_dirs (subj))
+
+    ;; Access to /firmware/image/softsku.mbn.
+    (call .qcfirmware.search_miscfile_dirs(subj))
+    (call .qcfirmware.read_miscfile_files(subj))
+
+    ;; Allow ssgtzd to access /dev/smcinvoke.
+    (call .smcinvoke.readwrite_nodedev_chr_files(subj))
+
+    ;; Allow access to /dev/dma_heap/....
+    (call .dma_heap.search_nodedev_dirs(subj))
+    (call .dma_heap.read_nodedev_chr_files (subj))
+
+    ;; Permissions for /sys/power/wake_lock /sys/power/wake_unlock.
+    (call .power.search_sysfile_dirs(subj))
+    (call .power.readwrite_sysfile_files (subj))
+
+    ;; This permission is for interaction with the temporary socket file created by cpu_sku_actuatord.
+    (allow subj cpu_sku_actuatord.tmpfile (sock_file (create read setattr unlink write)))
+
+    ;; This enables cpu_sku_actuatord to clean up its temporary files/directories.
+    (allow subj tmp.fs (dir (remove_name)))
+
+)

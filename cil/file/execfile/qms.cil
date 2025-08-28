@@ -205,7 +205,7 @@
 	(allow qms.subj firmware.sysfile (dir (search)))
 	(allow qms.subj firmware.sysfile (file (open read getattr)))
 	(allow qms.subj self (netlink_kobject_uevent_socket (create setopt bind getattr write read)))
-	(allow qms.subj file.execfile (file (read open execute getattr)))
+	(allow qms.subj file.execfile (file (read open execute getattr execute_no_trans map)))
 	(allow qms.subj nameservice.miscfile (file (getattr)))
 )
 

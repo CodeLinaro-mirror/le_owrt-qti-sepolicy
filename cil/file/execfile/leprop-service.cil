@@ -1,4 +1,4 @@
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
@@ -42,6 +42,7 @@
 
        (blockinherit .agent.base_template)
 
+       (allow subj self (capability (fowner fsetid)))
        (call .shell.mapexecute_execfile_files (subj))
        (call .file.search_conffile_dirs (subj))
 
@@ -61,6 +62,9 @@
        (allow subj .kmsg.nodedev (chr_file (open write)))
        (allow subj .nameservice.miscfile (file (open read)))
        (allow subj .version.procfile (file (open read)))
+       (allow subj .tmp.fs (chr_file (getattr setattr)))
+       (allow subj .kernel.sysfile (dir (search)))
+       (allow subj .config.fs (dir (search write add_name create getattr)))
 )
 
 (block leprop_scripts

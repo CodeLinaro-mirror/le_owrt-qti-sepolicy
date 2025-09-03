@@ -1,5 +1,5 @@
 
-;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .sys
@@ -93,6 +93,8 @@
 	(allow subj tftp_server.subj (lnk_file (read)))
 
 	(allow subj diag-router.subj (dir (read open search)))
+
+	(allow subj pppd.subj (fd (use)))
 
 	(dontaudit subj qcmap_cm.subj (udp_socket( read write)))
 	(dontaudit subj ubusd.subj (lnk_file (read)))

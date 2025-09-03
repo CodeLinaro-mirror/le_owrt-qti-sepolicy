@@ -160,4 +160,7 @@
 
 	(allow subj conntrack.execfile (file (getattr execute read open map)))
 	(call .conntrack.subj_type_transition (subj))
+
+	(allow subj qcmap_cm.execfile (file (execute)))
+
 )

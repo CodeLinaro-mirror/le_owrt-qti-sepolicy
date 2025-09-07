@@ -32,5 +32,7 @@
 	(allow subj wifi.logtmpfile (file (read append)))
 
 	(allow subj tmpfile.runtimetmpfile (dir (search)))
+
+	(dontaudit subj self (capability (sys_admin)))
 )
 

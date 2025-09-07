@@ -27,7 +27,7 @@
         (allow subj .uci.execfile (file(read open execute map getattr)))
 
         (allow subj .qcmap_cm.conffile (dir (search)))
-        (allow subj .qcmap_cm.conffile (file (read open)))
+        (call .qcmap_cm.read_conffile_files (subj))
 
         (allow subj .qcmap_cli.subj (fd (use)))
         (allow subj .qcmap_cli.subj (fifo_file (read write)))
@@ -37,7 +37,7 @@
 
         ;; Need obj_type_transition for /etc/firewall.user.*
         (call .firewall.obj_type_transition_conffile_ext (subj))
-        (allow subj .firewall.conffile (file (read open)))
+        (call .firewall.read_conffile_files (subj))
 
         ;; Need read for /etc/firewall.user
         (call .file.read_conffile_files (subj))
@@ -99,10 +99,16 @@
         (call .ubus.subj_type_transition (subj))
         (allow subj ubus.execfile (file (open read map execute)))
 
+        (call .jsonfilter.subj_type_transition (subj))
+        (allow subj jsonfilter.execfile (file (open read map execute)))
+
+        (allow subj miniupnpd.datafile (file (open read)))
+
         (allow subj board.miscfile (file (unlink)))
 
         ;; Provide access to ucode
 
+        (call allow_search_read_getattr_cmd_perms(afc.subj))
         (call allow_search_read_getattr_cmd_perms(bus.sysfile))
         (call allow_search_read_getattr_cmd_perms(jshn.subj))
         (call allow_search_read_getattr_cmd_perms(ubus.subj))

@@ -76,7 +76,7 @@
 	;; Macros
 	;;
 	(macro dontaudit_pgrep_killall_cmd_search_perms ((type ARG1) (type ARG2))
-	(dontaudit ARG1 ARG2 (dir (read open search)))
+	(dontaudit ARG1 ARG2 (dir (read open search getattr)))
 	(dontaudit ARG1 ARG2 (file (read open)))
 	(dontaudit ARG1 ARG2 (lnk_file (read)))
 	)

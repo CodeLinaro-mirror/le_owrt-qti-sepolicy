@@ -42,7 +42,7 @@
 
        (blockinherit .agent.base_template)
 
-       (allow subj self (capability (fowner fsetid)))
+       (allow subj self (capability (fowner fsetid chown)))
        (call .shell.mapexecute_execfile_files (subj))
        (call .file.search_conffile_dirs (subj))
 
@@ -65,6 +65,7 @@
        (allow subj .tmp.fs (chr_file (getattr setattr)))
        (allow subj .kernel.sysfile (dir (search)))
        (allow subj .config.fs (dir (search write add_name create getattr)))
+       (allow subj .sys.rootfile (dir (read)))
 )
 
 (block leprop_scripts

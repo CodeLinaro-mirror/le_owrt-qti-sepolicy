@@ -291,6 +291,7 @@
     (allow subj .tmpfile.locktmpfile (file (open)))
     (call .iproute2.search_conffile_dirs (subj))
     (call .iproute2.read_conffile_files (subj))
+    (allow subj iproute2.conffile (file (append)))
     (allow subj self (netlink_route_socket (nlmsg_write nlmsg_read)))
     ;; Need add_name, write on /etc/rc.d
     (call .file.readwrite_conffile_dirs (subj))

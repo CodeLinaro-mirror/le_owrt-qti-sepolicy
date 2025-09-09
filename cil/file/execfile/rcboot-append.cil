@@ -1,4 +1,4 @@
-;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .rcboot
@@ -34,16 +34,26 @@
 
 	(allow subj file.conffile (dir (setattr)))
 	(allow subj file.conffile (chr_file (create link rename)))
+        (allow subj file.datafile (file (getattr)))
 
 	;; wifi permissions
 	(call .wifi.subj_type_transition (subj))
 	(allow subj .wifi.miscfile (dir (read open search)))
 	(allow subj .wifi.miscfile (file (open read execute)))
+	(allow subj .wifi.execfile (file (execute)))
 
 	;; ucode permissions
 	(call .ucode.subj_type_transition (subj))
 	(allow subj .ucode.execfile (file (open read execute getattr)))
 
+	;; Need permission for pbr
+	(allow subj .file.initscriptfile (file (getattr read open)))
+
+	;; Need read on firewall initscriptfile
+	(allow subj .rcfirewall.initscriptfile (file (read open)))
+
+	;; Need getattr on nftables
+	(allow subj .nftables.execfile (file (getattr)))
 )
 
 

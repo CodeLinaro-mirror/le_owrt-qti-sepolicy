@@ -24,6 +24,14 @@
                 "/usr/bin/mirror_copy"
                 file
                 execfile_file_context)
+        (filecon
+                "/usr/bin/swupdate_app"
+                file
+                execfile_file_context)
+        (filecon
+                "/usr/bin/swupdate_console_app"
+                file
+                execfile_file_context)
 	(filecon
 		"/data/full_update_ext4_ab.zip"
 		file
@@ -125,50 +133,83 @@
 	(call obj_type_transition_tmpfile (subj file "recovery.log"))
 	(call obj_type_transition_tmpfile (subj file "last_install"))
 
+	(allow subj self(capability (chown dac_override dac_read_search fowner fsetid sys_resource)))
+	(allow subj sys.subj (process (signal)))
+
 	(allow cache.miscfile self (filesystem (associate)))
 	(allow subj cache.miscfile (dir ( create getattr open read remove_name rmdir add_name search write )))
 	(allow subj cache.miscfile (file ( ioctl read getattr setattr unlink create open write rename append)))
 	(allow subj cache.miscfile (filesystem ( getattr )))
-	(allow subj file.conffile(lnk_file (read)))
-	(allow subj file.conffile (file ( open read getattr)))
+
+	(allow subj file.conffile (dir (write add_name)))
+	(allow subj file.conffile (file (open read write create ioctl getattr)))
+	(allow subj file.conffile (lnk_file (read getattr)))
+
+	(allow subj logd.miscfile (sock_file (write)))
+	(allow subj logd.subj (unix_dgram_socket (sendto)))
+
 	(allow subj fs.sysfile(dir (search)))
 	(allow subj selinux.conffile(dir (search)))
-	(allow subj self(capability ( chown dac_override dac_read_search fowner fsetid sys_resource)))
 	(allow subj selinux.fs(filesystem (getattr)))
+	(allow subj shell.execfile (file (execute_no_trans execute map open read write getattr)))
 	(allow subj sys.fs(dir (search)))
+
 	;;the recovery binary reads the logs from stdout and redirects to a file
 	(allow subj sys.subj(system (syslog_read)))
+
 	(allow subj kmsg.nodedev (chr_file ( open write )))
+
 	(allow subj recovery.runtimetmpfile (file ( execute_no_trans create unlink execute map open read write getattr )))
         (allow subj recovery.execfile (file ( execute_no_trans )))
 	(allow subj recovery.tmpfile (file ( append create ioctl open write read )))
-	(allow subj shell.execfile (file ( execute_no_trans execute map open read write getattr )))
 	(allow subj recovery.datafile (file ( open read getattr map)))
+
 	(allow subj leprop.miscfile (sock_file ( write )))
 	(allow subj leprop.subj (unix_stream_socket ( connectto )))
-	(allow subj self (unix_stream_socket ( connect create read write )))
+
+	(allow subj self (unix_stream_socket (connect create read write)))
+	(allow subj self (qipcrtr_socket (create)))
+	(allow subj self (unix_dgram_socket (create write connect)))
 	(allow subj cmdline.procfile (file ( open read )))
+
 	(allow subj mmc.stordev (blk_file ( getattr read open write ioctl )))
 	(call .dev.stor.readwrite.subj_type (subj))
+
 	(allow subj class.sysfile (dir ( open read search )))
 	(allow subj class.sysfile (file ( open read )))
 	(allow subj class.sysfile (lnk_file ( read )))
+
 	(allow subj mtd.procfile (file ( open read )))
 	(allow subj mtd.stordev (chr_file ( getattr ioctl open read write )))
 	(allow subj mtd.stordev (blk_file ( getattr read write open )))
+
 	(allow subj ubiutil.execfile (file ( execute_no_trans execute map open read write)))
+
 	(allow subj devices.sysfile (dir ( open read search )))
 	(allow subj devices.sysfile (file ( open read )))
+
 	(allow subj mnt.miscfile (dir (search )))
 	(allow subj mnt.miscfile (file ( getattr map open read )))
+
 	(allow subj tmp.fs (dir ( remove_name )))
+	(allow subj tmp.fs (blk_file ( getattr )))
+
 	(allow subj .tmpfile.conftmpfile (dir (search)))
+
 	(call .openssl.execute_execfile_files(subj))
 	(allow subj .ssl.conftmpfile (dir (search)))
 	(allow subj .ssl.conftmpfile (file (getattr read open )))
 	(allow subj .ssl.certfile (dir (search getattr read open)))
 	(allow subj .ssl.certfile (file (read open)))
+
 	(allow subj sys.sysctlfile (dir (search)))
+
 	(allow subj vm.sysctlfile (dir (search)))
 	(allow subj vm.sysctlfile (file ( open write )))
+
+	(allow subj meminfo.procfile (file (read open)))
+
+	(allow subj diag-router.subj (unix_stream_socket (connectto)))
+
+	(dontaudit subj self (capability (sys_admin)))
 )

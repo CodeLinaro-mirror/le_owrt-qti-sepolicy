@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -43,6 +43,11 @@
 
         (filecon
         "/dev/socket/data/.*"
+        socket
+        tmpfile_file_context)
+
+        (filecon
+        "/dev/socket/dcc*"
         socket
         tmpfile_file_context)
 
@@ -662,6 +667,7 @@
     (call .qcmap_cm.manage_tmpfile_files (subj))
     (call .sys.search_sysctlfile_dirs (subj))
     (call .net.search_sysctlfile_dirs (subj))
+    (call .net.readwrite_sysctlfile_files (subj))
     (call .netfilter.search_sysctlfile_dirs (subj))
     (call .netfilter.readwrite_sysctlfile_files (subj))
     (allow subj .devices.sysfile (dir (read open)))
@@ -799,7 +805,6 @@
     (call .tmpfile.readwrite_runtimetmpfile_files (subj))
 
     ;; Need read/write/create for miniupnpd
-    (allow subj nftables.execfile (file ( getattr )))
     (call .miniupnpd.obj_type_transition_conftmpfile(subj))
     (call .miniupnpd.obj_type_transition_runtimetmpfile (subj))
     (call .miniupnpd.readwrite_conftmpfile_files (subj))
@@ -983,7 +988,6 @@
     (call pidof_denials (subj odhcp6c.subj))
     (call pidof_denials (subj uci.subj))
 
-    (allow subj .filesystems.procfile (file (read)))
     (allow subj .sys.fs (filesystem(getattr)))
     (allow subj .qseecomd.subj (lnk_file (read open)))
 
@@ -1457,4 +1461,12 @@
     ;;Need for Health monitor XML access/update for factory reset
     (allow subj .health_monitor.conffile (dir (search write add_name remove_name)))
     (allow subj .health_monitor.conffile (file (read write open lock getattr create ioctl unlink)))
+
+    ;;Need permissions for QoS
+    (allow subj nftables.execfile (file ( getattr )))
+    (call .nftables.subj_type_transition (subj))
+    (call .nftables.read_execfile_files (subj))
+    (call .nftables.mapexecute_execfile_files (subj))
+
+    (dontaudit subj .filesystems.procfile (file (read open)))
 )

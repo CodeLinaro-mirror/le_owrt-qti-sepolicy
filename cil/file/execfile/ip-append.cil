@@ -1,4 +1,4 @@
-;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .ip
@@ -24,6 +24,7 @@
   (allow subj .qcmap_cm.subj (netlink_route_socket (read write)))
   (allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
   (allow subj .tlpd.subj (netlink_socket (bind create write read)))
+  (allow subj .netmgrd.subj (udp_socket (read write)))
   (call .qcmap_cm.readwrite_unix_stream_sockets (subj))
   (allow subj .qcmap_cm.subj (unix_dgram_socket (read write)))
   ;; Need ioctl write on /tmp/data/tmpfdbtable.txt
@@ -56,5 +57,10 @@
   (allow subj .sys.subj (packet_socket (read write)))
   ;; rule for ipv6
   (allow subj ipv6.sysctlfile (file (read)))
+  (allow subj file.conffile (lnk_file(read)))
 
+  ;;rule for ip
+  (allow subj locale.miscfile (file (read)))
+
+  (dontaudit subj self (capability (sys_admin)))
 )

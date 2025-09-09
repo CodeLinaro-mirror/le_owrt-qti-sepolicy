@@ -1,4 +1,4 @@
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2023,2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .odhcpd
@@ -16,4 +16,7 @@
      (allow subj .qcmap_cm.tmpfile (sock_file (write)))
      (allow subj .qcmap_cm.subj (packet_socket (read write)))
      (allow subj .qcmap_cm.subj (netlink_socket (read write)))
+
+     ;;Dont audit rule for odhcpd
+     (dontaudit subj odhcpd.subj (capability (dac_read_search)))
 )

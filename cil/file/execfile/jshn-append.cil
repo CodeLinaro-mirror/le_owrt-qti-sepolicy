@@ -1,43 +1,45 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .jshn
 
 ;; policy
 
- (allow subj self (capability (dac_override)))
- (call .qcmap_cli.use_fds (subj))
- (allow subj self (capability (dac_read_search)))
- (call .qcmap_cli.readwrite_unix_stream_sockets (subj))
- (allow .jshn.subj .qcmap_cli.subj (fifo_file (read write ioctl)))
- (call .qcmap_ref.write_tmpfile_files (subj))
- (allow subj .kmsg.nodedev (chr_file (open write ioctl)))
+	(allow subj self (capability (dac_override dac_read_search)))
 
- ;; IPQ sigma_dut
- (allow subj .wifi.logtmpfile readwrite_file)
- (allow subj .wifi.subj readwrite_tcp_socket)
- (allow subj qcmap_ref.subj (netlink_route_socket (read write)))
+	(allow subj ucode.subj (fd (use)))
+	(allow subj ucode.subj (fifo_file (write ioctl)))
+	(allow subj fw3.datafile (file (read)))
 
- (allow subj odhcpd.subj (rawip_socket(read write)))
+	(call .qcmap_cli.use_fds (subj))
+	(call .qcmap_cli.readwrite_unix_stream_sockets (subj))
+	(allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
 
- ;; For QCMAP 'Activate supplicant'
- (allow subj .dev.ttydev (chr_file (read write)))
- (allow subj .netifd.subj (netlink_route_socket (read write)))
+	;; Need for PBR
+	(allow subj qcmap_cm.tmpfile (file (append)))
 
- ;; IPQ ctrl_app_dut
- (allow subj .wifi.subj readwrite_udp_socket)
- (allow subj .wifi.tmpfile readwrite_file)
+	(call .qcmap_ref.write_tmpfile_files (subj))
+	(allow subj qcmap_ref.subj (netlink_route_socket (read write)))
 
-;;open/write pmsg_dev.nodedev
-(allow subj .pmsg_dev.nodedev (chr_file (write open)))
+	;; IPQ sigma_dut, ctrl_app_dut
+	(allow subj .wifi.subj readwrite_tcp_socket)
+	(allow subj .wifi.subj readwrite_udp_socket)
+	(allow subj .wifi.tmpfile readwrite_file)
+	(allow subj .wifi.logtmpfile readwrite_file)
 
- ;; Need for PBR
- (allow subj qcmap_cm.tmpfile (file (append)))
+	(allow subj odhcpd.subj (rawip_socket(read write)))
 
- (allow subj file.datafile (file (open read getattr)))
+	;; For QCMAP 'Activate supplicant'
+	(allow subj .dev.ttydev (chr_file (read write)))
+
+	(allow subj .netifd.subj (netlink_route_socket (read write)))
+
+	;;open/write pmsg_dev.nodedev
+	(allow subj .pmsg_dev.nodedev (chr_file (write open)))
+	(allow subj .kmsg.nodedev (chr_file (open write ioctl)))
+
+	(allow subj file.datafile (file (open read getattr)))
+
+	(dontaudit subj self (capability (sys_admin)))
 )
-
-
-
-

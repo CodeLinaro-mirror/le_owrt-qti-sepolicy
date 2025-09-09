@@ -1,4 +1,4 @@
-;;Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .jsonfilter
@@ -14,4 +14,11 @@
      (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
      ;;open/write pmsg_dev.nodedev
      (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+
+     (allow subj pppd.subj (fd (use)))
+
+     (allow subj ucode.subj (fd (use)))
+     (allow subj ucode.subj (fifo_file (write)))
+     (allow subj fw3.datafile (file (read)))
+
 )

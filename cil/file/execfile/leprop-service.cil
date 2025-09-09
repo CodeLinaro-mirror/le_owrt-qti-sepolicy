@@ -53,7 +53,14 @@
        (call .selinux.getattr_filesystems(subj))
        (call .selinux.search_conffile_dirs (subj))
        (call .shell.execute_execfile_files (subj))
-       (allow subj .bus.sysfile (dir (create)))
+       (allow subj .bus.sysfile (dir (search create)))
+       (allow subj .bus.sysfile (lnk_file (read)))
+       (allow subj .devices.sysfile (file (getattr setattr)))
+       (allow subj .devices.sysfile (dir (search)))
+       (allow subj .sys.subj (fifo_file (write)))
+       (allow subj .kmsg.nodedev (chr_file (open write)))
+       (allow subj .nameservice.miscfile (file (open read)))
+       (allow subj .version.procfile (file (open read)))
 )
 
 (block leprop_scripts

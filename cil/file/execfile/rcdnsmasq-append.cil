@@ -1,4 +1,4 @@
-;;Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .rcdnsmasq
@@ -48,4 +48,7 @@
          (call .uci.readwrite_conffile_dirs (subj))
          ;;open/write pmsg_dev.nodedev
          (allow subj .pmsg_dev.nodedev (chr_file (write open)))
+
+         ;;Dont audit rule for rcdnsmasq
+         (dontaudit subj rcdnsmasq.subj (capability (sys_admin)))
 )

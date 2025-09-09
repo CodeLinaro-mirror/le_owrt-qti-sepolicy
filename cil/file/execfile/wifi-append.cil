@@ -1,5 +1,4 @@
-;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
@@ -188,6 +187,11 @@
 	(allow subj .qcmap_ref.subj (unix_stream_socket (read write)))
 	(allow subj .qcmap_ref.subj (netlink_route_socket( read write )))
 
+	;; For loc_xtwifi_client
+	(allow subj .loc_xtwifi_client.subj (dir (search)))
+	(allow subj .loc_xtwifi_client.subj (file  (read)))
+	(allow subj .loc_xtwifi_client.subj (lnk_file  (read)))
+
 	;; For ifconfig
 	(allow subj self (capability (net_admin)))
 	(allow subj .net.procfile (file (read open)))
@@ -219,7 +223,7 @@
 	(allow subj .osrelease.miscfile (file (read open)))
 
 	;; Need open write on /dev/kmsg
-	(allow subj .kmsg.nodedev (chr_file (open write)))
+	(allow subj .kmsg.nodedev (chr_file (open write append ioctl)))
 
 	;; Need manage on /data/vendor/wifi
 	(call .wifi.manage_datafile_dirs (subj))
@@ -372,6 +376,13 @@
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .nftables.subj))
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .pppd.subj))
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .ucode.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .loc_xtwifi_client.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .health_monitor.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .ssgtzd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .stmfd.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .emergencyalert.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .fw3.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .nftables.subj))
 
 	;; Look for files in /tmp
 	(allow subj .tmp.fs (file (create read write getattr open unlink)))
@@ -472,6 +483,9 @@
 	(call .wpad.search_runtimetmpfile_dirs (subj))
 	(call .wpad.read_runtimetmpfile_sock_files (subj))
 
+	;; Need permissions for ipcalc.sh
+	(allow subj .ipcalc.subj (dir (search)))
+
 	;; Access module parameters
 	(call .module.read_sysfile_files (subj))
 
@@ -504,8 +518,9 @@
 	(allow subj .afc.subj (lnk_file (read)))
 
 	;; Read /lib/wifi/qcacld32-modules and mv WCNSS_qcom_cfg.ini
-	(allow subj .wifi.miscfile (lnk_file (read)))
+	(allow subj .wpad.miscfile (dir (read create setattr rename reparent)))
 	(allow subj .wpad.miscfile (lnk_file (read unlink)))
+	(allow subj .wifi.miscfile (lnk_file (read)))
 
 	;; To access /etc/capabilities/{hostapd-daemon.json wpa_supplicant.json}
 	;; when calling /etc/init.d/{hostapd-daemon.init wpa-supplicant_qcacld.init}
@@ -551,6 +566,15 @@
 	;; For ifstatus
 	(call .ifstatus.execute_execfile_files (subj))
 
+	;; For RCU
+	(allow subj rcucitrack.subj (dir (search)))
+	(allow subj rcucitrack.subj (file (read)))
+
+	;; For Healthmonitor
+	(allow subj health_monitor.subj (dir (search)))
+	(allow subj health_monitor.subj (lnk_file (read)))
+	(allow subj health_monitor.subj (file (read open)))
+
 	;; IPQ ctrl_app_dut
 	(allow subj self readwrite_udp_socket)
 	;; Overwrite oom_score_adj
@@ -582,6 +606,7 @@
 	(allow subj .rccron.subj read_lnk_file)
 	(allow subj .kmodloader.subj read_file)
 	(allow subj .kmodloader.subj (dir (search)))
+	(allow subj .kmodloader.subj (lnk_file (read)))
 	(allow subj .jsonfilter.subj read_file)
 	(allow subj .jsonfilter.subj read_lnk_file)
 	(allow subj .jsonfilter.subj (dir (search)))
@@ -619,17 +644,19 @@
 	(allow subj ezmesh.subj (file (read open)))
 	(allow subj ezmesh.subj (lnk_file (read)))
 	(allow subj ezmesh.subj (unix_dgram_socket (sendto)))
-	(allow subj .ezmesh.runtimetmpfile (dir (write)))
+	(allow subj .ezmesh.runtimetmpfile (dir (write search)))
 
 	;; Need open for /proc/sys/kernel/
 	(allow subj kernel.sysctlfile (dir ( search)))
 	(allow subj corepattern.sysctlfile (file ( getattr)))
 
-	(allow subj .file.conffile (dir (remove_name)))
-	(allow subj .file.conffile (file (getattr write unlink)))
+	(allow subj .file.conffile (dir (remove_name create setattr rename reparent)))
+	(allow subj .file.conffile (file (getattr write unlink create open ioctl rename read)))
+	(allow subj .file.conffile (chr_file (link rename unlink)))
 
 	;; vaalidatedata subj transition
 	(call .validatedata.subj_type_transition (subj))
+	(allow subj .validatedata.execfile (dir (search)))
 	(allow subj .validatedata.execfile (file (read open execute map)))
 
 	;; Need on /proc for process
@@ -709,6 +736,8 @@
 	(allow subj .loc_lowi_server.subj (dir (getattr)))
 	(allow subj .loc_xtra_daemon.subj (dir (getattr)))
 
+	(allow subj .ssgtzd.subj (dir (search)))
+
 	(allow subj .mlid.subj (dir (getattr)))
 
 	(allow subj self (capability (chown fowner fsetid)))
@@ -732,11 +761,24 @@
 
 	(allow subj .proc.fs (dir (read open)))
 
+	;; For nftable
+	(allow subj .nftables.subj (dir (search)))
+
+	;; For rcodhcpd
+	(allow subj .rcodhcpd.subj (dir (search)))
+
+	;; For rcdropbear
+	(allow subj .rcdropbear.subj (dir (search)))
+
+	;; For rcgpioswitch
+	(allow subj .rcgpioswitch.subj (dir (search)))
+
 	(allow subj .wpad.subj (dir (read search open)))
 	(allow subj .wpad.subj (file (read open)))
 
 	;;iface-up subj transition
 	(call .ifup.subj_type_transition (subj))
+	(allow subj .ifup.execfile (dir (search)))
 	(allow subj .ifup.execfile (file (getattr read open execute)))
 
 	(allow subj .ipacm.subj (dir (getattr)))
@@ -753,4 +795,23 @@
 
 	;; Need permission for "/sys/kernel/debug/cnss/mlo_config"
 	(allow subj .debug.fs (file (getattr)))
+
+	(allow subj .ucode.execfile (file (getattr execute read open map)))
+	;; Domain name transition for ucode.execfile for execute_no_trans permission
+	(call .ucode.subj_type_transition (subj))
+
+	(allow subj .file.datafile (file (read open)))
+
+	(allow subj .uci.tmpfile (dir (read open search)))
+	(allow subj .uci.tmpfile (file (getattr read open lock)))
+
+	(allow subj .rcboot.subj (fd (use)))
+	(allow subj .rcboot.subj (dir (search)))
+	(allow subj .rcboot.subj (file (read open)))
+	(allow subj .rcboot.subj (lnk_file (read)))
+
+
+	(dontaudit subj self (capability (sys_admin)))
+
+	(allow subj .wifi.tmpfile (lnk_file (read)))
 )

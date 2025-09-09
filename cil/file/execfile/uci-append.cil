@@ -1,11 +1,9 @@
-;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .uci
 
 	;; policy
-
 	(allow subj self (capability (dac_override dac_read_search)))
 
 	(call .qcmap_cli.use_fds (subj))
@@ -13,6 +11,9 @@
 	;; Need manage on /tmp/ipv{4/6}config[0-9]+
 	(call .qcmap_cli.manage_tmpfile_files (subj))
 	(allow subj .qcmap_cli.subj (fifo_file (read write ioctl)))
+
+	(call .netifd.obj_type_transition_statetmpfile (subj))
+	(call .netifd.manage_statetmpfile_files (subj))
 
 	(call .mwan3.obj_type_transition_statetmpfile (subj))
 	(call .mwan3.manage_statetmpfile_files (subj))
@@ -92,6 +93,8 @@
 
 	;; Need permission for pppd
 	(allow subj .pppd.subj (fd (use)))
+
+	(allow subj .tmpfile.runtimetmpfile (dir (search)))
 
 	(dontaudit subj self (capability (sys_admin)))
 

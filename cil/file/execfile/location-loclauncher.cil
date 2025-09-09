@@ -1,87 +1,84 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; Sepolicy rules for location daemon - loc_launcher
 (in .sys
-    (call .loc_launcher.subj_type_transition (subj)))
+	(call .loc_launcher.subj_type_transition (subj)))
 
 (in .file
-    ;; location exec files transition
-    (call .loc_launcher.obj_type_transition_execfile (unconfined.subj_typeattr)))
+	;; location exec files transition
+	(call .loc_launcher.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
 ;;#============= Location launcher ==============
 (block loc_launcher
-    ;;
-    ;; Contexts
-    ;; --------
-    (filecon "/usr/bin/loc_launcher" file execfile_file_context)
+	;;
+	;; Contexts
+	;; --------
+	(filecon "/usr/bin/loc_launcher" file execfile_file_context)
 
-    ;;
-    ;; Macros
-    ;; ------
-    (macro obj_type_transition_execfile ((type ARG1))
-          (call .file.execfile_obj_type_transition
-                (ARG1 execfile file "loc_launcher")))
+	;;
+	;; Macros
+	;; ------
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "loc_launcher")))
 
-    ;;
-    ;; Policy
-    ;; ------
-    (blockinherit .agent.base_template)
-    (blockinherit .loc_daemons_common.loc_daemons_common_template)
+	;;
+	;; Policy
+	;; ------
+	(blockinherit .agent.base_template)
+	(blockinherit .loc_daemons_common.loc_daemons_common_template)
 
-    ;; Child process launched by loc_launcher.
-    ;; Load and execute child process. Allow loc-launcher to launch file
-    (call .loc_lowi_server.execute_execfile_files (subj))
-    (call .loc_xtra_daemon.execute_execfile_files (subj))
-    (call .loc_xtwifi_client.execute_execfile_files (subj))
-    (call .loc_xtwifi_inet.execute_execfile_files (subj))
-    (call .loc_edgnss_daemon.execute_execfile_files (subj))
-    (call .loc_engine_service.execute_execfile_files (subj))
+	;; Set groups for child process
+	(allow subj self (capability (setgid)))
 
-    ;; Execute these daemons with an automatic transition to required context by default
-    (call .loc_lowi_server.subj_type_transition (subj))
-    (call .loc_lowi_server.execfile_subj_type_transition (subj .loc_lowi_server.subj))
-    (call .loc_xtra_daemon.subj_type_transition (subj))
-    (call .loc_xtra_daemon.execfile_subj_type_transition (subj .loc_xtra_daemon.subj))
-    (call .loc_xtwifi_client.subj_type_transition (subj))
-    (call .loc_xtwifi_client.execfile_subj_type_transition (subj .loc_xtwifi_client.subj))
-    (call .loc_xtwifi_inet.subj_type_transition (subj))
-    (call .loc_xtwifi_inet.execfile_subj_type_transition (subj .loc_xtwifi_inet.subj))
-    (call .loc_edgnss_daemon.subj_type_transition (subj))
-    (call .loc_edgnss_daemon.execfile_subj_type_transition (subj .loc_edgnss_daemon.subj))
-    (call .loc_engine_service.subj_type_transition (subj))
-    (call .loc_engine_service.execfile_subj_type_transition (subj .loc_engine_service.subj))
+	;; Child process launched by loc_launcher.
+	;; Load and execute child process. Allow loc-launcher to launch file
+	(call .loc_lowi_server.execute_execfile_files (subj))
+	(call .loc_xtra_daemon.execute_execfile_files (subj))
+	(call .loc_xtwifi_client.execute_execfile_files (subj))
+	(call .loc_xtwifi_inet.execute_execfile_files (subj))
+	(call .loc_edgnss_daemon.execute_execfile_files (subj))
+	(call .loc_engine_service.execute_execfile_files (subj))
+	(call .loc_blp_svc.execute_execfile_files (subj))
 
-    ;; Below transition denials seen after adding ujail support in loc-launcher rc
-    (call .loc_lowi_server.nnptransition (subj))
-    (call .loc_xtra_daemon.nnptransition (subj))
-    (call .loc_xtwifi_client.nnptransition (subj))
-    (call .loc_xtwifi_inet.nnptransition (subj))
-    (call .loc_edgnss_daemon.nnptransition (subj))
-    (call .loc_engine_service.nnptransition (subj))
+	;; Execute these daemons with an automatic transition to required context by default
+	(call .loc_lowi_server.subj_type_transition (subj))
+	(call .loc_lowi_server.execfile_subj_type_transition (subj .loc_lowi_server.subj))
+	(call .loc_xtra_daemon.subj_type_transition (subj))
+	(call .loc_xtra_daemon.execfile_subj_type_transition (subj .loc_xtra_daemon.subj))
+	(call .loc_xtwifi_client.subj_type_transition (subj))
+	(call .loc_xtwifi_client.execfile_subj_type_transition (subj .loc_xtwifi_client.subj))
+	(call .loc_xtwifi_inet.subj_type_transition (subj))
+	(call .loc_xtwifi_inet.execfile_subj_type_transition (subj .loc_xtwifi_inet.subj))
+	(call .loc_edgnss_daemon.subj_type_transition (subj))
+	(call .loc_edgnss_daemon.execfile_subj_type_transition (subj .loc_edgnss_daemon.subj))
+	(call .loc_engine_service.subj_type_transition (subj))
+	(call .loc_engine_service.execfile_subj_type_transition (subj .loc_engine_service.subj))
+	(call .loc_blp_svc.subj_type_transition (subj))
+	(call .loc_blp_svc.execfile_subj_type_transition (subj .loc_blp_svc.subj))
 
-    ;; import common rules for location deamons
-    (call loc_daemons_common_rules (subj))
+	;; Below transition denials seen after adding ujail support in loc-launcher rc
+	(call .loc_lowi_server.nnptransition (subj))
+	(call .loc_xtra_daemon.nnptransition (subj))
+	(call .loc_xtwifi_client.nnptransition (subj))
+	(call .loc_xtwifi_inet.nnptransition (subj))
+	(call .loc_edgnss_daemon.nnptransition (subj))
+	(call .loc_engine_service.nnptransition (subj))
+	(call .loc_blp_svc.nnptransition (subj))
 
-    ;; loc-launcher child process which has signal handling
-    (call .loc_xtra_daemon.signal (subj))
-    (call .loc_edgnss_daemon.signal (subj))
+	;; import common rules for location deamons
+	(call loc_daemons_common_rules (subj))
 
-    ;; Set groups for child process
-    (allow subj self (capability (setgid)))
+	;; loc-launcher child process which has signal handling
+	(call .loc_xtra_daemon.signal (subj))
+	(call .loc_edgnss_daemon.signal (subj))
 
-    ;; communicate with location daemons via unix dgram sockets
-    (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
-    (call .loc_lowi_server.sendto_unix_dgram_sockets (subj))
+	;;connect to leprop socket
+	(call .leprop.connectto_unix_stream_sockets (subj))
+	(call .leprop.manage_miscfile_sock_files (subj))
 
-    ;; read /etc/group
-    (call .nameservice.read_miscfile_files (subj))
-
-    ;; needed to access /dev/socket/leprop-service
-    (allow subj  leprop.miscfile  (sock_file  (read write)))
-    ;;connect to leprop socket
-    (call .leprop.connectto_unix_stream_sockets (subj))
-
-    (allow subj mlid.subj (unix_dgram_socket (sendto)))
+	;; read /etc/group
+	(call .nameservice.read_miscfile_files (subj))
 )

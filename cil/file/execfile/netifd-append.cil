@@ -1,9 +1,10 @@
-;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .file
     (call .netifd.obj_type_transition_tmpfile_ext (unconfined.subj_typeattr))
     (call .netifd.obj_type_transition_runtimetmpfile_1 (unconfined.subj_typeattr))
+    (call .netifd.obj_type_transition_statetmpfile (unconfined.subj_typeattr))
 )
 
 (in .netifd
@@ -20,17 +21,12 @@
        tmpfile_file_context)
 
        (filecon
+       "/tmp/state/qcmap_lan"
+       file
+       statetmpfile_file_context)
+
+       (filecon
        "/tmp/usb_bind_in_progress"
-       file
-       tmpfile_file_context)
-
-       (filecon
-       "/tmp/default\.route\.v4\.list"
-       file
-       tmpfile_file_context)
-
-       (filecon
-       "/tmp/default\.route\.v6\.list"
        file
        tmpfile_file_context)
 
@@ -38,14 +34,16 @@
             (call .tmp.fs_obj_type_transition
                 (ARG1 tmpfile ARG2 ARG3)))
 
+       (macro obj_type_transition_statetmpfile ((type ARG1))
+           (call .tmpfile.statetmpfile_obj_type_transition
+               (ARG1 statetmpfile file "qcmap_lan")))
+
        (macro obj_type_transition_tmpfile_ext ((type ARG1))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanwlan"))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanusb"))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanbt"))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.waneth"))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.lan"))
-            (call obj_type_transition_tmpfile (ARG1 file "default.route.v4.list"))
-            (call obj_type_transition_tmpfile (ARG1 file "default.route.v6.list"))
             (call obj_type_transition_tmpfile (ARG1 file "usb_bind_in_progress"))
        )
 
@@ -65,10 +63,14 @@
                  (call .tmpfile.runtimetmpfile_obj_type_transition
                         (ARG1 runtimetmpfile file "charon.pid")))
 
+         (blockinherit .tmpfile.state.obj_template)
          (blockinherit .tmpfile.obj_template)
+
+         ;; Allow
+         (allow subj netifd.statetmpfile (file (open read getattr write unlink)))
+
          (call obj_type_transition_tmpfile_ext (subj))
          (call obj_type_transition_runtimetmpfile_1 (subj))
-         (allow subj mwan3.tmpfile (fifo_file (write open)))
          (allow subj netifd.tmpfile (file (create write open append read getattr unlink)))
          (allow subj .tmp.fs (dir (remove_name)))
          (allow subj odhcp6c.tmpfile (file (open read getattr write unlink)))
@@ -81,18 +83,21 @@
           (call .ifup.subj_type_transition (subj))
           (call .rcdnsmasq.subj_type_transition (subj))
           (call .conntrack.subj_type_transition (subj))
-          (call .xtables.subj_type_transition (subj))
           (call .ifstatus.subj_type_transition (subj))
           (call .file.search_initscriptfile_dirs (subj))
           (call .file.execute_initscriptfile_files (subj))
           (call .file.readwrite_conffile_dirs(subj))
           (call .file.readwrite_conffile_files (subj))
+          (call .file.read_conffile_lnk_files (subj))
+          (call .file.execute_execfile_files (subj))
+          (call .file.execute_libfile_files (subj))
+
+          (allow subj .file.conffile (dir (read open)))
+          (allow subj .file.conffile (file (getattr map)))
+
           ;; Need read , open, append on /etc/iproute2/rt_tables
           (call .iproute2.readwrite_conffile_files (subj))
           (call .sys.readwriteinherited_fifo_files (subj))
-          (allow xtables.subj netifd.subj (fd (use)))
-          (allow xtables.subj netifd.subj (netlink_route_socket (read write)))
-          (allow xtables.subj netifd.subj (netlink_kobject_uevent_socket (read write)))
           ;; Need manage on /tmp/ipv{4/6}config[0-9]+
           (call .qcmap_ref.manage_tmpfile_files (subj))
           (call .qcmap_cm.search_runtimetmpfile_dirs (subj))
@@ -145,14 +150,24 @@
           (call .mwan3.manage_runtimetmpfile_files(subj))
           (call .mwan3.create_runtimetmpfile_dirs (subj))
           (call .mwan3.manage_runtimetmpfile_dirs (subj))
+          (allow subj mwan3.tmpfile (fifo_file (write open)))
+
           (call .ipa.readwrite_nodedev_chr_files (subj))
           (allow subj diag-router.subj (unix_stream_socket (connectto)))
           (call .net.read_procfile_lnk_files (subj))
           ;; Need readon ip_table_names
           (call .net.readwrite_procfile_files (subj))
+
           ;; Need read_write on xtables
+          (call .xtables.subj_type_transition (subj))
           (call .xtables.readwrite_runtimetmpfile_files (subj))
-          (allow subj .xtables.execfile ( file (getattr)))
+          ;;Need for execute_no_trans denials for ipsec
+          (call .xtables.execute_execfile_files (subj))
+          (allow xtables.subj netifd.subj (fd (use)))
+          (allow xtables.subj netifd.subj (netlink_route_socket (read write)))
+          (allow xtables.subj netifd.subj (netlink_kobject_uevent_socket (read write)))
+          (allow subj .xtables.execfile (file (getattr execute)))
+
           ;; Need search, getattr on /sys/module/nf_conntrack_amanda
           (call .module.search_sysfile_dirs (subj))
           ;; Need getattr, associate on nf_conntrack
@@ -165,7 +180,6 @@
           ;; Need open write on /etc/firewall.user
           (call .firewall.manage_conffile_files (subj))
 
-          (call .file.read_conffile_lnk_files (subj))
           (allow subj self create_netlink_netfilter_socket)
           (allow subj self readwrite_netlink_netfilter_socket)
           ;; Need permission for nf_conntrack
@@ -226,11 +240,6 @@
           ;; Need permissions for /etc/data/qcmap_ipsec
 	  (call .qcmap_cm.mapexecute_execfile_files (subj))
 	  (call .qcmap_cm.execute_conffile_files (subj))
-	  (call .file.execute_initscriptfile_files (subj))
-	  (call .file.read_conffile_files (subj))
-	  (allow subj .file.conffile (file (getattr map)))
-	  (allow subj .file.conffile (dir (read open)))
-	  (allow subj .xtables.execfile (file (getattr execute)))
 
 	  ;; Need for /tmp/ipsec/strongswan.conf
 	  (allow subj .tmp.fs (file (create read open getattr write unlink map)))
@@ -265,10 +274,6 @@
 	  (allow subj .qcmap_cli.subj (process (signull signal)))
 	  (allow subj .sys.subj (process (signull signal)))
 
-	  ;;Need for execute_no_trans denials for ipsec
-	  (call .file.execute_libfile_files (subj))
-	  (call .xtables.execute_execfile_files (subj))
-	  (call .file.execute_execfile_files (subj))
 
           ;;Need for ipsec iptable rule
           (allow subj .file.conffile (lnk_file (read)))
@@ -321,6 +326,12 @@
 	  (allow subj nftables.subj (process (rlimitinh siginh)))
 	  ;; Need for pppoe on /tmp/ipv4config.waneth*
 	  (allow subj pppd.tmpfile (file (getattr read open)))
+          ;Need permission for nft
+          (call .nftables.read_execfile_files (subj))
+          (call .nftables.mapexecute_execfile_files (subj))
+
+          (allow subj dnsmasq.conffile (file(read open)))
+          (call .net.readwrite_sysctlfile_files (subj))
 
           (dontaudit subj self (capability (sys_admin)))
 )

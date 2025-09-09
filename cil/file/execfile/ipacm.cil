@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -92,6 +92,21 @@
 
 	(filecon
 	"/etc/data/ipa/IPACM_cfg_temporary.xml"
+	file
+	conffile_file_context)
+
+	(filecon
+	"/etc/data/ipa/ipa_filter_cfg.xml"
+	file
+	conffile_file_context)
+
+	(filecon
+	"/etc/data/ipa/factory_ipa_filter_cfg.xml"
+	file
+	conffile_file_context)
+
+	(filecon
+	"/etc/data/ipa/ipa_filter_cfg_temporary.xml"
 	file
 	conffile_file_context)
 
@@ -287,6 +302,9 @@
 	(allow subj .uci.execfile (file (execute read open execute_no_trans map)))
 
 	(allow .ipacm.runtimetmpfile .xattr.fs (filesystem (associate)))
+
+	;; To allow ipacm to read /etc/localtime
+	(allow subj file.conffile (lnk_file (read)))
 
 	;;
 )

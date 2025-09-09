@@ -1,4 +1,4 @@
-;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .nftables
@@ -20,5 +20,17 @@
 (allow subj .hotplugcall.subj (fifo_file(read write ioctl)))
 ;; Need permission for pppd
 (allow subj .pppd.subj (fd (use)))
+(call .file.read_datafile_files (subj))
+(call .tmpfile.read_runtimetmpfile_files (subj))
+(call .tmpfile.search_runtimetmpfile_dirs (subj))
+;; Need permission for QoS
+(call .qcmap_cm.use_fds (subj))
+(call .qcmap_cm.readwriteinherited_fifo_files (subj))
+(call .qcmap_cm.readwrite_unix_stream_sockets (subj))
+(allow subj qcmap_cm.subj readwrite_packet_socket)
+(allow subj qcmap_cm.subj readwrite_netlink_socket)
+(allow subj qcmap_cm.subj create_netlink_kobject_uevent_socket)
+
+(dontaudit subj nftables.subj (capability (dac_read_search sys_admin)))
 )
 

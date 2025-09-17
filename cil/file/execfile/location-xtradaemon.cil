@@ -1,10 +1,13 @@
-;; Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
 ;; Sepolicy rules for location daemon - xtra-daemon
+(in .sys
+	(call .loc_xtra_daemon.subj_type_transition (subj)))
+
 (in .file
 	;; location exec files transition
 	(call .loc_xtra_daemon.obj_type_transition_execfile (unconfined.subj_typeattr)))
@@ -30,6 +33,9 @@
 	(blockinherit .file.exec.obj_macro_template)
 	(blockinherit .loc_daemons_common.loc_daemons_common_template)
 
+	;; Set groups for child process
+	(allow subj self (capability (setgid)))
+
 	;; import common rules for location deamons
 	(call loc_daemons_common_rules (subj))
 
@@ -44,12 +50,7 @@
 
 	;;connect to leprop socket
 	(call .leprop.connectto_unix_stream_sockets (subj))
-	(allow subj  leprop.miscfile  (sock_file  (read write)))
-
-	;; Need qipcrtr socket creations
-	(allow subj self create_qipcrtr_socket)
-	(allow subj self create_tcp_socket)
-	(allow subj self create_udp_socket)
+	(call .leprop.readwrite_miscfile_sock_files (subj))
 
 	(call .net.udp_bind_netnodes (subj))
 	(call .net.recvfromsendto_netnodes (subj))
@@ -63,7 +64,7 @@
 
 	;; Search system directory
 	(call .unknown.search_miscfile_dirs(subj))
-	(allow subj  .unknown.miscfile  (file  (read open)))
+	(call .unknown.read_miscfile_files (subj))
 
 	;; KPI node access
 	(call .kpi_values.manage_sysfile_files (subj))
@@ -83,5 +84,10 @@
 
 	;; read kernel sysfs
 	(call .kernel.search_sysfile_dirs (subj))
+
+	;; Need qipcrtr socket creations
+	(allow subj self create_qipcrtr_socket)
+	(allow subj self create_tcp_socket)
+	(allow subj self create_udp_socket)
 
 )

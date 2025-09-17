@@ -1,0 +1,67 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+	(call .ssgtzd.subj_type_transition (subj)))
+
+(in .file
+	(call .ssgtzd.obj_type_transition_execfile (unconfined.subj_typeattr))
+	(call .ssgtzd_socket.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+
+(block ssgtzd_socket
+	(filecon
+		"/dev/socket/ssgtzd"
+		socket
+		nodedev_file_context)
+
+	(filecon
+		"/dev/socket/ssgtzd_opener"
+		socket
+		nodedev_file_context)
+
+	(macro obj_type_transition_nodedev ((type ARG1))
+		(call .tmp.fs_obj_type_transition
+			(ARG1 nodedev sock_file "ssgtzd"))
+		(call .tmp.fs_obj_type_transition
+			(ARG1 nodedev sock_file "ssgtzd_opener")))
+
+	(macro manage_ssgtzd_socket_files ((type ARG1))
+		(call manage_nodedev_sock_files (ARG1)))
+
+	(blockinherit .dev.node.obj_template)
+)
+
+(block ssgtzd
+	(filecon
+		"/usr/bin/ssgtzd"
+		file
+		execfile_file_context)
+
+	;;
+	;; Macros
+	;;
+
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "ssgtzd")))
+
+	(blockinherit .agent.base_template)
+
+	(call .ssgtzd_socket.obj_type_transition_nodedev (subj))
+
+	;; Need ssgtzd to access /dev/smcinvoke
+	(call .smcinvoke.manage_nodedev_chr_files (subj))
+
+	(call .ssgtzd_socket.manage_nodedev_sock_files (subj))
+	(call .ssgtzd.connectto_unix_stream_sockets (subj))
+
+	(call .file.search_conffile_dirs (subj))
+	(call .file.read_conffile_files (subj))
+	(call .logd.write_miscfile_sock_files (subj))
+	(call .logd.sendto_unix_dgram_sockets (subj))
+	(allow subj .tmp.fs (dir(remove_name)))
+
+	(allow subj self create_unix_dgram_socket)
+	(allow subj self create_qipcrtr_socket)
+	(allow subj self create_unix_stream_stream_socket)
+)

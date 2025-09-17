@@ -1,0 +1,160 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .aios_daemon.subj_type_transition (subj)))
+
+(in .file
+    (call .aios_daemon.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block mqueue
+        ;; Define mqueue file type that inherits from tmpfile
+        (blockinherit .tmpfile.obj_template)
+
+        ;; Define filesystem type
+        (type fs)
+        (call .fs.obj_type (fs))
+        (allow fs self (filesystem (associate)))
+        (call .tmp.associate_filesystems (fs))
+
+        ;; Define filesystem context for mqueue
+        (context fs_context (.u .r fs (systemlow systemlow)))
+
+        ;; Add filesystem support for mqueue
+        (fsuse trans "mqueue" fs_context)
+
+        ;; Label mqueue directory with filesystem context
+        (filecon "/dev/mqueue" dir fs_context)
+
+        ;; Label mqueue files with tmpfile context (not filesystem context)
+        (filecon
+        "/dev/mqueue/.*"
+        file
+        tmpfile_file_context)
+
+        (filecon
+        "/aios_app2daemon_q"
+        file
+        tmpfile_file_context)
+
+        (filecon
+        "/daemon2app_q_.*"
+        file
+        tmpfile_file_context)
+
+        ;; Allow tmpfile type to associate with mqueue filesystem
+        (allow tmpfile fs (filesystem (associate)))
+
+        ;; Macros for directory operations
+        (macro manage_dirs ((type ARG1))
+                (allow ARG1 fs (dir (search write add_name remove_name)))
+        )
+
+        ;; Macros for file operations
+        (macro manage_files ((type ARG1))
+                (allow ARG1 fs (file (create read write open unlink getattr)))
+        )
+
+        ;; Macros for tmp filesystem access needed for mqueue operations
+        (macro setup_tmp_access ((type ARG1))
+                (allow ARG1 tmp.fs (dir (search write add_name remove_name)))
+                (call .tmp.search_fs_dirs (ARG1))
+        )
+
+        ;; Comprehensive macro for full mqueue access
+        (macro full_access ((type ARG1))
+                (call search_tmpfile_dirs (ARG1))
+                (call delete_tmpfile_files (ARG1))
+                (call manage_dirs (ARG1))
+                (call manage_files (ARG1))
+                (call setup_tmp_access (ARG1))
+        )
+)
+
+(block aios_daemon
+        ;;
+        ;; Contexts
+        ;;
+        (filecon
+        "/usr/bin/aios_daemon"
+        file
+        execfile_file_context)
+
+        (macro obj_type_transition_execfile ((type ARG1))
+            (call .file.execfile_obj_type_transition
+            (ARG1 execfile file "aios_daemon")))
+
+        ;; Policy
+        (blockinherit .agent.base_template)
+        (blockinherit file.conf.obj_template)
+
+        ;; Capability and process permissions
+        (allow subj self (process(getsched setsched)))
+
+        ;; Rules
+
+        ;; File-related rules
+        (call .file.search_conffile_dirs (subj))
+        (call .file.read_conffile_lnk_files (subj))
+
+        ;; System-related rules
+        (call .sys.search_fs_dirs (subj))
+
+        ;; Devices-related rules
+        (call .devices.search_sysfile_dirs (subj))
+        (call .devices.read_sysfile_files (subj))
+        (call .devices.read_sysfile_lnk_files (subj))
+
+        ;; CPU info-related rules
+        (allow subj .cpuinfo.procfile (file (read open)))
+
+        ;; Temporary files-related rules
+        (call .tmp.readwrite_fs_dirs (subj))
+        (call .tmp.manage_fs_files (subj))
+        (allow subj tmp.fs (file(lock)))
+        (allow subj tmp.fs (file(map)))
+
+        ;; Unix socket-related rules
+        (allow subj self create_unix_dgram_socket)
+        (allow subj self create_unix_stream_stream_socket)
+
+        ;; Locale-related rules
+        (call .locale.read_miscfile_files (subj))
+
+        ;; Message queue-related rules
+        (call .mqueue.full_access (subj))
+
+        ;; Socket file creation in tmp
+        (call .tmp.manage_fs_sock_files (subj))
+
+        ;; Log-related rules
+        (call .logd.sendto_unix_dgram_sockets (subj))
+        (call .sys.sendto_unix_dgram_sockets (subj))
+        (call .logd.readwrite_miscfile_sock_files (subj))
+
+        ;; Pipe operations with sys.subj
+        (allow subj sys.subj (fifo_file (write ioctl)))
+
+        ;; Random device-related rules
+        (call .random.read_nodedev_chr_files (subj))
+
+        ;; Network-related rules
+        (allow subj self create_tcp_stream_socket)
+        (allow subj net.netnode (tcp_socket(node_bind)))
+        (call .net.search_sysctlfile_dirs (subj))
+
+        ;; Core-related rules
+        (call .core.search_sysctlfile_dirs (subj))
+        (call .core.read_sysctlfile_files (subj))
+
+        ;; System sysctlfile access
+        (call .sys.search_sysctlfile_dirs (subj))
+
+        ;; Locale mapping rules
+        (call .locale.map_miscfile_files (subj))
+
+        ;; Shared memory-related rules
+        (allow subj self (shm(create unix_read unix_write read write destroy)))
+)

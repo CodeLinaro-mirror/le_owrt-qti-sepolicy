@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -113,6 +113,7 @@
        (blockinherit .agent.base_template)
        (blockinherit .file.conf.obj_template)
        (blockinherit .file.data.obj_template)
+       (allow subj self (capability (setgid)))
 
        ;; Need for /dev/logd or logging
        ;; this will also add write permission
@@ -133,10 +134,12 @@
        (allow subj self create_udp_socket)
        (call connectto_unix_stream_sockets (subj))
 
+       ;; Access /dev/socket/qms
        (call .qms.readwrite_tmpfile_sock_files (subj))
        (call .qms.connectto_unix_stream_sockets (subj))
        (call .qms.readwrite_unix_stream_sockets (subj))
        (allow subj qms.tmpfile (sock_file (write)))
+       (call .nameservice.read_miscfile_files (subj))
 
        ;; Read only /etc/bluetooth(/.*)?
        (call .file.search_conffile_dirs (subj))

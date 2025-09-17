@@ -1,4 +1,4 @@
-;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .odhcp6c
@@ -42,6 +42,7 @@
     (allow subj qcmap_ref.tmpfile (file (getattr read open)))
     (allow subj .netifd.miscfile (dir (read open)))
     (allow subj .tmp.fs (dir (remove_name)))
+    (allow subj .tmp.fs (sock_file (write)))
     (allow subj odhcp6c.tmpfile (file (unlink)))
 
     ;; Need permissions write log from backhaulCommonConfig.sh
@@ -94,7 +95,7 @@
     (allow subj self (netlink_route_socket (nlmsg_read nlmsg_write)))
     (allow subj .netifd.tmpfile (file (getattr read open append create)))
     (allow subj .qcmap_cm.subj (process (signal)))
-    (allow subj .odhcp6c.subj (capability (kill)))
+    (allow subj .odhcp6c.subj (capability (kill dac_override)))
     (call .iw.subj_type_transition (subj))
     (allow subj self (netlink_generic_socket(create)))
     (allow iw.subj odhcp6c.subj (fd (use)))
@@ -165,6 +166,10 @@
     (allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
     (allow subj .tinyproxy.logtmpfile (file (getattr unlink)))
 
+    ;; Need permission for mwan3
+    (call .mwan3.search_runtimetmpfile_dirs (subj))
+    (call .mwan3.read_runtimetmpfile_files (subj))
+
     ;; Need subj transition for ipa
     (call .ipacli.subj_type_transition (subj))
 
@@ -181,7 +186,14 @@
     (allow subj .locale.miscfile (file (read open getattr map)))
 
     ;; Need permission for pppd
-    (allow subj pppd.tmpfile (file (getattr read open)))
+    (allow subj .pppd.tmpfile (file (getattr read open)))
+
+    ;; Need permission for statetmpfile
+    (allow subj .netifd.statetmpfile (file (create getattr write read open lock ioctl)))
+
+    ;; Need permission for conntrack
+    (allow subj conntrack.execfile (file (getattr execute read open map)))
+    (call .conntrack.subj_type_transition (subj))
 
     ;;Dont audit rule for ohcp6
     (dontaudit subj self (capability (sys_admin)))

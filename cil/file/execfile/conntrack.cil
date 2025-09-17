@@ -1,5 +1,4 @@
-
-;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. All rights reserved.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .sys
@@ -11,81 +10,97 @@
 
 (block conntrack
 
-       ;;
-       ;; Contexts
-       ;;
+	;;
+	;; Contexts
+	;;
 
-       (filecon
-        "/usr/bin/conntrack"
-        file
-        execfile_file_context)
+	(filecon
+	"/usr/bin/conntrack"
+	file
+	execfile_file_context)
 
-       (filecon
-        "/data/conn.txt"
-        file
-        datafile_file_context)
+	(filecon
+	"/data/conn.txt"
+	file
+	datafile_file_context)
 
 
-       ;;
-       ;; Macros
-       ;;
+	;;
+	;; Macros
+	;;
 
-       (macro obj_type_transition_execfile ((type ARG1))
-              (call .file.execfile_obj_type_transition
-                    (ARG1 execfile file "conntrack")))
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "conntrack")))
 
-       (macro obj_type_transition_datafile ((type ARG1)(class ARG2)(name ARG3))
-              (call .file.datafile_obj_type_transition
-                    (ARG1 datafile ARG2 ARG3)))
+	(macro obj_type_transition_datafile ((type ARG1)(class ARG2)(name ARG3))
+		(call .file.datafile_obj_type_transition
+			(ARG1 datafile ARG2 ARG3)))
 
-       ;;
-       ;; Policy
-       ;;
+	;;
+	;; Policy
+	;;
 
-       (blockinherit .agent.base_template)
-       (blockinherit file.data.obj_template)
-       ;;
-       (call obj_type_transition_datafile (subj file "conn.txt"))
-	   (allow subj self create_netlink_netfilter_socket)
-	   (call .file.search_conffile_dirs (subj))
-	   (allow subj self readwrite_netlink_netfilter_socket)
-           (allow subj self (capability (net_admin)))
-	   (call .qcmap_cm.read_tmpfile_files (subj))
-           ;; Need to print conntrack output on console
-           ;; conntrack -L | grep <port_number>
-           ;; Here we are grepping on conntrack.
-           ;; grep process runs with sys.subj context.
-           ;; For grep process to run we need to provide write and ioctl permissions
-           (allow subj .sys.subj (fifo_file (read write ioctl)))
-           ;; Need permission to socket related need
-           (allow subj .sys.subj (unix_stream_socket (read write)))
-           (allow subj .sys.subj (packet_socket (read write)))
-           (allow subj .sys.subj (netlink_kobject_uevent_socket (read write)))
-           (allow subj .sys.subj (netlink_socket (read write)))
-           (call .dev.readwriteinherited_ttydev_chr_files (subj))
-           (allow subj conntrack.datafile (file (write ioctl)))
-           ;; Need permission to run conntrack related cmds from netifd context
-           (allow subj .netifd.subj (fd (use)))
-           (allow subj .netifd.subj (fifo_file (write ioctl)))
-           (allow subj .netifd.subj (netlink_route_socket (read write)))
-           (allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+	(blockinherit .agent.base_template)
+	(blockinherit file.data.obj_template)
+	;;
+	(call obj_type_transition_datafile (subj file "conn.txt"))
+	(allow subj self create_netlink_netfilter_socket)
+	(call .file.search_conffile_dirs (subj))
+	(allow subj self readwrite_netlink_netfilter_socket)
+	(allow subj self (capability (net_admin)))
 
-           ;; Need permission for conntrack
-           (allow subj qcmap_cm.subj (packet_socket (read write)))
-           (allow subj qcmap_cm.subj (netlink_socket (read write)))
-           (allow subj qcmap_cm.subj (unix_dgram_socket( read write )))
-           ;; Need permission for conntrack cmds in hotplug context
-           (allow subj hotplugcall.subj (fd (use)))
-           (allow subj hotplugcall.subj (fifo_file(write ioctl)))
+	;; Need permission for conntrack
+	(call .qcmap_cm.read_tmpfile_files (subj))
+	(allow subj qcmap_cm.subj (packet_socket (read write)))
+	(allow subj qcmap_cm.subj (netlink_socket (read write)))
+	(allow subj qcmap_cm.subj (unix_dgram_socket( read write )))
 
-           ;;Need permission for conntrack
-           (allow subj net.procfile (lnk_file (read)))
+	;; Need to print conntrack output on console
+	;; conntrack -L | grep <port_number>
+	;; Here we are grepping on conntrack.
+	;; grep process runs with sys.subj context.
+	;; For grep process to run we need to provide write and ioctl permissions
+	(allow subj .sys.subj (fifo_file (read write ioctl)))
+	(allow subj .sys.subj (file (read)))
+	(allow subj .sys.subj (lnk_file (read)))
+	(allow subj .sys.subj (unix_stream_socket (read write)))
+	(allow subj .sys.subj (packet_socket (read write)))
+	(allow subj .sys.subj (netlink_kobject_uevent_socket (read write)))
+	(allow subj .sys.subj (netlink_socket (read write)))
+	(allow subj .sys.subj (dir (read open search)))
 
-           (allow subj proc.fs (dir (read open)))
-           (allow subj sys.subj (dir (read open search)))
-           (allow subj net.procfile (file (read open)))
-           (allow subj ubusd.subj (dir (read open search)))
-           (allow subj tftp_server.subj (lnk_file (read)))
-           (allow subj diag-router.subj (dir (read open search)))
-           (dontaudit subj qcmap_cm.subj (udp_socket( read write)))
-       )
+	(call .dev.readwriteinherited_ttydev_chr_files (subj))
+	(allow subj conntrack.datafile (file (write ioctl)))
+
+	;; Need permission to run conntrack related cmds from netifd context
+	(allow subj .netifd.subj (fd (use)))
+	(allow subj .netifd.subj (fifo_file (write ioctl)))
+	(allow subj .netifd.subj (netlink_route_socket (read write)))
+	(allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+
+	;; Need permission for conntrack cmds in hotplug context
+	(allow subj hotplugcall.subj (fd (use)))
+	(allow subj hotplugcall.subj (fifo_file(write ioctl)))
+
+	;;Need permission for conntrack
+	(allow subj net.procfile (lnk_file (read)))
+	(allow subj net.procfile (file (read open)))
+
+	(allow subj odhcp6c.subj (fd (use)))
+
+	(allow subj proc.fs (dir (read open)))
+
+	(allow subj ubusd.subj (dir (read open search)))
+
+	(allow subj tftp_server.subj (lnk_file (read)))
+	(allow subj tftp_server.subj (dir (read)))
+
+	(allow subj diag-router.subj (dir (read open search)))
+
+	(allow subj pppd.subj (fd (use)))
+
+	(dontaudit subj qcmap_cm.subj (udp_socket( read write)))
+	(dontaudit subj ubusd.subj (lnk_file (read)))
+)
+

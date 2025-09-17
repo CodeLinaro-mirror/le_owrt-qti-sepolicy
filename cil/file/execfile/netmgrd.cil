@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023, 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -73,7 +73,7 @@
         (allow subj .devices.sysfile (file (open)))
         (allow subj .ipv6.sysctlfile (file (open ioctl)))
         (allow subj self (process (getcap)))
-        (allow subj .qcmap_cm.conffile (dir (search)))
+        (allow subj .qcmap_cm.conffile (dir (search getattr)))
         (allow subj .qcmap_cm.conffile (file (read open write)))
         (allow subj .ipv4.sysctlfile (file (open ioctl)))
         (allow subj netmgrd.tmpfile (sock_file (create setattr unlink)))

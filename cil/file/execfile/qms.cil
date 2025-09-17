@@ -1,4 +1,4 @@
-;; Copyright (c) 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -57,7 +57,10 @@
 	(macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
 		(call .tmp.fs_obj_type_transition
 			(ARG1 tmpfile ARG2 ARG3)))
-
+	(macro qms_read_access_to_obj ((type TARGET_OBJ_TYPE))
+		(allow subj TARGET_OBJ_TYPE (dir (search getattr)))
+		(allow subj TARGET_OBJ_TYPE (file (getattr read open)))
+		(allow subj TARGET_OBJ_TYPE (lnk_file (read getattr))))
 	;;
 	;; Policy
 	;;
@@ -66,7 +69,7 @@
 	(blockinherit .file.data.obj_template)
 	(blockinherit .tmpfile.obj_template)
 
-	(allow subj self (capability (net_admin dac_read_search)))
+	(allow subj self (capability (net_admin dac_read_search chown)))
 
 	(call obj_type_transition_tmpfile (subj sock_file "qms"))
 	(allow subj self create_qipcrtr_socket)
@@ -104,21 +107,19 @@
 	(allow subj .ssl.conftmpfile (file (read getattr open)))
 
 	(allow subj .ssl.certfile (dir (search read open getattr)))
-	(allow subj .ssl.certfile (file (read open)))
+	(allow subj .ssl.certfile (file (read open getattr)))
 
 	(allow subj .wifi.datafile (dir (search)))
 	(allow subj .wifi.datafile (sock_file (getattr)))
 
 	(allow subj .tmp.fs (dir (remove_name)))
-	(allow subj qms.tmpfile (sock_file (create setattr unlink)))
+	(allow subj qms.tmpfile (sock_file (create setattr unlink write)))
 
 	;; Manage files in /data/vendor/
 	(call .qms.manage_datafile_dirs (subj))
 	(call .qms.manage_datafile_files (subj))
 
 	(allow subj kernel.sysfile (dir (search)))
-	(allow subj file.conffile (dir (search)))
-	(allow subj file.conffile (lnk_file (read getattr)))
 
 	;; To execute /usr/sbin/wpa_cli
 	(call .wpad.subj_type_transition (subj))
@@ -139,4 +140,72 @@
 
 	;;read proc fs files
 	(call .proc.read_fs_files (subj))
+
+	;; Read devices sysfile
+	(call .devices.search_sysfile_dirs (subj))
+	(call .devices.read_sysfile_files (subj))
+
+	;; Read class sysfile
+	(call .class.search_sysfile_dirs (subj))
+	(call .class.list_sysfile_dirs(subj))
+	(call .class.read_sysfile_lnk_files (subj))
+
+	;; ssgtzd related permissions
+	(call .ssgtzd_socket.manage_ssgtzd_socket_files (subj))
+	(call .ssgtzd.connectto_unix_stream_sockets (subj))
+
+	;; Allow qms to monitor thermal zone files (e.g., /sys/devices/virtual/thermal/thermal_zone11/temp)
+	(call qms_read_access_to_obj (devices.sysfile)) 
+
+	;; /data/vendor folder
+	(call .file.manage_datafile_dirs (qms.subj))
+	(call .file.manage_datafile_files (qms.subj))
+	(allow qms.subj file.datafile (dir (add_name remove_name watch)))
+
+	;; Access to DNS resolver temp files
+	(call qms_read_access_to_obj (resolv.tmpfile)) ; Assuming resolv.tmpfile can be a subject type
+
+	;;Allow qms.subj to getattr on xattr.fs (filesystem root)
+	(allow qms.subj xattr.fs (filesystem (getattr)))
+
+	;;Allow qms.subj to read build.prop labeled as unknown.miscfile
+	(call qms_read_access_to_obj (unknown.miscfile))
+
+	;;Allow qms.subj to search qcfirmware.miscfile directory
+	(call .qcfirmware.search_miscfile_dirs (qms.subj))
+
+	;;Allow qms.subj to read board.json labeled as file.conffile
+	(call qms_read_access_to_obj (board.miscfile))
+	(call qms_read_access_to_obj (file.conffile))
+
+	;; Allow qms.subj to read Ver_Info.txt labeled as qcfirmware.miscfile
+	(call .qcfirmware.read_miscfile_files (qms.subj))
+	(call .module.search_sysfile_dirs (qms.subj))
+
+	;; Covers (dir (search)) and (lnk_file (read)) from original
+	(call qms_read_access_to_obj (bus.sysfile))
+	(allow qms.subj devices.sysfile (file (watch watch_reads write)))
+
+	;; Network socket permissions for qms
+	(allow qms.subj net.netnode (udp_socket (node_bind)))
+	(allow qms.subj net.netif (netif (egress)))
+	(allow qms.subj net.netnode (node (sendto)))
+	(allow qms.subj self create_tcp_stream_socket)
+
+	;; Standard named permission set (covers more than just create/connect to self)
+	(allow qms.subj http.netport (tcp_socket (name_connect)))
+	(allow qms.subj httpproxy.netport (tcp_socket (name_connect)))
+
+	;; Allow qms.subj to set socket options and write to its own tcp_socket
+	(allow qms.subj qms.subj (tcp_socket (setopt write read bind getattr)))
+	(allow qms.subj tmp.fs (chr_file (read open write getattr map ioctl)))
+
+	;; Allow qms.subj to access microdump sysfs nodes and also enable microdump (e.g /sys/module/microdump_collector/parameters/enable_microdump)
+	(allow qms.subj module.sysfile (file (open read write setattr)))
+	(allow qms.subj firmware.sysfile (dir (search)))
+	(allow qms.subj firmware.sysfile (file (open read getattr)))
+	(allow qms.subj self (netlink_kobject_uevent_socket (create setopt bind getattr write read)))
+	(allow qms.subj file.execfile (file (read open execute getattr execute_no_trans map)))
+	(allow qms.subj nameservice.miscfile (file (getattr)))
 )
+

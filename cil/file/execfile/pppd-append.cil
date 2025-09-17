@@ -1,4 +1,4 @@
-;;Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .pppd
@@ -50,6 +50,8 @@
 	(allow subj uci.statetmpfile (file (getattr write read open lock ioctl)))
 	(allow subj .uci.conffile (dir (read write open add_name remove_name)))
 	(allow subj .uci.conffile (file (create write open getattr read setattr rename unlink ioctl append lock)))
+
+	(allow subj .netifd.statetmpfile (file (create getattr write read open lock ioctl)))
 
 	;; Need read open and execute_no_trans permission on /usr/sbin/ebtables
 	(call .file.manage_conffile_files (subj))
@@ -119,15 +121,15 @@
 	(allow subj self (netlink_generic_socket (create)))
 
 	;; Need permission for awk and backhaulCommonC
-	(allow subj resolv.tmpfile (dir (search)))
+	(allow subj resolv.tmpfile (dir (search write add_name remove_name)))
 	(allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
 	(allow subj self create_rawip_socket)
 
 	;; Need permission for ip6tables and odhcpd and search on /tmp/state/
 	(call .tmpfile.search_statetmpfile_dirs (subj))
 	(allow subj .tmpfile.logtmpfile (dir (search getattr read open write remove_name)))
-	(allow subj .tmpfile.locktmpfile (dir (search)))
-	(allow subj .tmpfile.locktmpfile (file (open)))
+	(allow subj .tmpfile.locktmpfile (dir (search write add_name)))
+	(allow subj .tmpfile.locktmpfile (file (open create)))
 	(allow subj .rccommon.conffile (file (read)))
 	(allow subj odhcp6c.tmpfile (file (read write getattr open unlink)))
 
@@ -156,5 +158,9 @@
 	(call .jsonfilter.read_execfile_files (subj))
 	(allow subj .jsonfilter.execfile (file (getattr execute map)))
 
-	(allow subj conntrack.execfile (file (getattr execute read open)))
+	(allow subj conntrack.execfile (file (getattr execute read open map)))
+	(call .conntrack.subj_type_transition (subj))
+
+	(allow subj qcmap_cm.execfile (file (execute)))
+
 )

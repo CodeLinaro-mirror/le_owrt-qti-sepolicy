@@ -78,6 +78,11 @@
          file
          execfile_file_context)
 
+	(filecon
+         "/usr/bin/QCMAP_ETHBHInterface"
+         file
+         execfile_file_context)
+
         (filecon
          "/tmp/run/charon\.vici"
          socket
@@ -1467,6 +1472,12 @@
     (call .nftables.subj_type_transition (subj))
     (call .nftables.read_execfile_files (subj))
     (call .nftables.mapexecute_execfile_files (subj))
+
+    (allow subj netifd.subj (fifo_file (write)))
+    (allow subj sys.subj (fifo_file (write)))
+    (allow subj hotplugcall.subj (fd (use)))
+    (allow subj odhcp6c.subj (fd (use)))
+
 
     (dontaudit subj .filesystems.procfile (file (read open)))
 )

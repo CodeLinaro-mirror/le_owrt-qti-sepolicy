@@ -192,7 +192,8 @@
     (allow subj .netifd.statetmpfile (file (create getattr write read open lock ioctl)))
 
     ;; Need permission for conntrack
-    (allow subj conntrack.execfile (file (getattr)))
+    (allow subj conntrack.execfile (file (getattr execute read open map)))
+    (call .conntrack.subj_type_transition (subj))
 
     ;;Dont audit rule for ohcp6
     (dontaudit subj self (capability (sys_admin)))

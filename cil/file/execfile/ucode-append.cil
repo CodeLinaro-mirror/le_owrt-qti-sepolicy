@@ -205,6 +205,7 @@
         (call allow_search_read_getattr_cmd_perms (wifi.subj))
         (call allow_search_read_getattr_cmd_perms (rcfirewall.subj))
         (call allow_search_read_getattr_cmd_perms (tcpdump.subj))
+        (call allow_search_read_getattr_cmd_perms (iw.subj))
 
         (dontaudit subj self (capability (sys_admin)))
 )

@@ -42,7 +42,7 @@
 
        (blockinherit .agent.base_template)
 
-       (allow subj self (capability (fowner fsetid chown)))
+       (allow subj self (capability (fowner fsetid chown dac_override dac_read_search)))
        (call .shell.mapexecute_execfile_files (subj))
        (call .file.search_conffile_dirs (subj))
 
@@ -70,6 +70,8 @@
        (allow subj .debug.fs (file (open write)))
        (allow subj .class.sysfile (dir (search)))
        (allow subj .class.sysfile (lnk_file (read)))
+       (allow subj .trace.fs (dir (search getattr write add_name create)))
+       (allow subj .trace.fs (file (create write open)))
 )
 
 (block leprop_scripts

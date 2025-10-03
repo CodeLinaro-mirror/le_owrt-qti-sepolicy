@@ -103,6 +103,7 @@
 	;;STC
 	(allow subj qcmap_cm.subj readwrite_tcp_socket)
 	(allow subj qcmap_cm.subj readwrite_netlink_netfilter_socket)
+	(allow subj qcmap_cm.runtimetmpfile (file (read)))
 
 	(dontaudit subj qcmap_cm.subj (udp_socket( read write)))
 	(dontaudit subj ubusd.subj (lnk_file (read)))

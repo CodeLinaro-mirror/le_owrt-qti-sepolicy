@@ -239,4 +239,7 @@
 
     ;; kmsg
     (allow subj .kmsg.nodedev (chr_file (write ioctl append)))
+
+    ;; STC unix socket
+    (allow subj qms.subj readwrite_unix_dgram_socket)
 )

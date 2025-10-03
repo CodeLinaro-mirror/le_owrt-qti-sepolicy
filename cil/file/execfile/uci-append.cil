@@ -96,7 +96,10 @@
 
 	(allow subj .tmpfile.runtimetmpfile (dir (search)))
 
-	(dontaudit subj self (capability (sys_admin)))
+	;;STC
+	(allow subj qcmap_cm.subj readwrite_tcp_socket)
+	(allow subj qcmap_cm.subj readwrite_netlink_netfilter_socket)
 
+	(dontaudit subj self (capability (sys_admin)))
 )
 

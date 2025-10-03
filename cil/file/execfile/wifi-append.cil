@@ -810,6 +810,21 @@
 	(allow subj .rcboot.subj (file (read open)))
 	(allow subj .rcboot.subj (lnk_file (read)))
 
+	;;STC
+	(call .wifi.manage_conffile_files (subj))
+	(call .wifi.manage_conffile_dirs (subj))
+
+	(allow subj ssgtzd.subj (file( read open )))
+	(allow subj ssgtzd.subj (lnk_file( read )))
+
+	(allow subj aios_daemon.subj (dir( search )))
+        (allow subj aios_daemon.subj (lnk_file( read )))
+        (allow subj aios_daemon.subj (file( read )))
+        (allow subj ifli.subj (dir( search )))
+
+	(allow subj loc_xtwifi_client.subj (file( open )))
+	(call .file.manage_conffile_chr_files (subj))
+        (call .debug.readwrite_fs_files (subj))
 
 	(dontaudit subj self (capability (sys_admin)))
 

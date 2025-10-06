@@ -769,6 +769,14 @@
 
 	;; For rcdropbear
 	(allow subj .rcdropbear.subj (dir (search)))
+	(allow subj .rcdropbear.subj (file (read open)))
+	(allow subj .rcdropbear.subj (lnk_file (read)))
+
+	;; For filesystems.procfile
+	(allow subj .filesystems.procfile (file (read open)))
+
+	;; For sys.fs
+	(allow subj .sys.fs (filesystem (getattr)))
 
 	;; For rcgpioswitch
 	(allow subj .rcgpioswitch.subj (dir (search)))

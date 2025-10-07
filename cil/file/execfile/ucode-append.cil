@@ -26,6 +26,11 @@
         (call .uci.subj_type_transition (subj))
         (allow subj .uci.execfile (file(read open execute map getattr)))
 
+        ;; Need for conntrack
+        (call .conntrack.read_execfile_files (subj))
+        (call .conntrack.execute_execfile_files (subj))
+        (call .conntrack.subj_type_transition (subj))
+
         (allow subj .qcmap_cm.conffile (dir (search)))
         (call .qcmap_cm.read_conffile_files (subj))
 
@@ -199,6 +204,7 @@
         (call allow_search_read_getattr_cmd_perms (ssgtzd.subj))
         (call allow_search_read_getattr_cmd_perms (wifi.subj))
         (call allow_search_read_getattr_cmd_perms (rcfirewall.subj))
+        (call allow_search_read_getattr_cmd_perms (tcpdump.subj))
 
         (dontaudit subj self (capability (sys_admin)))
 )

@@ -276,4 +276,9 @@
 
 ;; Need for sysfs setattr access
 	(allow .hotplugcall.subj .devices.sysfile (file (setattr)))
+
+      (allow subj pppd.tmpfile (file (write getattr)))
+      (allow subj resolv.tmpfile (dir (search)))
+
+
 )

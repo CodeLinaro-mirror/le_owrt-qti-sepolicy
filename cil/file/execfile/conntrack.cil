@@ -1,5 +1,4 @@
-
-;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .sys
@@ -63,11 +62,13 @@
 	;; grep process runs with sys.subj context.
 	;; For grep process to run we need to provide write and ioctl permissions
 	(allow subj .sys.subj (fifo_file (read write ioctl)))
+	(allow subj .sys.subj (file (read)))
+	(allow subj .sys.subj (lnk_file (read)))
 	(allow subj .sys.subj (unix_stream_socket (read write)))
 	(allow subj .sys.subj (packet_socket (read write)))
 	(allow subj .sys.subj (netlink_kobject_uevent_socket (read write)))
 	(allow subj .sys.subj (netlink_socket (read write)))
-	(allow subj sys.subj (dir (read open search)))
+	(allow subj .sys.subj (dir (read open search)))
 
 	(call .dev.readwriteinherited_ttydev_chr_files (subj))
 	(allow subj conntrack.datafile (file (write ioctl)))
@@ -86,13 +87,18 @@
 	(allow subj net.procfile (lnk_file (read)))
 	(allow subj net.procfile (file (read open)))
 
+	(allow subj odhcp6c.subj (fd (use)))
+
 	(allow subj proc.fs (dir (read open)))
 
 	(allow subj ubusd.subj (dir (read open search)))
 
 	(allow subj tftp_server.subj (lnk_file (read)))
+	(allow subj tftp_server.subj (dir (read)))
 
 	(allow subj diag-router.subj (dir (read open search)))
+
+	(allow subj pppd.subj (fd (use)))
 
 	(dontaudit subj qcmap_cm.subj (udp_socket( read write)))
 	(dontaudit subj ubusd.subj (lnk_file (read)))

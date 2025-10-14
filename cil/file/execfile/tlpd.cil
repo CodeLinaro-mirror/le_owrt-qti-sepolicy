@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -57,12 +57,12 @@
         (allow subj .qcmap_cm.runtimetmpfile (dir (search write add_name remove_name)))
         (allow subj .qcmap_cm.runtimetmpfile (sock_file (read write create unlink)))
         (allow subj .tmpfile.runtimetmpfile (dir (search)))
-        (allow subj .qcmap_cm.conffile (file (read open)))
+        (allow subj .qcmap_cm.conffile (file (read open getattr)))
         (allow subj .tlpd.execfile (file (execute_no_trans)))
         (allow subj file.conffile (dir (search)))
         (allow subj ssl.certfile (dir (search open read getattr)))
-        (allow subj ssl.certfile (file (read open)))
-	(allow subj file.conffile (lnk_file (read write)))
+        (allow subj ssl.certfile (file (read open getattr)))
+        (allow subj file.conffile (lnk_file (read write getattr)))
 	(allow subj logd.miscfile (sock_file (write)))
 	(allow subj .locale.miscfile (file(read getattr open map)))
         (allow subj self create_qipcrtr_socket)

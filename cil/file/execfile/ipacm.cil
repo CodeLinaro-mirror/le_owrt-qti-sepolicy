@@ -264,6 +264,7 @@
 	(call .ipacm.create_runtimetmpfile_files (subj))
 	(allow subj ip.execfile (file(read open execute getattr execute_no_trans map)))
 	(allow subj qcmap_cm.runtimetmpfile (dir (remove_name)))
+	(allow subj qcmap_cm.runtimetmpfile (file (create write open)))
 
 	(allow subj self (netlink_generic_socket (create read write setopt bind getattr)))
 	(allow subj .wifi.execfile (file(read open execute getattr)))

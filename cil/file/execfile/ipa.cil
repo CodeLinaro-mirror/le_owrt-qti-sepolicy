@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c)  Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -94,6 +94,6 @@
 	;; Need permission for pppd
 	(allow subj pppd.subj (fd (use)))
 
-	(dontaudit subj self (capability (sys_admin)))
+	(dontaudit subj self (capability (sys_admin dac_read_search)))
     ;;
 )

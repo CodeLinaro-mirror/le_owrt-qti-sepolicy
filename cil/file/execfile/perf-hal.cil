@@ -1,4 +1,4 @@
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
@@ -113,5 +113,7 @@
 
       (call .logd.write_miscfile_sock_files(subj))
       (call .logd.sendto_unix_dgram_sockets (subj))
+
+      (dontaudit subj self (capability (sys_admin)))
 
 )

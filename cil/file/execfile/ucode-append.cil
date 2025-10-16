@@ -111,6 +111,9 @@
 
         (allow subj board.miscfile (file (unlink)))
 
+        (call .fw3.subj_type_transition (subj))
+        (allow subj fw3.execfile (file (open read map execute)))
+
         ;; Provide access to ucode
 
         (call allow_search_read_getattr_cmd_perms(afc.subj))

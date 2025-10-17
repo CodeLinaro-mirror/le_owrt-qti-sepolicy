@@ -81,5 +81,9 @@
         (allow subj tmpfile.conftmpfile (dir (search)))
         (dontaudit subj .dataadpl.subj (process (signal)))
 	(dontaudit subj port-bridge.subj (process (signal)))
+
+	(dontaudit subj invalid (file( read )))
+	(dontaudit subj invalid (dir( search )))
+	(dontaudit subj invalid (lnk_file( read )))
 )
 

@@ -119,5 +119,7 @@
         (allow subj .ubusd.runtimetmpfile (dir (search)))
         (allow subj .ubusd.runtimetmpfile (sock_file (read write)))
         (allow subj ubusd.subj (unix_stream_socket (connectto)))
+
+        (dontaudit subj invalid (file( read )))
 )
 

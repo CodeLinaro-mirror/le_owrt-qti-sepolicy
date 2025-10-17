@@ -81,5 +81,9 @@
 	(allow subj .net.procfile (lnk_file (read)))
 	(allow subj .net.procfile (file (read open getattr)))
 
+	(dontaudit subj invalid (file( read )))
+	(dontaudit subj invalid (dir( search )))
+	(dontaudit subj invalid (lnk_file( read )))
+
 )
 

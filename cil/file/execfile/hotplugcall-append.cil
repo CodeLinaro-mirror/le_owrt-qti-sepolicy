@@ -278,7 +278,6 @@
 	(allow .hotplugcall.subj .devices.sysfile (file (setattr)))
 
       (allow subj pppd.tmpfile (file (write getattr)))
-      (allow subj resolv.tmpfile (dir (search)))
-      (allow subj resolv.tmpfile (file (getattr read append)))
-
+      (allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
+      (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
 )

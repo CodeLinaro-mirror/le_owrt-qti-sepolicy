@@ -74,7 +74,7 @@
         (allow subj .ipv6.sysctlfile (file (open ioctl)))
         (allow subj self (process (getcap)))
         (allow subj .qcmap_cm.conffile (dir (search getattr)))
-        (allow subj .qcmap_cm.conffile (file (read open write)))
+        (allow subj .qcmap_cm.conffile (file (read open write getattr)))
         (allow subj .ipv4.sysctlfile (file (open ioctl)))
         (allow subj netmgrd.tmpfile (sock_file (create setattr unlink)))
         (allow subj self (capability (net_admin net_raw)))

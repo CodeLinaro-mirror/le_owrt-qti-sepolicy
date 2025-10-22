@@ -1487,4 +1487,5 @@
     (allow subj selinux.conffile (file (getattr)))
 
     (dontaudit subj .filesystems.procfile (file (read open)))
+    (allow subj .ipa.nodedev (chr_file (open read write)))
 )

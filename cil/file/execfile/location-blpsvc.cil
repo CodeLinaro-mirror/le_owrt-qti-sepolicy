@@ -54,6 +54,9 @@
 	;; read /etc/group
 	(call .nameservice.read_miscfile_files (subj))
 
+	;; read /etc/dev_info
+	(call .file.read_conffile_files (subj))
+
 	;; read urandom
 	(call .random.read_nodedev_chr_files (subj))
 

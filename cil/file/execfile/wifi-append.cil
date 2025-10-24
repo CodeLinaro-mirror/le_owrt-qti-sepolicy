@@ -294,6 +294,7 @@
 	;; Read/write ini files (/etc/misc/ipq/.*)
 	(allow subj .wifi.conffile (dir (search getattr read open write add_name remove_name create setattr rename reparent)))
 	(allow subj .wifi.conffile (file (getattr read open append write unlink create ioctl setattr rename link)))
+	(allow subj .wifi.conffile (chr_file (create)))
 
 	;; cfg/default in /data/vendor/ipq/.*
 	(allow subj .wifi.datafile (dir (create search write add_name getattr setattr)))

@@ -157,4 +157,9 @@
 
         ;; Shared memory-related rules
         (allow subj self (shm(create unix_read unix_write read write destroy)))
+
+        ;; IFLI permission
+        (call .file.read_execfile_files (subj))
+        (call .file.mapexecute_execfile_files (subj))
+
 )

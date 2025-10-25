@@ -60,7 +60,10 @@
   (allow subj file.conffile (lnk_file(read)))
 
   ;;rule for ip
-  (allow subj locale.miscfile (file (read)))
+  (allow subj locale.miscfile (file (open read getattr map)))
+
+  ;;STC
+  (allow subj qcmap_cm.subj readwrite_tcp_socket)
 
   (dontaudit subj self (capability (sys_admin)))
 )

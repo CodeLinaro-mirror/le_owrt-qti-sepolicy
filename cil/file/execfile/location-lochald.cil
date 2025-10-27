@@ -41,6 +41,9 @@
 	;; manage loc_socket nodedev link files
 	(call .loc_socket.manage_nodedev_lnk_files (subj))
 
+	;; Lcs related
+	(call .file.read_conffile_lnk_files(subj))
+
 	;; communicate with location test apps which runs in sys.subj ctxt
 	(call .sys.sendto_unix_dgram_sockets (subj))
 	;; connect to location test apps target stream
@@ -66,6 +69,9 @@
 
 	;; read /etc/group
 	(call .nameservice.read_miscfile_files (subj))
+	;; Lcs related
+	(call .locale.read_miscfile_files (subj))
+	(call .locale.map_miscfile_files (subj))
 
 	;; Search system directory
 	(call .unknown.search_miscfile_dirs(subj))
@@ -81,6 +87,9 @@
 
 	;; qcmap related
 	(call .qcmap_ref.read_tmpfile_files (subj))
+	;; Lcs related
+	(call .qms.readwrite_tmpfile_sock_files(subj))
+	(call .qms.connectto_unix_stream_sockets (subj))
 
 	;; KPI node access
 	(call .kpi_values.manage_sysfile_files (subj))
@@ -154,5 +163,8 @@
 
 	;; Need qipcrtr socket creations
 	(allow subj  self  create_qipcrtr_socket)
+
+	;; Lcs related
+	(allow subj file.conffile (file (getattr)))
 
 )

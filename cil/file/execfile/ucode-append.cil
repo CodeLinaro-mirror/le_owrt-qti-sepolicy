@@ -61,6 +61,7 @@
         (allow subj bus.sysfile (dir (search read open)))
         (allow subj class.sysfile (dir (read open)))
         (allow subj proc.fs (dir (read open)))
+        (allow subj proc.fs (file (read open)))
         (allow subj fs.procfile (dir (search)))
         (allow subj sys.subj readwriteinherited_fifo_file)
 

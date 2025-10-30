@@ -62,5 +62,8 @@
   ;;rule for ip
   (allow subj locale.miscfile (file (read)))
 
+  ;;STC
+  (allow subj qcmap_cm.subj readwrite_tcp_socket)
+
   (dontaudit subj self (capability (sys_admin)))
 )

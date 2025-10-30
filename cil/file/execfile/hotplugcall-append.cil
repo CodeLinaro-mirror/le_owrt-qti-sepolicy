@@ -279,6 +279,6 @@
 
       (allow subj pppd.tmpfile (file (write getattr)))
       (allow subj resolv.tmpfile (dir (search)))
-
+      (allow subj resolv.tmpfile (file (getattr read append)))
 
 )

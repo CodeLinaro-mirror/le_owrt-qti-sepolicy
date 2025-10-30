@@ -54,7 +54,7 @@
 	(allow subj file.initscriptfile (dir (search)))
 	(allow subj file.initscriptfile (file (execute read open)))
 
-	(allow subj rccommon.conffile (file (read open)))
+	(allow subj rccommon.conffile (file (read open getattr)))
 
 	(allow subj functions.miscfile (dir (search)))
 	(allow subj functions.miscfile (file (read open getattr)))
@@ -94,4 +94,5 @@
 
 	(allow subj debug.fs (dir (search)))
 	(allow subj debug.fs (file (write open)))
+	(dontaudit subj self (capability (sys_admin)))
 )

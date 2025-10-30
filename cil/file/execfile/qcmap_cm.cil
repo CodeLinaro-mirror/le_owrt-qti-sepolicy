@@ -1478,6 +1478,13 @@
     (allow subj hotplugcall.subj (fd (use)))
     (allow subj odhcp6c.subj (fd (use)))
 
+    ;;Need for STC tcp socket
+    (allow subj self create_tcp_socket)
+    (allow subj unreserved.netport (tcp_socket( name_connect )))
+    (call .nftables.execute_execfile_files (subj))
+    (allow subj qcmap_cm.subj readwrite_tcp_socket)
+    (allow subj ifli.execfile (file(getattr)))
+    (allow subj selinux.conffile (file (getattr)))
 
     (dontaudit subj .filesystems.procfile (file (read open)))
 )

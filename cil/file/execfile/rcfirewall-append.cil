@@ -36,5 +36,6 @@
        (allow subj netifd.miscfile (dir (search getattr)))
        ;; Need for pppd
        (allow subj .pppd.subj (fd (use)))
+       (dontaudit subj rcfirewall.subj (capability (sys_admin)))
 
 )

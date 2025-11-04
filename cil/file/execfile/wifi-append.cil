@@ -823,6 +823,9 @@
 	(allow subj .rcboot.subj (file (read open)))
 	(allow subj .rcboot.subj (lnk_file (read)))
 
+	;; Xtables
+	(allow subj .xtables.subj (dir (search)))
+
 	;;STC
 	(call .wifi.manage_conffile_files (subj))
 	(call .wifi.manage_conffile_dirs (subj))

@@ -137,6 +137,7 @@
 
           ;; Need run chmod on /dev/socket/data/pd_manager
           (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
+          (allow subj qcmap_cm.execfile (file (execute read open)))
           (allow subj self (capability (fsetid fowner)))
 
           (allow subj miniupnpd.datafile (file (open read getattr)))

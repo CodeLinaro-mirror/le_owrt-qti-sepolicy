@@ -1473,7 +1473,7 @@
     (call .nftables.read_execfile_files (subj))
     (call .nftables.mapexecute_execfile_files (subj))
 
-    (allow subj netifd.subj (fifo_file (write)))
+    (allow subj netifd.subj (fifo_file (write ioctl)))
     (allow subj sys.subj (fifo_file (write)))
     (allow subj hotplugcall.subj (fd (use)))
     (allow subj odhcp6c.subj (fd (use)))

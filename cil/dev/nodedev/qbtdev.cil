@@ -17,6 +17,12 @@
         char
         nodedev_file_context)
 
+       ;; BT SPI
+       (filecon
+        "/dev/btspi"
+        char
+        nodedev_file_context)
+
        ;; BT UART
        (filecon
         "/dev/ttyHS0"
@@ -29,6 +35,8 @@
        (macro obj_type_transition_nodedev ((type ARG1))
               (call .tmp.fs_obj_type_transition
                     (ARG1 nodedev chr_file "btpower"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "btspi"))
               (call .tmp.fs_obj_type_transition
                     (ARG1 nodedev chr_file "ttyHS0")))
        ;;

@@ -274,6 +274,8 @@
 	(call .sys.search_sysctlfile_dirs (subj))
 	(call .fs.search_sysfile_dirs (subj))
 
+	(allow subj .locale.miscfile (file (open read getattr map)))
+
 	(call .selinux.search_conffile_dirs (subj))
 	(call .selinux.getattr_filesystems(subj))
 

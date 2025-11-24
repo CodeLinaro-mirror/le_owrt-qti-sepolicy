@@ -61,6 +61,7 @@
         (allow subj bus.sysfile (dir (search read open)))
         (allow subj class.sysfile (dir (read open)))
         (allow subj proc.fs (dir (read open)))
+        (allow subj proc.fs (file (read open)))
         (allow subj fs.procfile (dir (search)))
         (allow subj sys.subj readwriteinherited_fifo_file)
 
@@ -110,6 +111,9 @@
         (allow subj miniupnpd.datafile (file (open read)))
 
         (allow subj board.miscfile (file (unlink)))
+
+        (call .fw3.subj_type_transition (subj))
+        (allow subj fw3.execfile (file (open read map execute)))
 
         ;; Provide access to ucode
 

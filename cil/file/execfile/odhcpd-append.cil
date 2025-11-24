@@ -18,5 +18,5 @@
      (allow subj .qcmap_cm.subj (netlink_socket (read write)))
 
      ;;Dont audit rule for odhcpd
-     (dontaudit subj odhcpd.subj (capability (dac_read_search)))
+     (dontaudit subj odhcpd.subj (capability (dac_read_search sys_admin)))
 )

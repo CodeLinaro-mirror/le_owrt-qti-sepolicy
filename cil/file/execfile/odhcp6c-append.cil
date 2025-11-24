@@ -57,7 +57,7 @@
     (call .ifstatus.subj_type_transition (subj))
     ;; Need permissions to run brctl command
     (allow subj .class.sysfile (lnk_file (read)))
-    (allow subj .class.sysfile (dir (read open search)))
+    (allow subj .class.sysfile (dir (read open search getattr)))
     ;; Need reload firewall anc access init.d from odhcp6c
     (allow subj .file.initscriptfile (dir (read search)))
     (call .rcfirewall.subj_type_transition (subj))
@@ -147,6 +147,10 @@
     ;; Need permission for awk and backhaulCommonC
     (allow subj resolv.tmpfile (dir (search)))
     (allow subj .qcmap_cm.tmpfile (file (read open getattr create write append unlink)))
+    (call .kmodloader.subj_type_transition (subj))
+    (allow subj .kmodloader.execfile (file (getattr read open execute map)))
+    (call .jsonfilter.subj_type_transition (subj))
+    (allow subj .jsonfilter.execfile (file (getattr read open execute map)))
 
     ;; Need permission for pidof
     (allow subj csd_server.subj (dir (search)))
@@ -194,6 +198,11 @@
     ;; Need permission for conntrack
     (allow subj conntrack.execfile (file (getattr execute read open map)))
     (call .conntrack.subj_type_transition (subj))
+
+    ;; Need permission for LTE_ETH Dual BH
+    (allow subj .modules.procfile (file (read open)))
+    (allow subj .filesystems.procfile (file (read open)))
+    (allow subj .sys.fs (filesystem (getattr)))
 
     ;;Dont audit rule for ohcp6
     (dontaudit subj self (capability (sys_admin)))

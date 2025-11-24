@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -34,6 +34,7 @@
     (blockinherit .tmpfile.obj_template)
     (blockinherit .dev.tty.obj_template)
 
+    (call qcmap_cm.obj_type_transition_tmpfile (subj file "*"))
     ;; Need obj_type_transition on mwan3
     (call .mwan3.obj_type_transition_runtimetmpfile (subj))
     ;; Need obj_type_transition for /etc/firewall.user.*

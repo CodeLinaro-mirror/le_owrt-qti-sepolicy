@@ -24,6 +24,11 @@
         file
         execfile_file_context)
 
+       (filecon
+        "/etc/scripts/init.qti.modem.debug.sh"
+        file
+        execfile_file_context)
+
        ;;
        ;; Macros
        ;;

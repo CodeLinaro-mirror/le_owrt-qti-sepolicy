@@ -13,12 +13,19 @@
             "/usr/bin/qseecomd"
             file
             execfile_file_context)
+        ;; qtee_supplicant has the same functionality as qseecomd for QLI targets
+        (filecon
+            "/usr/bin/qtee_supplicant"
+            file
+            execfile_file_context)
         ;;
         ;; Macros
         ;;
         (macro obj_type_transition_execfile ((type ARG1))
               (call .file.execfile_obj_type_transition
-                          (ARG1 execfile file "qseecomd")))
+                          (ARG1 execfile file "qseecomd"))
+              (call .file.execfile_obj_type_transition
+                  (ARG1 execfile file "qtee_supplicant")))
         ;;
         ;;Policy
         ;;

@@ -106,5 +106,7 @@
         (call .ssgtzd_socket.readwrite_nodedev_sock_files (subj))
         (allow subj ssgtzd.subj (unix_stream_socket( connectto )))
 
-
+        ;;TSA module conffile
+        (call .tsa.search_conffile_dirs (subj))
+        (call .tsa.read_conffile_files (subj))
 )

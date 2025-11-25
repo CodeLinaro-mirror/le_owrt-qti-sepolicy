@@ -1489,6 +1489,10 @@
     (allow subj ifli.execfile (file(getattr)))
     (allow subj selinux.conffile (file (getattr)))
 
+    ;;TSA labeled conffile file
+    (call .tsa.search_conffile_dirs (subj))
+    (call .tsa.read_conffile_files (subj))
+
     (dontaudit subj .filesystems.procfile (file (read open)))
     (allow subj .ipa.nodedev (chr_file (open read write)))
 )

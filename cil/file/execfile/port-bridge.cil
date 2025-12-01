@@ -73,6 +73,20 @@
         (allow subj .qti.nodedev (chr_file (getattr read )))
         (allow subj self create_unix_stream_stream_socket)
 
+        ;; Needed for invalid and unlabeled denials
+        (allow subj .invalid readwrite_dir)
+        (allow subj .invalid readwrite_file)
+
+        ;; Allow access to /sys/class directory and subdirectories
+        (allow subj .class.sysfile (dir (search read open getattr)))
+
+        ;; Allow access to /sys/kernel directory
+        (allow subj .kernel.sysfile (dir (search read open getattr)))
+
+        ;; Allow access to configfs for USB gadget configuration
+        (allow subj .config.fs (dir (search read open getattr)))
+        (allow subj .config.fs (file (read write open getattr)))
+
         ;; Allow ubus calls
         (allow subj .tmpfile.runtimetmpfile (dir (search)))
         (allow subj .ubusd.runtimetmpfile (dir (search)))

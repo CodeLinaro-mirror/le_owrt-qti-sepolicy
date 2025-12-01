@@ -71,5 +71,11 @@
 
 (allow subj ipv6.sysctlfile (file (read)))
 (allow subj qcmap_cm.runtimetmpfile (file (read)))
+
+;;STC
+(allow subj qcmap_cm.subj readwrite_tcp_socket)
+(allow subj qcmap_cm.subj readwrite_netlink_netfilter_socket)
+
+(call .ipa.readwrite_nodedev_chr_files (subj))
 (dontaudit subj self (capability (sys_admin)))
 )

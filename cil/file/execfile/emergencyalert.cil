@@ -51,6 +51,10 @@
     (allow subj .mnt.miscfile (dir (search)))
     (allow subj .mnt.miscfile (file (open read)))
 
+    ;; Need for /dev/logd or logging
+    ;; this will add write permission also
+    (call .logd.unix_dgram_send(subj))
+
     (dontaudit subj .sys.subj (fifo_file (ioctl)))
 
     ;; silence denial for check of sdcard when sdcard is not there

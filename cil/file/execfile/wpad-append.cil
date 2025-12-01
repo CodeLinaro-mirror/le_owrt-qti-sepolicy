@@ -233,10 +233,13 @@
     ;; Allow QMS to set WLAN country code
     (allow subj qms.subj (fd (use)))
     (allow subj qms.subj (fifo_file (read write)))
-    (allow subj qms.subj (unix_stream_socket (read write)))
-    (allow subj qms.subj (netlink_route_socket (read write)))
     (allow subj qms.subj create_unix_dgram_socket)
+    (allow subj qms.subj create_unix_stream_stream_socket)
+    (allow subj qms.subj create_netlink_route_socket)
 
     ;; kmsg
     (allow subj .kmsg.nodedev (chr_file (write ioctl append)))
+
+    ;; STC unix socket
+    (allow subj qms.subj readwrite_unix_dgram_socket)
 )

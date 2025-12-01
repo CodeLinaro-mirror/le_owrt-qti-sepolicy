@@ -31,6 +31,11 @@
 	runtimetmpfile_file_context)
 
 	(filecon
+	"/var/run/data/monitor/ipacmd\.pid"
+	file
+	runtimetmpfile_file_context)
+
+	(filecon
 	"/tmp/run/data/ipa"
 	dir
 	runtimetmpfile_file_context)
@@ -146,6 +151,8 @@
 		(call .qcmap_cm.runtimetmpfile_obj_type_transition
 			(ARG1 runtimetmpfile file "ipacm.pid"))
 		(call .qcmap_cm.runtimetmpfile_obj_type_transition
+			(ARG1 runtimetmpfile file "ipacmd.pid"))
+		(call .qcmap_cm.runtimetmpfile_obj_type_transition
 			(ARG1 runtimetmpfile dir "ipa"))
 		(call .tmp.fs_obj_type_transition
 			(ARG1 runtimetmpfile dir "data_ipa"))
@@ -256,6 +263,7 @@
 	(call .ipacm.manage_runtimetmpfile_files (subj))
 	(call .ipacm.create_runtimetmpfile_files (subj))
 	(allow subj ip.execfile (file(read open execute getattr execute_no_trans map)))
+	(allow subj qcmap_cm.runtimetmpfile (dir (remove_name)))
 
 	(allow subj self (netlink_generic_socket (create read write setopt bind getattr)))
 	(allow subj .wifi.execfile (file(read open execute getattr)))
@@ -265,6 +273,8 @@
 	(call .sys.search_fs_dirs (subj))
 	(call .sys.search_sysctlfile_dirs (subj))
 	(call .fs.search_sysfile_dirs (subj))
+
+	(allow subj .locale.miscfile (file (open read getattr map)))
 
 	(call .selinux.search_conffile_dirs (subj))
 	(call .selinux.getattr_filesystems(subj))

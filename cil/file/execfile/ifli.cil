@@ -1,0 +1,103 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .ifli.subj_type_transition (subj)))
+
+(in .file
+    (call .ifli.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block ifli
+        ;;
+        ;; Contexts
+        ;;
+
+        (filecon
+        "/usr/bin/ifli"
+        file
+        execfile_file_context)
+
+        (filecon
+        "/usr/bin/tm"
+        file
+        execfile_file_context)
+
+        (macro obj_type_transition_execfile ((type ARG1))
+            (call .file.execfile_obj_type_transition (ARG1 execfile file "ifli"))
+            (call .file.execfile_obj_type_transition (ARG1 execfile file "tm")))
+
+        ;; Policy
+        (blockinherit .agent.base_template)
+        (blockinherit file.conf.obj_template)
+
+        ;; Rules
+        (call .wifi.read_datafile_files (subj))
+        (call .wifi.mapexecute_datafile_files (subj))
+
+        (call .file.read_conffile_lnk_files (subj))
+        (call .file.read_conffile_files (subj))
+
+        (call .locale.read_miscfile_files (subj))
+        (call .locale.mapexecute_miscfile_files (subj))
+
+        (call .tmp.read_fs_chr_files (subj))
+        (call .tmp.readwrite_fs_sock_files (subj))
+        (call .tmp.manage_fs_sock_files (subj))
+        (call .tmp.readwrite_fs_dirs (subj))
+
+        (call .tmpfile.readwrite_logtmpfile_dirs (subj))
+        (call .tmpfile.search_logtmpfile_dirs (subj))
+        (call .tmpfile.manage_logtmpfile_files (subj))
+
+        (allow subj ifli.subj (unix_dgram_socket( write bind read )))
+        (allow subj ifli.subj readwrite_tcp_socket)
+        (allow subj ifli.subj (capability( dac_override )))
+        (allow subj ifli.subj (netlink_generic_socket( setopt bind getattr write read )))
+        (allow subj ifli.execfile (file(getattr)))
+
+        (call .qcmap_cm.readwrite_tmpfile_files (subj))
+
+        (allow subj sys.subj (unix_dgram_socket( sendto )))
+        (allow subj sys.subj (msgq( unix_write write unix_read read associate )))
+        (allow subj sys.subj (unix_stream_socket( connectto )))
+        (allow subj sys.subj (fifo_file( write )))
+        (allow subj sys.subj (shm( unix_read unix_write associate read write)))
+
+        (allow subj aios_daemon.subj (unix_stream_socket( connectto )))
+        (allow subj aios_daemon.subj (shm( read write unix_read unix_write )))
+
+        (allow subj self create_unix_stream_socket)
+        (allow subj self create_unix_dgram_socket)
+        (allow subj self create_udp_socket)
+        (allow subj self create_tcp_socket)
+        (allow subj self create_netlink_route_socket)
+        (allow subj self create_netlink_generic_socket)
+
+        (call .net.search_sysctlfile_dirs (subj))
+        (call .net.readwrite_sysctlfile_files (subj))
+
+        (call .proc.manage_fs_files (subj))
+        (call .proc.readwrite_fs_dirs (subj))
+
+        (call .sys.search_sysctlfile_dirs (subj))
+        (call .sys.search_fs_dirs (subj))
+
+        (call .debug.search_fs_dirs (subj))
+        (call .debug.read_fs_files (subj))
+
+        (allow subj self ( netlink_route_socket ( write nlmsg_read )))
+        (allow subj unreserved.netport (tcp_socket( name_connect )))
+        (allow subj net.netif (netif( egress )))
+        (allow subj net.netnode (node( sendto )))
+        (allow subj uci.conffile (file(getattr)))
+        (allow subj rcfirewall.subj (lnk_file( getattr )))
+        (allow subj logd.subj (unix_dgram_socket( sendto )))
+        (call .uci.search_conffile_dirs (subj))
+        (call .nameservice.read_miscfile_files (subj))
+        (call .resolv.search_tmpfile_dirs (subj))
+        (call .kernel.search_sysfile_dirs (subj))
+        (call .logd.readwrite_miscfile_sock_files (subj))
+        (call .mqueue.full_access (subj))
+)

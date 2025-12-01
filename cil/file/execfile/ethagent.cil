@@ -1,4 +1,4 @@
-;; Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -52,8 +52,8 @@
 	(call .tmpfile.search_conftmpfile_dirs (subj))
 	(allow subj tmpfile.runtimetmpfile (dir(search)))
 
-	(allow subj qcmap_cm.conffile(dir(search)))
-	(allow subj qcmap_cm.conffile (file(read open)))
+	(allow subj qcmap_cm.conffile(dir(search getattr)))
+	(allow subj qcmap_cm.conffile (file(read open getattr)))
 	(allow subj qcmap_cm.runtimetmpfile (dir(search)))
 	(allow subj qcmap_cm.runtimetmpfile(sock_file(write)))
 
@@ -62,7 +62,7 @@
 	(allow subj tlpd.subj(unix_stream_socket(connectto)))
 
 	(allow subj file.conffile (dir(search)))
-	(allow subj file.conffile(lnk_file (read)))
+	(allow subj file.conffile(lnk_file (read getattr)))
 
 	(allow subj kernel.sysfile(dir(search)))
 
@@ -84,6 +84,10 @@
 	(allow subj ssl.certfile(dir(read open)))
 
 	(call .pmsg_dev.readwrite_nodedev_chr_files (subj))
+
+	(dontaudit subj invalid (dir( search )))
+	(dontaudit subj invalid (file( read )))
+	(dontaudit subj invalid (lnk_file( read )))
 
 	(dontaudit subj ethagent.subj (capability( dac_override )))
 )

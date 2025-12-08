@@ -1,4 +1,4 @@
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -118,7 +118,8 @@
         (allow subj .qcfirmware.miscfile (dir (search)))
         (allow subj .qcfirmware.miscfile (file (getattr read open)))
         (allow subj .xattr.fs (filesystem (getattr)))
-        (allow subj .cache.miscfile (file (read)))
+        (allow subj .cache.miscfile (dir (search)))
+        (allow subj .cache.miscfile (file (getattr open read)))
 
         ;; Permissions to access productId
         (allow subj .config.fs (dir (search)))

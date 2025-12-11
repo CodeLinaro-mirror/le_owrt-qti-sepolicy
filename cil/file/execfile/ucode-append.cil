@@ -34,6 +34,10 @@
         (allow subj .qcmap_cm.conffile (dir (search)))
         (call .qcmap_cm.read_conffile_files (subj))
 
+        ;; Need to access /tmp/data/softap.log
+        (call .qcmap_cm.search_tmpfile_dirs (subj))
+        (call .qcmap_cm.readwrite_tmpfile_files (subj))
+
         (allow subj .qcmap_cli.subj (fd (use)))
         (allow subj .qcmap_cli.subj (fifo_file (read write)))
         (allow subj .qcmap_cli.subj (unix_stream_socket (read write)))
@@ -61,6 +65,7 @@
         (allow subj bus.sysfile (dir (search read open)))
         (allow subj class.sysfile (dir (read open)))
         (allow subj proc.fs (dir (read open)))
+        (allow subj proc.fs (file (read open)))
         (allow subj fs.procfile (dir (search)))
         (allow subj sys.subj readwriteinherited_fifo_file)
 

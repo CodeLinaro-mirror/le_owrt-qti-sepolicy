@@ -278,7 +278,9 @@
 	(allow .hotplugcall.subj .devices.sysfile (file (setattr)))
 
       (allow subj pppd.tmpfile (file (write getattr)))
-      (allow subj resolv.tmpfile (dir (search)))
-      (allow subj resolv.tmpfile (file (getattr read append)))
-
+      (allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
+      (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
+      (call .netifd.execute_miscfile_files (subj))
+      (call .firewall.obj_type_transition_conffile_ext (subj))
+      (allow subj firewall.conffile (file (create write getattr rename unlink)))
 )

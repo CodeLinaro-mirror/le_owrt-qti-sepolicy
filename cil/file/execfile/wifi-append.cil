@@ -294,6 +294,7 @@
 	;; Read/write ini files (/etc/misc/ipq/.*)
 	(allow subj .wifi.conffile (dir (search getattr read open write add_name remove_name create setattr rename reparent)))
 	(allow subj .wifi.conffile (file (getattr read open append write unlink create ioctl setattr rename link)))
+	(allow subj .wifi.conffile (chr_file (create)))
 
 	;; cfg/default in /data/vendor/ipq/.*
 	(allow subj .wifi.datafile (dir (create search write add_name getattr setattr)))
@@ -546,6 +547,9 @@
 	(allow subj .netifd.subj readwrite_netlink_route_socket)
 	(allow subj .netifd.subj (fifo_file (read write ioctl)))
 	(allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
+
+	;; For conntrack
+	(allow subj .conntrack.subj (dir (search)))
 
 	(call .sys.readwrite_rootfile_dirs (subj))
 
@@ -818,6 +822,9 @@
 	(allow subj .rcboot.subj (dir (search)))
 	(allow subj .rcboot.subj (file (read open)))
 	(allow subj .rcboot.subj (lnk_file (read)))
+
+	;; Xtables
+	(allow subj .xtables.subj (dir (search)))
 
 	;;STC
 	(call .wifi.manage_conffile_files (subj))

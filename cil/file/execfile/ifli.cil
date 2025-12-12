@@ -100,4 +100,11 @@
         (call .kernel.search_sysfile_dirs (subj))
         (call .logd.readwrite_miscfile_sock_files (subj))
         (call .mqueue.full_access (subj))
+
+        ;;Licensing Modules access
+        (allow subj diag-router.subj (unix_stream_socket( connectto )))
+        (call .ssgtzd_socket.readwrite_nodedev_sock_files (subj))
+        (allow subj ssgtzd.subj (unix_stream_socket( connectto )))
+
+
 )

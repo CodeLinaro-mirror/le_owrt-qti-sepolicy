@@ -283,4 +283,10 @@
       (call .netifd.execute_miscfile_files (subj))
       (call .firewall.obj_type_transition_conffile_ext (subj))
       (allow subj firewall.conffile (file (create write getattr rename unlink)))
+
+;; Need for ECM
+      (allow subj net.sysctlfile (file(getattr)))
+      (call .ecm.search_sysfile_dirs (subj))
+      (allow subj ecm.sysfile (file(getattr)))
+      (call .ecm.readwrite_sysfile_files (subj))
 )

@@ -106,6 +106,8 @@
 	(allow subj qcmap_cm.subj readwrite_netlink_netfilter_socket)
 	(allow subj qcmap_cm.runtimetmpfile (file (read)))
 
+	(allow subj ipa.nodedev (chr_file (read write)))
+
 	(dontaudit subj qcmap_cm.subj (udp_socket( read write)))
 	(dontaudit subj ubusd.subj (lnk_file (read)))
 )

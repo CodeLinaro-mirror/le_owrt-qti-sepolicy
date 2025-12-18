@@ -1488,6 +1488,7 @@
     (allow subj qcmap_cm.subj readwrite_tcp_socket)
     (allow subj ifli.execfile (file(getattr)))
     (allow subj selinux.conffile (file (getattr)))
+    (allow subj wifi.tmpfile (file(getattr)))
 
     (dontaudit subj .filesystems.procfile (file (read open)))
     (allow subj .ipa.nodedev (chr_file (open read write)))

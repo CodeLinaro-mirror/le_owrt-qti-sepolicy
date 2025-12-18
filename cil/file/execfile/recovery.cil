@@ -210,6 +210,6 @@
 	(allow subj meminfo.procfile (file (read open)))
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
-
+	(allow subj .file.execfile (file (read open execute getattr map)))
 	(dontaudit subj self (capability (sys_admin)))
 )

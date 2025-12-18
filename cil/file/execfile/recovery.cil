@@ -171,4 +171,6 @@
 	(allow subj sys.sysctlfile (dir (search)))
 	(allow subj vm.sysctlfile (dir (search)))
 	(allow subj vm.sysctlfile (file ( open write )))
+	(allow subj .file.execfile (file (read open execute getattr map)))
+	(allow subj meminfo.procfile (file (read open)))
 )

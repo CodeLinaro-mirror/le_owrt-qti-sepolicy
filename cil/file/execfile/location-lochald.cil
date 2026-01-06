@@ -167,4 +167,6 @@
 	;; Lcs related
 	(allow subj file.conffile (file (getattr)))
 
+	;; Send messages to mbb_device_agent
+	(call .mbb_device_agent.sendto_unix_dgram_sockets (subj))
 )

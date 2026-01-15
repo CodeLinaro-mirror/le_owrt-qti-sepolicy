@@ -1,0 +1,9 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(block mkfs_ext4
+	(allow mke2fs.subj mke2fs.subj (capability (sys_rawio)))
+	(allow mke2fs.subj kmsg.nodedev (chr_file (append)))
+	(allow mke2fs.subj tmp.fs (blk_file (getattr open read write ioctl)))
+	(allow mke2fs.subj dev.sysfile (lnk_file (read)))
+)

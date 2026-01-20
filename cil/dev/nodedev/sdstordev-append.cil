@@ -1,0 +1,225 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+;; SPDX-FileCopyrightText: © 2021 Dominick Grift <dominick.grift@defensec.nl>
+;; SPDX-License-Identifier: Unlicense
+
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .dev
+    (call .sd.obj_type_transition_stordev_3 (unconfined.subj_typeattr)))
+
+(in .dev.stor
+    (call .sd.obj_type_transition_stordev_3 (unconfined.subj_typeattr)))
+
+(in .sd
+       (macro obj_type_transition_stordev_3 ((type ARG1))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda1"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda2"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda3"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda4"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda5"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda6"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda7"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda8"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda9"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda10"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda11"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sda12"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdb"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdb1"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdb2"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdb3"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdb4"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdb5"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdc"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdc1"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdc2"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdc3"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdc4"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdd"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdd1"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdd2"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdd3"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde1"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde2"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde3"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde4"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde5"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde6"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde7"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde8"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde9"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde10"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde11"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde12"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde13"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde14"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde15"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde16"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde17"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde18"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde19"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde20"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde21"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde22"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde23"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde24"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde25"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde26"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde27"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde28"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde29"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde30"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde31"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde32"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde33"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde34"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde35"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde36"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde37"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde38"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde39"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde40"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde41"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde42"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde43"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde44"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde45"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde46"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde47"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde48"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde49"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde50"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde51"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde52"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde53"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde54"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde55"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde56"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde57"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde58"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde59"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde60"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde61"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde62"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde63"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde64"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde65"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde66"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde67"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde68"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde69"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdf"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdf1"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdf2"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdf3"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdf4"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sdf5"))
+       )
+)

@@ -1,0 +1,26 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(block trace
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (genfscon
+        "tracefs"
+        "/"
+        fs_context)
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .fs.obj_file_macro_template)
+       (blockinherit .fs.seclabel.obj_template)
+
+       (allow fs self (filesystem (associate)))
+
+       (optional tracefsseclabelfs_opt_sandbox
+                 (call .fs.sandboxexception.obj_type (fs))))
+

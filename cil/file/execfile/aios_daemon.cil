@@ -162,4 +162,9 @@
         (call .file.read_execfile_files (subj))
         (call .file.mapexecute_execfile_files (subj))
 
+         ;; TSA permission
+        (allow subj tmp.fs (dir (create)))
+        (allow subj ifli.subj (dir( search )))
+        (allow subj ifli.subj (lnk_file( read )))
+
 )

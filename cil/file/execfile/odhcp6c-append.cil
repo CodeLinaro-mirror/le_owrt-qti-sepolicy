@@ -56,7 +56,7 @@
     (allow subj .ifstatus.execfile (file (execute read open getattr)))
     (call .ifstatus.subj_type_transition (subj))
     ;; Need permissions to run brctl command
-    (allow subj .class.sysfile (lnk_file (read)))
+    (allow subj .class.sysfile (lnk_file (read getattr)))
     (allow subj .class.sysfile (dir (read open search getattr)))
     ;; Need reload firewall anc access init.d from odhcp6c
     (allow subj .file.initscriptfile (dir (read search)))

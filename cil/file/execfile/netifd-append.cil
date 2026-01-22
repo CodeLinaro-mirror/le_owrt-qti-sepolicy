@@ -136,6 +136,7 @@
           (allow subj .filesystems.procfile (file (read open)))
 
           ;; Need run chmod on /dev/socket/data/pd_manager
+          (call .qcmap_cm.subj_type_transition (subj))
           (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
           (allow subj qcmap_cm.execfile (file (execute read open)))
           (allow subj self (capability (fsetid fowner)))
@@ -327,7 +328,7 @@
 	  (allow subj nftables.subj (process (rlimitinh siginh)))
 	  ;; Need for pppoe on /tmp/ipv4config.waneth*
 	  (allow subj pppd.tmpfile (file (getattr read open)))
-          ;Need permission for nft
+          ;; Need permission for nft
           (call .nftables.read_execfile_files (subj))
           (call .nftables.mapexecute_execfile_files (subj))
 

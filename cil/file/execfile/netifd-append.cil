@@ -26,6 +26,11 @@
        statetmpfile_file_context)
 
        (filecon
+       "/tmp/state/qcmap_lan_runtime"
+       file
+       statetmpfile_file_context)
+
+       (filecon
        "/tmp/usb_bind_in_progress"
        file
        tmpfile_file_context)
@@ -36,7 +41,9 @@
 
        (macro obj_type_transition_statetmpfile ((type ARG1))
            (call .tmpfile.statetmpfile_obj_type_transition
-               (ARG1 statetmpfile file "qcmap_lan")))
+               (ARG1 statetmpfile file "qcmap_lan"))
+           (call .tmpfile.statetmpfile_obj_type_transition
+               (ARG1 statetmpfile file "qcmap_lan_runtime")))
 
        (macro obj_type_transition_tmpfile_ext ((type ARG1))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanwlan"))

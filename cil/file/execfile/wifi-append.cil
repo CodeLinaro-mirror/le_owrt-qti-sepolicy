@@ -280,7 +280,7 @@
 
 	;; Read devicetree from /sys/firmware
 	(allow subj .firmware.sysfile (dir (search getattr read open)))
-	(allow subj .firmware.sysfile (file (getattr)))
+	(allow subj .firmware.sysfile (file (getattr read open)))
 
 	;; Access to /firmware/image/qcn9224
 	(allow subj .dos.fs (dir (search getattr)))

@@ -26,6 +26,7 @@
     (filecon "/tmp/wpa_supplicant\.txt" file tmpfile_file_context)
     (filecon "/var/run/hostapd.*\.pid" file runtimetmpfile_file_context)
     (filecon "/var/run/hostapd-wifi[0-9]+" dir runtimetmpfile_file_context)
+    (filecon "/var/run/hostapd-.*" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant.*\.pid" file runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicantglobal" socket runtimetmpfile_file_context)
     (filecon "/var/run/wpa_supplicant-ath[0-9]+" dir runtimetmpfile_file_context)

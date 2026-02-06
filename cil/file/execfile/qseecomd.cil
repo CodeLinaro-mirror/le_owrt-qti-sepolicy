@@ -78,7 +78,12 @@
        (allow qseecomd.subj. block.sysfile (lnk_file (read)))
 
 ;;don't audit shell cmds denials
-       (dontaudit qseecomd.subj shell.execfile (file (execute)))
+       (dontaudit qseecomd.subj shell.execfile (file (read open execute execute_no_trans map getattr)))
+
+;;don't audit denials for /sys/fs and /proc/filesystems access
+       (dontaudit qseecomd.subj fs.sysfile (dir (search)))
+       (dontaudit qseecomd.subj sys.fs (filesystem (getattr)))
+       (dontaudit qseecomd.subj filesystems.procfile (file (read open)))
 
 )
 

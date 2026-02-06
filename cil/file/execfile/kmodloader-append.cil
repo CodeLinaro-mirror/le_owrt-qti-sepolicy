@@ -48,6 +48,11 @@
 
   ;;STC
   (allow subj qcmap_cm.subj readwrite_tcp_socket)
+
+  (call .ipa.readwrite_nodedev_chr_files (subj))
+
+  ;;ECM
+  (call .ecm.search_sysfile_dirs (subj))
 )
 
 

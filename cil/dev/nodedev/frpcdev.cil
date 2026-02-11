@@ -1,0 +1,37 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .dev
+    (call .frpc_dev.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+
+(block frpc_dev
+
+       ;;
+       ;; Contexts
+       ;;
+
+       (filecon
+        "/dev/fastrpc-adsp-secure"
+        char
+        nodedev_file_context)
+
+       (filecon
+        "/dev/fastrpc-adsp"
+        char
+        nodedev_file_context)
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_nodedev ((type ARG1))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "fastrpc-adsp-secure"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 nodedev chr_file "fastrpc-adsp")))
+
+       ;;
+       ;; Policy
+       ;;
+
+       (blockinherit .dev.node.obj_template))

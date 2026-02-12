@@ -120,6 +120,7 @@
 	(call .qms.manage_datafile_files (subj))
 
 	(allow subj kernel.sysfile (dir (search)))
+	(allow qms.subj kernel_dload.sysfile(file (open read write)))
 
 	;; To execute /usr/sbin/wpa_cli
 	(call .wpad.subj_type_transition (subj))
@@ -186,6 +187,7 @@
 	(call qms_read_access_to_obj (bus.sysfile))
 	(allow qms.subj bus.sysfile (dir (read open)))
 	(allow qms.subj devices.sysfile (file (watch watch_reads write)))
+	(allow qms.subj devices.sysfile (dir (read)))
 
 	;; Network socket permissions for qms
 	(allow qms.subj net.netnode (udp_socket (node_bind)))

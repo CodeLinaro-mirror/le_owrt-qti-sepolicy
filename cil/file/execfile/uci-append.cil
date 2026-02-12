@@ -86,7 +86,7 @@
 
 	(allow subj functions.miscfile (file (read)))
 
-	(allow subj file.conffile (dir (remove_name)))
+	(allow subj file.conffile (dir (setattr remove_name)))
 
 	;Need permission for uci
 	(allow subj tmpfile.runtimetmpfile (dir (search)))

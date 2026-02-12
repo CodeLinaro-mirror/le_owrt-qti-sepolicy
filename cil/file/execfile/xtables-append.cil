@@ -1,4 +1,4 @@
-;;Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .xtables
@@ -13,7 +13,8 @@
 	(allow subj .qcmap_ref.subj (netlink_route_socket (read write)))
 
 	;;Need read, write permission on qcmap_cm.subj
-	(allow subj qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+	(allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
+        (allow subj .qcmap_cm.subj (netlink_route_socket (read write)))
 
 	;; Need permission to run iptables in netifd script
 	(allow subj .netifd.subj readwriteinherited_fifo_file)

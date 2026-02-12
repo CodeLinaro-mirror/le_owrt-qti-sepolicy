@@ -1,0 +1,59 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .nwaios_app.subj_type_transition (subj)))
+
+(in .file
+    (call .nwaios_app.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block nwaios_app
+        ;;
+        ;; Contexts
+        ;;
+        (filecon
+         "/usr/bin/nwaios-sample-app"
+         file
+         execfile_file_context)
+
+        (macro obj_type_transition_execfile ((type ARG1))
+            (call .file.execfile_obj_type_transition
+            (ARG1 execfile file "nwaios-sample-app")))
+
+        ;; Policy
+        (blockinherit .agent.base_template)
+
+        ;; Rules
+
+        ;; File-related rules
+        (call .file.search_conffile_dirs (subj))
+
+        ;; NWAIOS data access for AI model files and input files
+        (call .nwaios.full_access (subj))
+
+        ;; Unix socket-related rules
+        (allow subj self create_unix_dgram_socket)
+        (allow subj self create_unix_stream_stream_socket)
+
+        ;; Write to aios_daemon's socket file
+        (allow subj aios_daemon.subj (sock_file (write)))
+
+        ;; Logging support
+        (call .logd.sendto_unix_dgram_sockets (subj))
+        (call .logd.readwrite_miscfile_sock_files (subj))
+
+        ;; Connect to aios_daemon unix stream socket
+        (allow subj aios_daemon.subj (unix_stream_socket (connectto)))
+
+        ;; Shared memory access with aios_daemon
+        (allow subj aios_daemon.subj (shm (unix_read unix_write read write)))
+
+        ;; Write output files to /data/nwaios/
+        (allow subj nwaios.datafile (dir (write add_name search)))
+        (allow subj nwaios.datafile (file (create write read open)))
+
+        ;; Allow nwaios_app to write to aios_daemon's tmpfile sock_files
+        (allow subj aios_daemon.tmpfile (sock_file (write)))
+)

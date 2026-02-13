@@ -825,6 +825,11 @@
 
 	;; Xtables
 	(allow subj .xtables.subj (dir (search)))
+	(allow subj .xtables.subj (file (read)))
+	(allow subj .xtables.subj (lnk_file (read)))
+
+	;; jshn
+	(allow subj .jshn.subj (dir (search)))
 
 	;;STC
 	(call .wifi.manage_conffile_files (subj))

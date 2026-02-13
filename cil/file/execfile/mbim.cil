@@ -1,4 +1,5 @@
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; All rights reserved.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -86,6 +87,7 @@
         ;; permission to access all configuration files under /data/mbimd
         (call .mbim.manage_datafile_dirs (subj))
         (call .mbim.manage_datafile_files (subj))
+        (call .mbim.manage_datafile_fifo_files (subj))
 
         ;; permission to manage runtime files under /tmp/run/mbim
         (call .mbim.manage_runtimetmpfile (subj))
@@ -133,4 +135,3 @@
         (call .android_mbim.readwrite_nodedev_chr_files (subj))
         (call .smdcntl.readwrite_nodedev_chr_files (subj))
         (call .ipa.readwrite_nodedev_chr_files (subj)))
-

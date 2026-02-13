@@ -59,6 +59,7 @@
 	(allow subj ipacm.conffile (file (unlink)))
 	(call .logd.write_miscfile_sock_files (subj))
 	(call .nameservice.read_miscfile_files (subj))
+	(allow subj qcmap_cm.runtimetmpfile (file (read)))
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
 	(allow .sdcard.miscfile .xattr.fs (filesystem (associate)))

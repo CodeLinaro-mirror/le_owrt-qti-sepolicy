@@ -1,6 +1,5 @@
-;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
-;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .kmodloader
 
@@ -48,6 +47,14 @@
 
   ;;STC
   (allow subj qcmap_cm.subj readwrite_tcp_socket)
+
+  (call .ipa.readwrite_nodedev_chr_files (subj))
+
+  ;;ECM
+  (call .ecm.search_sysfile_dirs (subj))
+
+  ;; Search tracefs directories
+  (allow subj .trace.fs search_dir)
 )
 
 

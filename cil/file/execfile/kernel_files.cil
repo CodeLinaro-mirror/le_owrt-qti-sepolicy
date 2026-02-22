@@ -1,0 +1,58 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; This file defines specific security contexts for kernel files
+;; to allow targeted access control rather than using the generic kernel.sysfile label
+
+;; Define the dload module context
+(block kernel_dload
+
+       ;;
+       ;; Contexts
+       ;;
+
+     (genfscon
+        "sysfs"
+        "/kernel/dload/dload_mode"
+        sysfile_file_context)
+
+    (blockinherit .sysfile.module.obj_template))
+
+(in .sysfile
+
+    (block kernel_dload
+
+           ;;
+           ;; Policy
+           ;;
+
+           (blockinherit .file.obj_all_macro_template)
+
+           ;;
+           ;; Templates
+           ;;
+
+           (block obj_base_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_base_template)
+
+                  (blockinherit .sysfile.obj_base_template)
+
+                  (call .sysfile.kernel_dload.obj_type (sysfile)))
+
+           (block obj_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_template)
+
+                  (blockinherit .sysfile.kernel_dload.obj_base_template)
+                  (blockinherit .sysfile.obj_macro_template))))

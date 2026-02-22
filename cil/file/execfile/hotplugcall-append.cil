@@ -47,6 +47,7 @@
       (allow  .hotplugcall.subj .sdcard.miscfile (dir (getattr mounton)))
       (allow  .hotplugcall.subj dos.fs (filesystem (mount unmount)))
       (allow  .hotplugcall.subj dos.fs (dir (getattr)))
+      (call .cmdline.read_procfile_files (subj))
 
 ;; Needed for the mount as this will be running in sys.subj
       (allow  .sys.subj  qcfirmware.miscfile (filesystem ( relabelto relabelfrom mount unmount getattr)))
@@ -280,4 +281,13 @@
       (allow subj pppd.tmpfile (file (write getattr)))
       (allow subj resolv.tmpfile (file (getattr read append write open create ioctl setattr rename unlink)))
       (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
+      (call .netifd.execute_miscfile_files (subj))
+      (call .firewall.obj_type_transition_conffile_ext (subj))
+      (allow subj firewall.conffile (file (create write getattr rename unlink)))
+
+;; Need for ECM
+      (allow subj net.sysctlfile (file(getattr)))
+      (call .ecm.search_sysfile_dirs (subj))
+      (allow subj ecm.sysfile (file(getattr)))
+      (call .ecm.readwrite_sysfile_files (subj))
 )

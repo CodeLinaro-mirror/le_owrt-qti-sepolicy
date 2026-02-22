@@ -72,12 +72,14 @@
 	(allow subj self (capability2 (block_suspend)))
 	(allow subj uio.nodedev (chr_file (map)))
 	(allow subj mmc.stordev (blk_file (read write)))
+	(allow subj sd.stordev (blk_file (read write)))
 	(allow subj tmp.fs (blk_file (open read write)))
  
         (call .power.search_sysfile_dirs(subj))
         (call .devices.search_sysfile_dirs(subj))
         (call .class.search_sysfile_dirs(subj))
         (call .mmc.readwrite_stordev_blk_files (subj))
+        (call .sd.readwrite_stordev_blk_files (subj))
         (call .dev.stor.readwrite.subj_type (subj))
 
 )

@@ -20,6 +20,7 @@
 	;; --------
 	(filecon "/etc/gps\.conf" file conffile_file_context)
 	(filecon "/etc/izat\.conf" file conffile_file_context)
+	(filecon "/etc/izat_process\.conf" file conffile_file_context)
 	(filecon "/etc/flp\.conf" file conffile_file_context)
 	(filecon "/etc/batching\.conf" file conffile_file_context)
 	(filecon "/etc/xtwifi\.conf" file conffile_file_context)
@@ -41,6 +42,8 @@
 		(call .file.conffile_obj_type_transition
 			(ARG1 conffile file "izat.conf"))
 		(call .file.conffile_obj_type_transition
+			(ARG1 conffile file "izat_process.conf"))
+		(call .file.conffile_obj_type_transition
 			(ARG1 conffile file "flp.conf"))
 		(call .file.conffile_obj_type_transition
 			(ARG1 conffile file "batching.conf"))
@@ -48,6 +51,8 @@
 			(ARG1 conffile file "xtwifi.conf"))
 		(call .file.conffile_obj_type_transition
 			(ARG1 conffile file "lowi.conf"))
+		(call .file.conffile_obj_type_transition
+			(ARG1 conffile file "qppe.conf"))
 		(call .file.conffile_obj_type_transition
 			(ARG1 conffile file "qapi.conf"))
 		(call .file.conffile_obj_type_transition

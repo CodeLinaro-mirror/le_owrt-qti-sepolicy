@@ -246,6 +246,7 @@
 	;; Need to read template files under /etc/misc/wifi
 	(call .wpad.search_miscfile_dirs (subj))
 	(call .wpad.read_miscfile_files (subj))
+	(allow .sys.subj .wpad.miscfile (system (firmware_load)))
 
 	;; Need to run command 'date' for logs in qcacld32.sh
 	(allow subj .file.conffile (lnk_file (read getattr unlink)))

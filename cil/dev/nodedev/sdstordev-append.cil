@@ -210,6 +210,8 @@
               (call .tmp.fs_obj_type_transition
                     (ARG1 stordev blk_file "sde69"))
               (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev blk_file "sde70"))
+              (call .tmp.fs_obj_type_transition
                     (ARG1 stordev blk_file "sdf"))
               (call .tmp.fs_obj_type_transition
                     (ARG1 stordev blk_file "sdf1"))

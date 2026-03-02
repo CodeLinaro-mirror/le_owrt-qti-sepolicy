@@ -386,6 +386,7 @@
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .fw3.subj))
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .nftables.subj))
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .data_path_opt.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .mbb_device_agent.subj))
 
 	;; Look for files in /tmp
 	(allow subj .tmp.fs (file (create read write getattr open unlink)))

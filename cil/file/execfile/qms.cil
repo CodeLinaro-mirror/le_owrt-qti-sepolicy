@@ -223,6 +223,15 @@
 	;; Allow creating/using packet sockets and setting options
 	(allow subj self create_packet_socket)
 
+	;; Allow qms to transition to uci domain when executing /sbin/uci
+	(call .uci.subj_type_transition (subj))
+
+	;; Allow qms to execute uci binary and trigger domain transition
+	(allow qms.subj .uci.execfile(file (getattr read open execute)))
+
+	;; Allow shell basic traversal of filesystem root
+	(allow qms.subj .sys.rootfile(dir (search getattr open read)))
+
 	(dontaudit subj self (capability (sys_admin)))
 )
 

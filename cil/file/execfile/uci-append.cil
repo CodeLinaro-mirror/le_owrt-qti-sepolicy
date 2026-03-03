@@ -102,6 +102,12 @@
 
 	(call .ipa.readwrite_nodedev_chr_files (subj))
 
+	;; Allow uci to use IPC objects inherited from qms
+	(allow subj qms.subj (fd (use)))
+	(allow subj qms.subj (fifo_file (read write ioctl)))
+	(allow subj qms.subj (unix_stream_socket (read write)))
+	(allow subj qms.subj (netlink_route_socket (read write)))
+
 	(dontaudit subj self (capability (sys_admin)))
 )
 

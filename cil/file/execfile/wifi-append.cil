@@ -835,6 +835,11 @@
 	(call .wifi.manage_conffile_files (subj))
 	(call .wifi.manage_conffile_dirs (subj))
 
+	;;mbb_device_agent
+	(allow subj mbb_device_agent.subj (dir(search)))
+	(allow subj mbb_device_agent.subj (file(read open)))
+	(allow subj mbb_device_agent.subj (lnk_file(read)))
+
 	(allow subj ssgtzd.subj (file( read open )))
 	(allow subj ssgtzd.subj (lnk_file( read )))
 

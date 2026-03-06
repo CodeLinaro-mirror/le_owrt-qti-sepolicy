@@ -1525,6 +1525,8 @@
     (allow subj tsa.subj (file( read open )))
     (allow subj ifli.subj (file( read open )))
 
+    (allow subj .ipacm.runtimetmpfile (file (getattr)))
+
     (dontaudit subj .filesystems.procfile (file (read open)))
     (allow subj .ipa.nodedev (chr_file (open read write)))
 )

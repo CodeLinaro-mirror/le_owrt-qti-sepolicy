@@ -71,6 +71,8 @@
 
 (allow subj ipv6.sysctlfile (file (read)))
 (allow subj qcmap_cm.runtimetmpfile (file (read)))
+(allow subj qcmap_cm.conffile (file (read)))
+(allow subj resolv.tmpfile (file (read)))
 
 ;;STC
 (allow subj qcmap_cm.subj readwrite_tcp_socket)

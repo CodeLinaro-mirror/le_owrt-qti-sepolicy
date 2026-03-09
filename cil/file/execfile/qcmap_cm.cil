@@ -1465,7 +1465,8 @@
     (allow subj qms.subj (unix_stream_socket( connectto )))
 
     ;;Need permission for pppd
-    (allow subj pppd.tmpfile (file (getattr)))
+    (allow subj pppd.tmpfile (file (getattr read open)))
+    (allow subj pppd.subj (fd (use)))
 
     ;;Need for Health monitor XML access/update for factory reset
     (allow subj .health_monitor.conffile (dir (search write add_name remove_name)))

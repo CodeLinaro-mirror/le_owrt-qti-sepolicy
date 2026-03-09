@@ -246,6 +246,7 @@
 	;; Need to read template files under /etc/misc/wifi
 	(call .wpad.search_miscfile_dirs (subj))
 	(call .wpad.read_miscfile_files (subj))
+	(allow .sys.subj .wpad.miscfile (system (firmware_load)))
 
 	;; Need to run command 'date' for logs in qcacld32.sh
 	(allow subj .file.conffile (lnk_file (read getattr unlink)))
@@ -385,6 +386,7 @@
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .fw3.subj))
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .nftables.subj))
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .data_path_opt.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .mbb_device_agent.subj))
 
 	;; Look for files in /tmp
 	(allow subj .tmp.fs (file (create read write getattr open unlink)))

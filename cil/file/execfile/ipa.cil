@@ -9,6 +9,7 @@
 
 (in .file
 	(call .ipacli.obj_type_transition_execfile (unconfined.subj_typeattr))
+	(call .ipacli.obj_type_transition_conffile (unconfined.subj_typeattr))
 )
 
 (block ipacli
@@ -20,6 +21,20 @@
 	file
 	execfile_file_context)
 
+	(filecon
+	"/etc/data/ipa_be"
+	dir
+	conffile_file_context)
+
+	(filecon
+	"/etc/data/ipa_be/ipa_ini_file.ini"
+	file
+	conffile_file_context)
+
+	(filecon
+	"/etc/data/ipa_be/ipa_ini_file\.ini\.tmp"
+	file
+	conffile_file_context)
 	;;
 
 	;; Macros
@@ -28,12 +43,21 @@
 		(call .file.execfile_obj_type_transition
 			(ARG1 execfile file "ipa")))
 
+	(macro obj_type_transition_conffile ((type ARG1))
+		(call .file.conffile_obj_type_transition
+			(ARG1 conffile dir "ipa_be"))
+		(call .file.conffile_obj_type_transition
+			(ARG1 conffile file "ipa_ini_file.ini"))
+		(call .file.conffile_obj_type_transition
+			(ARG1 conffile file "ipa_ini_file.ini.tmp")))
+
 	;;
 
 	;; Policy
 
 	(blockinherit .subj.subj_all_macro_template)
 	(blockinherit .agent.base_template)
+	(blockinherit .file.conf.obj_template)
 
 	(call .ipa.readwrite_nodedev_chr_files (subj))
 	(call .ipa.mapexecute_nodedev_chr_files (subj))
@@ -59,6 +83,9 @@
 	(allow subj ipacm.conffile (file (unlink)))
 	(call .logd.write_miscfile_sock_files (subj))
 	(call .nameservice.read_miscfile_files (subj))
+	(allow subj qcmap_cm.runtimetmpfile (file (read)))
+	(call .ipacli.manage_conffile_files (subj))
+	(call .ipacli.manage_conffile_dirs (subj))
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
 	(allow .sdcard.miscfile .xattr.fs (filesystem (associate)))
@@ -93,6 +120,8 @@
 
 	;; Need permission for pppd
 	(allow subj pppd.subj (fd (use)))
+
+	(allow .sys.subj .ipacli.conffile (system (firmware_load)))
 
 	(dontaudit subj self (capability (sys_admin dac_read_search)))
     ;;

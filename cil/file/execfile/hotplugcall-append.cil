@@ -47,10 +47,13 @@
       (allow  .hotplugcall.subj .sdcard.miscfile (dir (getattr mounton)))
       (allow  .hotplugcall.subj dos.fs (filesystem (mount unmount)))
       (allow  .hotplugcall.subj dos.fs (dir (getattr)))
+      (call .cmdline.read_procfile_files (subj))
 
 ;; Needed for the mount as this will be running in sys.subj
       (allow  .sys.subj  qcfirmware.miscfile (filesystem ( relabelto relabelfrom mount unmount getattr)))
       (allow  .qcfirmware.miscfile  qcfirmware.miscfile (filesystem (associate)))
+      (allow  .sys.subj  qcfirmware.miscfile (system (firmware_load)))
+
 
 ;; Need for default route /tmp/default.route.*
       (allow  subj .netifd.tmpfile (file (read open)))

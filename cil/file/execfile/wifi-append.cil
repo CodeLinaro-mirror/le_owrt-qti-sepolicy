@@ -827,7 +827,7 @@
 
 	;; Xtables
 	(allow subj .xtables.subj (dir (search)))
-	(allow subj .xtables.subj (file (read)))
+	(allow subj .xtables.subj (file (read open)))
 	(allow subj .xtables.subj (lnk_file (read)))
 
 	;; jshn

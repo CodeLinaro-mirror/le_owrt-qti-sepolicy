@@ -29,7 +29,7 @@
 	(allow subj .nameservice.miscfile (file (append)))
 
 	(call .uci.manage_conffile_files (subj))
-	(allow subj uci.conffile (dir (setattr remove_name)))
+	(allow subj uci.conffile (dir (create rename rmdir reparent setattr remove_name)))
 	(allow subj uci.defaults.conffile (dir (create add_name setattr rename reparent)))
 
 	(allow subj file.conffile (dir (setattr)))

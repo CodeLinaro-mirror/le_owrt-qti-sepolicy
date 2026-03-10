@@ -69,7 +69,7 @@
 	(blockinherit .file.data.obj_template)
 	(blockinherit .tmpfile.obj_template)
 
-	(allow subj self (capability (net_admin dac_read_search chown)))
+	(allow subj self (capability (net_admin dac_read_search chown net_raw)))
 
 	(call obj_type_transition_tmpfile (subj sock_file "qms"))
 	(allow subj self create_qipcrtr_socket)
@@ -120,6 +120,7 @@
 	(call .qms.manage_datafile_files (subj))
 
 	(allow subj kernel.sysfile (dir (search)))
+	(allow qms.subj kernel_dload.sysfile(file (open read write)))
 
 	;; To execute /usr/sbin/wpa_cli
 	(call .wpad.subj_type_transition (subj))
@@ -184,7 +185,9 @@
 
 	;; Covers (dir (search)) and (lnk_file (read)) from original
 	(call qms_read_access_to_obj (bus.sysfile))
+	(allow qms.subj bus.sysfile (dir (read open)))
 	(allow qms.subj devices.sysfile (file (watch watch_reads write)))
+	(allow qms.subj devices.sysfile (dir (read)))
 
 	;; Network socket permissions for qms
 	(allow qms.subj net.netnode (udp_socket (node_bind)))
@@ -206,7 +209,14 @@
 	(allow qms.subj firmware.sysfile (file (open read getattr)))
 	(allow qms.subj self (netlink_kobject_uevent_socket (create setopt bind getattr write read)))
 	(allow qms.subj file.execfile (file (read open execute getattr execute_no_trans map)))
-	(allow qms.subj nameservice.miscfile (file (getattr read)))
+	(allow qms.subj nameservice.miscfile (file (open getattr read)))
+	;; Allow qms.subj to run coresight_reset_source_sink.sh to reset and reconfigure Coresight connections at runtime.
+	(allow qms.subj file.conffile (file (execute)))
+	;; Allow qms to connect to DNS netport
+	(allow qms.subj dns.netport (tcp_socket (name_connect)))
+	(call conntrack.subj_type_transition (subj))
+	;; Allow creating/using packet sockets and setting options
+	(allow subj self create_packet_socket)
 
 	(dontaudit subj self (capability (sys_admin)))
 )

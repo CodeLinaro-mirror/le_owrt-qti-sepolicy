@@ -7,7 +7,39 @@
     (call .aios_daemon.subj_type_transition (subj)))
 
 (in .file
-    (call .aios_daemon.obj_type_transition_execfile (unconfined.subj_typeattr)))
+    (call .aios_daemon.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .nwaios.obj_type_transition_datafile (unconfined.subj_typeattr)))
+
+(block nwaios
+        ;;
+        ;; Contexts
+        ;;
+        (filecon
+         "/data/nwaios"
+         dir
+         datafile_file_context)
+
+        (filecon
+         "/data/nwaios/.*"
+         any
+         datafile_file_context)
+
+        ;; Macros
+        (macro obj_type_transition_datafile ((type ARG1))
+            (call .file.datafile_obj_type_transition
+                (ARG1 datafile dir "nwaios")))
+
+        ;; Policy
+        (blockinherit .file.data.obj_template)
+        (blockinherit .file.data.obj_macro_template)
+
+        ;; Comprehensive macro for full nwaios access
+        (macro full_access ((type ARG1))
+                (call search_datafile_dirs (ARG1))
+                (call manage_datafile_files (ARG1))
+                (allow ARG1 datafile (file (map)))
+        )
+)
 
 (block mqueue
         ;; Define mqueue file type that inherits from tmpfile
@@ -73,6 +105,33 @@
         )
 )
 
+(block nwaios_recovery
+        ;; Define nwaios_recovery file type that inherits from tmpfile
+        (blockinherit .tmpfile.obj_template)
+
+        ;; Label nwaios_recovery directory with tmpfile context
+        (filecon
+        "/tmp/nwaios_recovery"
+        dir
+        tmpfile_file_context)
+
+        (filecon
+        "/tmp/nwaios_recovery/.*"
+        any
+        tmpfile_file_context)
+
+        (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+                (call .tmp.fs_obj_type_transition
+                (ARG1 tmpfile ARG2 ARG3)))
+
+        ;; Comprehensive macro for full nwaios_recovery access
+        (macro full_tmpfile_access ((type ARG1))
+                (call search_tmpfile_dirs (ARG1))
+                (call manage_tmpfile_dirs (ARG1))
+                (call manage_tmpfile_files (ARG1))
+        )
+)
+
 (block aios_daemon
         ;;
         ;; Contexts
@@ -82,13 +141,23 @@
         file
         execfile_file_context)
 
+        (filecon
+         "/tmp/nwaios_ipc_ctrl\.sock"
+         socket
+         tmpfile_file_context)
+
         (macro obj_type_transition_execfile ((type ARG1))
             (call .file.execfile_obj_type_transition
             (ARG1 execfile file "aios_daemon")))
 
+        (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
+            (call .tmp.fs_obj_type_transition
+            (ARG1 tmpfile ARG2 ARG3)))
+
         ;; Policy
         (blockinherit .agent.base_template)
         (blockinherit file.conf.obj_template)
+        (blockinherit .tmpfile.obj_template)
 
         ;; Capability and process permissions
         (allow subj self (process(getsched setsched)))
@@ -98,6 +167,9 @@
         ;; File-related rules
         (call .file.search_conffile_dirs (subj))
         (call .file.read_conffile_lnk_files (subj))
+
+        ;; NWAIOS data access for AI model files and input files
+        (call .nwaios.full_access (subj))
 
         ;; System-related rules
         (call .sys.search_fs_dirs (subj))
@@ -116,6 +188,10 @@
         (allow subj tmp.fs (file(lock)))
         (allow subj tmp.fs (file(map)))
 
+        ;; nwaios_recovery directory-related rules
+        (call nwaios_recovery.obj_type_transition_tmpfile (subj dir nwaios_recovery))
+        (call nwaios_recovery.full_tmpfile_access (subj))
+
         ;; Unix socket-related rules
         (allow subj self create_unix_dgram_socket)
         (allow subj self create_unix_stream_stream_socket)
@@ -126,8 +202,13 @@
         ;; Message queue-related rules
         (call .mqueue.full_access (subj))
 
-        ;; Socket file creation in tmp
+        ;; Socket file operations in tmp
+        (call obj_type_transition_tmpfile (subj sock_file "nwaios_ipc_ctrl.sock"))
         (call .tmp.manage_fs_sock_files (subj))
+        (allow subj tmpfile (sock_file (create unlink)))
+
+        ;; Write to execfile directories
+        (call .file.write_execfile_dirs (subj))
 
         ;; Log-related rules
         (call .logd.sendto_unix_dgram_sockets (subj))
@@ -144,6 +225,8 @@
         (allow subj self create_tcp_stream_socket)
         (allow subj net.netnode (tcp_socket(node_bind)))
         (call .net.search_sysctlfile_dirs (subj))
+        (allow subj net.netif (netif (egress)))
+        (allow subj net.netnode (node (sendto)))
 
         ;; Core-related rules
         (call .core.search_sysctlfile_dirs (subj))
@@ -162,4 +245,15 @@
         (call .file.read_execfile_files (subj))
         (call .file.mapexecute_execfile_files (subj))
 
+        ;; TSA permission
+        (allow subj tmp.fs (dir (create)))
+        (allow subj ifli.subj (dir( search )))
+        (allow subj ifli.subj (lnk_file( read )))
+
+        ;; Nwaios-app permissions
+        (allow subj nwaios_app.subj (dir (search)))
+        (allow subj nwaios_app.subj (lnk_file (read)))
+        (allow subj nwaios_app.subj (file (read open)))
+
+        (dontaudit subj unknown.miscfile (dir (search)))
 )

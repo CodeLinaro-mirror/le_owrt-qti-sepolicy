@@ -26,6 +26,11 @@
        statetmpfile_file_context)
 
        (filecon
+       "/tmp/state/qcmap_lan_runtime"
+       file
+       statetmpfile_file_context)
+
+       (filecon
        "/tmp/usb_bind_in_progress"
        file
        tmpfile_file_context)
@@ -36,7 +41,9 @@
 
        (macro obj_type_transition_statetmpfile ((type ARG1))
            (call .tmpfile.statetmpfile_obj_type_transition
-               (ARG1 statetmpfile file "qcmap_lan")))
+               (ARG1 statetmpfile file "qcmap_lan"))
+           (call .tmpfile.statetmpfile_obj_type_transition
+               (ARG1 statetmpfile file "qcmap_lan_runtime")))
 
        (macro obj_type_transition_tmpfile_ext ((type ARG1))
             (call obj_type_transition_tmpfile (ARG1 file "ipv4config.wanwlan"))
@@ -110,6 +117,7 @@
           ;; Need execute, read open on /etc/init.d/odhcpd
           (call .rcodhcpd.execute_initscriptfile_files (subj))
           (call .rcodhcpd.read_initscriptfile_files (subj))
+          (allow .rcodhcpd.subj netifd.subj (fifo_file (read)))
           (call .rccommon.read_conffile_files (subj))
           ;; Need search, read on /tmp/lock/procd_odhcpd.lock
           (call .tmpfile.search_locktmpfile_dirs (subj))
@@ -136,6 +144,7 @@
           (allow subj .filesystems.procfile (file (read open)))
 
           ;; Need run chmod on /dev/socket/data/pd_manager
+          (call .qcmap_cm.subj_type_transition (subj))
           (allow subj .qcmap_cm.tmpfile (sock_file (getattr setattr)))
           (allow subj qcmap_cm.execfile (file (execute read open)))
           (allow subj self (capability (fsetid fowner)))
@@ -327,7 +336,7 @@
 	  (allow subj nftables.subj (process (rlimitinh siginh)))
 	  ;; Need for pppoe on /tmp/ipv4config.waneth*
 	  (allow subj pppd.tmpfile (file (getattr read open)))
-          ;Need permission for nft
+          ;; Need permission for nft
           (call .nftables.read_execfile_files (subj))
           (call .nftables.mapexecute_execfile_files (subj))
 

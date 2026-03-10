@@ -1,0 +1,24 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(block ecm
+        ;;
+        ;; Contexts
+        ;;
+
+        ;; Label ECM debugfs directory and files
+        (genfscon
+                "debugfs"
+                "/ecm/ecm_classifier_dscp/enabled"
+                sysfile_file_context
+        )
+
+        (blockinherit .sysfile.module.obj_template)
+
+        ;;
+        ;; Policy
+        ;;
+        (call .ecm.search_sysfile_dirs (unconfined.subj_typeattr))
+        (call .ecm.readwrite_sysfile_dirs (unconfined.subj_typeattr))
+        (call .ecm.manage_sysfile_files (unconfined.subj_typeattr))
+)

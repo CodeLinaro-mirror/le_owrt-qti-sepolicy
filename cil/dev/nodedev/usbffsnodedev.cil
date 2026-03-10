@@ -1,0 +1,29 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .dev
+    (call .usb_ffs.obj_type_transition_nodedev (unconfined.subj_typeattr)))
+
+(block usb_ffs
+
+    (filecon "/dev/ffs-dun" dir nodedev_file_context)
+    (filecon "/dev/ffs-dun/.*" any nodedev_file_context)
+
+    (macro obj_type_transition_nodedev ((type ARG1))
+        (call .tmp.fs_obj_type_transition
+            (ARG1 nodedev dir "ffs-dun"))
+        (call .tmp.fs_obj_type_transition
+            (ARG1 nodedev file "ep0"))
+        (call .tmp.fs_obj_type_transition
+            (ARG1 nodedev file "ep1"))
+        (call .tmp.fs_obj_type_transition
+            (ARG1 nodedev file "ep2"))
+        (call .tmp.fs_obj_type_transition
+            (ARG1 nodedev file "ep3")))
+
+    (allow  usb_ffs.nodedev usb_ffs.nodedev (filesystem ( associate)))
+    (allow .sys.subj usb_ffs.nodedev (dir (mounton)))
+    (allow .sys.subj usb_ffs.nodedev (filesystem (relabelto relabelfrom mount getattr)))
+
+    (blockinherit .dev.node.obj_template))
+

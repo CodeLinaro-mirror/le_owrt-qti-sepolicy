@@ -402,6 +402,9 @@
       (call .uci.readwrite_conffile_files (subj))
       (call .uci.manage_conffile_files (subj))
 
+      (call .uci.search_tmpfile_dirs (subj))
+      (call .uci.manage_tmpfile_files (subj))
+
       ;; Need read open and execute_no_trans permission on /usr/sbin/ebtables
       (call .file.manage_conffile_files (subj))
       (call .file.execute_execfile_files (subj))
@@ -732,6 +735,7 @@
     (allow xtables.subj qcmap_cm.subj (packet_socket(read write)))
     (allow xtables.subj qcmap_cm.subj (netlink_socket(read write)))
     (allow xtables.subj qcmap_cm.tmpfile (file(write ioctl)))
+    (allow xtables.subj qcmap_cm.runtimetmpfile (file (read open getattr)))
 
     (allow subj .file.execfile (dir (read open getattr)))
     (allow subj .wifi.execfile (file (read open execute)))
@@ -1485,6 +1489,41 @@
     (allow subj qcmap_cm.subj readwrite_tcp_socket)
     (allow subj ifli.execfile (file(getattr)))
     (allow subj selinux.conffile (file (getattr)))
+    (allow subj wifi.tmpfile (file(getattr)))
+
+    ;;TSA labeled conffile file
+    (call .tsa.search_conffile_dirs (subj))
+    (call .tsa.read_conffile_files (subj))
+
+    ;;Check IFLI status
+    (allow subj ubusd.subj (dir( getattr )))
+    (allow subj qwesd.subj (dir( getattr )))
+    (allow subj ssgtzd.subj (dir( getattr search )))
+    (allow subj rmt_storage.subj (dir( getattr search )))
+    (allow subj rmt_storage.subj (file( open read )))
+    (allow subj afc.subj (dir( getattr )))
+    (allow subj qms.subj (dir( getattr )))
+    (allow subj qmuxbridge.subj (dir( getattr )))
+    (allow subj stmfd.subj (dir( getattr )))
+    (allow subj wifi.subj (dir( getattr )))
+    (allow subj ssgtzd.subj (file( read open )))
+    (allow subj health_monitor.subj (dir( getattr search )))
+    (allow subj health_monitor.subj (file( read open )))
+    (allow subj dlsc.subj (dir( getattr )))
+    (allow subj ethagent.subj (dir( getattr search )))
+    (allow subj emergencyalert.subj (file( read open )))
+    (allow subj tlpd.subj (dir( getattr )))
+    (allow subj emergencyalert.subj (dir( getattr )))
+    (allow subj msdc.subj (dir( getattr )))
+    (allow subj stmfd.subj (dir( search )))
+    (allow subj stmfd.subj (file( read open )))
+    (allow subj perf-hal-service.subj (dir( getattr )))
+    (allow subj aios_daemon.subj (dir( getattr search )))
+    (allow subj tsa.subj (dir( getattr search )))
+    (allow subj ifli.subj (dir( getattr search )))
+    (allow subj aios_daemon.subj (file( read open )))
+    (allow subj tsa.subj (file( read open )))
+    (allow subj ifli.subj (file( read open )))
 
     (dontaudit subj .filesystems.procfile (file (read open)))
     (allow subj .ipa.nodedev (chr_file (open read write)))

@@ -1,0 +1,129 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .mbb_device_agent.subj_type_transition (subj)))
+
+(in .file
+    (call .mbb_device_agent.obj_type_transition_datafile (unconfined.subj_typeattr))
+    (call .mbb_device_agent.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+
+(block mbb_device_agent
+
+    ;; Contexts
+    (filecon
+    "/usr/bin/mbb_device_agent"
+    file
+    execfile_file_context)
+
+    (filecon
+    "/data/vendor/mbb_device_agent"
+    dir
+    datafile_file_context)
+
+    (filecon
+    "/data/vendor/mbb_device_agent/.*"
+    any
+    datafile_file_context)
+
+    ;; Macros
+    (macro obj_type_transition_execfile ((type ARG1))
+        (call .file.execfile_obj_type_transition
+            (ARG1 execfile file "mbb_device_agent")))
+
+    (macro obj_type_transition_datafile ((type ARG1))
+        (call .file.datafile_obj_type_transition
+            (ARG1 datafile dir "mbb_device_agent")))
+
+    ;; Policy
+
+    (blockinherit .agent.base_template)
+    (blockinherit .file.conf.obj_template)
+    (blockinherit .file.data.obj_template)
+
+    ;; Rules
+    (allow subj self (process (getsched)))
+    (allow subj file.conffile (dir (search)))
+    (allow subj file.conffile (lnk_file (read)))
+    (allow subj file.conffile (file(getattr)))
+
+    (allow subj logd.miscfile (sock_file (write)))
+    (allow subj logd.subj (unix_dgram_socket (sendto)))
+
+    (allow subj qcmap_cm.conffile (dir (search)))
+    (allow subj qcmap_cm.conffile (file (read open)))
+
+    (allow subj qcfirmware.miscfile (filesystem (getattr)))
+
+    (allow subj self create_unix_dgram_socket)
+    (allow subj self create_qipcrtr_socket)
+    (allow subj self create_unix_stream_stream_socket)
+
+    ;; Needed for statvfs (/, /persist, /cache partitions)
+    (allow subj xattr.fs (filesystem (getattr)))
+    (allow subj persist.miscfile (filesystem (getattr)))
+    (allow subj cache.miscfile (filesystem (getattr)))
+
+    (allow subj class.sysfile (dir (open search read)))
+    (allow subj class.sysfile (lnk_file (read)))
+
+    (allow subj diag-router.subj (unix_stream_socket (connectto)))
+
+    (allow subj locale.miscfile (file (open read map getattr)))
+
+    (allow subj sys.fs (dir (search)))
+    (allow subj sys.subj (fifo_file (write ioctl)))
+
+    (allow subj devices.sysfile (dir (search)))
+    (allow subj devices.sysfile (file (read open)))
+
+    (allow subj leprop.miscfile (sock_file (write)))
+    (allow subj leprop.subj (unix_stream_socket (connectto)))
+    (allow subj loc_data.datafile (dir (search)))
+    (allow subj loc_etc.conffile (file (open read)))
+    (allow subj loc_socket.nodedev (dir (getattr search add_name write)))
+    (allow subj loc_socket.nodedev (sock_file (write setattr create)))
+    (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
+
+    (allow subj tmp.fs (dir (write add_name remove_name)))
+    (allow subj tmp.fs (file (read write create open append ioctl unlink map)))
+    (allow subj tmp.fs (filesystem (getattr)))
+
+    (allow subj nameservice.miscfile (file (open read)))
+    (allow subj fs.sysfile (dir (search)))
+    (allow subj kernel.sysfile (dir (search)))
+
+    (allow subj selinux.conffile (dir (search)))
+    (allow subj selinux.fs (filesystem (getattr)))
+
+    (allow subj kpi_values.sysfile (file (read open watch)))
+
+    ;; QData
+    (allow subj qms.subj (unix_stream_socket (connectto)))
+    (call qms.readwrite_tmpfile_sock_files (subj))
+    (call .mbb_device_agent.readwrite_datafile_dirs (subj))
+    (call .mbb_device_agent.search_datafile_dirs (subj))
+    (call .mbb_device_agent.manage_datafile_files (subj))
+
+    ;; popen / mpstat
+    (call .shell.execute_execfile_files (subj))
+    (allow subj stat.procfile (file (read open)))
+    (allow subj uptime.procfile (file (read open)))
+    (allow subj interrupts.procfile (file (read open)))
+    (allow subj softirqs.procfile (file (read open)))
+
+    ;; iperf3
+    (allow subj self create_tcp_socket)
+    (allow subj self create_udp_socket)
+    (call .random.read_nodedev_chr_files (subj))
+    (allow subj .resolv.tmpfile (dir (search)))
+    (allow subj .resolv.tmpfile (file (read open)))
+    (allow subj .net.netnode (udp_socket (node_bind)))
+    (allow subj .net.netnode (node (sendto)))
+    (allow subj net.netif (netif (egress)))
+    (allow subj .reserved.netport (tcp_socket (name_connect)))
+    (allow subj .unreserved.netport (tcp_socket (name_connect)))
+)

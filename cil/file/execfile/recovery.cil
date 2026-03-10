@@ -173,6 +173,7 @@
 	(allow subj cmdline.procfile (file ( open read )))
 
 	(allow subj mmc.stordev (blk_file ( getattr read open write ioctl )))
+	(allow subj sd.stordev (blk_file ( getattr read open write ioctl )))
 	(call .dev.stor.readwrite.subj_type (subj))
 
 	(allow subj class.sysfile (dir ( open read search )))
@@ -210,6 +211,6 @@
 	(allow subj meminfo.procfile (file (read open)))
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
-
+	(allow subj .file.execfile (file (read open execute getattr map)))
 	(dontaudit subj self (capability (sys_admin)))
 )

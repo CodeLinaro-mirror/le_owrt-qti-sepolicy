@@ -1,6 +1,8 @@
 ;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
 (in .file
     (call .wifi.obj_type_transition_execfile_ext (unconfined.subj_typeattr))
     (call .wifi.obj_type_transition_datafile (unconfined.subj_typeattr))

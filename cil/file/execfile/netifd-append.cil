@@ -343,5 +343,8 @@
           (allow subj dnsmasq.conffile (file(read open)))
           (call .net.readwrite_sysctlfile_files (subj))
 
+	  ;; Need permission to run ipa disable command on ippt disable
+	  (allow subj ipacli.subj (process (siginh)))
+
           (dontaudit subj self (capability (sys_admin)))
 )

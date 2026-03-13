@@ -1,5 +1,5 @@
 ;;Changes from Qualcomm Innovation Center are provided under the following license:
-;;Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .file
@@ -464,6 +464,7 @@
     (allow subj .wifi.tmpfile (file (execute execute_no_trans)))
     ;; mcl [sigma_dut|quicktrack] ctrl socket permission
     (allow subj self create_udp_socket)
+    (allow subj .reserved.netport (udp_socket (name_bind)))
     (allow subj .unreserved.netport (udp_socket (name_bind)))
     (allow subj .net.netnode (udp_socket (node_bind)))
 

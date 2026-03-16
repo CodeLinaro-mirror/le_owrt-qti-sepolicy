@@ -16,9 +16,15 @@
     file
     conffile_file_context)
 
+    (filecon
+    "/etc/firewall\.d/qca-nss-ecm"
+    file
+    conffile_file_context)
+
     (macro obj_type_transition_conffile_ext ((type ARG1))
            (call .file.conffile_obj_type_transition(ARG1 conffile file "firewall.user.qcmap"))
-           (call .file.conffile_obj_type_transition(ARG1 conffile file "firewall.user.qcmap.tmp")))
+           (call .file.conffile_obj_type_transition(ARG1 conffile file "firewall.user.qcmap.tmp"))
+           (call .file.conffile_obj_type_transition(ARG1 conffile file "qca-nss-ecm")))
 
 )
 

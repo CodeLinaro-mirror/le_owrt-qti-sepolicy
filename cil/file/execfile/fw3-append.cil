@@ -50,9 +50,13 @@
 (allow subj .sys.fs (filesystem (getattr)))
 (allow subj .filesystems.procfile (file (read open)))
 (allow subj .qcmap_cm.conffile (dir (search)))
+(allow subj .firewall.conffile (file (getattr)))
+(allow subj .qcmap_cm.conffile (file (getattr)))
 
 ;; Need permission for /usr/share/pbr/pbr.firewall.include
 (allow subj .file.datafile (file (getattr)))
+
+(dontaudit subj .sys.rootfile (dir (read)))
 )
 
 

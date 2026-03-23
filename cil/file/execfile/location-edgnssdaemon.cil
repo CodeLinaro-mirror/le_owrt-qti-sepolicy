@@ -1,54 +1,56 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; Sepolicy rules for location daemon - edgnss-daemon
 (in .file
-    ;; location exec files transition
-    (call .loc_edgnss_daemon.obj_type_transition_execfile (unconfined.subj_typeattr)))
+	;; location exec files transition
+	(call .loc_edgnss_daemon.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
 ;;#============= EDgnss Daemon ==============
 (block loc_edgnss_daemon
-    ;;
-    ;; Contexts
-    ;; --------
-    (filecon "/usr/bin/edgnss-daemon" file execfile_file_context)
+	;;
+	;; Contexts
+	;; --------
+	(filecon "/usr/bin/edgnss-daemon" file execfile_file_context)
 
-    ;;
-    ;; Macros
-    ;; ------
-    (macro obj_type_transition_execfile ((type ARG1))
-          (call .file.execfile_obj_type_transition
-                (ARG1 execfile file "edgnss-daemon")))
+	;;
+	;; Macros
+	;; ------
+	(macro obj_type_transition_execfile ((type ARG1))
+		  (call .file.execfile_obj_type_transition
+			(ARG1 execfile file "edgnss-daemon")))
 
-    ;;
-    ;; Policy
-    ;; ------
-    (blockinherit .agent.base_template)
-    (blockinherit .file.exec.obj_macro_template)
-    (blockinherit .loc_daemons_common.loc_daemons_common_template)
+	;;
+	;; Policy
+	;; ------
+	(blockinherit .agent.base_template)
+	(blockinherit .file.exec.obj_macro_template)
+	(blockinherit .loc_daemons_common.loc_daemons_common_template)
 
-    ;; import common rules for location deamons
-    (call loc_daemons_common_rules (subj))
+	;; import common rules for location deamons
+	(call loc_daemons_common_rules (subj))
 
-    ;; communicate with location daemons via unix dgram sockets
-    (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
-    (call .loc_launcher.sendto_unix_dgram_sockets (subj))
+	;; communicate with location daemons via unix dgram sockets
+	(call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
+	(call .loc_launcher.sendto_unix_dgram_sockets (subj))
 
-    (call .loc_launcher.use_fds (subj))
+	(call .loc_launcher.use_fds (subj))
 
-    ;; Need qipcrtr socket creations
-    (allow subj self create_qipcrtr_socket)
+	(call .net.egress_netifs (subj))
+	(call .net.recvfromsendto_netnodes (subj))
 
-    ;; create tcp sockets
-    (allow subj self create_tcp_socket)
+	(call .unreserved.tcp_connect_netports (subj))
+	(call .unreserved.tcp_bind_netports (subj))
 
-    (allow subj .unreserved.netport (tcp_socket (name_bind name_connect)))
-    (call .net.egress_netifs (subj))
-    (call .net.recvfromsendto_netnodes (subj))
+	;;connect to leprop socket
+	(call .leprop.connectto_unix_stream_sockets (subj))
+	;; needed to read,write /dev/socket/leprop-service
+	(call .leprop.readwrite_miscfile_sock_files (subj))
 
-    ;; needed to read  /dev/socket/leprop-service
-    (allow subj  leprop.miscfile  (sock_file  (read write)))
-    ;;connect to leprop socket
-    (call .leprop.connectto_unix_stream_sockets (subj))
+	;; read urandom
+	(call .random.read_nodedev_chr_files (subj))
+
+	;; Need qipcrtr socket creations
+	(allow subj self create_qipcrtr_socket)
 )

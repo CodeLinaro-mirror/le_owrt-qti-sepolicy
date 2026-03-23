@@ -117,6 +117,7 @@
           ;; Need execute, read open on /etc/init.d/odhcpd
           (call .rcodhcpd.execute_initscriptfile_files (subj))
           (call .rcodhcpd.read_initscriptfile_files (subj))
+          (allow .rcodhcpd.subj netifd.subj (fifo_file (read)))
           (call .rccommon.read_conffile_files (subj))
           ;; Need search, read on /tmp/lock/procd_odhcpd.lock
           (call .tmpfile.search_locktmpfile_dirs (subj))
@@ -341,6 +342,9 @@
 
           (allow subj dnsmasq.conffile (file(read open)))
           (call .net.readwrite_sysctlfile_files (subj))
+
+	  ;; Need permission to run ipa disable command on ippt disable
+	  (allow subj ipacli.subj (process (siginh)))
 
           (dontaudit subj self (capability (sys_admin)))
 )

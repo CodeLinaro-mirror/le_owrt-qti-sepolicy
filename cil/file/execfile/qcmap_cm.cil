@@ -735,6 +735,7 @@
     (allow xtables.subj qcmap_cm.subj (packet_socket(read write)))
     (allow xtables.subj qcmap_cm.subj (netlink_socket(read write)))
     (allow xtables.subj qcmap_cm.tmpfile (file(write ioctl)))
+    (allow xtables.subj qcmap_cm.runtimetmpfile (file (read open getattr)))
 
     (allow subj .file.execfile (dir (read open getattr)))
     (allow subj .wifi.execfile (file (read open execute)))
@@ -1464,7 +1465,8 @@
     (allow subj qms.subj (unix_stream_socket( connectto )))
 
     ;;Need permission for pppd
-    (allow subj pppd.tmpfile (file (getattr)))
+    (allow subj pppd.tmpfile (file (getattr read open)))
+    (allow subj pppd.subj (fd (use)))
 
     ;;Need for Health monitor XML access/update for factory reset
     (allow subj .health_monitor.conffile (dir (search write add_name remove_name)))
@@ -1523,6 +1525,8 @@
     (allow subj aios_daemon.subj (file( read open )))
     (allow subj tsa.subj (file( read open )))
     (allow subj ifli.subj (file( read open )))
+
+    (allow subj .ipacm.runtimetmpfile (file (getattr)))
 
     (dontaudit subj .filesystems.procfile (file (read open)))
     (allow subj .ipa.nodedev (chr_file (open read write)))

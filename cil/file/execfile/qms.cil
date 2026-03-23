@@ -69,7 +69,7 @@
 	(blockinherit .file.data.obj_template)
 	(blockinherit .tmpfile.obj_template)
 
-	(allow subj self (capability (net_admin dac_read_search chown)))
+	(allow subj self (capability (net_admin dac_read_search chown net_raw)))
 
 	(call obj_type_transition_tmpfile (subj sock_file "qms"))
 	(allow subj self create_qipcrtr_socket)
@@ -214,6 +214,9 @@
 	(allow qms.subj file.conffile (file (execute)))
 	;; Allow qms to connect to DNS netport
 	(allow qms.subj dns.netport (tcp_socket (name_connect)))
+	(call conntrack.subj_type_transition (subj))
+	;; Allow creating/using packet sockets and setting options
+	(allow subj self create_packet_socket)
 
 	(dontaudit subj self (capability (sys_admin)))
 )

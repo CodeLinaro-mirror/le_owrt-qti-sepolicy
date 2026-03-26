@@ -1,0 +1,40 @@
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .sys
+    (call .adsprpcd.subj_type_transition (subj)))
+
+(in .file
+    (call .adsprpcd.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block adsprpcd
+        ;;
+        ;;Contexts
+        ;;
+
+	(filecon
+		"/usr/bin/adsprpcd"
+		file
+		execfile_file_context)
+
+	;;
+	;; Macros
+	;;
+
+	(macro obj_type_transition_execfile ((type ARG1))
+		(call .file.execfile_obj_type_transition
+			(ARG1 execfile file "adsprpcd")))
+	;;
+	;; Policy
+	;;
+
+        (blockinherit .agent.base_template)
+
+        (allow subj self create_unix_dgram_socket)
+        (allow subj sys.subj (fifo_file (write)))
+        (call .file.search_conffile_dirs (subj))
+        (call .frpc_dev.read_nodedev_chr_files (subj))
+        (call .dma_heap.search_nodedev_dirs(subj))
+        (call .dma_heap.read_nodedev_chr_files (subj))
+        (call .debug.search_fs_dirs (subj))
+        (call .logd.unix_dgram_send(subj)))

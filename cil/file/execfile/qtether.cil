@@ -1,4 +1,4 @@
-;; Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
@@ -148,4 +148,7 @@
        (allow subj .logd.miscfile (sock_file (write)))
        (call .dataadpl.create_conffile_files (subj))
        (allow subj .tmp.fs (dir (remove_name)))
+       (dontaudit subj .kernel.sysfile (dir (search)))
+       (dontaudit subj .config.fs (dir (search)))
+       (dontaudit subj .config.fs (file (read open)))
 )

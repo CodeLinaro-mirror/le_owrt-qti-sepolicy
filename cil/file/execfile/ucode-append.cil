@@ -225,4 +225,7 @@
 	(call allow_search_read_getattr_cmd_perms (data_path_opt.subj))
 
         (dontaudit subj self (capability (sys_admin)))
+        (dontaudit subj kernel.sysctlfile (dir (search)))
+        (dontaudit subj modprobe.sysctlfile (file (read open)))
+        (dontaudit subj kmodloader.execfile (file(execute read open execute_no_trans)))
 )

@@ -37,6 +37,7 @@
 (allow jsonfilter.subj fw3.subj (fd (use)))
 (allow jsonfilter.subj fw3.subj (unix_stream_socket (read write)))
 (allow jsonfilter.subj fw3.subj readwriteinherited_fifo_file)
+(allow subj .ucode.subj (fd (use)))
 ;; denied { execute_no_trans } for  pid=11079 comm="sh" path="/sbin/fw3"
 ;; dev="mmcblk0p40" ino=1385 scontext=u:r:fw3.subj tcontext=u:r:fw3.execfile tclass=file
 (call .fw3.subj_type_transition (subj))

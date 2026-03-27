@@ -1075,6 +1075,7 @@
     (call .console.readwriteinherited_ttydev_chr_files (subj))
     (call .ttyd.readwriteinherited_ptydev_chr_files (subj))
     (allow subj  ttydev readwriteinherited_chr_file)
+    (allow subj debug.sysctlfile (dir (search)))
 
     ;; Need to print on adb shell
     (call .sys.readwriteinherited_ptydev_chr_files (subj))

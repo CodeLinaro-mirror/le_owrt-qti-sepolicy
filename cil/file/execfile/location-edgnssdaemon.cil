@@ -39,6 +39,7 @@
 
 	(call .net.egress_netifs (subj))
 	(call .net.recvfromsendto_netnodes (subj))
+	(call .net.udp_bind_netnodes (subj))
 
 	(call .unreserved.tcp_connect_netports (subj))
 	(call .unreserved.tcp_bind_netports (subj))
@@ -48,9 +49,19 @@
 	;; needed to read,write /dev/socket/leprop-service
 	(call .leprop.readwrite_miscfile_sock_files (subj))
 
+	(call .nameservice.read_miscfile_files (subj))
+
+	;; for resolv.conf file
+	(call .file.read_conffile_lnk_files (subj))
+
+	;; for resolv.conf.d dir and resolv.conf.auto file
+	(call .resolv.search_tmpfile_dirs (subj))
+	(call .resolv.read_tmpfile_files (subj))
+
 	;; read urandom
 	(call .random.read_nodedev_chr_files (subj))
 
-	;; Need qipcrtr socket creations
+	;; Need qipcrtr and udp socket creations
 	(allow subj self create_qipcrtr_socket)
+	(allow subj self create_udp_socket)
 )

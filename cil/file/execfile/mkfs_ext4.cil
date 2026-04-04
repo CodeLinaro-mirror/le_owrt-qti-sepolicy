@@ -6,4 +6,6 @@
 	(allow mke2fs.subj kmsg.nodedev (chr_file (append)))
 	(allow mke2fs.subj tmp.fs (blk_file (getattr open read write ioctl)))
 	(allow mke2fs.subj dev.sysfile (lnk_file (read)))
+	(allow mke2fs.subj cache.miscfile (file (append)))
+	(allow jshn.subj cache.miscfile (file (append)))
 )

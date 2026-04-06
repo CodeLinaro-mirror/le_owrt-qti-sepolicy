@@ -51,6 +51,7 @@
 (allow subj .sys.fs (filesystem (getattr)))
 (allow subj .filesystems.procfile (file (read open)))
 (allow subj .qcmap_cm.conffile (dir (search)))
+(allow subj ucode.subj (fd (use)))
 (allow subj .firewall.conffile (file (getattr)))
 (allow subj .qcmap_cm.conffile (file (getattr)))
 

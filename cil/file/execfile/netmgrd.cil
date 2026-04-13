@@ -100,6 +100,8 @@
         (allow subj self create_unix_stream_stream_socket)
         (allow subj self create_netlink_kobject_uevent_socket)
         (allow subj self create_netlink_netfilter_socket)
+        (allow subj self create_netlink_generic_socket)
+        (allow subj self create_netlink_xfrm_socket)
 
         (allow ip.subj netmgrd.subj (netlink_route_socket (read write)))
         (allow ip.subj netmgrd.subj (netlink_socket (read write)))
@@ -114,6 +116,12 @@
         (allow subj .ip.subj (process2 (nnp_transition)))
         (allow subj .ip.subj (process (sigkill)))
         (allow subj logd.miscfile (sock_file (write)))
+        (allow subj .net.netnode (tcp_socket (node_bind)))
+        (allow subj .net.netnode (udp_socket (node_bind)))
+        (allow subj .core.sysctlfile (dir(search getattr read open)))
+        (allow subj .core.sysctlfile (file (write open read getattr ioctl)))
+        (allow subj .ephemeral.netport (tcp_socket (name_bind)))
+        (allow subj .ephemeral.netport (udp_socket (name_bind)))
 
         ;; Allow ubus calls
         (allow subj .tmpfile.runtimetmpfile (dir (search)))

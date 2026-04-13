@@ -127,6 +127,10 @@
 	(call .wpad.subj_type_transition (subj))
 	(allow subj .wpad.execfile (file (getattr execute read open)))
 
+	;; To allow qms to execute /sbin/ip
+	(call .ip.subj_type_transition (subj))
+	(allow qms.subj ip.execfile (file (read open execute getattr)))
+
 	(call .selinux.search_conffile_dirs (subj))
 	(call .selinux.getattr_filesystems (subj))
 	(allow subj .locale.miscfile (file (getattr map open read)))

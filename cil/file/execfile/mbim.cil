@@ -80,7 +80,7 @@
         ;; permission to access /etc/data/mbim_mode
         (call .file.search_conffile_dirs (subj))
 
-        (allow subj .file.conffile (lnk_file (read)))
+        (allow subj .file.conffile (lnk_file (getattr read)))
         (allow subj .locale.miscfile (file (getattr open read map)))
 
         ;; permission to access all configuration files under /data/mbimd

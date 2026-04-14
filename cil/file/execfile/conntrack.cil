@@ -75,7 +75,7 @@
 
 	;; Need permission to run conntrack related cmds from netifd context
 	(allow subj .netifd.subj (fd (use)))
-	(allow subj .netifd.subj (fifo_file (write ioctl)))
+	(allow subj .netifd.subj (fifo_file (read write ioctl)))
 	(allow subj .netifd.subj (netlink_route_socket (read write)))
 	(allow subj .netifd.subj (netlink_kobject_uevent_socket (read write)))
 
@@ -88,6 +88,7 @@
 	(allow subj net.procfile (file (read open)))
 
 	(allow subj odhcp6c.subj (fd (use)))
+	(allow subj odhcp6c.subj (fifo_file (write)))
 
 	(allow subj proc.fs (dir (read open)))
 

@@ -67,6 +67,7 @@
 
         (allow subj aios_daemon.subj (unix_stream_socket( connectto )))
         (allow subj aios_daemon.subj (shm( read write unix_read unix_write )))
+        (allow subj aios_daemon.tmpfile (sock_file (write)))
 
         (allow subj self create_unix_stream_socket)
         (allow subj self create_unix_dgram_socket)

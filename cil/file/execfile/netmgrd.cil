@@ -122,6 +122,7 @@
         (allow subj .core.sysctlfile (file (write open read getattr ioctl)))
         (allow subj .ephemeral.netport (tcp_socket (name_bind)))
         (allow subj .ephemeral.netport (udp_socket (name_bind)))
+        (allow subj self (netlink_xfrm_socket (nlmsg_write nlmsg_read)))
 
         ;; Allow ubus calls
         (allow subj .tmpfile.runtimetmpfile (dir (search)))

@@ -1,5 +1,5 @@
-; Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
-;; SPDX-License-Identifier: BSD-3-Clause-Clear
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
@@ -210,6 +210,10 @@
 
 	(allow subj meminfo.procfile (file (read open)))
 
+	(allow recovery.subj file.datafile (file ( map getattr open read )))
+	(allow recovery.subj locale.miscfile (file ( map getattr open read )))
+        ;; recovery bin to r/w blk files
+	(allow recovery.subj tmp.fs (blk_file ( read write open ioctl )))
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
 	(allow subj .file.execfile (file (read open execute getattr map)))
 	(dontaudit subj self (capability (sys_admin)))

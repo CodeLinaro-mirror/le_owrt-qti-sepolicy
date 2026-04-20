@@ -1,4 +1,3 @@
-;;Changes from Qualcomm Innovation Center are provided under the following license:
 ;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
@@ -70,7 +69,7 @@
 (allow subj .pppd.subj (fifo_file (write ioctl)))
 
 (allow subj ipv6.sysctlfile (file (read)))
-(allow subj qcmap_cm.runtimetmpfile (file (read)))
+(allow subj qcmap_cm.runtimetmpfile (file (read write)))
 (allow subj qcmap_cm.conffile (file (read)))
 (allow subj resolv.tmpfile (file (read)))
 

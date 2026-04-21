@@ -79,6 +79,7 @@
 	(allow subj self create_netlink_route_socket)
 	(allow subj self (netlink_socket (read write)))
 	(allow subj self (netlink_route_socket (read write nlmsg_write nlmsg_read)))
+	(allow subj self create_netlink_tcpdiag_socket)
 
 	(allow subj self create_udp_socket)
 	(allow subj self create_unix_dgram_socket)

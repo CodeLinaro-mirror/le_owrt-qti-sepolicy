@@ -847,7 +847,7 @@
 
 	(allow subj aios_daemon.subj (dir( search )))
         (allow subj aios_daemon.subj (lnk_file( read )))
-        (allow subj aios_daemon.subj (file( read )))
+        (allow subj aios_daemon.subj (file( read open )))
         (allow subj ifli.subj (dir( search )))
 
 	(allow subj loc_xtwifi_client.subj (file( open )))

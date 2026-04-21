@@ -214,6 +214,10 @@
            (allow subj self create_unix_stream_stream_socket)
            (allow subj self create_netlink_kobject_uevent_socket)
            (allow subj self create_netlink_netfilter_socket)
+          ; Allow qcmap_cm to create and use TIPC sockets
+           (allow subj self create_tipc_socket)
+           (allow subj self (tipc_socket (accept listen sendto recvfrom)))
+
 
         ;; Need search on config files is needed - which is done on start /Stop  of services
           (call .qcmap_cm.search_conffile_dirs (subj))
@@ -1075,6 +1079,7 @@
     (call .console.readwriteinherited_ttydev_chr_files (subj))
     (call .ttyd.readwriteinherited_ptydev_chr_files (subj))
     (allow subj  ttydev readwriteinherited_chr_file)
+    (allow subj debug.sysctlfile (dir (search)))
 
     ;; Need to print on adb shell
     (call .sys.readwriteinherited_ptydev_chr_files (subj))
@@ -1495,6 +1500,8 @@
     ;;TSA labeled conffile file
     (call .tsa.search_conffile_dirs (subj))
     (call .tsa.read_conffile_files (subj))
+
+    (call .ipacm.read_runtimetmpfile_files (subj))
 
     ;;Check IFLI status
     (allow subj ubusd.subj (dir( getattr )))

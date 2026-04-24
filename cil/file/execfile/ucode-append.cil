@@ -223,6 +223,11 @@
  	(call allow_search_read_getattr_cmd_perms (ifli.subj))
 	(call allow_search_read_getattr_cmd_perms (aios_daemon.subj))
 	(call allow_search_read_getattr_cmd_perms (data_path_opt.subj))
+        (allow subj .ifli.subj (fd (use)))
+        (allow subj .ifli.subj (fifo_file (read write)))
+        (allow subj .ifli.subj (unix_stream_socket (read write)))
+        (allow subj tmpfile.logtmpfile (file (append)))
+        (allow subj .ifli.subj readwrite_tcp_socket)
 
         (dontaudit subj self (capability (sys_admin)))
         (dontaudit subj kernel.sysctlfile (dir (search)))

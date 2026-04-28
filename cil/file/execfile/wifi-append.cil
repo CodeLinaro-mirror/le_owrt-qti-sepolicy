@@ -219,8 +219,8 @@
 	(allow subj .file.modulesfile (dir (getattr read open search)))
 	(allow subj .file.modulesfile (file (getattr)))
 
-	;; Need read open on /etc/openwrt_release
-	(allow subj .osrelease.miscfile (file (read open)))
+	;; Need read open getattr on /etc/openwrt_release
+	(allow subj .osrelease.miscfile (file (read open getattr)))
 
 	;; Need open write on /dev/kmsg
 	(allow subj .kmsg.nodedev (chr_file (open write append ioctl)))
@@ -246,6 +246,7 @@
 	;; Need to read template files under /etc/misc/wifi
 	(call .wpad.search_miscfile_dirs (subj))
 	(call .wpad.read_miscfile_files (subj))
+	(allow .sys.subj .wpad.miscfile (system (firmware_load)))
 
 	;; Need to run command 'date' for logs in qcacld32.sh
 	(allow subj .file.conffile (lnk_file (read getattr unlink)))
@@ -385,6 +386,7 @@
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .fw3.subj))
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .nftables.subj))
 	(call dontaudit_pgrep_killall_cmd_search_perms (subj .data_path_opt.subj))
+	(call dontaudit_pgrep_killall_cmd_search_perms (subj .mbb_device_agent.subj))
 
 	;; Look for files in /tmp
 	(allow subj .tmp.fs (file (create read write getattr open unlink)))
@@ -825,7 +827,7 @@
 
 	;; Xtables
 	(allow subj .xtables.subj (dir (search)))
-	(allow subj .xtables.subj (file (read)))
+	(allow subj .xtables.subj (file (read open)))
 	(allow subj .xtables.subj (lnk_file (read)))
 
 	;; jshn
@@ -835,12 +837,17 @@
 	(call .wifi.manage_conffile_files (subj))
 	(call .wifi.manage_conffile_dirs (subj))
 
+	;;mbb_device_agent
+	(allow subj mbb_device_agent.subj (dir(search)))
+	(allow subj mbb_device_agent.subj (file(read open)))
+	(allow subj mbb_device_agent.subj (lnk_file(read)))
+
 	(allow subj ssgtzd.subj (file( read open )))
 	(allow subj ssgtzd.subj (lnk_file( read )))
 
 	(allow subj aios_daemon.subj (dir( search )))
         (allow subj aios_daemon.subj (lnk_file( read )))
-        (allow subj aios_daemon.subj (file( read )))
+        (allow subj aios_daemon.subj (file( read open )))
         (allow subj ifli.subj (dir( search )))
 
 	(allow subj loc_xtwifi_client.subj (file( open )))

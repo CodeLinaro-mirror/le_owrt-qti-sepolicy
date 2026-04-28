@@ -107,6 +107,12 @@
 	(call .qcmap_cm.execute_conffile_files (subj))
 	(allow subj .qcmap_cm.conffile (dir (search)))
 	(allow subj .qcmap_cm.conffile (file (read open write getattr)))
+	;; Fix for QCMAP_ETHBHInterface execution denials
+	(call .qcmap_cm.subj_type_transition (subj))
+	;; Fix for qcmap_eth_bh_uds_file socket operations
+	(allow subj .qcmap_cm.tmpfile (sock_file (write)))
+	(allow subj .qcmap_cm.subj (unix_dgram_socket (sendto)))
+	(allow subj qcmap_cm.execfile (file (execute read open map)))
 
 	;; Permissions for backhaulCommonC
 	(allow subj functions.miscfile (dir (search)))
@@ -161,6 +167,10 @@
 	(allow subj conntrack.execfile (file (getattr execute read open map)))
 	(call .conntrack.subj_type_transition (subj))
 
-	(allow subj qcmap_cm.execfile (file (execute read open)))
+	;; Fix for setattr on ipv4config.waneth files
+	(allow subj pppd.tmpfile (file (setattr)))
+
+	;; Fix for getattr on /sys/class/net/rmnet_data1
+	(allow subj .class.sysfile (lnk_file (getattr)))
 
 )

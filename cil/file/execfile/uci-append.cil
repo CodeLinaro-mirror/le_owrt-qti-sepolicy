@@ -44,6 +44,7 @@
 
 	(call .qcmap_cm.manage_tmpfile_files (subj))
 	(call .qcmap_cm.read_runtimetmpfile_files (subj))
+	(call .qcmap_cm.write_runtimetmpfile_files (subj))
 	(allow subj .qcmap_cm.tmpfile (file (getattr read open lock)))
 	;;For Speedtest
 	(allow subj qcmap_cm.subj (unix_dgram_socket( read write )))
@@ -95,6 +96,9 @@
 	(allow subj .pppd.subj (fd (use)))
 
 	(allow subj .tmpfile.runtimetmpfile (dir (search)))
+
+	;; Need read on ipv6.sysctlfile
+	(call .ipv6.read_sysctlfile_files (subj))
 
 	;;STC
 	(allow subj qcmap_cm.subj readwrite_tcp_socket)

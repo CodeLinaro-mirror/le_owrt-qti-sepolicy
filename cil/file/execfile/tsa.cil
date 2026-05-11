@@ -67,4 +67,9 @@
         (call .debug.search_fs_dirs (subj))
         (call .debug.read_fs_files (subj))
 
+        (allow subj .tmpfile.logtmpfile (dir (search getattr read open write add_name remove_name)))
+        (allow subj .tmpfile.logtmpfile (file (create append open ioctl)))
+        (allow subj self create_unix_dgram_socket)
+        (call .logd.sendto_unix_dgram_sockets (subj))
+        (allow subj logd.miscfile (sock_file (write)))
 )

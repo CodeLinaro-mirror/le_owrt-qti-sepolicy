@@ -127,6 +127,10 @@
 	(call .wpad.subj_type_transition (subj))
 	(allow subj .wpad.execfile (file (getattr execute read open)))
 
+	;; To allow qms to execute /sbin/ip
+	(call .ip.subj_type_transition (subj))
+	(allow qms.subj ip.execfile (file (read open execute getattr)))
+
 	(call .selinux.search_conffile_dirs (subj))
 	(call .selinux.getattr_filesystems (subj))
 	(allow subj .locale.miscfile (file (getattr map open read)))
@@ -218,6 +222,15 @@
 	(call conntrack.subj_type_transition (subj))
 	;; Allow creating/using packet sockets and setting options
 	(allow subj self create_packet_socket)
+
+	;; Allow qms to transition to uci domain when executing /sbin/uci
+	(call .uci.subj_type_transition (subj))
+
+	;; Allow qms to execute uci binary and trigger domain transition
+	(allow qms.subj .uci.execfile(file (getattr read open execute)))
+
+	;; Allow shell basic traversal of filesystem root
+	(allow qms.subj .sys.rootfile(dir (search getattr open read)))
 
 	(dontaudit subj self (capability (sys_admin)))
 )

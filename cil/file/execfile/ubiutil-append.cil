@@ -1,16 +1,15 @@
-
-
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .ubiutil
 
 ;; policy
 
-(call .file.writeinherited_all_fifo_files(subj))
-(dontaudit subj .sys.subj (fifo_file (write)))
+	(call .file.writeinherited_all_fifo_files(subj))
+	;; Need write on /dev/kmsg chr_file
+	(call .kmsg.readwrite_nodedev_chr_files (subj))
+	(dontaudit subj .sys.subj (fifo_file (write)))
+
 
 )
-
-
 

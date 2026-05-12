@@ -14,7 +14,8 @@
 
 	;;Need read, write permission on qcmap_cm.subj
 	(allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
-        (allow subj .qcmap_cm.subj (netlink_route_socket (read write)))
+	(allow subj .qcmap_cm.subj (netlink_route_socket (read write)))
+	(call .qcmap_cm.write_runtimetmpfile_files (subj))
 
 	;; Need permission to run iptables in netifd script
 	(allow subj .netifd.subj readwriteinherited_fifo_file)

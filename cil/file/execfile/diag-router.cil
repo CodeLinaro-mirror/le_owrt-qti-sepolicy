@@ -85,6 +85,15 @@
 	(allow subj .bus.sysfile (dir (search)))
 	(allow subj .bus.sysfile (lnk_file (read)))
 	(allow subj .devices.sysfile (file ( write)))
+
+	(allow subj file.conffile (file (open read execute getattr)))
+	(allow subj .shell.execfile (file (open read execute getattr execute_no_trans map)))
+	(allow subj fs.sysfile (dir (search)))
+	(allow subj selinux.conffile (dir (search)))
+	(allow subj selinux.fs (filesystem (getattr)))
+	(allow subj sys.rootfile (dir (read open)))
+	(allow subj bus.sysfile (dir (getattr read open)))
+	(allow subj bus.sysfile (lnk_file (getattr)))
 )
 
 (block kpi_values

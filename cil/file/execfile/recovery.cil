@@ -1,5 +1,5 @@
-; Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
-;; SPDX-License-Identifier: BSD-3-Clause-Clear
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
@@ -211,6 +211,21 @@
 	(allow subj meminfo.procfile (file (read open)))
 
 	(allow subj diag-router.subj (unix_stream_socket (connectto)))
+
+	;; Need permission for /tmp/TZ to get timezone info
+	(allow subj locale.miscfile (file (read open getattr map)))
+
+	;; sysfs: locate SCSI generic node via libabctl
+	(allow subj block.sysfile (dir (search)))
+	(allow subj block.sysfile (lnk_file (read)))
+	(allow subj devices.sysfile (lnk_file (read)))
+
+	;; UFS BSG: open/read/write/ioctl /dev/bsg/ufs-bsg0
+	(allow subj bsg.stordev (chr_file(read write open ioctl)))
+
+	;; Capabilities required by libabctl
+	(allow subj self (process (getcap setcap)))
+	(allow subj self (capability (sys_rawio)))
 
 	(dontaudit subj self (capability (sys_admin)))
 )

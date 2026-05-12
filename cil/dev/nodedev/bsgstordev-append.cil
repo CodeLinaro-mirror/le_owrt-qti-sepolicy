@@ -1,0 +1,38 @@
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+
+(in .dev
+    (call .bsg.obj_type_transition_stordev_append (unconfined.subj_typeattr)))
+
+(in .dev.stor
+    (call .bsg.obj_type_transition_stordev_append (unconfined.subj_typeattr)))
+
+(in .bsg
+
+       ;;
+       ;; Macros
+       ;;
+
+       (macro obj_type_transition_stordev_append ((type ARG1))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "0:0:0:1"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "0:0:0:2"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "0:0:0:3"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "0:0:0:4"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "0:0:0:49456"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "0:0:0:49476"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "0:0:0:49488"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "0:0:0:5"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "0:0:0:6"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "0:0:0:7"))
+              (call .tmp.fs_obj_type_transition
+                    (ARG1 stordev chr_file "ufs-bsg0"))))

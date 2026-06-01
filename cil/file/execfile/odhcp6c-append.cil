@@ -158,6 +158,7 @@
     ;; Need permission for pidof
     (allow subj csd_server.subj (dir (search)))
     (allow subj .qcmap_cm.tmpfile (dir (search write add_name remove_name)))
+    (allow subj .netmgrd.subj (dir (search)))
 
     ;; Need permission for ip6tables and odhcpd
     (allow subj .rccommon.conffile (file (read)))

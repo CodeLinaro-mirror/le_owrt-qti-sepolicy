@@ -105,7 +105,7 @@
 	;;STC
 	(allow subj qcmap_cm.subj readwrite_tcp_socket)
 	(allow subj qcmap_cm.subj readwrite_netlink_netfilter_socket)
-	(allow subj qcmap_cm.runtimetmpfile (file (read)))
+	(allow subj qcmap_cm.runtimetmpfile (file (read write)))
 
 	(allow subj ipa.nodedev (chr_file (read write)))
 

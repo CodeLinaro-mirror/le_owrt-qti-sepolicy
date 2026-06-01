@@ -14,7 +14,8 @@
 
 	;;Need read, write permission on qcmap_cm.subj
 	(allow subj .qcmap_cm.subj (netlink_kobject_uevent_socket (read write)))
-        (allow subj .qcmap_cm.subj (netlink_route_socket (read write)))
+	(allow subj .qcmap_cm.subj (netlink_route_socket (read write)))
+	(call .qcmap_cm.write_runtimetmpfile_files (subj))
 
 	;; Need permission to run iptables in netifd script
 	(allow subj .netifd.subj readwriteinherited_fifo_file)
@@ -43,12 +44,20 @@
 	;;Need permission for pppd
 	(allow subj .pppd.subj (fd (use)))
 
-        ;;STC
-        (allow subj ucode.subj (fifo_file( ioctl )))
+	;;STC
+	(allow subj ucode.subj (fifo_file( ioctl )))
 
 	;;IPA denial fix
 	(allow subj ipa.nodedev (chr_file (read write)))
 
 	;; Suppress rule for grep
 	(dontaudit subj .ucode.subj (fifo_file (write)))
+
+	;;Need permission for ifli
+	(allow subj ifli.subj (fd (use)))
+	(allow subj .ifli.subj (netlink_kobject_uevent_socket (read write)))
+	(allow subj .ifli.subj (netlink_route_socket (read write)))
+	(allow subj tmpfile.logtmpfile (file (append)))
+	(allow subj ifli.subj (tcp_socket (read write)))
+	(call .ifli.readwrite_unix_stream_sockets (subj))
 )

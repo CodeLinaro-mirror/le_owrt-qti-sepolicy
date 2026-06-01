@@ -18,9 +18,16 @@
          file
          execfile_file_context)
 
+        (filecon
+        "/usr/bin/nwaios-stats-app"
+        file
+        execfile_file_context)
+
         (macro obj_type_transition_execfile ((type ARG1))
             (call .file.execfile_obj_type_transition
-            (ARG1 execfile file "nwaios-sample-app")))
+            (ARG1 execfile file "nwaios-sample-app"))
+            (call .file.execfile_obj_type_transition
+            (ARG1 execfile file "nwaios-stats-app")))
 
         ;; Policy
         (blockinherit .agent.base_template)

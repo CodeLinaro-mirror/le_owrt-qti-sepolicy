@@ -60,4 +60,11 @@
 	(allow subj tmpfile.logtmpfile (file (append)))
 	(allow subj ifli.subj (tcp_socket (read write)))
 	(call .ifli.readwrite_unix_stream_sockets (subj))
+
+	;; xtables.subj inherits fd/pipes/sockets from loc_hal_daemon.subj when invoked via lanUtils.sh
+	(call .loc_hal_daemon.use_fds (subj))
+	(call .loc_hal_daemon.readwriteinherited_fifo_files (subj))
+	(call .loc_hal_daemon.readwrite_unix_dgram_sockets (subj))
+	(call .loc_hal_daemon.readwrite_unix_stream_sockets (subj))
+	(allow subj .loc_hal_daemon.subj readwrite_qipcrtr_socket)
 )

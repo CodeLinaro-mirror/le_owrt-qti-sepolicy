@@ -76,6 +76,11 @@
 ;;STC
 (allow subj qcmap_cm.subj readwrite_tcp_socket)
 (allow subj qcmap_cm.subj readwrite_netlink_netfilter_socket)
+(allow subj ifli.subj readwrite_tcp_socket)
+(allow subj ifli.subj readwrite_netlink_netfilter_socket)
+(call .ifli.use_fds (subj))
+(call .ifli.readwrite_unix_stream_sockets (subj))
+(allow subj tmpfile.logtmpfile (file (append)))
 
 (call .ipa.readwrite_nodedev_chr_files (subj))
 (dontaudit subj self (capability (sys_admin)))

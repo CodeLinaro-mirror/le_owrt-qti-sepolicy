@@ -103,6 +103,9 @@
 	;;STC
 	(allow subj qcmap_cm.subj readwrite_tcp_socket)
 	(allow subj qcmap_cm.subj readwrite_netlink_netfilter_socket)
+	(allow subj ifli.subj readwrite_tcp_socket)
+	(call .ifli.use_fds (subj))
+	(call .ifli.readwrite_unix_stream_sockets (subj))
 
 	(call .ipa.readwrite_nodedev_chr_files (subj))
 

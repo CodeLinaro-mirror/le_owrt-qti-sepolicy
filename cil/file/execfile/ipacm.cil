@@ -36,6 +36,11 @@
 	runtimetmpfile_file_context)
 
 	(filecon
+	"/tmp/run/data/monitor/ipacmd\.pid"
+	file
+	runtimetmpfile_file_context)
+
+	(filecon
 	"/tmp/run/data/ipa"
 	dir
 	runtimetmpfile_file_context)

@@ -1,0 +1,89 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+;;
+;; Copyright (c) Qualcomm Technologies, Inc.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+;;
+
+(in .sys
+    (call .nicmd.subj_type_transition (subj)))
+
+(in .file
+    (call .nicmd.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block nicmd
+
+    (filecon
+        "/usr/bin/nicmd"
+        file
+        execfile_file_context)
+
+    (macro obj_type_transition_execfile ((type ARG1))
+        (call .file.execfile_obj_type_transition
+            (ARG1 execfile file "nicmd")))
+
+    (blockinherit .agent.base_template)
+    (blockinherit file.conf.obj_template)
+    (blockinherit file.data.obj_template)
+
+    (allow subj self (capability (net_admin net_raw)))
+    (allow subj self (process (getcap)))
+
+    (allow subj self create_netlink_route_socket)
+    (allow subj self create_unix_dgram_socket)
+    (allow subj self create_unix_stream_socket)
+    (allow subj self create_unix_stream_stream_socket)
+    (allow subj self create_udp_socket)
+    (allow subj self create_qipcrtr_socket)
+    (allow subj self create_tipc_socket)
+
+    (allow subj self (tipc_socket (accept listen sendto recvfrom)))
+    (allow subj self (netlink_route_socket (nlmsg_read nlmsg_write)))
+
+    (call .sys.search_fs_dirs (subj))
+    (call .file.search_conffile_dirs (subj))
+    (call .selinux.search_conffile_dirs (subj))
+    (call .selinux.getattr_filesystems (subj))
+
+    (call .fs.search_sysfile_dirs (subj))
+
+    (call .ipv6.search_sysctlfile_dirs (subj))
+    (call .ipv6.readwrite_sysctlfile_files (subj))
+
+    (call .core.search_sysctlfile_dirs (subj))
+    (call .core.write_sysctlfile_files (subj))
+
+    (call .sys.search_sysctlfile_dirs (subj))
+    (call .net.search_sysctlfile_dirs (subj))
+
+    (call .sys.requestmodule (subj))
+
+    (call .diag-router.connectto_unix_stream_sockets (subj))
+    (call .logd.sendto_unix_dgram_sockets (subj))
+
+    (allow subj qcmap_cm.conffile (dir (search)))
+    (allow subj qcmap_cm.conffile (file (open read getattr)))
+
+    (allow subj ssl.certfile (dir (search)))
+    (allow subj ssl.certfile (file (open read getattr)))
+
+    (allow subj tmpfile.conftmpfile (dir (search)))
+
+    (allow subj ssl.conftmpfile (dir (search)))
+    (allow subj ssl.conftmpfile (file (open read getattr)))
+
+    (allow subj file.datafile (dir (search add_name)))
+    (allow subj file.datafile (file (create open read write ioctl getattr)))
+
+    (allow subj logd.miscfile (sock_file (write)))
+
+    (allow subj file.conffile (lnk_file (read)))
+    (allow subj locale.miscfile (file (open read getattr map)))
+
+    (call .class.search_sysfile_dirs (subj))
+    (call .class.read_sysfile_lnk_files (subj))
+
+    (call .devices.search_sysfile_dirs (subj))
+    (call .devices.read_sysfile_files (subj))
+
+    (dontaudit subj invalid (file (read)))
+)

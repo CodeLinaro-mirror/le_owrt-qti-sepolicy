@@ -28,9 +28,18 @@
             (call .file.execfile_obj_type_transition (ARG1 execfile file "ifli"))
             (call .file.execfile_obj_type_transition (ARG1 execfile file "tm")))
 
+        ;; Copy from qcmap_cm for STC
+        (macro pidof_denials ((type ARG1) (type ARG2))
+              (allow ARG1 ARG2 (dir (read open search getattr)))
+              (allow ARG1 ARG2 (file (read open)))
+              (allow ARG1 ARG2 (lnk_file (read))))
+
         ;; Policy
         (blockinherit .agent.base_template)
         (blockinherit file.conf.obj_template)
+        (blockinherit .tmpfile.obj_template)
+        (blockinherit .tmpfile.runtime.obj_template)
+
 
         ;; Rules
         (call .wifi.read_datafile_files (subj))
@@ -58,15 +67,18 @@
         (allow subj ifli.execfile (file(getattr)))
 
         (call .qcmap_cm.readwrite_tmpfile_files (subj))
-
+        
         (allow subj sys.subj (unix_dgram_socket( sendto )))
         (allow subj sys.subj (msgq( unix_write write unix_read read associate )))
         (allow subj sys.subj (unix_stream_socket( connectto )))
         (allow subj sys.subj (fifo_file( write )))
         (allow subj sys.subj (shm( unix_read unix_write associate read write)))
+        (allow subj sys.subj (key (search)))
+        (call pidof_denials (subj sys.subj))
 
         (allow subj aios_daemon.subj (unix_stream_socket( connectto )))
         (allow subj aios_daemon.subj (shm( read write unix_read unix_write )))
+        (allow subj aios_daemon.tmpfile (sock_file (write)))
 
         (allow subj self create_unix_stream_socket)
         (allow subj self create_unix_dgram_socket)
@@ -94,19 +106,185 @@
         (allow subj uci.conffile (file(getattr)))
         (allow subj rcfirewall.subj (lnk_file( getattr )))
         (allow subj logd.subj (unix_dgram_socket( sendto )))
-        (call .uci.search_conffile_dirs (subj))
         (call .nameservice.read_miscfile_files (subj))
         (call .resolv.search_tmpfile_dirs (subj))
         (call .kernel.search_sysfile_dirs (subj))
         (call .logd.readwrite_miscfile_sock_files (subj))
         (call .mqueue.full_access (subj))
+        (call .uci.readwrite_conffile_dirs (subj))
 
         ;;Licensing Modules access
         (allow subj diag-router.subj (unix_stream_socket( connectto )))
         (call .ssgtzd_socket.readwrite_nodedev_sock_files (subj))
         (allow subj ssgtzd.subj (unix_stream_socket( connectto )))
 
-        ;;TSA module conffile
+        ;; TSA module conffile
         (call .tsa.search_conffile_dirs (subj))
         (call .tsa.read_conffile_files (subj))
+
+        ;; Backhaul state file on /tmp/data/
+        (allow subj qcmap_cm.conffile (file (read open getattr execute watch)))
+        (call .qcmap_cm.manage_tmpfile_dirs (subj))
+
+        ;; Need for busybox read, open, execute
+        (call .shell.execute_execfile_files (subj))
+
+        (allow subj fs.sysfile (dir (search)))
+
+        (allow subj selinux.conffile (dir (search)))
+        (allow subj selinux.fs (filesystem (getattr)))
+
+        ;; Need permission for uci
+	    (allow subj tmpfile.runtimetmpfile (dir (search)))
+        (allow subj uci.tmpfile (dir (search)))
+        (allow subj uci.tmpfile (file (getattr read open lock)))
+        (call .uci.search_conffile_dirs (subj))
+        (call .uci.readwrite_conffile_files (subj))
+        (call .uci.subj_type_transition (subj))
+        (allow uci.subj subj (unix_stream_socket (read write)))
+        (allow uci.subj subj (tcp_socket (read write)))
+        (allow uci.subj subj readwriteinherited_fifo_file)
+        (allow uci.subj subj (fd (use)))
+        (allow uci.subj fw3.subj (unix_stream_socket (read write)))
+        (allow uci.subj fw3.subj readwriteinherited_fifo_file)
+        ;; Need this to indicate uci during subject type transition
+        (allow uci.subj qcmap_ref.subj (unix_stream_socket (read write)))
+        (allow uci.subj qcmap_ref.subj readwriteinherited_fifo_file)
+        (allow uci.subj qcmap_ref.subj (fd (use)))
+        (allow uci.subj file.conffile (dir (search)))
+        (allow uci.subj tmpfile.logtmpfile (file (append)))
+
+        ;; Need execute on /sbin/uci
+        (call .uci.execute_execfile_files (subj))
+        (allow subj .uci.execfile (file(getattr read open map)))
+
+        (allow subj netifd.miscfile (dir (search)))
+        (allow subj netifd.miscfile (file (read open)))
+
+        ;; Dynamic lib loading
+        (call .tmpfile.search_conftmpfile_dirs (subj))
+        (allow subj tmpfile.statetmpfile (dir (search read open getattr)))
+
+        ;; Dynamic module loading
+        (allow subj file.modulesfile (dir (search read open)))
+        (allow subj file.modulesfile (file (open read)))
+        (allow subj file.modulesfile (system (module_load)))
+        (allow subj module.sysfile (dir (search)))
+        (call .sys.loadkernelmodule.subj_type (subj))
+
+        ;; Need obj_type_transition for /etc/firewall.user.*
+        (call .firewall.obj_type_transition_conffile_ext (subj))
+        (allow subj firewall.conffile (file (create write getattr rename unlink)))
+        (call .rcfirewall.subj_type_transition (subj))
+        (allow subj .qcmap_cm.conffile (dir (search write add_name remove_name)))
+
+        ;; Need open write on /etc/firewall.user
+        (call .firewall.manage_conffile_files (subj))
+
+        ;; Need execute on firewallConfig.sh
+	    (allow subj sys.rootfile (dir (read open)))
+        (allow subj functions.miscfile (file (read open getattr)))
+        (allow subj functions.miscfile (dir (search)))
+        (allow subj libubox.datafile (dir (search)))
+        (allow subj libubox.datafile (file (read open)))
+
+        ;; Need to read /sys/devices/
+        (allow subj devices.sysfile (dir (search)))
+        (allow subj devices.sysfile (file (read open)))
+
+
+        ;; Need permission to run init.d script
+        (call .qcmap_cm.execute_conffile_files (subj))
+        (call .file.execute_initscriptfile_files (subj))
+        (call .file.search_initscriptfile_dirs (subj))
+        (allow subj .rccommon.conffile (file (read open)))
+        (allow subj .tmpfile.locktmpfile (file (open)))
+	    (allow subj .tmpfile.locktmpfile (dir (search)))
+	    (allow subj ubus.execfile (file(getattr)))
+        (call .ubus.read_execfile_files (subj))
+        (call .ubus.mapexecute_execfile_files (subj))
+        (call .ubus.subj_type_transition (subj))
+
+        (call .wpad.subj_type_transition (subj))
+        (call .qcmap_cm.execute_conffile_files (subj))
+        (call .wifi.search_datafile_dirs (subj))
+        (call .file.execute_initscriptfile_files (subj))
+        (call .file.search_initscriptfile_dirs (subj))
+        (allow subj .wifi.datafile (sock_file (write)))
+        (allow subj .file.initscriptfile (file (execute read open)))
+
+        ;; Need permission for jshn
+        (call .jshn.subj_type_transition (subj))
+        (allow jshn.subj subj (unix_stream_socket (read write)))
+        (allow jshn.subj subj readwriteinherited_fifo_file)
+        (allow jshn.subj subj (fd (use)))
+        (allow subj .jshn.execfile (file (getattr execute read open map)))
+        (allow jshn.subj tmpfile.logtmpfile (file (append)))
+        (allow jshn.subj ifli.subj (tcp_socket (read write)))
+
+        ;; Need rules for xtables
+        (call .xtables.subj_type_transition (subj))
+        (allow xtables.subj qcmap_cli.subj (unix_stream_socket (read write)))
+        (allow xtables.subj qcmap_cli.subj readwriteinherited_fifo_file)
+        (allow xtables.subj qcmap_cli.subj (fd (use)))
+
+        ;; Need rules for ubusd
+        (call pidof_denials (subj ubusd.subj))
+        (call pidof_denials (subj urngd.subj))
+
+
+        ;; Check IFLI status - Copy from qcmap_cm
+        (call pidof_denials (subj mbim.subj))
+        (call pidof_denials (subj diag-router.subj))
+        (call pidof_denials (subj tftp_server.subj))
+        (call pidof_denials (subj qwesd.subj))
+        (call pidof_denials (subj qseecomd.subj))
+        (call pidof_denials (subj qcmap_cm.subj))
+        (call pidof_denials (subj leprop.subj))
+        (call pidof_denials (subj ipacm.subj))
+        (call pidof_denials (subj ipacmdiag.subj))
+        (call pidof_denials (subj netifd.subj))
+        (call pidof_denials (subj logd.subj))
+        (call pidof_denials (subj rpcd.subj))
+        (call pidof_denials (subj fs-scrub-daemon.subj))
+        (call pidof_denials (subj afc.subj))
+        (call pidof_denials (subj diagrebootapp.subj))
+        (call pidof_denials (subj qms.subj))
+        (call pidof_denials (subj qmuxbridge.subj))
+        (call pidof_denials (subj dropbear.subj))
+        (call pidof_denials (subj dnsmasq.subj))
+        (call pidof_denials (subj wifi.subj))
+        (call pidof_denials (subj odhcp6c.subj))
+        (call pidof_denials (subj ip.subj))
+        (call pidof_denials (subj netmgrd.subj))
+        (call pidof_denials (subj odhcpd.subj))
+        (call pidof_denials (subj uhttpd.subj))
+        (call pidof_denials (subj dlsc.subj))
+        (call pidof_denials (subj ethagent.subj))
+        (call pidof_denials (subj tlpd.subj))
+        (call pidof_denials (subj ssgtzd.subj))
+        (call pidof_denials (subj rmt_storage.subj))
+        (call pidof_denials (subj stmfd.subj))
+        (call pidof_denials (subj emergencyalert.subj))
+        (call pidof_denials (subj tsa.subj))
+        (call pidof_denials (subj aios_daemon.subj))
+        (call pidof_denials (subj msdc.subj))
+        (call pidof_denials (subj perf-hal-service.subj))
+        (call pidof_denials (subj loc_launcher.subj))
+        (call pidof_denials (subj loc_lowi_server.subj))
+        (call pidof_denials (subj loc_xtra_daemon.subj))
+        (call pidof_denials (subj loc_hal_daemon.subj))
+        (call pidof_denials (subj qtether.subj))
+        (call pidof_denials (subj mbb_device_agent.subj))
+        (call pidof_denials (subj health_monitor.subj))
+        (call pidof_denials (subj atfwd.subj))
+        (call pidof_denials (subj port-bridge.subj))
+        (call pidof_denials (subj qcril.subj))
+        (call pidof_denials (subj powerstate.subj))
+        (call pidof_denials (subj hotplugcall.subj))
+        (call pidof_denials (subj rcdnsmasq.subj))
+        (call pidof_denials (subj dataadpl.subj))
+        (call pidof_denials (subj ubus.subj))
+        (call pidof_denials (subj uci.subj))
+        (call pidof_denials (subj qcmap_cli.subj))
 )

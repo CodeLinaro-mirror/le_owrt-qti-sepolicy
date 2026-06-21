@@ -214,6 +214,10 @@
            (allow subj self create_unix_stream_stream_socket)
            (allow subj self create_netlink_kobject_uevent_socket)
            (allow subj self create_netlink_netfilter_socket)
+          ; Allow qcmap_cm to create and use TIPC sockets
+           (allow subj self create_tipc_socket)
+           (allow subj self (tipc_socket (accept listen sendto recvfrom)))
+
 
         ;; Need search on config files is needed - which is done on start /Stop  of services
           (call .qcmap_cm.search_conffile_dirs (subj))
@@ -735,6 +739,7 @@
     (allow xtables.subj qcmap_cm.subj (packet_socket(read write)))
     (allow xtables.subj qcmap_cm.subj (netlink_socket(read write)))
     (allow xtables.subj qcmap_cm.tmpfile (file(write ioctl)))
+    (allow xtables.subj qcmap_cm.runtimetmpfile (file (read open getattr)))
 
     (allow subj .file.execfile (dir (read open getattr)))
     (allow subj .wifi.execfile (file (read open execute)))
@@ -1074,6 +1079,7 @@
     (call .console.readwriteinherited_ttydev_chr_files (subj))
     (call .ttyd.readwriteinherited_ptydev_chr_files (subj))
     (allow subj  ttydev readwriteinherited_chr_file)
+    (allow subj debug.sysctlfile (dir (search)))
 
     ;; Need to print on adb shell
     (call .sys.readwriteinherited_ptydev_chr_files (subj))
@@ -1464,7 +1470,8 @@
     (allow subj qms.subj (unix_stream_socket( connectto )))
 
     ;;Need permission for pppd
-    (allow subj pppd.tmpfile (file (getattr)))
+    (allow subj pppd.tmpfile (file (getattr read open)))
+    (allow subj pppd.subj (fd (use)))
 
     ;;Need for Health monitor XML access/update for factory reset
     (allow subj .health_monitor.conffile (dir (search write add_name remove_name)))
@@ -1476,7 +1483,7 @@
     (call .nftables.read_execfile_files (subj))
     (call .nftables.mapexecute_execfile_files (subj))
 
-    (allow subj netifd.subj (fifo_file (write ioctl)))
+    (allow subj netifd.subj (fifo_file (read write ioctl)))
     (allow subj sys.subj (fifo_file (write)))
     (allow subj hotplugcall.subj (fd (use)))
     (allow subj odhcp6c.subj (fd (use)))
@@ -1493,6 +1500,8 @@
     ;;TSA labeled conffile file
     (call .tsa.search_conffile_dirs (subj))
     (call .tsa.read_conffile_files (subj))
+
+    (call .ipacm.read_runtimetmpfile_files (subj))
 
     ;;Check IFLI status
     (allow subj ubusd.subj (dir( getattr )))
@@ -1523,6 +1532,8 @@
     (allow subj aios_daemon.subj (file( read open )))
     (allow subj tsa.subj (file( read open )))
     (allow subj ifli.subj (file( read open )))
+
+    (allow subj .ipacm.runtimetmpfile (file (getattr)))
 
     (dontaudit subj .filesystems.procfile (file (read open)))
     (allow subj .ipa.nodedev (chr_file (open read write)))

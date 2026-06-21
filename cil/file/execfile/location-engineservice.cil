@@ -1,49 +1,53 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
-;; Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; Sepolicy rules for location daemon - engine-service
 (in .file
-    ;; location exec files transition
-    (call .loc_engine_service.obj_type_transition_execfile (unconfined.subj_typeattr)))
+	;; location exec files transition
+	(call .loc_engine_service.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
 ;;#============= Engine Service ==============
 (block loc_engine_service
-    ;;
-    ;; Contexts
-    ;; --------
-    (filecon "/usr/bin/engine-service" file execfile_file_context)
+	;;
+	;; Contexts
+	;; --------
+	(filecon "/usr/bin/engine-service" file execfile_file_context)
 
-    ;;
-    ;; Macros
-    ;; ------
-    (macro obj_type_transition_execfile ((type ARG1))
-          (call .file.execfile_obj_type_transition
-                (ARG1 execfile file "engine-service")))
+	;;
+	;; Macros
+	;; ------
+	(macro obj_type_transition_execfile ((type ARG1))
+		  (call .file.execfile_obj_type_transition
+			(ARG1 execfile file "engine-service")))
 
-    ;;
-    ;; Policy
-    ;; ------
-    (blockinherit .agent.base_template)
-    (blockinherit .file.exec.obj_macro_template)
-    (blockinherit .loc_daemons_common.loc_daemons_common_template)
+	;;
+	;; Policy
+	;; ------
+	(blockinherit .agent.base_template)
+	(blockinherit .file.exec.obj_macro_template)
+	(blockinherit .loc_daemons_common.loc_daemons_common_template)
 
-    ;; import common rules for location deamons
-    (call loc_daemons_common_rules (subj))
+	(call subj_type_transition (subj))
 
-    (call subj_type_transition (subj))
+	;; import common rules for location deamons
+	(call loc_daemons_common_rules (subj))
 
-    (call .loc_launcher.use_fds (subj))
+	(call .loc_launcher.use_fds (subj))
 
-    ;; Needed to for diagrebootapp to connect to diag-router
-    (call .diag-router.unix_stream_connect(subj))
+	;; communicate with location daemons via unix dgram sockets
+	(call .loc_launcher.sendto_unix_dgram_sockets (subj))
+	(call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
 
-    ;; communicate with location daemons via unix dgram sockets
-    (call .loc_launcher.sendto_unix_dgram_sockets (subj))
-    (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
+	;; Needed to for diagrebootapp to connect to diag-router
+	(call .diag-router.unix_stream_connect(subj))
 
-    ;; needed to read  /dev/socket/leprop-service
-    (allow subj  leprop.miscfile  (sock_file  (read write)))
-    ;;connect to leprop socket
-    (call .leprop.connectto_unix_stream_sockets (subj))
+	;;connect to leprop socket
+	(call .leprop.connectto_unix_stream_sockets (subj))
+	;; needed to read,write /dev/socket/leprop-service
+	(call .leprop.readwrite_miscfile_sock_files (subj))
+
+	;; Need qipcrtr socket creations
+	(allow subj self create_qipcrtr_socket)
+
 )

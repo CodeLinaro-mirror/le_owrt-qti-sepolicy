@@ -61,7 +61,7 @@
 
   ;;rule for ip
   (allow subj locale.miscfile (file (open read getattr map)))
-  (allow subj self (netlink_xfrm_socket (read write nlmsg_read)))
+  (allow subj self (netlink_xfrm_socket (read write nlmsg_read nlmsg_write)))
 
   ;;STC
   (allow subj qcmap_cm.subj readwrite_tcp_socket)

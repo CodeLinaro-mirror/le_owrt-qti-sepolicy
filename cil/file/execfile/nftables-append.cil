@@ -31,6 +31,15 @@
 (allow subj qcmap_cm.subj readwrite_netlink_socket)
 (allow subj qcmap_cm.subj create_netlink_kobject_uevent_socket)
 
+(call .ifli.use_fds (subj))
+(call .ifli.readwriteinherited_fifo_files (subj))
+(call .ifli.readwrite_unix_stream_sockets (subj))
+(allow subj ifli.subj readwrite_packet_socket)
+(allow subj ifli.subj readwrite_netlink_socket)
+(allow subj ifli.subj create_netlink_kobject_uevent_socket)
+(allow subj tmpfile.logtmpfile (file (append)))
+(allow subj ifli.subj (tcp_socket (read write)))
+
 (dontaudit subj nftables.subj (capability (dac_read_search sys_admin)))
 )
 

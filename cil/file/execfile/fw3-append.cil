@@ -55,6 +55,11 @@
 (allow subj .firewall.conffile (file (getattr)))
 (allow subj .qcmap_cm.conffile (file (getattr)))
 
+(call .ifli.use_fds (subj))
+(call .ifli.readwrite_unix_stream_sockets (subj))
+(allow subj ifli.subj (tcp_socket (read write)))
+(allow subj tmpfile.logtmpfile (file (append)))
+
 ;; Need permission for /usr/share/pbr/pbr.firewall.include
 (allow subj .file.datafile (file (getattr)))
 

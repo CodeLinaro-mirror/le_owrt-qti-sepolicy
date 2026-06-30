@@ -1,6 +1,6 @@
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
-;; Copyright (c) 2023, 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .sys
@@ -99,6 +99,8 @@
     (call .random.read_nodedev_chr_files (subj))
     (allow subj .netmgrd.tmpfile (sock_file (write)))
     (allow subj .netmgrd.subj (unix_stream_socket (connectto)))
+    (allow subj .qcmap_cm.tmpfile (sock_file (write)))
+    (allow subj .qcmap_cm.subj (unix_stream_socket (connectto)))
 
     ;; read /etc/hosts file
     (call .nameservice.read_miscfile_files (subj))

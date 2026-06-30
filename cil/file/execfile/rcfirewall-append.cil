@@ -36,6 +36,10 @@
        (allow subj netifd.miscfile (dir (search getattr)))
        ;; Need for pppd
        (allow subj .pppd.subj (fd (use)))
+       (call .ifli.use_fds (subj))
+       (call .ifli.readwrite_unix_stream_sockets (subj))
+       (allow subj tmpfile.logtmpfile (file (append)))
+       (allow subj ifli.subj (tcp_socket (read write)))
        (dontaudit subj rcfirewall.subj (capability (sys_admin)))
 
 )

@@ -61,13 +61,19 @@
 
   ;;rule for ip
   (allow subj locale.miscfile (file (open read getattr map)))
-  (allow subj self (netlink_xfrm_socket (read write nlmsg_read)))
+  (allow subj self (netlink_xfrm_socket (read write nlmsg_read nlmsg_write)))
 
   ;;STC
   (allow subj qcmap_cm.subj readwrite_tcp_socket)
 
   (call .ipa.readwrite_nodedev_chr_files (subj))
   (allow subj self create_udp_socket)
+
+  ;; Allow ip to add routes
+  (allow ip.subj qms.subj (fd (use)))
+  (allow ip.subj qms.subj (fifo_file (read write)))
+  (allow ip.subj qms.subj (unix_stream_socket (read write)))
+  (allow ip.subj qms.subj (netlink_route_socket (read write)))
 
   (dontaudit subj self (capability (sys_admin)))
 )

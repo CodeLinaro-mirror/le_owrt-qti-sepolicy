@@ -84,6 +84,11 @@
          execfile_file_context)
 
         (filecon
+         "/usr/bin/qcmap_bh_combine"
+         file
+         execfile_file_context)
+
+        (filecon
          "/tmp/run/charon\.vici"
          socket
          runtimetmpfile_file_context)
@@ -1390,7 +1395,7 @@
     (allow subj .file.initscriptfile (dir (search)))
     (allow subj .rcodhcpd.initscriptfile (file (getattr execute read open)))
     (call .tmpfile.search_locktmpfile_dirs (subj))
-    (allow subj .tmpfile.locktmpfile (file (open)))
+    (allow subj .tmpfile.locktmpfile (file (open read)))
     (call .rccommon.read_conffile_files (subj))
     (allow subj resolv.tmpfile (file (getattr create read write open ioctl setattr append rename unlink)))
     (allow subj resolv.tmpfile (dir (search write add_name remove_name)))
@@ -1537,4 +1542,14 @@
 
     (dontaudit subj .filesystems.procfile (file (read open)))
     (allow subj .ipa.nodedev (chr_file (open read write)))
+
+    ;; Need obj_type_transition for /tmp/state/qcmap_lan created by qcmap_bh_combine
+   (call .netifd.obj_type_transition_statetmpfile (subj))
+   (allow subj .netifd.statetmpfile (file (open read getattr write create unlink)))
+
+    ;; Need write add_name on /tmp/.uci dir (uci.tmpfile) for qcmap_bh_combine
+    (allow subj .uci.tmpfile (dir (write add_name)))
+
+    ;; dontaudit sys_admin capability for qcmap_bh_combine
+    (dontaudit subj self (capability (sys_admin)))
 )

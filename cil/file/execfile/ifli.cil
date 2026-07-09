@@ -292,4 +292,5 @@
         (call pidof_denials (subj xtables.subj))
         (call pidof_denials (subj rcdropbear.subj))
         (call pidof_denials (subj nftables.subj))
+        (call pidof_denials (subj jsonfilter.subj))
 )

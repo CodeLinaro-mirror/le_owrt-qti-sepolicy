@@ -24,6 +24,9 @@
 	;; Need for adding iptable-save
 	(allow subj .locale.miscfile (file (read open getattr map)))
 
+	;;Need permission for ip6tables
+	(allow subj .qcmap_cm.subj (udp_socket (read write)))
+
 	; Add rule for fw3 sub
 	(allow subj .fw3.subj (fifo_file (read write ioctl)))
 

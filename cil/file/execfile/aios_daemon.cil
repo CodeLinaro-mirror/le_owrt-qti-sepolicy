@@ -182,7 +182,7 @@
         (call .qcmap_cm.search_conffile_dirs (subj))
 
         ;; Read aios_daemon's own config file cv_cfg.json
-        (allow subj conffile (file (read open)))
+        (allow subj conffile (file (read open getattr)))
 
         ;; NWAIOS data access for AI model files and input files
         (call .nwaios.full_access (subj))

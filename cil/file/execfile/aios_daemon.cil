@@ -8,7 +8,8 @@
 
 (in .file
     (call .aios_daemon.obj_type_transition_execfile (unconfined.subj_typeattr))
-    (call .nwaios.obj_type_transition_datafile (unconfined.subj_typeattr)))
+    (call .nwaios.obj_type_transition_datafile (unconfined.subj_typeattr))
+    (call .aios_daemon.obj_type_transition_conffile (unconfined.subj_typeattr)))
 
 (block nwaios
         ;;
@@ -146,9 +147,18 @@
          socket
          tmpfile_file_context)
 
+        (filecon
+         "/etc/data/cv_cfg\.json"
+         file
+         conffile_file_context)
+
         (macro obj_type_transition_execfile ((type ARG1))
             (call .file.execfile_obj_type_transition
             (ARG1 execfile file "aios_daemon")))
+
+        (macro obj_type_transition_conffile ((type ARG1))
+            (call .qcmap_cm.conffile_obj_type_transition
+                (ARG1 conffile file "cv_cfg.json")))
 
         (macro obj_type_transition_tmpfile ((type ARG1)(class ARG2)(name ARG3))
             (call .tmp.fs_obj_type_transition
@@ -167,6 +177,12 @@
         ;; File-related rules
         (call .file.search_conffile_dirs (subj))
         (call .file.read_conffile_lnk_files (subj))
+
+        ;; Search /etc/data/ dir to reach cv_cfg.json
+        (call .qcmap_cm.search_conffile_dirs (subj))
+
+        ;; Read aios_daemon's own config file cv_cfg.json
+        (allow subj conffile (file (read open)))
 
         ;; NWAIOS data access for AI model files and input files
         (call .nwaios.full_access (subj))

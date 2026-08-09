@@ -160,6 +160,25 @@
 	(call .ssgtzd_socket.manage_ssgtzd_socket_files (subj))
 	(call .ssgtzd.connectto_unix_stream_sockets (subj))
 
+	;; Send messages to mbb_device_agent
+	(call .mbb_device_agent.sendto_unix_dgram_sockets (subj))
+
+	;; Need search on /lib/netifd/ dir and read on netifd-proto.sh (lanUtils.sh calls it)
+	(call .netifd.search_miscfile_dirs (subj))
+	(call .netifd.read_miscfile_files (subj))
+
+	;; lanUtils.sh (launched by loc_hal_daemon) invokes ip-full to configure routes.
+	;; subj_type_transition ensures ip-full runs as ip.subj; nnptransition is required
+	;; because loc_hal_daemon is launched under NNP (no-new-privs).
+	;; The fd/socket inheritance rules are defined in ip-append.cil.
+	(call .ip.subj_type_transition (subj))
+	(call .ip.nnptransition (subj))
+
+	;; lanUtils.sh also invokes xtables-nft-multi (iptables/ip6tables) to manage firewall
+	;; rules. Same reasoning as ip above: subj_type_transition + nnptransition for the
+	;; domain switch under NNP. The fd/socket inheritance rules are defined in xtables-append.cil.
+	(call .xtables.subj_type_transition (subj))
+	(call .xtables.nnptransition (subj))
 
 	;; Need qipcrtr socket creations
 	(allow subj  self  create_qipcrtr_socket)
@@ -167,6 +186,4 @@
 	;; Lcs related
 	(allow subj file.conffile (file (getattr)))
 
-	;; Send messages to mbb_device_agent
-	(call .mbb_device_agent.sendto_unix_dgram_sockets (subj))
 )

@@ -1,0 +1,60 @@
+; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .license_hub_cli.subj_type_transition (subj)))
+
+(in .file
+    (call .license_hub_cli.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+(block license_hub_cli
+
+    ;;
+    ;; Contexts
+    ;;
+
+    (filecon
+    "/usr/bin/license_hub_cli"
+    file
+    execfile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+
+    (macro obj_type_transition_execfile ((type ARG1))
+        (call .file.execfile_obj_type_transition
+            (ARG1 execfile file "license_hub_cli")))
+
+    ;;
+    ;; Policy
+    ;;
+
+    (blockinherit .agent.base_template)
+    (blockinherit .tmpfile.obj_template)
+    (blockinherit .tmpfile.runtime.obj_template)
+
+    ;; Need search on /etc config dir (etc-upper)
+    (call .file.search_conffile_dirs (subj))
+
+    ;; Need qipcrtr socket creation and read/write
+    (allow subj self create_qipcrtr_socket)
+
+    ;; Need unix_dgram socket for logging
+    (allow subj self create_unix_dgram_socket)
+
+    ;; Need for /dev/log logging (write on logd.miscfile sock_file + sendto logd.subj)
+    (call .logd.unix_dgram_send (subj))
+
+    ;; Need unix_stream socket
+    (allow subj self create_unix_stream_socket)
+
+    ;; Need connectto diag-router unix stream socket
+    (call .diag-router.unix_stream_connect (subj))
+
+    ;; Need to read /tmp/*.pfm license files (tmp.fs)
+    (allow subj .tmp.fs (file (getattr read open)))
+
+)

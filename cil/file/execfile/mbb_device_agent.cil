@@ -47,7 +47,7 @@
     ;; Rules
     (allow subj self (process (getsched)))
     (allow subj file.conffile (dir (search)))
-    (allow subj file.conffile (lnk_file (read)))
+    (allow subj file.conffile (lnk_file (read getattr)))
     (allow subj file.conffile (file(getattr)))
 
     (allow subj logd.miscfile (sock_file (write)))
@@ -126,4 +126,7 @@
     (allow subj net.netif (netif (egress)))
     (allow subj .reserved.netport (tcp_socket (name_connect)))
     (allow subj .unreserved.netport (tcp_socket (name_connect)))
+
+    ;; don't audits
+    (dontaudit subj invalid (lnk_file (read)))
 )

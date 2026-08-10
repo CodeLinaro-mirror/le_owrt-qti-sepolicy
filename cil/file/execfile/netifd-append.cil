@@ -76,6 +76,9 @@
          ;; Allow
          (allow subj netifd.statetmpfile (file (open read getattr write unlink)))
 
+         ;; Need by "ip" command run from netifd (e.g. "ip -6 addr")
+         (allow subj self create_tcp_socket)
+
          (call obj_type_transition_tmpfile_ext (subj))
          (call obj_type_transition_runtimetmpfile_1 (subj))
          (allow subj netifd.tmpfile (file (create write open append read getattr unlink)))

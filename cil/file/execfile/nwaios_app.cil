@@ -56,6 +56,28 @@
         (allow subj .unreserved.netport (tcp_socket (name_bind)))
         (allow subj .net.netnode (tcp_socket (node_bind)))
 
+        ;; Network egress for media_wrapper_app server responses
+        (allow subj net.netif (netif (egress)))
+        (allow subj net.netnode (node (sendto)))
+
+        ;; UDP socket for media_wrapper_app on port 10000
+        (allow subj self create_udp_socket)
+        (allow subj .unreserved.netport (udp_socket (name_bind)))
+        (allow subj .net.netnode (udp_socket (node_bind)))
+
+        ;; Netlink route socket for address resolution
+        (allow subj self create_netlink_route_socket)
+        (allow subj self (netlink_route_socket (nlmsg_read)))
+
+        ;; DNS resolution support
+        (call .file.read_conffile_lnk_files (subj))
+        (call .resolv.search_tmpfile_dirs (subj))
+        (call .resolv.read_tmpfile_files (subj))
+        (call .nameservice.read_miscfile_files (subj))
+
+        ;; Pipe operations with sys.subj
+        (allow subj sys.subj (fifo_file (read)))
+
         ;; Write to aios_daemon's socket file
         (allow subj aios_daemon.subj (sock_file (write)))
 

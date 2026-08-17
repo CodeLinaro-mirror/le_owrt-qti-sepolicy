@@ -19,6 +19,8 @@
     (filecon "/etc/misc/wifi" dir miscfile_file_context)
     (filecon "/data/hostapd\.log" file datafile_file_context)
     (filecon "/data/wpa_supplicant\.log" file datafile_file_context)
+    (filecon "/data/vendor/qhcp" dir datafile_file_context)
+    (filecon "/data/vendor/qhcp/.*" any datafile_file_context)
 
     (filecon "/tmp/hostapd\.txt" file tmpfile_file_context)
     (filecon "/tmp/map_bh_info\.tmp" file tmpfile_file_context)

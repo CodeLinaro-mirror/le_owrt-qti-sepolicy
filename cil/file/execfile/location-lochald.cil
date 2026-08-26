@@ -91,6 +91,9 @@
 	(call .qms.readwrite_tmpfile_sock_files(subj))
 	(call .qms.connectto_unix_stream_sockets (subj))
 
+	;; Search /dev/socket/qcrild
+	(call .qcril.search_runtimetmpfile_dirs (subj))
+
 	;; KPI node access
 	(call .kpi_values.manage_sysfile_files (subj))
 	;; read urandom

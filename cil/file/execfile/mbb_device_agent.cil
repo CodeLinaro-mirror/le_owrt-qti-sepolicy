@@ -8,7 +8,8 @@
 
 (in .file
     (call .mbb_device_agent.obj_type_transition_datafile (unconfined.subj_typeattr))
-    (call .mbb_device_agent.obj_type_transition_execfile (unconfined.subj_typeattr)))
+    (call .mbb_device_agent.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .mbb_device_agent.obj_type_transition_tmpfile (unconfined.subj_typeattr)))
 
 
 (block mbb_device_agent
@@ -29,6 +30,16 @@
     any
     datafile_file_context)
 
+    (filecon
+    "/dev/socket/mbb_device_agent"
+    dir
+    tmpfile_file_context)
+
+    (filecon
+    "/dev/socket/mbb_device_agent/mbb_da_test\.sock"
+    socket
+    tmpfile_file_context)
+
     ;; Macros
     (macro obj_type_transition_execfile ((type ARG1))
         (call .file.execfile_obj_type_transition
@@ -38,11 +49,16 @@
         (call .file.datafile_obj_type_transition
             (ARG1 datafile dir "mbb_device_agent")))
 
+    (macro obj_type_transition_tmpfile ((type ARG1))
+        (call .tmp.fs_obj_type_transition
+            (ARG1 tmpfile dir "mbb_device_agent")))
+
     ;; Policy
 
     (blockinherit .agent.base_template)
     (blockinherit .file.conf.obj_template)
     (blockinherit .file.data.obj_template)
+    (blockinherit .tmpfile.obj_template)
 
     ;; Rules
     (allow subj self (process (getsched)))
@@ -88,8 +104,9 @@
     (allow subj loc_socket.nodedev (sock_file (write setattr create)))
     (call .loc_hal_daemon.sendto_unix_dgram_sockets (subj))
 
-    (allow subj tmp.fs (dir (write add_name remove_name)))
+    (allow subj tmp.fs (dir (write add_name remove_name create)))
     (allow subj tmp.fs (file (read write create open append ioctl unlink map)))
+    (allow subj tmp.fs (sock_file (create setattr unlink)))
     (allow subj tmp.fs (filesystem (getattr)))
 
     (allow subj nameservice.miscfile (file (open read)))

@@ -18,6 +18,7 @@
 
 	;; Need for PBR
 	(allow subj qcmap_cm.tmpfile (file (append)))
+	(allow subj .tmp.fs (file (read write open getattr ioctl)))
 
 	(call .qcmap_ref.write_tmpfile_files (subj))
 	(allow subj qcmap_ref.subj (netlink_route_socket (read write)))

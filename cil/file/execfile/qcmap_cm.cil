@@ -1000,6 +1000,7 @@
     (call pidof_denials (subj qtether.subj))
     (call pidof_denials (subj odhcp6c.subj))
     (call pidof_denials (subj uci.subj))
+    (call pidof_denials (subj license_hub_service.subj))
 
     (allow subj .sys.fs (filesystem(getattr)))
     (allow subj .qseecomd.subj (lnk_file (read open)))

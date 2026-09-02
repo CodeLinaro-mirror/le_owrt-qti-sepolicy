@@ -96,4 +96,16 @@
     ;; Need to search/read SSL certificates (/etc/ssl/ca-certificates.crt)
     (call .ssl.read.subj_type (subj))
 
+    ;; Enable SSR - Need for editing /sys/class/remoteproc/remoteproc0/recovery
+    ;; Need to search sysfs root (sys.fs) to traverse /sys
+    (call .sys.search_fs_dirs (subj))
+
+    ;; Need to search /sys/class dir and read remoteproc class symlink (class.sysfile)
+    (call .class.search_sysfile_dirs (subj))
+    (call .class.read_sysfile_lnk_files (subj))
+
+    ;; Need to search /sys/devices and write remoteproc state file (devices.sysfile)
+    (call .devices.search_sysfile_dirs (subj))
+    (call .devices.read_sysfile_files (subj))
+    (allow subj .devices.sysfile (file (write)))
 )

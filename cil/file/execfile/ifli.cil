@@ -87,6 +87,9 @@
         (allow subj self create_netlink_route_socket)
         (allow subj self create_netlink_generic_socket)
 
+        ;; QRTR socket: Required for LicenseHub integration
+        (allow subj self (qipcrtr_socket (create getattr read write setopt)))
+
         (call .net.search_sysctlfile_dirs (subj))
         (call .net.readwrite_sysctlfile_files (subj))
 
@@ -293,4 +296,5 @@
         (call pidof_denials (subj rcdropbear.subj))
         (call pidof_denials (subj nftables.subj))
         (call pidof_denials (subj jsonfilter.subj))
+        (call pidof_denials (subj license_hub_service.subj))
 )

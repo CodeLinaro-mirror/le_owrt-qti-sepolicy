@@ -1,4 +1,4 @@
-;;Copyright (c) 2023,2025 Qualcomm Innovation Center, Inc. All rights reserved.
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;;SPDX-License-Identifier: BSD-3-Clause-Clear.
 
 (in .odhcpd
@@ -19,4 +19,5 @@
 
      ;;Dont audit rule for odhcpd
      (dontaudit subj odhcpd.subj (capability (dac_read_search sys_admin)))
+     (dontaudit subj .tmp.fs (dir (create)))
 )

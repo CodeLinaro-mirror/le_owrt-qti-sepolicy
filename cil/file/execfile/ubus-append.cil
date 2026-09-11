@@ -80,6 +80,7 @@
 (allow subj ifli.subj readwrite_netlink_netfilter_socket)
 (call .ifli.use_fds (subj))
 (call .ifli.readwrite_unix_stream_sockets (subj))
+(allow subj ifli.subj (fifo_file (read write)))
 (allow subj tmpfile.logtmpfile (file (append)))
 
 (call .ipa.readwrite_nodedev_chr_files (subj))

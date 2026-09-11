@@ -73,6 +73,9 @@
 	(call .leprop.manage_miscfile_sock_files (subj))
 	(call .leprop.connectto_unix_stream_sockets (subj))
 
+	;; loc-mq-thread sends syslog messages via unix dgram socket to /dev/log (sys.subj)
+	(call .sys.sendto_unix_dgram_sockets (subj))
+
 	;; sysfile
 	(call .firmware.manage_sysfile_dirs (subj))
 	(call .firmware.manage_sysfile_files (subj))

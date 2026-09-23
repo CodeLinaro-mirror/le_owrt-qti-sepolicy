@@ -51,6 +51,7 @@
 	(allow subj .uci.conffile (dir (read write open add_name remove_name)))
 	(allow subj .uci.conffile (file (create write open getattr read setattr rename unlink ioctl append lock)))
 
+	(call .netifd.obj_type_transition_statetmpfile (subj))
 	(allow subj .netifd.statetmpfile (file (create getattr write read open lock ioctl)))
 
 	;; Need read open and execute_no_trans permission on /usr/sbin/ebtables

@@ -84,5 +84,9 @@
 (allow subj tmpfile.logtmpfile (file (append)))
 
 (call .ipa.readwrite_nodedev_chr_files (subj))
+
+;; Need read on /tmp/lock/combine_backhaul.lock
+(allow subj .tmpfile.locktmpfile (file (read)))
+
 (dontaudit subj self (capability (sys_admin)))
 )

@@ -64,6 +64,9 @@
 ;; Need permission for /usr/share/pbr/pbr.firewall.include
 (allow subj .file.datafile (file (getattr)))
 
+;; Need read write on pppd netlink_route_socket
+(allow subj .pppd.subj (netlink_route_socket (read write)))
+
 (dontaudit subj .sys.rootfile (dir (read)))
 )
 

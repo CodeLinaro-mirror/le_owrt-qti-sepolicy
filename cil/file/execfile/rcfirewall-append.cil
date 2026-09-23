@@ -36,6 +36,7 @@
        (allow subj netifd.miscfile (dir (search getattr)))
        ;; Need for pppd
        (allow subj .pppd.subj (fd (use)))
+       (allow subj .pppd.subj (netlink_route_socket (read write)))
        (call .ifli.use_fds (subj))
        (call .ifli.readwrite_unix_stream_sockets (subj))
        (allow subj tmpfile.logtmpfile (file (append)))

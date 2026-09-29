@@ -56,3 +56,54 @@
 
                   (blockinherit .sysfile.kernel_dload.obj_base_template)
                   (blockinherit .sysfile.obj_macro_template))))
+
+;; Define the snd_card module context
+(block snd_card
+
+       ;;
+       ;; Contexts
+       ;;
+
+     (genfscon
+        "sysfs"
+        "/kernel/snd_card/card_state"
+        sysfile_file_context)
+
+    (blockinherit .sysfile.module.obj_template))
+
+(in .sysfile
+
+    (block snd_card
+
+           ;;
+           ;; Policy
+           ;;
+
+           (blockinherit .file.obj_all_macro_template)
+
+           ;;
+           ;; Templates
+           ;;
+
+           (block obj_base_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_base_template)
+
+                  (blockinherit .sysfile.obj_base_template)
+
+                  (call .sysfile.snd_card.obj_type (sysfile)))
+
+           (block obj_template
+
+                  ;;
+                  ;; Policy
+                  ;;
+
+                  (blockabstract obj_template)
+
+                  (blockinherit .sysfile.snd_card.obj_base_template)
+                  (blockinherit .sysfile.obj_macro_template))))

@@ -229,6 +229,9 @@
         (allow subj tmpfile.logtmpfile (file (append)))
         (allow subj .ifli.subj readwrite_tcp_socket)
 
+        ;; Need read write on pppd netlink_route_socket
+        (allow subj .pppd.subj (netlink_route_socket (read write)))
+
         (dontaudit subj self (capability (sys_admin)))
         (dontaudit subj kernel.sysctlfile (dir (search)))
         (dontaudit subj modprobe.sysctlfile (file (read open)))

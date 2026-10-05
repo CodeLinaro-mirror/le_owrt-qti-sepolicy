@@ -1,15 +1,17 @@
-;; Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 ;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
 
 (in .sys
     (call .hal_rec_test.subj_type_transition (subj))
-    (call .hal_play_test.subj_type_transition (subj)))
+    (call .hal_play_test.subj_type_transition (subj))
+    (call .hal_voice_test.subj_type_transition (subj)))
 
 (in .file
     (call .hal_rec_test.obj_type_transition_execfile (unconfined.subj_typeattr))
-    (call .hal_play_test.obj_type_transition_execfile (unconfined.subj_typeattr)))
+    (call .hal_play_test.obj_type_transition_execfile (unconfined.subj_typeattr))
+    (call .hal_voice_test.obj_type_transition_execfile (unconfined.subj_typeattr)))
 
 
 (block hal_rec_test
@@ -116,6 +118,8 @@
      ;;search/write kernel sysfile dir
     (call .kernel.search_sysfile_dirs (subj))
     (call .kernel.write_sysfile (subj))
+    ;; read /sys/kernel/snd_card/card_state
+    (allow subj snd_card.sysfile (file (open read getattr)))
 
     ;;connect to leprop socket
     (call .leprop.connectto_unix_stream_sockets (subj))
@@ -269,6 +273,8 @@
      ;;search/write kernel dir/files
     (call .kernel.search_sysfile_dirs(subj))
     (call .kernel.write_sysfile_files(subj))
+    ;; read /sys/kernel/snd_card/card_state
+    (allow subj snd_card.sysfile (file (open read getattr)))
 
     ;; connect/write leprop socket/sock files
     (call .leprop.connectto_unix_stream_sockets (subj))
@@ -281,6 +287,137 @@
 
     (allow subj .invalid (dir (search)))
     (allow subj .invalid (chr_file (ioctl read write open map)))
+    (allow subj  .sys.subj (binder (call transfer)))
+
+    ;;open pmsg_dev.nodedev
+    (allow subj pmsg_dev.nodedev (chr_file (write open)))
+
+    ;; manage sdcard miscfile
+    (call .sdcard.search_miscfile_dirs(subj))
+    (allow subj sdcard.miscfile (dir (search)))
+    (allow subj sdcard.miscfile (file (read open)))
+)
+
+(block hal_voice_test
+    ;;
+    ;; Contexts
+    ;;
+
+    (filecon
+        "/usr/bin/hal_voice_test"
+        file
+        execfile_file_context)
+
+    ;;
+    ;; Macros
+    ;;
+        (macro obj_type_transition_execfile ((type ARG1))
+            (call .file.execfile_obj_type_transition
+                (ARG1 execfile file "hal_voice_test")))
+
+    ;;
+    ;; Policy
+        ;;
+        (blockinherit .agent.base_template)
+
+    ;; search in config files is needed
+    (call .file.search_conffile_dirs (subj))
+
+    ;; Need qipcrtr socket creations
+       (allow subj  self  create_qipcrtr_socket)
+
+    ;; Needed for  unix_dgram socket creation
+       (allow subj self create_unix_dgram_socket)
+
+    ;;Needed for creating of unix stream socket
+       (allow subj self create_unix_stream_stream_socket)
+
+    ;; Need creat and read of this uevent socket
+       (allow subj self create_netlink_kobject_uevent_socket)
+
+    ;;need for /dev/logd or logging
+    ;; this will add write permission also
+       (call .logd.unix_dgram_send(subj))
+
+    ;;(blockinherit .file.exec.obj_template)
+
+    ;;(call .dev.readwriteinherited_csddev_chr_files (subj))
+    (call .fs.write_sysfile_dirs (subj))
+    ;;  (call .fs.search_tracefile_dirs (subj))
+
+    (call .shell.execute_execfile_files (subj))
+    ;;search sysfs files
+    (call .sys.search_fs_dirs (subj))
+
+    ;;getattr selinuxfs files
+    (call .selinux.getattr_filesystems (subj))
+
+    ;;search selinux conffile
+    (call .selinux.search_conffile_dirs (subj))
+
+    ;;search power sysfile
+    (call .power.search_sysfile_dirs (subj))
+
+    ;; write power sysfile: prevent audio thread/codecs from being
+    ;; suspended during a voice call, which is handled on the modem but
+    ;; needs completion/coordination from apps running on this processor
+    (call .power.write_sysfile_files (subj))
+
+    ;;self block_suspend: same voice-call suspend-prevention need as above
+    (allow subj self (capability2(block_suspend)))
+
+    ;;read conffile
+    (call .file.read_conffile_files (subj))
+
+    ;;read/open procfs
+    (allow subj proc.fs (dir (read open)))
+
+    ;;read/open/search debugfs
+    (allow subj debug.fs (dir (read open search)))
+
+    ;;connectto diag-router unix_stream_socket
+    (call .diag-router.connectto_unix_stream_sockets (subj))
+
+    ;; manage tmp/proc file
+    (allow subj proc.fs (file (open read)))
+
+    ;; search/read dma_heap nodedev dir/files
+    (call .dma_heap.search_nodedev_dirs(subj))
+    (call .dma_heap.read_nodedev_chr_files(subj))
+
+    ;;open conffile
+    (allow subj file.conffile (file (open)))
+
+    ;;connect/search/read-write socket/dir/file
+    (call .sys.search_fs_dirs(subj))
+    (call .sys.readwriteinherited_ptydev_chr_files (subj))
+
+    ;;search/getattr selinux file/dir
+    (call .selinux.search_conffile_dirs(subj))
+    (call .selinux.getattr_filesystems(subj))
+
+     ;;read datafiles
+    (call .file.read_datafile_lnk_files(subj))
+    (call .file.read_datafile_files(subj))
+
+    ;; search/read/write/map pcm dev nodes
+    (call .snd.search_nodedev_dirs (subj))
+    (call .snd.readwrite_nodedev_chr_files(subj))
+    (call .snd.mapexecute_nodedev_chr_files (subj))
+
+     ;;search kernel sysfile dir
+    (call .kernel.search_sysfile_dirs(subj))
+    ;; read/write /sys/kernel/snd_card/card_state
+    (allow subj snd_card.sysfile (file (open read getattr write)))
+
+    ;; connect/write leprop socket/sock files
+    (call .leprop.connectto_unix_stream_sockets (subj))
+    (call .leprop.write_miscfile_sock_files(subj))
+
+    ;; manage miscfile
+    (call .mnt.search_miscfile_dirs(subj))
+    (call .mnt.read_miscfile_files(subj))
+
     (allow subj  .sys.subj (binder (call transfer)))
 
     ;;open pmsg_dev.nodedev

@@ -134,6 +134,9 @@
     ;; Need open write on /etc/firewall.user
     (call .firewall.manage_conffile_files (subj))
 
+    ;; Need open/write on /etc/firewall.user.nat
+    (allow subj file.conffile (file (getattr open read write append)))
+
     (allow subj self (capability (net_raw net_admin)))
 
     (allow subj conntrack.execfile ( file ( getattr)))

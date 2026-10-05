@@ -1,0 +1,46 @@
+;; -*- mode: CIL; fill-column: 79; indent-tabs-mode: nil; -*-
+
+;;Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
+
+(in .sys
+    (call .mbb_device_agent_test.subj_type_transition (subj)))
+
+(in .file
+    (call .mbb_device_agent_test.obj_type_transition_execfile (unconfined.subj_typeattr)))
+
+
+(block mbb_device_agent_test
+
+    ;; Contexts
+    (filecon
+    "/usr/bin/mbb_device_agent_test"
+    file
+    execfile_file_context)
+
+    ;; Macros
+    (macro obj_type_transition_execfile ((type ARG1))
+        (call .file.execfile_obj_type_transition
+            (ARG1 execfile file "mbb_device_agent_test")))
+
+    ;; Policy
+
+    (blockinherit .agent.base_template)
+
+    ;; Rules
+
+    ;; Connect to mbb_device_agent test socket
+    (allow subj self create_unix_stream_stream_socket)
+    (allow subj mbb_device_agent.tmpfile (dir (search getattr)))
+    (allow subj mbb_device_agent.tmpfile (sock_file (write read)))
+    (allow subj mbb_device_agent.subj (unix_stream_socket (connectto)))
+    (allow subj file.conffile (dir (search)))
+    (allow subj tmp.fs (file (read open)))
+    (allow subj tmp.fs (sock_file (write)))
+
+    (allow subj logd.miscfile (sock_file (write)))
+    (allow subj logd.subj (unix_dgram_socket (sendto)))
+
+    (allow subj selinux.conffile (dir (search)))
+    (allow subj selinux.fs (filesystem (getattr)))
+)

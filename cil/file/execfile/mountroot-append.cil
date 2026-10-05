@@ -1,6 +1,5 @@
-
-;;Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-;;SPDX-License-Identifier: BSD-3-Clause-Clear.
+;; Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+;; SPDX-License-Identifier: BSD-3-Clause-Clear
 
 (in .mountroot
 
@@ -11,6 +10,7 @@
 (call .tmp.read_fs_blk_files (subj))
 (allow subj .snd.nodedev  (dir ( getattr)))
 (allow subj .dma_heap.nodedev  (dir ( getattr)))
+(allow subj .usb_ffs.nodedev  (dir( getattr)))
 
 )
 

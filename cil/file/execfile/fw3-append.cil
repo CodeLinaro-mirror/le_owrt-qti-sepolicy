@@ -38,6 +38,7 @@
 (allow jsonfilter.subj fw3.subj (unix_stream_socket (read write)))
 (allow jsonfilter.subj fw3.subj readwriteinherited_fifo_file)
 (allow subj .ucode.subj (fd (use)))
+(allow subj .ucode.subj (fifo_file (write)))
 ;; denied { execute_no_trans } for  pid=11079 comm="sh" path="/sbin/fw3"
 ;; dev="mmcblk0p40" ino=1385 scontext=u:r:fw3.subj tcontext=u:r:fw3.execfile tclass=file
 (call .fw3.subj_type_transition (subj))
@@ -62,6 +63,9 @@
 
 ;; Need permission for /usr/share/pbr/pbr.firewall.include
 (allow subj .file.datafile (file (getattr)))
+
+;; Need read write on pppd netlink_route_socket
+(allow subj .pppd.subj (netlink_route_socket (read write)))
 
 (dontaudit subj .sys.rootfile (dir (read)))
 )

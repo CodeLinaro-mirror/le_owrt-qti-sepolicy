@@ -82,5 +82,10 @@
   (call .loc_hal_daemon.readwrite_unix_stream_sockets (subj))
   (allow subj .loc_hal_daemon.subj readwrite_qipcrtr_socket)
 
+  ;; Need read on /tmp/lock/combine_backhaul.lock
+  (allow subj .tmpfile.locktmpfile (file (read)))
+  ;; Need use on fd inherited from odhcp6c.subj (switch_backhaul_v6.lock)
+  (allow subj .odhcp6c.subj (fd (use)))
+
   (dontaudit subj self (capability (sys_admin)))
 )

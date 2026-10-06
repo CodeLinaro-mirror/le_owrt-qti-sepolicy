@@ -54,7 +54,15 @@
     ;; Need connectto diag-router unix stream socket
     (call .diag-router.unix_stream_connect (subj))
 
-    ;; Need to read /tmp/*.pfm license files (tmp.fs)
-    (allow subj .tmp.fs (file (getattr read open)))
+    ;; Need to read /tmp/*.pfm license files and create/write license output files (tmp.fs)
+    (allow subj .tmp.fs (file (getattr read open create write ioctl)))
 
+    ;; Need to read /etc/TZ and /etc/localtime symlinks (file.conffile lnk_file)
+    (allow subj .file.conffile (lnk_file (read)))
+
+    ;; Need to read /tmp/TZ locale file (locale.miscfile)
+    (allow subj .locale.miscfile (file (read open getattr map)))
+
+    ;; Need to write to /tmp directory to create temporary license files (tmp.fs dir)
+    (allow subj .tmp.fs (dir (write add_name)))
 )

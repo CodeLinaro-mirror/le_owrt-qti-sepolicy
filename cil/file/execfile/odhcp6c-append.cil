@@ -163,7 +163,7 @@
     ;; Need permission for ip6tables and odhcpd
     (allow subj .rccommon.conffile (file (read)))
     (allow subj .tmpfile.locktmpfile (dir (search)))
-    (allow subj .tmpfile.locktmpfile (file (open)))
+    (allow subj .tmpfile.locktmpfile (file (open setattr)))
 
     ;; Need for tinyproxy
     (call .rctinyproxy.execute_initscriptfile_files (subj))
